@@ -94,21 +94,21 @@ const Registration = () => {
             emailValidationColor: "danger",
           });
         });
-      setData({ ...data, email: value });
-      let emailFormat = /^\w+([-]?\w+)*@\w+([-]?\w+)*(\.\w{2,3})+$/;
-      if (emailFormat.test(value)) {
-        setValidationDetails({
-          ...validationDetails,
-          emailValidationMessage: "Valid Email Address.",
-          emailValidationColor: "success",
-        });
-      } else {
-        setValidationDetails({
-          ...validationDetails,
-          emailValidationMessage: "Invalid Email Address.",
-          emailValidationColor: "danger",
-        });
-      }
+
+      // let emailFormat = /^\w+([-]?\w+)*@\w+([-]?\w+)*(\.\w{2,3})+$/;
+      // if (emailFormat.test(value)) {
+      //   setValidationDetails({
+      //     ...validationDetails,
+      //     emailValidationMessage: "Valid Email Address.",
+      //     emailValidationColor: "success",
+      //   });
+      // } else {
+      //   setValidationDetails({
+      //     ...validationDetails,
+      //     emailValidationMessage: "Invalid Email Address.",
+      //     emailValidationColor: "danger",
+      //   });
+      // }
     } else if (name === "landlineNumber") {
       let landlineNumberLength = value.length;
       if (landlineNumberLength >= 7 && landlineNumberLength <= 11) {
@@ -126,20 +126,37 @@ const Registration = () => {
         });
       }
     } else if (name === "mobileNumber") {
-      let mobileNumberLength = value.length;
-      if (mobileNumberLength === 10) {
-        setValidationDetails({
-          ...validationDetails,
-          mobileValidationMessage: "Valid Mobile Number.",
-          mobileValidationColor: "success",
+      await axios
+        .post(
+          `http://host.docker.internal:3000/sam/v1/customer-registration/mobilenumber-validation`,
+          JSON.stringify({ mobile_number: value }),
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then((res) => {
+          setValidationDetails({
+            ...validationDetails,
+            mobileValidationMessage: res.data.msg_to_return,
+            mobileValidationColor: "danger",
+          });
         });
-      } else {
-        setValidationDetails({
-          ...validationDetails,
-          mobileValidationMessage: "Please Enter Valid Mobile Number.",
-          mobileValidationColor: "danger",
-        });
-      }
+      // let mobileNumberLength = value.length;
+      // if (mobileNumberLength === 10) {
+      //   setValidationDetails({
+      //     ...validationDetails,
+      //     mobileValidationMessage: "Valid Mobile Number.",
+      //     mobileValidationColor: "success",
+      //   });
+      // } else {
+      //   setValidationDetails({
+      //     ...validationDetails,
+      //     mobileValidationMessage: "Please Enter Valid Mobile Number.",
+      //     mobileValidationColor: "danger",
+      //   });
+      // }
     }
   };
 
