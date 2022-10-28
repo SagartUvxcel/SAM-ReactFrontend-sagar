@@ -2,12 +2,17 @@ import React, { useRef, useState } from "react";
 import Layout from "../1.CommonLayout/Layout";
 import IndividualForm from "./IndividualForm";
 import OrganizationForm from "./OrganizationForm";
+import axios from "axios";
 
 const Registration = () => {
   const toggleIndividualForm = useRef();
   const toggleOrganizationForm = useRef();
   const individualCheck = useRef();
   const organizationCheck = useRef();
+
+  // const showData = () => {
+  //   console.log(JSON.stringify(data));
+  // };
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -38,7 +43,7 @@ const Registration = () => {
     mobileValidationColor: "",
   });
 
-  const onInputChange = (e) => {
+  const onInputChange = async (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     const { name, value } = e.target;
     if (name === "aadhaarNumber") {
@@ -72,6 +77,24 @@ const Registration = () => {
         });
       }
     } else if (name === "emailAddress") {
+      await axios
+        .post(
+          `http://host.docker.internal:3000/sam/v1/customer-registration/email-validation`,
+          JSON.stringify({ email: value }),
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then((res) => {
+          setValidationDetails({
+            ...validationDetails,
+            emailValidationMessage: res.data.msg_to_return,
+            emailValidationColor: "danger",
+          });
+        });
+      setData({ ...data, email: value });
       let emailFormat = /^\w+([-]?\w+)*@\w+([-]?\w+)*(\.\w{2,3})+$/;
       if (emailFormat.test(value)) {
         setValidationDetails({
@@ -159,6 +182,9 @@ const Registration = () => {
                     {/* Individual Form Heading */}
                     <div className="col-lg-12">
                       <h4 className="fw-bold">New Customer Register</h4>
+                      {/* <button className="btn btn-success" onClick={showData}>
+                        Test
+                      </button> */}
                       <hr />
                     </div>
                     {/*  Checkboxes - Individual & Organization */}

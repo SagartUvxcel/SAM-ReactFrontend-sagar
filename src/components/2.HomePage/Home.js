@@ -2,27 +2,9 @@ import React, { useEffect } from "react";
 import HomeAboutUs from "./HomeAboutUs";
 import Layout from "../1.CommonLayout/Layout";
 import Properties from "./Properties";
-// import axios from "axios";
 
 function Home() {
-  // const [data, setData] = useState("ok");
-
-  // const getData = async () => {
-  //   await axios
-  //     .post(
-  //       `http://host.docker.internal:3000/sam/v1/customer-registration/email-validation`
-  //     )
-  //     .then((res) => {
-  //       setData(res);
-  //     });
-  // };
-
-  // const showData = () => {
-  //   console.log(data);
-  // };
-
   useEffect(() => {
-    // getData();
     let nav = document.querySelector(".navbar");
     nav.style.backgroundColor = "#5857579a";
     window.onscroll = function () {
@@ -39,9 +21,6 @@ function Home() {
       <section className="full-home-page-section common-full-page-bg">
         <section className="home-wrapper">
           <div className="container-fluid">
-            {/* <button className="btn btn-danger" onClick={showData}>
-              Show
-            </button> */}
             {/* 5 select boxes */}
             <div className="home-top-row">
               <div className="row five-box-row">
