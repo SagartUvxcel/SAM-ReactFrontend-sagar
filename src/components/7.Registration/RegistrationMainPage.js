@@ -39,7 +39,7 @@ const Registration = () => {
   });
 
   const onInputChange = (e) => {
-    // setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
     const { name, value } = e.target;
     if (name === "aadhaarNumber") {
       let aadhaarFormat = /^[2-9]{1}[0-9]{3}[0-9]{4}[0-9]{4}$/;
