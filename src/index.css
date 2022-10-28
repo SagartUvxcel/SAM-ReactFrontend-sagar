@@ -1,0 +1,337 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+/* Common css */
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.common-btn {
+  filter: drop-shadow(18px 18px 3px rgba(0, 0, 0, 0.4));
+  color: #fff !important;
+  font-size: 20px !important;
+  background: rgb(0, 153, 255);
+  background: linear-gradient(0deg, rgb(2, 48, 251) 0%, rgb(0, 229, 255) 100%);
+  transition: 0.3s ease-in-out !important;
+  border: 2px solid #c797eb !important;
+  border-radius: 9px !important;
+  font-weight: 600 !important;
+}
+.common-btn:hover {
+  transform: scale(0.9, 0.9) translate(0px, 5px);
+  filter: drop-shadow(0px 0px 10px);
+  transition: 0.3s ease-in-out;
+}
+
+.common-full-page-bg {
+  background-color: #3f444c !important;
+}
+
+.form-control:focus,
+.form-control {
+  box-shadow: none !important;
+}
+
+.min-100vh {
+  min-height: 100vh;
+}
+
+.section-padding {
+  padding: 4rem 0;
+}
+
+.wrapper {
+  padding: 2rem 0;
+}
+
+/* Navbar */
+.navbar {
+  background-color: #585757;
+  transition: 0.3s ease-in-out;
+}
+
+.header-scrolled {
+  background-color: #585757 !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  transition: 0.3s ease-in-out;
+}
+
+.navbar-nav .nav-link.active {
+  color: orange !important;
+}
+
+.navbar .navbar-toggler {
+  box-shadow: none !important;
+}
+
+.navbar .navbar-brand,
+.navbar-brand:focus,
+.navbar-brand:hover {
+  color: white !important;
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+.navbar .nav-item .nav-link {
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 500;
+  transition: color 0.3s ease-in-out;
+}
+
+/* Home */
+.home-wrapper {
+  width: 100%;
+  height: auto;
+  min-height: 650px;
+  background-image: url("images/images14.jpg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed;
+  padding: 200px 0 100px 0;
+  position: relative;
+}
+
+.home-wrapper .home-top-row {
+  display: flex;
+  justify-content: center;
+}
+
+.home-wrapper .five-box-row {
+  background-color: rgba(255, 255, 255, 0.658);
+  height: 140px;
+  align-items: center;
+  justify-content: center;
+  width: 95%;
+}
+
+.home-wrapper .five-section-col .inner-box {
+  border-radius: 14px;
+  border: 2px solid;
+}
+
+.home-wrapper .five-section-col .inner-box label {
+  padding: 12px 0 12px 10px;
+  font-weight: bold;
+}
+
+.home-wrapper .five-section-col .inner-box .select-div {
+  display: flex;
+  justify-content: center;
+}
+
+.home-wrapper .five-section-col .inner-box .select-div select {
+  width: 98%;
+  border-radius: 14px;
+  background-color: transparent;
+  box-shadow: none;
+  border-color: none !important;
+}
+
+.home-wrapper .five-section-col .inner-box .select-div select:focus {
+  border-color: rgba(128, 128, 128, 0.486) !important;
+}
+
+.home-wrapper .home-bottom-heading {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left: 0;
+}
+
+/* Property */
+
+.property-wrapper .property-card-wrapper .card {
+  background-color: transparent;
+  border: none;
+}
+
+.property-wrapper .property-card-wrapper .card hr {
+  width: 100%;
+  height: 10px;
+  margin-left: auto;
+  margin-right: auto;
+  background: linear-gradient(
+    0deg,
+    rgba(2, 126, 251, 1) 0%,
+    rgb(0, 0, 255) 100%
+  );
+  border: 0 none;
+  margin-bottom: 20px;
+}
+
+.property-card-wrapper .card .card-body {
+  padding: 1rem 0 !important;
+}
+
+/* Home about Us */
+
+.home-about-wrapper .common-col {
+  height: 320px;
+  padding: 0 !important;
+}
+
+.home-about-wrapper .common-col img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+.home-about-wrapper .about-details-col,
+.home-about-wrapper .why-choose-us-col {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Footer */
+
+.footer-wrapper {
+  width: 100%;
+  border-top: 2px solid blue;
+}
+
+.footer-wrapper .fluid-div {
+  min-height: 140px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.footer-icons-div {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.footer-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 30px;
+  height: 50px;
+  width: 50px;
+  color: gray;
+  cursor: pointer;
+  background-color: black;
+  margin: 0 10px;
+}
+
+.footer-icon svg {
+  transition: 0.2s ease-in-out;
+}
+
+.footer-icon:hover svg {
+  transform: scale(1.08);
+  transition: 0.2s ease-in-out;
+  color: white;
+}
+
+/* <----- Registration ----> */
+.registration-wrapper .form-wrapper-card {
+  border: none !important;
+}
+
+.form-text {
+  font-size: 0.78em !important;
+  margin-top: 0.1rem !important;
+}
+
+.individual-and-organization-check {
+  background-image: url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 20 20%27%3e%3cpath fill=%27none%27 stroke=%27%23fff%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%273%27 d=%27m6 10 3 3 6-6%27/%3e%3c/svg%3e") !important;
+  background-color: #0d6efd !important;
+  border-color: #0d6efd !important;
+}
+
+.toggle-label:hover {
+  cursor: pointer;
+  color: #337ab7;
+  text-decoration: underline;
+}
+
+/* Individual Registration */
+
+.SamTermsConditionsRow a {
+  color: blueviolet;
+  text-decoration: none;
+  border-bottom: 1px solid blueviolet;
+  font-weight: 600;
+}
+
+.IndividualForm .btn-secondary,
+.OrganizationForm .btn-secondary {
+  background-color: rgba(211, 211, 211, 0.647) !important;
+  border: none !important;
+}
+
+.IndividualForm .btn-secondary:hover,
+.OrganizationForm .btn-secondary:hover {
+  background-color: lightgray !important;
+}
+
+/* Login */
+
+.login-wrapper .btn {
+  width: 100px;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+}
+
+/* Media Queries */
+@media screen and (min-width: 992px) {
+  .five-section-col {
+    width: 19% !important;
+    flex: 0 0 auto !important;
+  }
+}
+
+@media screen and (max-width: 992px) {
+  .home-wrapper {
+    background-attachment: unset;
+  }
+  .home-wrapper .five-box-row {
+    width: 100%;
+  }
+  .five-section-col {
+    width: 20% !important;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .home-wrapper {
+    padding: 100px 0 50px 0;
+    background-attachment: fixed;
+  }
+  .home-wrapper .five-box-row {
+    height: 520px;
+  }
+  .five-section-col {
+    width: 100% !important;
+  }
+}
