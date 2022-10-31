@@ -48,12 +48,14 @@ function Home() {
         { state_id: parseInt(value) }
       );
       setSearchFields({ ...searchFields, cities: cityByState.data });
+      document.getElementById("city-col").classList.remove("d-none");
     } else if (name === "cities") {
-      const cityByState = await axios.post(
+      const localityByCity = await axios.post(
         `http://host.docker.internal:3000/sam/v1/property/by-address`,
         { city_id: parseInt(value) }
       );
-      setSearchFields({ ...searchFields, localities: cityByState.data });
+      setSearchFields({ ...searchFields, localities: localityByCity.data });
+      document.getElementById("locality-col").classList.remove("d-none");
     }
   };
 
@@ -105,7 +107,7 @@ function Home() {
                     </div>
                   </div>
                 </div>
-                <div className="five-section-col col-12">
+                <div className="five-section-col col-12 d-none" id="city-col">
                   <div className="inner-box">
                     <label htmlFor="city">City</label>
                     <div className="select-div">
@@ -130,7 +132,10 @@ function Home() {
                     </div>
                   </div>
                 </div>
-                <div className="five-section-col col-12">
+                <div
+                  className="five-section-col col-12 d-none"
+                  id="locality-col"
+                >
                   <div className="inner-box">
                     <label htmlFor="locality">Locality</label>
                     <div className="select-div">
