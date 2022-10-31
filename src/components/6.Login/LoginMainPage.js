@@ -11,18 +11,18 @@ const LoginMainPage = () => {
               <form action="" className="card p-5">
                 <h6 className="fw-bold">Login with Email</h6>
                 <div className="row">
-                  <div class="col-lg-12 mb-3">
+                  <div className="col-lg-12 mb-3">
                     <input
                       type="email"
-                      class="form-control"
+                      className="form-control"
                       id="exampleInputEmail1"
                       placeholder="Email"
                     />
                   </div>
-                  <div class="col-lg-12 mb-3">
+                  <div className="col-lg-12 mb-3">
                     <input
                       type="password"
-                      class="form-control"
+                      className="form-control"
                       id="exampleInputPassword1"
                       placeholder="Password"
                     />
@@ -31,10 +31,10 @@ const LoginMainPage = () => {
                 </div>
                 <h6 className="fw-bold mt-3 mt-md-0">Login with OTP</h6>
                 <div className="row">
-                  <div class="col-md-8 mb-3">
+                  <div className="col-md-8 mb-3">
                     <input
                       type="Number"
-                      class="form-control"
+                      className="form-control"
                       id="mobile"
                       placeholder="Mobile Number"
                     />

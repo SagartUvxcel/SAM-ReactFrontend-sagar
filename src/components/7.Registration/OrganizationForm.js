@@ -44,9 +44,7 @@ const OrganizationForm = ({
               aria-label="Default select example"
               required
             >
-              <option disabled selected>
-                Select Type
-              </option>
+              <option value="">Select Type</option>
               <option value="Proprietor">Proprietor</option>
               <option value="LLP">LLP</option>
               <option value="Partnership/Joint Venture">

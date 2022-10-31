@@ -60,9 +60,7 @@ const CommonFormFields = ({
             aria-label="Default select example"
             required
           >
-            <option disabled selected>
-              Zipcode
-            </option>
+            <option value="">Zipcode</option>
             <option value="411015">411015</option>
             <option value="411016">411016</option>
             <option value="411017">411017</option>
