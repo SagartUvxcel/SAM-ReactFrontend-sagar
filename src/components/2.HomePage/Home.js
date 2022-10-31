@@ -2,9 +2,44 @@ import React, { useEffect } from "react";
 import HomeAboutUs from "./HomeAboutUs";
 import Layout from "../1.CommonLayout/Layout";
 import Properties from "./Properties";
+import axios from "axios";
+import { useState } from "react";
 
 function Home() {
+  const [searchFields, setSearchFields] = useState({
+    states: "",
+    banks: "",
+    assetCategory: "",
+  });
+
+  const getSearchDetails = async () => {
+    // States
+    const allStates = await axios.get(
+      `http://host.docker.internal:3000/sam/v1/property/by-state`
+    );
+
+    // banks
+    const allBanks = await axios.get(
+      `http://host.docker.internal:3000/sam/v1/property/by-bank`
+    );
+
+    // Asset Category
+
+    const assetCategories = await axios.get(
+      `http://host.docker.internal:3000/sam/v1/property/by-category`
+    );
+    setSearchFields({
+      ...searchFields,
+      states: allStates.data,
+      banks: allBanks.data,
+      assetCategory: assetCategories.data,
+    });
+    console.log(assetCategories.data);
+  };
+
   useEffect(() => {
+    getSearchDetails();
+    // navbar color change on scroll
     let nav = document.querySelector(".navbar");
     nav.style.backgroundColor = "#5857579a";
     window.onscroll = function () {
@@ -14,6 +49,7 @@ function Home() {
         nav.classList.remove("header-scrolled");
       }
     };
+    // eslint-disable-next-line
   }, []);
 
   return (

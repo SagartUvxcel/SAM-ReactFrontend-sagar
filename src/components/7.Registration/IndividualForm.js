@@ -1,5 +1,4 @@
 import React from "react";
-
 import CommonFormFields from "./CommonFormFields";
 
 const IndividualForm = ({

@@ -80,7 +80,7 @@ const Registration = () => {
     }
   };
 
-  const onInputChange = async (e) => {
+  const onInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     const { name, value } = e.target;
     if (name === "aadhaarNumber") {
