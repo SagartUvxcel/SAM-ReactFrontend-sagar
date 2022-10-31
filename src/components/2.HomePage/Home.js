@@ -12,6 +12,8 @@ function Home() {
     assetCategory: "",
   });
 
+  const { states, banks, assetCategory } = searchFields;
+
   const getSearchDetails = async () => {
     // States
     const allStates = await axios.get(
@@ -24,16 +26,17 @@ function Home() {
     );
 
     // Asset Category
-
     const assetCategories = await axios.get(
       `http://host.docker.internal:3000/sam/v1/property/by-category`
     );
+
     setSearchFields({
       ...searchFields,
       states: allStates.data,
       banks: allBanks.data,
       assetCategory: assetCategories.data,
     });
+
     console.log(assetCategories.data);
   };
 
@@ -69,8 +72,21 @@ function Home() {
                         className="form-select form-select-sm"
                         aria-label=".form-select-sm example"
                       >
-                        <option selected>All</option>
-                        <option value="1">One</option>
+                        <option disabled selected>
+                          Select State
+                        </option>
+                        {states
+                          ? states.map((state) => {
+                              return (
+                                <option
+                                  key={state.state_id}
+                                  value={state.state_id}
+                                >
+                                  {state.state_name}
+                                </option>
+                              );
+                            })
+                          : ""}
                       </select>
                     </div>
                   </div>
@@ -114,8 +130,19 @@ function Home() {
                         className="form-select form-select-sm"
                         aria-label=".form-select-sm example"
                       >
-                        <option selected>All</option>
-                        <option value="1">One</option>
+                        <option selected>Select Category</option>
+                        {assetCategory
+                          ? assetCategory.map((category) => {
+                              return (
+                                <option
+                                  key={category.type_id}
+                                  value={category.type_id}
+                                >
+                                  {category.type_name}
+                                </option>
+                              );
+                            })
+                          : ""}
                       </select>
                     </div>
                   </div>
@@ -129,8 +156,18 @@ function Home() {
                         className="form-select form-select-sm"
                         aria-label=".form-select-sm example"
                       >
-                        <option selected>All</option>
-                        <option value="1">One</option>
+                        <option disabled selected>
+                          Select Bank
+                        </option>
+                        {banks
+                          ? banks.map((bank) => {
+                              return (
+                                <option key={bank.bank_id} value={bank.bank_id}>
+                                  {bank.bank_name}
+                                </option>
+                              );
+                            })
+                          : ""}
                       </select>
                     </div>
                   </div>
