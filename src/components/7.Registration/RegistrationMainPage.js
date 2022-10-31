@@ -73,11 +73,13 @@ const Registration = () => {
           }
         )
         .then((res) => {
-          setValidationDetails({
-            ...validationDetails,
-            mobileValidationMessage: res.data.msg_to_return,
-            mobileValidationColor: "danger",
-          });
+          if (res.data.msg_to_return === "Mobile number already exists") {
+            setValidationDetails({
+              ...validationDetails,
+              mobileValidationMessage: res.data.msg_to_return,
+              mobileValidationColor: "danger",
+            });
+          }
         });
     }
   };
