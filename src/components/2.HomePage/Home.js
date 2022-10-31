@@ -8,11 +8,13 @@ import { useState } from "react";
 function Home() {
   const [searchFields, setSearchFields] = useState({
     states: "",
-    banks: "",
+    cities: "",
+    localities: "",
     assetCategory: "",
+    banks: "",
   });
 
-  const { states, banks, assetCategory } = searchFields;
+  const { states, assetCategory, cities, localities, banks } = searchFields;
 
   const getSearchDetails = async () => {
     // States
@@ -38,6 +40,17 @@ function Home() {
     });
 
     console.log(assetCategories.data);
+  };
+
+  const onFieldsChange = async (e) => {
+    const { name, value } = e.target;
+    if (name === "states") {
+      const cityByState = await axios.post(
+        `http://host.docker.internal:3000/sam/v1/property/by-city`,
+        { state_id: parseInt(value) }
+      );
+      setSearchFields({ ...searchFields, cities: cityByState.data });
+    }
   };
 
   useEffect(() => {
@@ -69,8 +82,10 @@ function Home() {
                     <div className="select-div">
                       <select
                         id="state"
+                        name="states"
                         className="form-select form-select-sm"
                         aria-label=".form-select-sm example"
+                        onChange={onFieldsChange}
                       >
                         <option disabled selected>
                           Select State
@@ -100,8 +115,18 @@ function Home() {
                         className="form-select form-select-sm"
                         aria-label=".form-select-sm example"
                       >
-                        <option selected>All</option>
-                        <option value="1">One</option>
+                        <option disabled selected>
+                          Select City
+                        </option>
+                        {cities
+                          ? cities.map((city) => {
+                              return (
+                                <option key={city.city_id} value={city.city_id}>
+                                  {city.city_name}
+                                </option>
+                              );
+                            })
+                          : ""}
                       </select>
                     </div>
                   </div>
