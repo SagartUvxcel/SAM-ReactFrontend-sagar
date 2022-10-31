@@ -107,7 +107,10 @@ function Home() {
                     </div>
                   </div>
                 </div>
-                <div className="five-section-col col-12 d-none" id="city-col">
+                <div
+                  className="five-section-col col-12 d-none mt-2 mt-md-0"
+                  id="city-col"
+                >
                   <div className="inner-box">
                     <label htmlFor="city">City</label>
                     <div className="select-div">
@@ -133,7 +136,7 @@ function Home() {
                   </div>
                 </div>
                 <div
-                  className="five-section-col col-12 d-none"
+                  className="five-section-col col-12 d-none mt-2 mt-md-0"
                   id="locality-col"
                 >
                   <div className="inner-box">
@@ -163,7 +166,7 @@ function Home() {
                     </div>
                   </div>
                 </div>
-                <div className="five-section-col col-12">
+                <div className="five-section-col col-12 mt-2 mt-md-0">
                   <div className="inner-box">
                     <label htmlFor="asset">Asset Category</label>
                     <div className="select-div">
@@ -186,7 +189,7 @@ function Home() {
                     </div>
                   </div>
                 </div>
-                <div className="five-section-col col-12">
+                <div className="five-section-col col-12 mt-2 mt-md-0">
                   <div className="inner-box">
                     <label htmlFor="bank">Bank</label>
                     <div className="select-div">

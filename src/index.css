@@ -329,7 +329,8 @@ input[type="number"] {
     background-attachment: fixed;
   }
   .home-wrapper .five-box-row {
-    height: 520px;
+    height: fit-content;
+    padding: 2rem 0;
   }
   .five-section-col {
     width: 100% !important;
