@@ -1,7 +1,11 @@
 import React from "react";
 import { FaCheck } from "react-icons/fa";
 
-const CommonFormFields = ({ validationDetails, onInputChange }) => {
+const CommonFormFields = ({
+  validationDetails,
+  onInputChange,
+  onInputBlur,
+}) => {
   const {
     emailValidationMessage,
     landlineValidationMessage,
@@ -86,6 +90,7 @@ const CommonFormFields = ({ validationDetails, onInputChange }) => {
         <div className="col-lg-2">
           <input
             onChange={onInputChange}
+            onBlur={onInputBlur}
             name="emailAddress"
             type="email"
             className={`form-control border-${emailValidationColor}`}
@@ -127,6 +132,7 @@ const CommonFormFields = ({ validationDetails, onInputChange }) => {
         <div className="col-lg-2 mb-lg-0 mb-2">
           <input
             onChange={onInputChange}
+            onBlur={onInputBlur}
             name="mobileNumber"
             type="Number"
             placeholder="Mobile Number"

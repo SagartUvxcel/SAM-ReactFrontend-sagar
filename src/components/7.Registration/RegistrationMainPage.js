@@ -10,10 +10,6 @@ const Registration = () => {
   const individualCheck = useRef();
   const organizationCheck = useRef();
 
-  // const showData = () => {
-  //   console.log(JSON.stringify(data));
-  // };
-
   const [formData, setFormData] = useState({
     firstName: "",
     middleName: "",
@@ -42,6 +38,47 @@ const Registration = () => {
     landlineValidationColor: "",
     mobileValidationColor: "",
   });
+
+  const onInputBlur = async (e) => {
+    const { name, value } = e.target;
+    if (name === "emailAddress") {
+      await axios
+        .post(
+          `http://host.docker.internal:3000/sam/v1/customer-registration/email-validation`,
+          JSON.stringify({ email: value }),
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then((res) => {
+          setValidationDetails({
+            ...validationDetails,
+            emailValidationMessage: res.data.msg_to_return,
+            emailValidationColor: "danger",
+          });
+        });
+    } else if (name === "mobileNumber") {
+      await axios
+        .post(
+          `http://host.docker.internal:3000/sam/v1/customer-registration/mobilenumber-validation`,
+          JSON.stringify({ mobile_number: value }),
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then((res) => {
+          setValidationDetails({
+            ...validationDetails,
+            mobileValidationMessage: res.data.msg_to_return,
+            mobileValidationColor: "danger",
+          });
+        });
+    }
+  };
 
   const onInputChange = async (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -77,38 +114,20 @@ const Registration = () => {
         });
       }
     } else if (name === "emailAddress") {
-      await axios
-        .post(
-          `http://host.docker.internal:3000/sam/v1/customer-registration/email-validation`,
-          JSON.stringify({ email: value }),
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        )
-        .then((res) => {
-          setValidationDetails({
-            ...validationDetails,
-            emailValidationMessage: res.data.msg_to_return,
-            emailValidationColor: "danger",
-          });
+      let emailFormat = /^\w+([-]?\w+)*@\w+([-]?\w+)*(\.\w{2,3})+$/;
+      if (emailFormat.test(value)) {
+        setValidationDetails({
+          ...validationDetails,
+          emailValidationMessage: "Valid Email Format.",
+          emailValidationColor: "success",
         });
-
-      // let emailFormat = /^\w+([-]?\w+)*@\w+([-]?\w+)*(\.\w{2,3})+$/;
-      // if (emailFormat.test(value)) {
-      //   setValidationDetails({
-      //     ...validationDetails,
-      //     emailValidationMessage: "Valid Email Address.",
-      //     emailValidationColor: "success",
-      //   });
-      // } else {
-      //   setValidationDetails({
-      //     ...validationDetails,
-      //     emailValidationMessage: "Invalid Email Address.",
-      //     emailValidationColor: "danger",
-      //   });
-      // }
+      } else {
+        setValidationDetails({
+          ...validationDetails,
+          emailValidationMessage: "Invalid Email Format.",
+          emailValidationColor: "danger",
+        });
+      }
     } else if (name === "landlineNumber") {
       let landlineNumberLength = value.length;
       if (landlineNumberLength >= 7 && landlineNumberLength <= 11) {
@@ -126,37 +145,20 @@ const Registration = () => {
         });
       }
     } else if (name === "mobileNumber") {
-      await axios
-        .post(
-          `http://host.docker.internal:3000/sam/v1/customer-registration/mobilenumber-validation`,
-          JSON.stringify({ mobile_number: value }),
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        )
-        .then((res) => {
-          setValidationDetails({
-            ...validationDetails,
-            mobileValidationMessage: res.data.msg_to_return,
-            mobileValidationColor: "danger",
-          });
+      let mobileNumberLength = value.length;
+      if (mobileNumberLength === 10) {
+        setValidationDetails({
+          ...validationDetails,
+          mobileValidationMessage: "Valid Mobile Number Format.",
+          mobileValidationColor: "success",
         });
-      // let mobileNumberLength = value.length;
-      // if (mobileNumberLength === 10) {
-      //   setValidationDetails({
-      //     ...validationDetails,
-      //     mobileValidationMessage: "Valid Mobile Number.",
-      //     mobileValidationColor: "success",
-      //   });
-      // } else {
-      //   setValidationDetails({
-      //     ...validationDetails,
-      //     mobileValidationMessage: "Please Enter Valid Mobile Number.",
-      //     mobileValidationColor: "danger",
-      //   });
-      // }
+      } else {
+        setValidationDetails({
+          ...validationDetails,
+          mobileValidationMessage: "Please Enter Valid Mobile Number.",
+          mobileValidationColor: "danger",
+        });
+      }
     }
   };
 
@@ -199,9 +201,6 @@ const Registration = () => {
                     {/* Individual Form Heading */}
                     <div className="col-lg-12">
                       <h4 className="fw-bold">New Customer Register</h4>
-                      {/* <button className="btn btn-success" onClick={showData}>
-                        Test
-                      </button> */}
                       <hr />
                     </div>
                     {/*  Checkboxes - Individual & Organization */}
@@ -254,6 +253,7 @@ const Registration = () => {
                         formData={formData}
                         validationDetails={validationDetails}
                         onInputChange={onInputChange}
+                        onInputBlur={onInputBlur}
                       />
                     </div>
                     <div
@@ -264,6 +264,7 @@ const Registration = () => {
                         formData={formData}
                         validationDetails={validationDetails}
                         onInputChange={onInputChange}
+                        onInputBlur={onInputBlur}
                       />
                     </div>
                   </div>

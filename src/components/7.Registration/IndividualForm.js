@@ -2,7 +2,12 @@ import React from "react";
 
 import CommonFormFields from "./CommonFormFields";
 
-const IndividualForm = ({ formData, validationDetails, onInputChange }) => {
+const IndividualForm = ({
+  formData,
+  validationDetails,
+  onInputChange,
+  onInputBlur,
+}) => {
   const {
     aadhaarValidationMessage,
     panValidationMessage,
@@ -15,6 +20,7 @@ const IndividualForm = ({ formData, validationDetails, onInputChange }) => {
 
   const onIndividualFormSubmit = (e) => {
     e.preventDefault();
+    console.log(formData);
     // alert("This is the Individual's Form");
     if (
       aadhaarValidationColor === "danger" ||
@@ -119,6 +125,7 @@ const IndividualForm = ({ formData, validationDetails, onInputChange }) => {
         <CommonFormFields
           validationDetails={validationDetails}
           onInputChange={onInputChange}
+          onInputBlur={onInputBlur}
         />
       </div>
     </form>

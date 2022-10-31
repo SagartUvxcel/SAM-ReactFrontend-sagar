@@ -1,7 +1,12 @@
 import React from "react";
 import CommonFormFields from "./CommonFormFields";
 
-const OrganizationForm = ({ formData, validationDetails, onInputChange }) => {
+const OrganizationForm = ({
+  formData,
+  validationDetails,
+  onInputChange,
+  onInputBlur,
+}) => {
   const {
     emailValidationColor,
     landlineValidationColor,
@@ -10,6 +15,7 @@ const OrganizationForm = ({ formData, validationDetails, onInputChange }) => {
 
   const onOrganizationFormSubmit = (e) => {
     e.preventDefault();
+    console.log(formData);
     // alert("This is the Organization's Form");
     if (
       emailValidationColor === "danger" ||
@@ -97,6 +103,7 @@ const OrganizationForm = ({ formData, validationDetails, onInputChange }) => {
         <CommonFormFields
           validationDetails={validationDetails}
           onInputChange={onInputChange}
+          onInputBlur={onInputBlur}
         />
       </div>
     </form>
