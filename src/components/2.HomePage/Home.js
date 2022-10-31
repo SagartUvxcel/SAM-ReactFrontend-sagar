@@ -38,8 +38,6 @@ function Home() {
       banks: allBanks.data,
       assetCategory: assetCategories.data,
     });
-
-    console.log(assetCategories.data);
   };
 
   const onFieldsChange = async (e) => {
@@ -50,6 +48,13 @@ function Home() {
         { state_id: parseInt(value) }
       );
       setSearchFields({ ...searchFields, cities: cityByState.data });
+    } else if (name === "cities") {
+      const cityByState = await axios.post(
+        `http://host.docker.internal:3000/sam/v1/property/by-address`,
+        { city_id: parseInt(value) }
+      );
+      setSearchFields({ ...searchFields, localities: cityByState.data });
+      console.log(cityByState.data);
     }
   };
 
@@ -112,8 +117,10 @@ function Home() {
                     <div className="select-div">
                       <select
                         id="city"
+                        name="cities"
                         className="form-select form-select-sm"
                         aria-label=".form-select-sm example"
+                        onChange={onFieldsChange}
                       >
                         <option disabled selected>
                           Select City
@@ -137,11 +144,24 @@ function Home() {
                     <div className="select-div">
                       <select
                         id="locality"
+                        name="localities"
                         className="form-select form-select-sm"
                         aria-label=".form-select-sm example"
                       >
-                        <option selected>All</option>
-                        <option value="1">One</option>
+                        <option selected>Select Locality</option>
+                        {localities
+                          ? localities.map((data, Index) => {
+                              return (
+                                <option key={Index} value={data.village}>
+                                  {data.locality +
+                                    " " +
+                                    data.village +
+                                    " " +
+                                    data.pincode}
+                                </option>
+                              );
+                            })
+                          : ""}
                       </select>
                     </div>
                   </div>
