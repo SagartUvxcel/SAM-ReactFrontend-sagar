@@ -54,7 +54,6 @@ function Home() {
         { city_id: parseInt(value) }
       );
       setSearchFields({ ...searchFields, localities: cityByState.data });
-      console.log(cityByState.data);
     }
   };
 
@@ -92,9 +91,7 @@ function Home() {
                         aria-label=".form-select-sm example"
                         onChange={onFieldsChange}
                       >
-                        <option disabled selected>
-                          Select State
-                        </option>
+                        <option value=""></option>
                         {states
                           ? states.map((state, Index) => {
                               return (
@@ -119,9 +116,7 @@ function Home() {
                         aria-label=".form-select-sm example"
                         onChange={onFieldsChange}
                       >
-                        <option disabled selected>
-                          Select City
-                        </option>
+                        <option value=""></option>
                         {cities
                           ? cities.map((city, Index) => {
                               return (
@@ -145,7 +140,7 @@ function Home() {
                         className="form-select form-select-sm"
                         aria-label=".form-select-sm example"
                       >
-                        <option selected>Select Locality</option>
+                        <option value=""></option>
                         {localities
                           ? localities.map((data, Index) => {
                               return (
@@ -172,7 +167,7 @@ function Home() {
                         className="form-select form-select-sm"
                         aria-label=".form-select-sm example"
                       >
-                        <option selected>Select Category</option>
+                        <option value=""></option>
                         {assetCategory
                           ? assetCategory.map((category, Index) => {
                               return (
@@ -195,9 +190,7 @@ function Home() {
                         className="form-select form-select-sm"
                         aria-label=".form-select-sm example"
                       >
-                        <option disabled selected>
-                          Select Bank
-                        </option>
+                        <option value=""></option>
                         {banks
                           ? banks.map((bank, Index) => {
                               return (
