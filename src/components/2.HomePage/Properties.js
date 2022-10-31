@@ -6,9 +6,9 @@ const Properties = () => {
     <section className="property-wrapper wrapper">
       <div className="container-fluid">
         <div className="row">
-          {properties.map((property) => {
+          {properties.map((property, Index) => {
             return (
-              <div className="col-lg-3 col-md-4">
+              <div className="col-lg-3 col-md-4" key={Index}>
                 <div className="property-card-wrapper">
                   <div className="card mb-4">
                     <hr />

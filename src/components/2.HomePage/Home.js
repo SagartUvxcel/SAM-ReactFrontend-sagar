@@ -96,12 +96,9 @@ function Home() {
                           Select State
                         </option>
                         {states
-                          ? states.map((state) => {
+                          ? states.map((state, Index) => {
                               return (
-                                <option
-                                  key={state.state_id}
-                                  value={state.state_id}
-                                >
+                                <option key={Index} value={state.state_id}>
                                   {state.state_name}
                                 </option>
                               );
@@ -126,9 +123,9 @@ function Home() {
                           Select City
                         </option>
                         {cities
-                          ? cities.map((city) => {
+                          ? cities.map((city, Index) => {
                               return (
-                                <option key={city.city_id} value={city.city_id}>
+                                <option key={Index} value={city.city_id}>
                                   {city.city_name}
                                 </option>
                               );
@@ -177,12 +174,9 @@ function Home() {
                       >
                         <option selected>Select Category</option>
                         {assetCategory
-                          ? assetCategory.map((category) => {
+                          ? assetCategory.map((category, Index) => {
                               return (
-                                <option
-                                  key={category.type_id}
-                                  value={category.type_id}
-                                >
+                                <option key={Index} value={category.type_id}>
                                   {category.type_name}
                                 </option>
                               );
@@ -205,9 +199,9 @@ function Home() {
                           Select Bank
                         </option>
                         {banks
-                          ? banks.map((bank) => {
+                          ? banks.map((bank, Index) => {
                               return (
-                                <option key={bank.bank_id} value={bank.bank_id}>
+                                <option key={Index} value={bank.bank_id}>
                                   {bank.bank_name}
                                 </option>
                               );
