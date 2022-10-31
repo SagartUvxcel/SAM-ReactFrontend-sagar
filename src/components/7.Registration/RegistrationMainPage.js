@@ -88,7 +88,7 @@ const Registration = () => {
       if (aadhaarFormat.test(value)) {
         setValidationDetails({
           ...validationDetails,
-          aadhaarValidationMessage: "Valid Aadhaar Number.",
+          aadhaarValidationMessage: "",
           aadhaarValidationColor: "success",
         });
       } else {
@@ -103,7 +103,7 @@ const Registration = () => {
       if (panFormat.test(value)) {
         setValidationDetails({
           ...validationDetails,
-          panValidationMessage: "Valid Pan Number.",
+          panValidationMessage: "",
           panValidationColor: "success",
         });
       } else {
@@ -118,7 +118,7 @@ const Registration = () => {
       if (emailFormat.test(value)) {
         setValidationDetails({
           ...validationDetails,
-          emailValidationMessage: "Valid Email Format.",
+          emailValidationMessage: "",
           emailValidationColor: "success",
         });
       } else {
@@ -133,7 +133,7 @@ const Registration = () => {
       if (landlineNumberLength >= 7 && landlineNumberLength <= 11) {
         setValidationDetails({
           ...validationDetails,
-          landlineValidationMessage: "Valid Landline Number.",
+          landlineValidationMessage: "",
           landlineValidationColor: "success",
         });
       } else {
@@ -149,7 +149,7 @@ const Registration = () => {
       if (mobileNumberLength === 10) {
         setValidationDetails({
           ...validationDetails,
-          mobileValidationMessage: "Valid Mobile Number Format.",
+          mobileValidationMessage: "",
           mobileValidationColor: "success",
         });
       } else {
