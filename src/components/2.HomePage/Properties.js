@@ -1,5 +1,4 @@
 import React from "react";
-// import { properties } from "../DataArrays/PropertyData";
 
 const Properties = ({ propertyData }) => {
   return (

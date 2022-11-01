@@ -5,11 +5,13 @@ import OrganizationForm from "./OrganizationForm";
 import axios from "axios";
 
 const Registration = () => {
+  // These are used for the functionality of selecting either individual form or organization form.
   const toggleIndividualForm = useRef();
   const toggleOrganizationForm = useRef();
   const individualCheck = useRef();
   const organizationCheck = useRef();
 
+  // useState to store each field's data from form.
   const [formData, setFormData] = useState({
     firstName: "",
     middleName: "",
@@ -26,6 +28,7 @@ const Registration = () => {
     mobileNumber: "",
   });
 
+  // Store validation message and validation color based on input field.
   const [validationDetails, setValidationDetails] = useState({
     aadhaarValidationMessage: "",
     panValidationMessage: "",
@@ -41,18 +44,15 @@ const Registration = () => {
     zipCodeValidationColor: "",
   });
 
+  // Function to show backend validation on outside click of input filed.
   const onInputBlur = async (e) => {
     const { name, value } = e.target;
     if (name === "emailAddress") {
+      // If input field is email then post its value to api for validating.
       await axios
         .post(
           `http://host.docker.internal:3000/sam/v1/customer-registration/email-validation`,
-          JSON.stringify({ email: value }),
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
+          JSON.stringify({ email: value })
         )
         .then((res) => {
           // if (res.data.msg_to_return === "Email ID already exists") {
@@ -64,25 +64,19 @@ const Registration = () => {
           // }
         });
     } else if (name === "mobileNumber") {
+      // If input field is mobile then post its value to api for validating.
       await axios
         .post(
           `http://host.docker.internal:3000/sam/v1/customer-registration/mobilenumber-validation`,
-          JSON.stringify({ mobile_number: value }),
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
+          JSON.stringify({ mobile_number: value })
         )
         .then((res) => {
-          if (res.data.status === 1 || res.data.status === 2) {
+          if (res.data.status === 1) {
+            // Store validation message and validation color.
             setValidationDetails({
               ...validationDetails,
               mobileValidationMessage:
-                validationDetails.mobileValidationMessage !== ""
-                  ? "Invalid Mobile Number Entered."
-                  : "Mobile number already exists.",
-
+                "Invalid mobile number entered or mobile number already exists",
               mobileValidationColor: "danger",
             });
           }
@@ -90,10 +84,12 @@ const Registration = () => {
     }
   };
 
+  // This will run onchange of input field.
   const onInputChange = async (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     const { name, value } = e.target;
     if (name === "aadhaarNumber") {
+      // Aadhaar frontend validation.
       let aadhaarFormat = /^[2-9]{1}[0-9]{3}[0-9]{4}[0-9]{4}$/;
       if (aadhaarFormat.test(value)) {
         setValidationDetails({
@@ -109,6 +105,7 @@ const Registration = () => {
         });
       }
     } else if (name === "panNumber") {
+      // Pan frontend validation.
       let panFormat = /^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?$/;
       if (panFormat.test(value)) {
         setValidationDetails({
@@ -124,6 +121,7 @@ const Registration = () => {
         });
       }
     } else if (name === "emailAddress") {
+      // Email frontend validation.
       let emailFormat = /^\w+([-]?\w+)*@\w+([-]?\w+)*(\.\w{2,3})+$/;
       if (emailFormat.test(value)) {
         setValidationDetails({
@@ -139,6 +137,7 @@ const Registration = () => {
         });
       }
     } else if (name === "landlineNumber") {
+      // Landline frontend validation.
       let landlineNumberLength = value.length;
       if (landlineNumberLength >= 7 && landlineNumberLength <= 11) {
         setValidationDetails({
@@ -155,6 +154,7 @@ const Registration = () => {
         });
       }
     } else if (name === "mobileNumber") {
+      // Mobile frontend validation.
       let mobileNumberLength = value.length;
       if (mobileNumberLength === 10) {
         setValidationDetails({
@@ -170,6 +170,8 @@ const Registration = () => {
         });
       }
     } else if (name === "zipCode") {
+      // ZipCode backend validation.
+      // Post value of zipCode to api.
       await axios
         .post(
           `http://host.docker.internal:3000/sam/v1/customer-registration/zipcode-validation`,
@@ -198,29 +200,37 @@ const Registration = () => {
     }
   };
 
+  // Function to show individual form or organization from on click of label.
   const onTopCheckLabelClick = (e) => {
     const attrOfForm = e.target.getAttribute("name");
     if (attrOfForm === "organization") {
+      // Reset from fields and validations.
       setValidationDetails({});
       document.getElementById("individualForm").reset();
+      // Make checkbox of label organization checked.
       individualCheck.current.classList.remove(
         "individual-and-organization-check"
       );
       organizationCheck.current.classList.add(
         "individual-and-organization-check"
       );
+      // Unhide organization form.
       toggleOrganizationForm.current.classList.remove("d-none");
+      // Hide Individual form.
       toggleIndividualForm.current.classList.add("d-none");
     } else if (attrOfForm === "individual") {
       setValidationDetails({});
       document.getElementById("organizationForm").reset();
+      // Make checkbox of label individual checked.
       individualCheck.current.classList.add(
         "individual-and-organization-check"
       );
       organizationCheck.current.classList.remove(
         "individual-and-organization-check"
       );
+      // Hide organization form.
       toggleOrganizationForm.current.classList.add("d-none");
+      // Unhide Individual form.
       toggleIndividualForm.current.classList.remove("d-none");
     }
   };
