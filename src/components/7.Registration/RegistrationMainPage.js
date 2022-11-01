@@ -53,7 +53,6 @@ const Registration = () => {
           }
         )
         .then((res) => {
-          console.log(res);
           // if (res.data.msg_to_return === "Email ID already exists") {
           setValidationDetails({
             ...validationDetails,
@@ -74,10 +73,15 @@ const Registration = () => {
           }
         )
         .then((res) => {
-          if (res.data.msg_to_return === "Mobile number already exists") {
+          console.log(res.data.status);
+          if (res.data.status === 1 || res.data.status === 2) {
             setValidationDetails({
               ...validationDetails,
-              mobileValidationMessage: res.data.msg_to_return,
+              mobileValidationMessage:
+                validationDetails.mobileValidationMessage !== ""
+                  ? validationDetails.mobileValidationMessage
+                  : "Mobile number already exists",
+
               mobileValidationColor: "danger",
             });
           }
