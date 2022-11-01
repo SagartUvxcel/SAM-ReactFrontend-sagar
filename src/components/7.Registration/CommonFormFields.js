@@ -1,6 +1,7 @@
 import React from "react";
 import { FaCheck } from "react-icons/fa";
 
+// Receiving validationDetails, onInputChange, onInputBlur as a props from organization/individual main form.
 const CommonFormFields = ({
   validationDetails,
   onInputChange,

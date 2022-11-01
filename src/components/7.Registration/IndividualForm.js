@@ -1,6 +1,7 @@
 import React from "react";
 import CommonFormFields from "./CommonFormFields";
 
+// Receiving formData, validationDetails, onInputChange, onInputBlur as a props from Registration main page.
 const IndividualForm = ({
   formData,
   validationDetails,

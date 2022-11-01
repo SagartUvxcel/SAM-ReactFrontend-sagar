@@ -302,6 +302,7 @@ const Registration = () => {
                         onInputBlur={onInputBlur}
                       />
                     </div>
+                    {/* Organization Main Form */}
                     <div
                       className="col-lg-12 d-none organization-form-wrapper"
                       ref={toggleOrganizationForm}
