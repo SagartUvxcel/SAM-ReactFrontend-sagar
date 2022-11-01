@@ -41,9 +41,10 @@ const Properties = ({ propertyData }) => {
               );
             })
           ) : (
-            <h2 className="text-center py-5 text-capitalize text-white">
-              No data available
-            </h2>
+            <div className="py-5 text-center text-white">
+              <h2 className="text-capitalize">Sorry! No result found :(</h2>
+              <span className="">Please try with another options</span>
+            </div>
           )}
         </div>
       </div>
