@@ -79,8 +79,8 @@ const Registration = () => {
               ...validationDetails,
               mobileValidationMessage:
                 validationDetails.mobileValidationMessage !== ""
-                  ? validationDetails.mobileValidationMessage
-                  : "Mobile number already exists",
+                  ? "Invalid Mobile Number Entered."
+                  : "Mobile number already exists.",
 
               mobileValidationColor: "danger",
             });
@@ -155,6 +155,7 @@ const Registration = () => {
       }
     } else if (name === "mobileNumber") {
       let mobileNumberLength = value.length;
+      console.log(typeof value);
       if (mobileNumberLength === 10) {
         setValidationDetails({
           ...validationDetails,
