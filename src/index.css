@@ -128,7 +128,7 @@ input[type="number"] {
   height: 140px;
   align-items: center;
   justify-content: center;
-  width: 95%;
+  width: fit-content;
 }
 
 .home-wrapper .five-section-col .inner-box {
@@ -303,10 +303,22 @@ input[type="number"] {
   font-size: 0.9rem;
 }
 
+.w-30 {
+  width: 30% !important;
+}
+
+.w-22 {
+  width: 22.5% !important;
+}
+
+.w-18 {
+  width: 18% !important;
+}
+
 /* Media Queries */
 @media screen and (min-width: 992px) {
   .five-section-col {
-    width: 19% !important;
+    /* width: 19% !important; */
     flex: 0 0 auto !important;
   }
 }
@@ -315,10 +327,10 @@ input[type="number"] {
   .home-wrapper {
     background-attachment: unset;
   }
-  .home-wrapper .five-box-row {
-    width: 100%;
+  .w-22 {
+    width: 24% !important;
   }
-  .five-section-col {
+  .w-18 {
     width: 20% !important;
   }
 }

@@ -53,13 +53,14 @@ const Registration = () => {
           }
         )
         .then((res) => {
-          if (res.data.msg_to_return === "Email ID already exists") {
-            setValidationDetails({
-              ...validationDetails,
-              emailValidationMessage: res.data.msg_to_return,
-              emailValidationColor: "danger",
-            });
-          }
+          console.log(res);
+          // if (res.data.msg_to_return === "Email ID already exists") {
+          setValidationDetails({
+            ...validationDetails,
+            emailValidationMessage: res.data.status,
+            emailValidationColor: "danger",
+          });
+          // }
         });
     } else if (name === "mobileNumber") {
       await axios

@@ -42,6 +42,7 @@ function Home() {
 
   const onFieldsChange = async (e) => {
     const { name, value } = e.target;
+    const fiveSectionCol = document.querySelectorAll(".five-section-col");
     if (name === "states") {
       const cityByState = await axios.post(
         `http://host.docker.internal:3000/sam/v1/property/by-city`,
@@ -49,6 +50,10 @@ function Home() {
       );
       setSearchFields({ ...searchFields, cities: cityByState.data });
       document.getElementById("city-col").classList.remove("d-none");
+      fiveSectionCol.forEach((col) => {
+        col.classList.remove("w-30");
+        col.classList.add("w-22");
+      });
     } else if (name === "cities") {
       const localityByCity = await axios.post(
         `http://host.docker.internal:3000/sam/v1/property/by-address`,
@@ -56,6 +61,10 @@ function Home() {
       );
       setSearchFields({ ...searchFields, localities: localityByCity.data });
       document.getElementById("locality-col").classList.remove("d-none");
+      fiveSectionCol.forEach((col) => {
+        col.classList.remove("w-22");
+        col.classList.add("w-18");
+      });
     }
   };
 
@@ -82,7 +91,7 @@ function Home() {
             {/* 5 select boxes */}
             <div className="home-top-row">
               <div className="row five-box-row">
-                <div className="five-section-col col-12">
+                <div className="five-section-col w-30 col-12">
                   <div className="inner-box">
                     <label htmlFor="state">State</label>
                     <div className="select-div">
@@ -108,7 +117,7 @@ function Home() {
                   </div>
                 </div>
                 <div
-                  className="five-section-col col-12 d-none mt-2 mt-md-0"
+                  className="five-section-col w-30 col-12 d-none mt-3 mt-md-0"
                   id="city-col"
                 >
                   <div className="inner-box">
@@ -136,7 +145,7 @@ function Home() {
                   </div>
                 </div>
                 <div
-                  className="five-section-col col-12 d-none mt-2 mt-md-0"
+                  className="five-section-col w-30 col-12 d-none mt-3 mt-md-0"
                   id="locality-col"
                 >
                   <div className="inner-box">
@@ -166,7 +175,7 @@ function Home() {
                     </div>
                   </div>
                 </div>
-                <div className="five-section-col col-12 mt-2 mt-md-0">
+                <div className="five-section-col w-30 col-12 mt-3 mt-md-0">
                   <div className="inner-box">
                     <label htmlFor="asset">Asset Category</label>
                     <div className="select-div">
@@ -189,7 +198,7 @@ function Home() {
                     </div>
                   </div>
                 </div>
-                <div className="five-section-col col-12 mt-2 mt-md-0">
+                <div className="five-section-col w-30 col-12 mt-3 mt-md-0">
                   <div className="inner-box">
                     <label htmlFor="bank">Bank</label>
                     <div className="select-div">
