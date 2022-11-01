@@ -3,8 +3,8 @@ import React from "react";
 
 const Properties = ({ propertyData }) => {
   return (
-    <section className="property-wrapper wrapper d-none display-on-search">
-      <div className="container-fluid">
+    <section className="property-wrapper" id="properties">
+      <div className="container-fluid d-none display-on-search wrapper">
         <div className="row">
           {propertyData !== null ? (
             propertyData.map((property, Index) => {

@@ -4,6 +4,7 @@ import Layout from "../1.CommonLayout/Layout";
 import Properties from "./Properties";
 import axios from "axios";
 import { useState } from "react";
+import { Link } from "react-scroll";
 
 function Home() {
   const [searchFields, setSearchFields] = useState({
@@ -97,7 +98,8 @@ function Home() {
     }
   };
 
-  const getPropertyData = async () => {
+  const getPropertyData = async (e) => {
+    e.preventDefault();
     // console.log(
     //   `state-${state_id} | city-${city_id} | locality-${locality} | asset-${type_id} | bank-${bank_id} | batchSize-${batch_size} | batchNumber-${batch_number}`
     // );
@@ -288,12 +290,13 @@ function Home() {
             {/* Search button*/}
             <div className="row justify-content-center py-4">
               <div className="text-center">
-                <button
+                <Link
+                  to="properties"
                   className="btn btn-lg common-btn"
                   onClick={getPropertyData}
                 >
                   Search
-                </button>
+                </Link>
               </div>
             </div>
           </div>
