@@ -24,6 +24,8 @@ function Home() {
     batch_number: 1,
   });
 
+  const [propertyData, setPropertyData] = useState([]);
+
   const { states, assetCategory, cities, localities, banks } = searchFields;
   const {
     state_id,
@@ -115,8 +117,13 @@ function Home() {
         dataToPost
       )
       .then((res) => {
-        console.log("Response= ", res);
+        console.log(res.data);
+        setPropertyData(res.data);
       });
+
+    document.querySelectorAll(".display-on-search").forEach((item) => {
+      item.classList.remove("d-none");
+    });
   };
 
   useEffect(() => {
@@ -291,11 +298,11 @@ function Home() {
               </div>
             </div>
           </div>
-          <div className="home-bottom-heading">
+          <div className="home-bottom-heading display-on-search d-none">
             <h1 className="text-center text-white">RECENT LISTINGS</h1>
           </div>
         </section>
-        <Properties />
+        <Properties propertyData={propertyData} />
         <HomeAboutUs />
       </section>
     </Layout>
