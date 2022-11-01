@@ -105,7 +105,7 @@ function Home() {
     const dataToPost = {
       state_id: state_id,
       city_id: city_id,
-      // locality: locality,
+      locality: locality,
       type_id: type_id,
       bank_id: bank_id,
       batch_size: batch_size,
