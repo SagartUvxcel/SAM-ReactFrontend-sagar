@@ -75,7 +75,6 @@ const Registration = () => {
           }
         )
         .then((res) => {
-          console.log(res.data.status);
           if (res.data.status === 1 || res.data.status === 2) {
             setValidationDetails({
               ...validationDetails,
@@ -157,7 +156,6 @@ const Registration = () => {
       }
     } else if (name === "mobileNumber") {
       let mobileNumberLength = value.length;
-      console.log(typeof value);
       if (mobileNumberLength === 10) {
         setValidationDetails({
           ...validationDetails,
@@ -183,7 +181,6 @@ const Registration = () => {
           }
         )
         .then((res) => {
-          console.log(res.data.status);
           if (res.data.status !== 1) {
             setValidationDetails({
               ...validationDetails,

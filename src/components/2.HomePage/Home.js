@@ -14,7 +14,26 @@ function Home() {
     banks: "",
   });
 
+  const [fieldValuesToPost, setFieldValuesToPost] = useState({
+    state_id: "",
+    city_id: "",
+    bank_id: "",
+    locality: "",
+    type_id: "",
+    batch_size: 10,
+    batch_number: 1,
+  });
+
   const { states, assetCategory, cities, localities, banks } = searchFields;
+  const {
+    state_id,
+    city_id,
+    bank_id,
+    locality,
+    type_id,
+    batch_size,
+    batch_number,
+  } = fieldValuesToPost;
 
   const getSearchDetails = async () => {
     // States
@@ -49,6 +68,7 @@ function Home() {
         { state_id: parseInt(value) }
       );
       setSearchFields({ ...searchFields, cities: cityByState.data });
+      setFieldValuesToPost({ ...fieldValuesToPost, state_id: value });
       document.getElementById("city-col").classList.remove("d-none");
       fiveSectionCol.forEach((col) => {
         col.classList.remove("w-30");
@@ -59,13 +79,27 @@ function Home() {
         `http://host.docker.internal:3000/sam/v1/property/by-address`,
         { city_id: parseInt(value) }
       );
+      // console.log(localityByCity.data);
       setSearchFields({ ...searchFields, localities: localityByCity.data });
+      setFieldValuesToPost({ ...fieldValuesToPost, city_id: value });
       document.getElementById("locality-col").classList.remove("d-none");
       fiveSectionCol.forEach((col) => {
         col.classList.remove("w-22");
         col.classList.add("w-18");
       });
+    } else if (name === "localities") {
+      setFieldValuesToPost({ ...fieldValuesToPost, locality: value });
+    } else if (name === "asset") {
+      setFieldValuesToPost({ ...fieldValuesToPost, type_id: value });
+    } else if (name === "bank") {
+      setFieldValuesToPost({ ...fieldValuesToPost, bank_id: value });
     }
+  };
+
+  const getPropertyData = async () => {
+    console.log(
+      `state-${state_id} | city-${city_id} | locality-${locality} | asset-${type_id} | bank-${bank_id} | batchSize-${batch_size} | batchNumber-${batch_number}`
+    );
   };
 
   useEffect(() => {
@@ -156,12 +190,13 @@ function Home() {
                         name="localities"
                         className="form-select form-select-sm"
                         aria-label=".form-select-sm example"
+                        onChange={onFieldsChange}
                       >
                         <option value=""></option>
                         {localities
                           ? localities.map((data, Index) => {
                               return (
-                                <option key={Index} value={data.village}>
+                                <option key={Index} value={data.locality}>
                                   {data.locality +
                                     " " +
                                     data.village +
@@ -180,9 +215,11 @@ function Home() {
                     <label htmlFor="asset">Asset Category</label>
                     <div className="select-div">
                       <select
+                        name="asset"
                         id="asset"
                         className="form-select form-select-sm"
                         aria-label=".form-select-sm example"
+                        onChange={onFieldsChange}
                       >
                         <option value=""></option>
                         {assetCategory
@@ -203,9 +240,11 @@ function Home() {
                     <label htmlFor="bank">Bank</label>
                     <div className="select-div">
                       <select
+                        name="bank"
                         id="bank"
                         className="form-select form-select-sm"
                         aria-label=".form-select-sm example"
+                        onChange={onFieldsChange}
                       >
                         <option value=""></option>
                         {banks
@@ -226,7 +265,12 @@ function Home() {
             {/* Search button*/}
             <div className="row justify-content-center py-4">
               <div className="text-center">
-                <button className="btn btn-lg common-btn">Search</button>
+                <button
+                  className="btn btn-lg common-btn"
+                  onClick={getPropertyData}
+                >
+                  Search
+                </button>
               </div>
             </div>
           </div>
