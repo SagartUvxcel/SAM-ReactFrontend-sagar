@@ -50,7 +50,9 @@ input[type="number"] {
 }
 
 .form-control:focus,
-.form-control {
+.form-control,
+.form-select:focus,
+.form-select {
   box-shadow: none !important;
 }
 

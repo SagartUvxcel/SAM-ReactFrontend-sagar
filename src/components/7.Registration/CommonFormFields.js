@@ -10,9 +10,11 @@ const CommonFormFields = ({
     emailValidationMessage,
     landlineValidationMessage,
     mobileValidationMessage,
+    zipCodeValidationMessage,
     emailValidationColor,
     landlineValidationColor,
     mobileValidationColor,
+    zipCodeValidationColor,
   } = validationDetails;
   return (
     <>
@@ -56,7 +58,7 @@ const CommonFormFields = ({
           <select
             onChange={onInputChange}
             name="zipCode"
-            className="form-select"
+            className={`form-select border-${zipCodeValidationColor}`}
             aria-label="Default select example"
             required
           >
@@ -66,8 +68,15 @@ const CommonFormFields = ({
             <option value="411017">411017</option>
             <option value="411018">411018</option>
             <option value="411019">411019</option>
-            <option value="411020">411020</option>
+            <option value="41102">41102</option>
           </select>
+          {zipCodeValidationMessage ? (
+            <span className={`pe-1 text-${zipCodeValidationColor}`}>
+              {zipCodeValidationMessage}
+            </span>
+          ) : (
+            <span className="d-none"></span>
+          )}
         </div>
         <div className="col-lg-2">
           <input

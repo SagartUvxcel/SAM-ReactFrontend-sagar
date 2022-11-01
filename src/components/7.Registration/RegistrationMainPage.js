@@ -32,11 +32,13 @@ const Registration = () => {
     emailValidationMessage: "",
     landlineValidationMessage: "",
     mobileValidationMessage: "",
+    zipCodeValidationMessage: "",
     aadhaarValidationColor: "",
     panValidationColor: "",
     emailValidationColor: "",
     landlineValidationColor: "",
     mobileValidationColor: "",
+    zipCodeValidationColor: "",
   });
 
   const onInputBlur = async (e) => {
@@ -89,7 +91,7 @@ const Registration = () => {
     }
   };
 
-  const onInputChange = (e) => {
+  const onInputChange = async (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     const { name, value } = e.target;
     if (name === "aadhaarNumber") {
@@ -169,6 +171,33 @@ const Registration = () => {
           mobileValidationColor: "danger",
         });
       }
+    } else if (name === "zipCode") {
+      await axios
+        .post(
+          `http://host.docker.internal:3000/sam/v1/customer-registration/zipcode-validation`,
+          JSON.stringify({ zipcode: value }),
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res.data.status);
+          if (res.data.status !== 1) {
+            setValidationDetails({
+              ...validationDetails,
+              zipCodeValidationMessage: "Invalid Zipcode",
+              zipCodeValidationColor: "danger",
+            });
+          } else {
+            setValidationDetails({
+              ...validationDetails,
+              zipCodeValidationMessage: "",
+              zipCodeValidationColor: "success",
+            });
+          }
+        });
     }
   };
 
