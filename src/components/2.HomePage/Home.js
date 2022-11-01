@@ -68,7 +68,7 @@ function Home() {
         { state_id: parseInt(value) }
       );
       setSearchFields({ ...searchFields, cities: cityByState.data });
-      setFieldValuesToPost({ ...fieldValuesToPost, state_id: value });
+      setFieldValuesToPost({ ...fieldValuesToPost, state_id: parseInt(value) });
       document.getElementById("city-col").classList.remove("d-none");
       fiveSectionCol.forEach((col) => {
         col.classList.remove("w-30");
@@ -81,7 +81,7 @@ function Home() {
       );
       // console.log(localityByCity.data);
       setSearchFields({ ...searchFields, localities: localityByCity.data });
-      setFieldValuesToPost({ ...fieldValuesToPost, city_id: value });
+      setFieldValuesToPost({ ...fieldValuesToPost, city_id: parseInt(value) });
       document.getElementById("locality-col").classList.remove("d-none");
       fiveSectionCol.forEach((col) => {
         col.classList.remove("w-22");
@@ -90,9 +90,9 @@ function Home() {
     } else if (name === "localities") {
       setFieldValuesToPost({ ...fieldValuesToPost, locality: value });
     } else if (name === "asset") {
-      setFieldValuesToPost({ ...fieldValuesToPost, type_id: value });
+      setFieldValuesToPost({ ...fieldValuesToPost, type_id: parseInt(value) });
     } else if (name === "bank") {
-      setFieldValuesToPost({ ...fieldValuesToPost, bank_id: value });
+      setFieldValuesToPost({ ...fieldValuesToPost, bank_id: parseInt(value) });
     }
   };
 
@@ -100,6 +100,23 @@ function Home() {
     console.log(
       `state-${state_id} | city-${city_id} | locality-${locality} | asset-${type_id} | bank-${bank_id} | batchSize-${batch_size} | batchNumber-${batch_number}`
     );
+    const dataToPost = {
+      state_id: state_id,
+      city_id: city_id,
+      // locality: locality,
+      type_id: type_id,
+      bank_id: bank_id,
+      batch_size: batch_size,
+      batch_number: batch_number,
+    };
+    await axios
+      .post(
+        `http://host.docker.internal:3000/sam/v1/property/count-category`,
+        dataToPost
+      )
+      .then((res) => {
+        console.log("Response= ", res);
+      });
   };
 
   useEffect(() => {
