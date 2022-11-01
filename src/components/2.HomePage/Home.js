@@ -111,6 +111,7 @@ function Home() {
       batch_size: batch_size,
       batch_number: batch_number,
     };
+    console.log(dataToPost);
     await axios
       .post(
         `http://host.docker.internal:3000/sam/v1/property/count-category`,
@@ -118,6 +119,7 @@ function Home() {
       )
       .then((res) => {
         console.log(res.data);
+        console.log(res.data !== null);
         setPropertyData(res.data);
       });
 
