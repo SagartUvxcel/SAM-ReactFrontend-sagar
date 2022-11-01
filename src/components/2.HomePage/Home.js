@@ -81,7 +81,6 @@ function Home() {
         `http://host.docker.internal:3000/sam/v1/property/by-address`,
         { city_id: parseInt(value) }
       );
-      // console.log(localityByCity.data);
       setSearchFields({ ...searchFields, localities: localityByCity.data });
       setFieldValuesToPost({ ...fieldValuesToPost, city_id: parseInt(value) });
       document.getElementById("locality-col").classList.remove("d-none");
@@ -99,9 +98,9 @@ function Home() {
   };
 
   const getPropertyData = async () => {
-    console.log(
-      `state-${state_id} | city-${city_id} | locality-${locality} | asset-${type_id} | bank-${bank_id} | batchSize-${batch_size} | batchNumber-${batch_number}`
-    );
+    // console.log(
+    //   `state-${state_id} | city-${city_id} | locality-${locality} | asset-${type_id} | bank-${bank_id} | batchSize-${batch_size} | batchNumber-${batch_number}`
+    // );
     const dataToPost = {
       state_id: state_id,
       city_id: city_id,
@@ -111,15 +110,13 @@ function Home() {
       batch_size: batch_size,
       batch_number: batch_number,
     };
-    console.log(dataToPost);
+
     await axios
       .post(
         `http://host.docker.internal:3000/sam/v1/property/count-category`,
         dataToPost
       )
       .then((res) => {
-        console.log(res.data);
-        console.log(res.data !== null);
         setPropertyData(res.data);
       });
 
