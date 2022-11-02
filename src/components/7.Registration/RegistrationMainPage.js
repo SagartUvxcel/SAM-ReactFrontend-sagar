@@ -11,6 +11,8 @@ const Registration = () => {
   const individualCheck = useRef();
   const organizationCheck = useRef();
 
+  const [IdOfState, SetIdOfState] = useState("");
+
   // useState to store each field's data from form.
   const [formData, setFormData] = useState({
     firstName: "",
@@ -81,28 +83,30 @@ const Registration = () => {
             });
           }
         });
-      // } else if (name === "zipCode") {
-      //   await axios
-      //     .post(
-      //       `http://host.docker.internal:3000/sam/v1/customer-registration/zipcode-validation`,
-      //       JSON.stringify({ zipcode: value }),
-      //       {
-      //         headers: {
-      //           "Content-Type": "application/json",
-      //         },
-      //       }
-      //     )
-      //     .then((res) => {
-      //       console.log(res.data.status);
-      //       if (res.data.status !== 1) {
-      //         setValidationDetails({
-      //           ...validationDetails,
-      //           zipCodeValidationMessage: "Invalid Zipcode",
-      //           zipCodeValidationColor: "danger",
-      //         });
-      //       }
-      //     });
     }
+  };
+
+  const zipValidationByState = async (zipValue, stateId) => {
+    await axios
+      .post(
+        `http://host.docker.internal:3000/sam/v1/customer-registration/zipcode-validation`,
+        { zipcode: zipValue, state_id: stateId }
+      )
+      .then((res) => {
+        if (res.data.status === 0) {
+          setValidationDetails({
+            ...validationDetails,
+            zipCodeValidationMessage: "Invalid ZipCode",
+            zipCodeValidationColor: "danger",
+          });
+        } else {
+          setValidationDetails({
+            ...validationDetails,
+            zipCodeValidationMessage: "",
+            zipCodeValidationColor: "success",
+          });
+        }
+      });
   };
 
   // This will run onchange of input field.
@@ -191,7 +195,13 @@ const Registration = () => {
         });
       }
     } else if (name === "zipCode") {
+      setFormData({ ...formData, zipCode: value });
+      zipValidationByState(value, parseInt(IdOfState));
     } else if (name === "state") {
+      SetIdOfState(value);
+      if (formData.zipCode !== "") {
+        zipValidationByState(formData.zipCode, parseInt(value));
+      }
     }
   };
 
