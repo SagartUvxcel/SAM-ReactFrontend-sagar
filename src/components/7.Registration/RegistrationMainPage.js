@@ -190,6 +190,7 @@ const Registration = () => {
           mobileValidationColor: "danger",
         });
       }
+    } else if (name === "state") {
     }
   };
 

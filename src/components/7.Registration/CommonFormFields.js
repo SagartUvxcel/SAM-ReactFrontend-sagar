@@ -78,7 +78,7 @@ const CommonFormFields = ({
             placeholder="State"
             required
           >
-            <option value="" style={{ color: "grey" }}>
+            <option value="" disabled selected>
               State
             </option>
             {states
