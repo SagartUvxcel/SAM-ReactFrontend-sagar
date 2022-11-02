@@ -83,6 +83,10 @@ const Registration = () => {
             });
           }
         });
+    } else if (name === "zipCode") {
+      if (IdOfState === "" && value !== "") {
+        alert("Please select State");
+      }
     }
   };
 
@@ -196,7 +200,9 @@ const Registration = () => {
       }
     } else if (name === "zipCode") {
       setFormData({ ...formData, zipCode: value });
-      zipValidationByState(value, parseInt(IdOfState));
+      if (IdOfState !== "") {
+        zipValidationByState(value, parseInt(IdOfState));
+      }
     } else if (name === "state") {
       SetIdOfState(value);
       if (formData.zipCode !== "") {

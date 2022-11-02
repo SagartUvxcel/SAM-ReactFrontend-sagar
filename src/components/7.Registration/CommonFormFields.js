@@ -96,7 +96,7 @@ const CommonFormFields = ({
           <input
             type="text"
             onChange={onInputChange}
-            // onBlur={onInputBlur}
+            onBlur={onInputBlur}
             placeholder="Zipcode"
             name="zipCode"
             className={`form-control border-${zipCodeValidationColor}`}
