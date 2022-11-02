@@ -234,7 +234,7 @@ const Registration = () => {
         <div className="container-fluid">
           <div className="row justify-content-center">
             <div className="col-lg-12">
-              <div className="card form-wrapper-card shadow pt-3 pb-5 ps-3">
+              <div className="card form-wrapper-card shadow pt-3 pb-5 ps-lg-3 ps-0">
                 <div className="container-fluid registration-form-container">
                   <div className="row">
                     {/* Individual Form Heading */}

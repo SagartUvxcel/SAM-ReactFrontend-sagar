@@ -1,4 +1,5 @@
-import React from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { FaCheck } from "react-icons/fa";
 
 // Receiving validationDetails, onInputChange, onInputBlur as a props from organization/individual main form.
@@ -17,6 +18,19 @@ const CommonFormFields = ({
     mobileValidationColor,
     zipCodeValidationColor,
   } = validationDetails;
+
+  const [states, setStates] = useState([]);
+  const getAllSates = async () => {
+    const allStates = await axios.get(
+      `http://host.docker.internal:3000/sam/v1/property/by-state`
+    );
+    setStates(allStates.data);
+  };
+
+  useEffect(() => {
+    getAllSates();
+  }, []);
+
   return (
     <>
       {/* Address Row 1 */}
@@ -56,6 +70,29 @@ const CommonFormFields = ({
           />
         </div>
         <div className="col-lg-2 mb-lg-0 mb-2">
+          <select
+            onChange={onInputChange}
+            name="state"
+            type="text"
+            className="form-select"
+            placeholder="State"
+            required
+          >
+            <option value="" style={{ color: "grey" }}>
+              State
+            </option>
+            {states
+              ? states.map((state, Index) => {
+                  return (
+                    <option key={Index} value={state.state_id}>
+                      {state.state_name}
+                    </option>
+                  );
+                })
+              : ""}
+          </select>
+        </div>
+        <div className="col-lg-2">
           <input
             type="text"
             onChange={onInputChange}
@@ -72,16 +109,6 @@ const CommonFormFields = ({
           ) : (
             <span className="d-none"></span>
           )}
-        </div>
-        <div className="col-lg-2">
-          <input
-            onChange={onInputChange}
-            name="state"
-            type="text"
-            className="form-control"
-            placeholder="State"
-            required
-          />
         </div>
       </div>
       {/* Email */}

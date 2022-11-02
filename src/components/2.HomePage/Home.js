@@ -73,6 +73,7 @@ function Home() {
     const fiveSectionCol = document.querySelectorAll(".five-section-col");
     // If input is state then post selected state id to api for getting cities based on selected state.
     if (name === "states") {
+      console.log(value);
       const cityByState = await axios.post(
         `http://host.docker.internal:3000/sam/v1/property/by-city`,
         { state_id: parseInt(value) }
