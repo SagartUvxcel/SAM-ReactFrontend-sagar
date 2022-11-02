@@ -94,6 +94,13 @@ const Registration = () => {
               mobileValidationMessage: "Mobile number already exists",
               mobileValidationColor: "danger",
             });
+          } else if (res.data.status === 2) {
+            // Store validation message and validation color.
+            setValidationDetails({
+              ...validationDetails,
+              mobileValidationMessage: "Invalid Mobile Number",
+              mobileValidationColor: "danger",
+            });
           }
         });
     } else if (name === "zipCode") {
@@ -207,7 +214,7 @@ const Registration = () => {
       } else {
         setValidationDetails({
           ...validationDetails,
-          mobileValidationMessage: "Please Enter Valid Mobile Number.",
+          mobileValidationMessage: "Invalid Mobile Number",
           mobileValidationColor: "danger",
         });
       }

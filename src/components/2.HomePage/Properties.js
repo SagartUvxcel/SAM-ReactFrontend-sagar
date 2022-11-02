@@ -27,7 +27,8 @@ const Properties = ({ propertyData }) => {
                         <br />
                         <span className="text-capitalize">
                           Ranging from {parseFloat(property.minvalue) / 100000}{" "}
-                          Lac to {parseFloat(property.maxvalue) / 10000000} Cr
+                          Lac
+                          {/* to {parseFloat(property.maxvalue) / 10000000} Cr */}
                         </span>
                         <br />
                         <div className="mt-3">
