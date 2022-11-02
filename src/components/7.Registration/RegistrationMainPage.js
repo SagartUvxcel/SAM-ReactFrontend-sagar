@@ -73,7 +73,6 @@ const Registration = () => {
           JSON.stringify({ mobile_number: value })
         )
         .then((res) => {
-          console.log(res.data.status);
           if (res.data.status === 1) {
             // Store validation message and validation color.
             setValidationDetails({
