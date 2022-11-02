@@ -81,6 +81,27 @@ const Registration = () => {
             });
           }
         });
+      // } else if (name === "zipCode") {
+      //   await axios
+      //     .post(
+      //       `http://host.docker.internal:3000/sam/v1/customer-registration/zipcode-validation`,
+      //       JSON.stringify({ zipcode: value }),
+      //       {
+      //         headers: {
+      //           "Content-Type": "application/json",
+      //         },
+      //       }
+      //     )
+      //     .then((res) => {
+      //       console.log(res.data.status);
+      //       if (res.data.status !== 1) {
+      //         setValidationDetails({
+      //           ...validationDetails,
+      //           zipCodeValidationMessage: "Invalid Zipcode",
+      //           zipCodeValidationColor: "danger",
+      //         });
+      //       }
+      //     });
     }
   };
 
@@ -169,34 +190,6 @@ const Registration = () => {
           mobileValidationColor: "danger",
         });
       }
-    } else if (name === "zipCode") {
-      // ZipCode backend validation.
-      // Post value of zipCode to api.
-      await axios
-        .post(
-          `http://host.docker.internal:3000/sam/v1/customer-registration/zipcode-validation`,
-          JSON.stringify({ zipcode: value }),
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        )
-        .then((res) => {
-          if (res.data.status !== 1) {
-            setValidationDetails({
-              ...validationDetails,
-              zipCodeValidationMessage: "Invalid Zipcode",
-              zipCodeValidationColor: "danger",
-            });
-          } else {
-            setValidationDetails({
-              ...validationDetails,
-              zipCodeValidationMessage: "",
-              zipCodeValidationColor: "success",
-            });
-          }
-        });
     }
   };
 

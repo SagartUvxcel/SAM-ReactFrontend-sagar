@@ -56,21 +56,15 @@ const CommonFormFields = ({
           />
         </div>
         <div className="col-lg-2 mb-lg-0 mb-2">
-          <select
+          <input
+            type="text"
             onChange={onInputChange}
+            // onBlur={onInputBlur}
+            placeholder="Zipcode"
             name="zipCode"
-            className={`form-select border-${zipCodeValidationColor}`}
-            aria-label="Default select example"
+            className={`form-control border-${zipCodeValidationColor}`}
             required
-          >
-            <option value="">Zipcode</option>
-            <option value="411015">411015</option>
-            <option value="411016">411016</option>
-            <option value="411017">411017</option>
-            <option value="411018">411018</option>
-            <option value="411019">411019</option>
-            <option value="41102">41102</option>
-          </select>
+          ></input>
           {zipCodeValidationMessage ? (
             <span className={`pe-1 text-${zipCodeValidationColor}`}>
               {zipCodeValidationMessage}
