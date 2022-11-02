@@ -55,13 +55,13 @@ const Registration = () => {
           JSON.stringify({ email: value })
         )
         .then((res) => {
-          // if (res.data.msg_to_return === "Email ID already exists") {
-          setValidationDetails({
-            ...validationDetails,
-            emailValidationMessage: res.data.status,
-            emailValidationColor: "danger",
-          });
-          // }
+          if (res.data.status === 1) {
+            setValidationDetails({
+              ...validationDetails,
+              emailValidationMessage: "Email id already exists.",
+              emailValidationColor: "danger",
+            });
+          }
         });
     } else if (name === "mobileNumber") {
       // If input field is mobile then post its value to api for validating.
@@ -71,12 +71,12 @@ const Registration = () => {
           JSON.stringify({ mobile_number: value })
         )
         .then((res) => {
+          console.log(res.data.status);
           if (res.data.status === 1) {
             // Store validation message and validation color.
             setValidationDetails({
               ...validationDetails,
-              mobileValidationMessage:
-                "Invalid mobile number entered or mobile number already exists",
+              mobileValidationMessage: "Mobile number already exists",
               mobileValidationColor: "danger",
             });
           }
