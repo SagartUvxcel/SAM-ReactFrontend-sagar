@@ -98,8 +98,15 @@ const Registration = () => {
             // Store validation message and validation color.
             setValidationDetails({
               ...validationDetails,
-              mobileValidationMessage: "Invalid Mobile Number",
+              mobileValidationMessage: "Invalid Mobile Number Entered",
               mobileValidationColor: "danger",
+            });
+          } else {
+            // Store validation message and validation color.
+            setValidationDetails({
+              ...validationDetails,
+              mobileValidationMessage: "",
+              mobileValidationColor: "success",
             });
           }
         });
@@ -200,22 +207,6 @@ const Registration = () => {
           landlineValidationMessage:
             "Landline No. is not valid, Please Enter 7 to 11 Digit.",
           landlineValidationColor: "danger",
-        });
-      }
-    } else if (name === "mobileNumber") {
-      // Mobile frontend validation.
-      let mobileNumberLength = value.length;
-      if (mobileNumberLength === 10) {
-        setValidationDetails({
-          ...validationDetails,
-          mobileValidationMessage: "",
-          mobileValidationColor: "success",
-        });
-      } else {
-        setValidationDetails({
-          ...validationDetails,
-          mobileValidationMessage: "Invalid Mobile Number",
-          mobileValidationColor: "danger",
         });
       }
     } else if (name === "zipCode") {
