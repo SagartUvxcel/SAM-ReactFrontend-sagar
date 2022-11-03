@@ -1,5 +1,6 @@
 import React from "react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Layout from "../1.CommonLayout/Layout";
 
 const ResetPassword = () => {
@@ -12,6 +13,8 @@ const ResetPassword = () => {
     passwordType1: "password",
     passwordType2: "password",
   });
+
+  const goTo = useNavigate();
 
   const {
     newPassword,
@@ -45,8 +48,9 @@ const ResetPassword = () => {
         passwordType2: "text",
       });
     } else {
-      alert("Password Matched");
+      alert("Password Changed Successfully !");
       setDetails({ ...details, invalidColor: "" });
+      goTo("/login");
     }
   };
 
