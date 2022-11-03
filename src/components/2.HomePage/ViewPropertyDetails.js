@@ -6,7 +6,7 @@ const ViewPropertyDetails = () => {
     <Layout>
       <section className="section-padding min-100vh view-property-wrapper">
         <div className="container-fluid px-lg-5 px-md-4 px-3">
-          <h4 className="mt-4">Property Details</h4>
+          <h4 className="mt-4 fw-bold">Property Details</h4>
           <div className="row wrapper">
             <div className="col-xl-3 col-lg-4 col-md-5 view-property-main-img-div">
               <img src="images4.jpg" alt="" className="img-fluid" />
@@ -88,7 +88,7 @@ const ViewPropertyDetails = () => {
               </div>
             </div>
           </div>
-          <h4 className="mt-4">Other properties in same area</h4>
+          <h4 className="mt-4 fw-bold">Other properties in same area</h4>
           <div className="row wrapper other-properties">
             <div className="col-lg-3 col-md-4">
               <div className="card">
