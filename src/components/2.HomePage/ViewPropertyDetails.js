@@ -16,7 +16,7 @@ const ViewPropertyDetails = () => {
                 <div className="icons">X</div>
               </div>
             </div>
-            <div className="col-xl-9 col-lg-8 col-md-7 property-full-details ps-lg-5 mt-5 mt-md-0">
+            <div className="col-xl-9 col-lg-8 col-md-7 property-full-details ps-md-5 mt-5 mt-md-0">
               <div className="row">
                 <div className="col-lg-2 col-md-3 col-5 property-info">
                   Owner:
