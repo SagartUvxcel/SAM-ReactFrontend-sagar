@@ -389,7 +389,6 @@ input[type="number"] {
 /* Media Queries */
 @media screen and (min-width: 992px) {
   .five-section-col {
-    /* width: 19% !important; */
     flex: 0 0 auto !important;
   }
 }

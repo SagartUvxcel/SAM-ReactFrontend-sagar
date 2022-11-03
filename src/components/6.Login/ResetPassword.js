@@ -7,9 +7,12 @@ const ResetPassword = () => {
     newPassword: "",
     confirmPassword: "",
     invalidColor: "",
+    eyeIcon: "eye-slash",
+    eyeIcon2: "eye-slash",
   });
 
-  const { newPassword, confirmPassword, invalidColor } = details;
+  const { newPassword, confirmPassword, invalidColor, eyeIcon, eyeIcon2 } =
+    details;
 
   const onPasswordsChange = (e) => {
     const { name, value } = e.target;
@@ -28,6 +31,22 @@ const ResetPassword = () => {
     } else {
       alert("Password Matched");
       setDetails({ ...details, invalidColor: "" });
+    }
+  };
+
+  const changeEyeIcon1 = () => {
+    if (eyeIcon === "eye-slash") {
+      setDetails({ ...details, eyeIcon: "eye" });
+    } else if (eyeIcon === "eye") {
+      setDetails({ ...details, eyeIcon: "eye-slash" });
+    }
+  };
+
+  const changeEyeIcon2 = () => {
+    if (eyeIcon2 === "eye-slash") {
+      setDetails({ ...details, eyeIcon2: "eye" });
+    } else if (eyeIcon2 === "eye") {
+      setDetails({ ...details, eyeIcon2: "eye-slash" });
     }
   };
 
@@ -54,6 +73,11 @@ const ResetPassword = () => {
                         onChange={onPasswordsChange}
                         required
                       />
+                      <i
+                        placeholder={eyeIcon}
+                        onClick={changeEyeIcon1}
+                        className={`icon-eye bi bi-${eyeIcon}`}
+                      ></i>
                     </div>
                   </div>
                   <div className="col-lg-12">
@@ -70,6 +94,11 @@ const ResetPassword = () => {
                         onChange={onPasswordsChange}
                         required
                       />
+                      <i
+                        placeholder={eyeIcon}
+                        onClick={changeEyeIcon2}
+                        className={`icon-eye bi bi-${eyeIcon2}`}
+                      ></i>
                     </div>
                   </div>
                   <div className="col-lg-12">
