@@ -6,6 +6,7 @@ const Properties = ({ propertyData }) => {
   const viewProperty = () => {
     goTo("/property");
   };
+
   return (
     <section className="property-wrapper" id="properties">
       <div className="container-fluid d-none display-on-search wrapper">
