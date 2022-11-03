@@ -1,6 +1,11 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const Properties = ({ propertyData }) => {
+  const goTo = useNavigate();
+  const viewProperty = () => {
+    goTo("/property");
+  };
   return (
     <section className="property-wrapper" id="properties">
       <div className="container-fluid d-none display-on-search wrapper">
@@ -32,7 +37,12 @@ const Properties = ({ propertyData }) => {
                         </span>
                         <br />
                         <div className="mt-3">
-                          <button className="btn common-btn">View</button>
+                          <button
+                            onClick={viewProperty}
+                            className="btn common-btn"
+                          >
+                            View
+                          </button>
                         </div>
                       </div>
                     </div>
