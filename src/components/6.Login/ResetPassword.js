@@ -36,7 +36,14 @@ const ResetPassword = () => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
       alert("Password and confirm password not matching");
-      setDetails({ ...details, invalidColor: "danger" });
+      setDetails({
+        ...details,
+        invalidColor: "danger",
+        eyeIcon: "eye",
+        passwordType1: "text",
+        eyeIcon2: "eye",
+        passwordType2: "text",
+      });
     } else {
       alert("Password Matched");
       setDetails({ ...details, invalidColor: "" });

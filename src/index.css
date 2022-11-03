@@ -292,11 +292,11 @@ input[type="number"] {
   margin: 0 10px;
 }
 
-.footer-icon svg {
+.footer-icon i {
   transition: 0.2s ease-in-out;
 }
 
-.footer-icon:hover svg {
+.footer-icon:hover i {
   transform: scale(1.08);
   transition: 0.2s ease-in-out;
   color: white;
