@@ -33,11 +33,7 @@ input[type="number"] {
   color: #fff !important;
   font-size: 18px !important;
   background: rgb(0, 153, 255);
-  background: linear-gradient(
-    0deg,
-    rgba(2, 48, 251, 0.668) 0%,
-    rgb(0, 229, 255) 100%
-  );
+  background: linear-gradient(0deg, rgba(2, 48, 251) 0%, rgb(0, 191, 255) 100%);
   transition: 0.3s ease-in-out !important;
   border: 2px solid #c797eb !important;
   border-radius: 9px !important;
@@ -198,17 +194,36 @@ input[type="number"] {
 
 /* View Property Details */
 
-.property-full-details .row div {
+.property-full-details .property-info {
   margin-bottom: 0.25rem;
   font-weight: 500;
 }
 
-.view-property-main-img-div .img-fluid {
-  height: 100%;
+.view-property-main-img-div img {
+  height: 80% !important;
 }
 
 .property-full-details .col-lg-10 {
   padding: 0 !important;
+}
+
+.property-icons-div {
+  margin-top: 1rem;
+  max-height: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.property-icons-div .icons {
+  height: 50px;
+  width: 60px;
+  background-color: wheat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 3px solid black;
+  cursor: pointer;
+  font-weight: bold;
 }
 
 /* Home about Us */
