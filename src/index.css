@@ -216,14 +216,20 @@ input[type="number"] {
 
 .property-icons-div .icons {
   height: 50px;
-  width: 50px;
+  width: 53px;
   background-color: #58575742;
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 3px solid black;
+  border: 2px solid black;
   cursor: pointer;
   font-weight: bold;
+  transition: 0.3s ease-in-out;
+}
+.property-icons-div .icons:hover {
+  background-color: #585757;
+  color: white;
+  transition: 0.3s ease-in-out;
 }
 
 .other-properties .card {
@@ -388,5 +394,9 @@ input[type="number"] {
   }
   .five-section-col {
     width: 100% !important;
+  }
+  .property-icons-div .icons {
+    height: 44px;
+    width: 47px;
   }
 }
