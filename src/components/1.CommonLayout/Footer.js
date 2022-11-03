@@ -1,5 +1,4 @@
 import React from "react";
-import { FaFacebookF, FaLinkedinIn } from "react-icons/fa";
 
 function Footers() {
   return (
@@ -8,8 +7,12 @@ function Footers() {
         <div className="row justify-content-center">
           <div className="col-12 mt-4">
             <div className="footer-icons-div">
-              <div className="footer-icon">{<FaFacebookF />}</div>
-              <div className="footer-icon">{<FaLinkedinIn />}</div>
+              <div className="footer-icon">
+                <i class="bi bi-facebook"></i>
+              </div>
+              <div className="footer-icon">
+                <i class="bi bi-linkedin"></i>
+              </div>
             </div>
           </div>
           <div className="col-12 mt-4">
