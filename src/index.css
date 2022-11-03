@@ -382,6 +382,7 @@ input[type="number"] {
   position: absolute;
   right: 1rem;
   bottom: 0.5rem;
+  font-size: 21px;
   color: rgba(128, 128, 128, 0.855);
   cursor: pointer;
 }

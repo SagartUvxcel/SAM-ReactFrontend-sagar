@@ -9,10 +9,19 @@ const ResetPassword = () => {
     invalidColor: "",
     eyeIcon: "eye-slash",
     eyeIcon2: "eye-slash",
+    passwordType1: "password",
+    passwordType2: "password",
   });
 
-  const { newPassword, confirmPassword, invalidColor, eyeIcon, eyeIcon2 } =
-    details;
+  const {
+    newPassword,
+    confirmPassword,
+    invalidColor,
+    eyeIcon,
+    eyeIcon2,
+    passwordType1,
+    passwordType2,
+  } = details;
 
   const onPasswordsChange = (e) => {
     const { name, value } = e.target;
@@ -36,17 +45,25 @@ const ResetPassword = () => {
 
   const changeEyeIcon1 = () => {
     if (eyeIcon === "eye-slash") {
-      setDetails({ ...details, eyeIcon: "eye" });
+      setDetails({ ...details, eyeIcon: "eye", passwordType1: "text" });
     } else if (eyeIcon === "eye") {
-      setDetails({ ...details, eyeIcon: "eye-slash" });
+      setDetails({
+        ...details,
+        eyeIcon: "eye-slash",
+        passwordType1: "password",
+      });
     }
   };
 
   const changeEyeIcon2 = () => {
     if (eyeIcon2 === "eye-slash") {
-      setDetails({ ...details, eyeIcon2: "eye" });
+      setDetails({ ...details, eyeIcon2: "eye", passwordType2: "text" });
     } else if (eyeIcon2 === "eye") {
-      setDetails({ ...details, eyeIcon2: "eye-slash" });
+      setDetails({
+        ...details,
+        eyeIcon2: "eye-slash",
+        passwordType2: "password",
+      });
     }
   };
 
@@ -68,7 +85,7 @@ const ResetPassword = () => {
                       <input
                         id="reset-password"
                         name="resetPassword"
-                        type="password"
+                        type={passwordType1}
                         className={`form-control border-${invalidColor}`}
                         onChange={onPasswordsChange}
                         required
@@ -89,7 +106,7 @@ const ResetPassword = () => {
                       <input
                         id="confirm-password"
                         name="confirmPassword"
-                        type="password"
+                        type={passwordType2}
                         className={`form-control border-${invalidColor}`}
                         onChange={onPasswordsChange}
                         required
