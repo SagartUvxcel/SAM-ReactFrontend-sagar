@@ -188,7 +188,7 @@ const Registration = () => {
       } else {
         setValidationDetails({
           ...validationDetails,
-          emailValidationMessage: "Invalid Email Format.",
+          emailValidationMessage: "Invalid Email Id.",
           emailValidationColor: "danger",
         });
       }
