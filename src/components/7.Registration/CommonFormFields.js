@@ -1,6 +1,5 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { FaCheck } from "react-icons/fa";
 
 // Receiving validationDetails, onInputChange, onInputBlur as a props from organization/individual main form.
 const CommonFormFields = ({
@@ -205,7 +204,7 @@ const CommonFormFields = ({
       <div className="row submitCancelRow mt-4">
         <div className="offset-lg-2 col-lg-2 col-md-4 col-6">
           <button className="btn btn-primary text-white">
-            <FaCheck className="me-1" />
+            <i className="me-1 bi bi-check-lg"></i>
             Submit
           </button>
         </div>
