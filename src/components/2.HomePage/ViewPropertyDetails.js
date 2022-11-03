@@ -54,6 +54,33 @@ const ViewPropertyDetails = () => {
               </div>
             </div>
           </div>
+          <h4 className="mt-4">Other properties in same area</h4>
+          <div className="row wrapper other-properties">
+            <div className="col-lg-3">
+              <div className="card">
+                <h5 className="card-title">2 BHK in Mukund Nagar</h5>
+                <p className="card-text">Price: 82 Lacs</p>
+              </div>
+            </div>
+            <div className="col-lg-3">
+              <div className="card">
+                <h5 className="card-title">2 BHK in Model Colony</h5>
+                <p className="card-text">Price: 82 Lacs</p>
+              </div>
+            </div>
+            <div className="col-lg-3">
+              <div className="card">
+                <h5 className="card-title">2 BHK in Mukund Nagar</h5>
+                <p className="card-text">Price: 82 Lacs</p>
+              </div>
+            </div>
+            <div className="col-lg-3">
+              <div className="card">
+                <h5 className="card-title">2 BHK in Model Colony</h5>
+                <p className="card-text">Price: 82 Lacs</p>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
     </Layout>

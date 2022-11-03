@@ -216,14 +216,20 @@ input[type="number"] {
 
 .property-icons-div .icons {
   height: 50px;
-  width: 60px;
-  background-color: wheat;
+  width: 50px;
+  background-color: #58575742;
   display: flex;
   justify-content: center;
   align-items: center;
   border: 3px solid black;
   cursor: pointer;
   font-weight: bold;
+}
+
+.other-properties .card {
+  padding: 1rem 2rem;
+  background-color: #58575733;
+  height: 122px;
 }
 
 /* Home about Us */
