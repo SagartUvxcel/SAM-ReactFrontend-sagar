@@ -2,8 +2,9 @@ import React, { useRef, useState } from "react";
 import Layout from "../1.CommonLayout/Layout";
 import CommonFormFields from "./CommonFormFields";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-const Registration = () => {
+const Registration = ({ setToken }) => {
   // These are used for the functionality of selecting either individual form or organization form.
   const toggleIndividualForm = useRef();
   const toggleOrganizationForm = useRef();
@@ -11,6 +12,7 @@ const Registration = () => {
   const organizationCheck = useRef();
 
   const [IdOfState, SetIdOfState] = useState("");
+  const goTo = useNavigate();
 
   // useState to store each field's data from form.
   const [formData, setFormData] = useState({
@@ -28,6 +30,22 @@ const Registration = () => {
     landlineNumber: "",
     mobileNumber: "",
   });
+
+  const {
+    firstName,
+    middleName,
+    lastName,
+    aadhaarNumber,
+    panNumber,
+    houseNumber,
+    locality,
+    city,
+    zipCode,
+    state,
+    emailAddress,
+    landlineNumber,
+    mobileNumber,
+  } = formData;
 
   // Store validation message and validation color based on input field.
   const [validationDetails, setValidationDetails] = useState({
@@ -235,7 +253,10 @@ const Registration = () => {
     ) {
       alert("form is not Valid");
     } else {
-      alert("Form is valid");
+      alert("Registration Successful !");
+      console.log(formData);
+      setToken(formData.emailAddress + "1234");
+      goTo("/register/verify");
     }
   };
 

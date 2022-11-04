@@ -8,10 +8,10 @@ function Footers() {
           <div className="col-12 mt-4">
             <div className="footer-icons-div">
               <div className="footer-icon">
-                <i class="bi bi-facebook"></i>
+                <i className="bi bi-facebook"></i>
               </div>
               <div className="footer-icon">
-                <i class="bi bi-linkedin"></i>
+                <i className="bi bi-linkedin"></i>
               </div>
             </div>
           </div>
