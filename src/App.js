@@ -27,7 +27,7 @@ function App() {
             element={<VerifyToken token={token} />}
           />
           <Route path="/login" element={<LoginMainPage />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/register/reset-password" element={<ResetPassword />} />
         </Routes>
       </ScrollToTop>
     </BrowserRouter>
