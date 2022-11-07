@@ -387,6 +387,10 @@ input[type="number"] {
   cursor: pointer;
 }
 
+.password-condition {
+  font-size: 10px;
+}
+
 /* Media Queries */
 @media screen and (min-width: 992px) {
   .five-section-col {
