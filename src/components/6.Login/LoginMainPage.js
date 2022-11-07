@@ -1,14 +1,21 @@
-import React, { useState } from "react";
+import React from "react";
+import { useNavigate } from "react-router-dom";
 import Layout from "../1.CommonLayout/Layout";
 
-const LoginMainPage = () => {
+const LoginMainPage = ({ setIsLoggedIn }) => {
+  const goTo = useNavigate();
+  const onLogin = (e) => {
+    e.preventDefault();
+    setIsLoggedIn(true);
+    goTo("/");
+  };
   return (
     <Layout>
       <section className="login-wrapper min-100vh section-padding">
         <div className="container-fluid mt-5">
           <div className="row justify-content-center">
             <div className="col-lg-4 col-md-7">
-              <form action="" className="card p-5">
+              <form onClick={onLogin} action="" className="card p-5">
                 <h6 className="fw-bold">Login with Email</h6>
                 <div className="row">
                   <div className="col-lg-12 mb-3">

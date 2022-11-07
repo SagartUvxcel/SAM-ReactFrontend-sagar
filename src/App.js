@@ -8,29 +8,36 @@ import Registration from "./components/7.Registration/RegistrationMainPage";
 import ScrollToTop from "./components/ScrollToTop";
 import { createContext } from "react";
 import { useState } from "react";
+import { useEffect } from "react";
+// export const MainContext = createContext();
 
 function App() {
-  const mainContext = createContext();
-  const [isLoggedIn, setIsLoggedIn] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      setIsLoggedIn(Boolean(localStorage.getItem("loggedIn")));
+    } else {
+      localStorage.setItem("loggedIn", isLoggedIn);
+      setIsLoggedIn(isLoggedIn);
+    }
+  });
   return (
     <BrowserRouter>
       <ScrollToTop>
-        <mainContext.Provider value={setIsLoggedIn}>
-          <Routes>
-            <Route path="/" element={<Home setIsLoggedIn={setIsLoggedIn} />} />
-            <Route
-              path="/search"
-              element={<Home setIsLoggedIn={setIsLoggedIn} />}
-            />
-            <Route path="/property" element={<ViewPropertyDetails />} />
-            <Route path="/register/*" element={<Registration />} />
-            <Route path="/login" element={<LoginMainPage />} />
-            <Route
-              path="/register/reset-password"
-              element={<ResetPassword />}
-            />
-          </Routes>
-        </mainContext.Provider>
+        {/* <MainContext.Provider value={isLoggedIn}> */}
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/search" element={<Home />} />
+          <Route path="/property" element={<ViewPropertyDetails />} />
+          <Route path="/register/*" element={<Registration />} />
+          <Route
+            path="/login"
+            element={<LoginMainPage setIsLoggedIn={setIsLoggedIn} />}
+          />
+          <Route path="/register/reset-password" element={<ResetPassword />} />
+        </Routes>
+        {/* </MainContext.Provider> */}
       </ScrollToTop>
     </BrowserRouter>
   );
