@@ -1,21 +1,7 @@
 import React from "react";
-import { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 function Header() {
-  const [IsLoggedIn, setIsLoggedIn] = useState(false);
-
-  const goTo = useNavigate();
-
-  const login = () => {
-    setIsLoggedIn(true);
-    goTo("/");
-  };
-
-  const logout = () => {
-    setIsLoggedIn(false);
-    goTo("/");
-  };
   return (
     <header className="header-wrapper">
       <nav className="navbar navbar-expand-lg fixed-top">
@@ -54,26 +40,16 @@ function Header() {
                   Account
                 </a>
               </li>
-              {!IsLoggedIn ? (
-                <>
-                  <li className="nav-item ps-lg-2">
-                    <span onClick={login} className="nav-link">
-                      Login
-                    </span>
-                  </li>
-                  <li className="nav-item ps-lg-2">
-                    <NavLink to="/register" className="nav-link">
-                      Registration
-                    </NavLink>
-                  </li>
-                </>
-              ) : (
-                <li className="nav-item ps-lg-2">
-                  <span onClick={logout} className="nav-link">
-                    Logout
-                  </span>
-                </li>
-              )}
+              <li className="nav-item ps-lg-2">
+                <NavLink to="/login" className="nav-link">
+                  Login
+                </NavLink>
+              </li>
+              <li className="nav-item ps-lg-2">
+                <NavLink to="/register" className="nav-link">
+                  Registration
+                </NavLink>
+              </li>
             </ul>
           </div>
         </div>
