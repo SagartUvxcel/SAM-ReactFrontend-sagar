@@ -6,11 +6,5 @@ const ChangeStatus = (state = initialSate, action) => {
   } else {
     return state;
   }
-  // switch (action.type) {
-  //   case "loggedIn":
-  //     return action.payload;
-  //   default:
-  //     return state;
-  // }
 };
 export default ChangeStatus;

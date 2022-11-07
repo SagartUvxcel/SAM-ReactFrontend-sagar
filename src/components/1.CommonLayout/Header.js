@@ -13,7 +13,7 @@ function Header() {
   const logOut = () => {
     alert("Logged Out Successfully");
     dispatch(checkStatus(false));
-    goTo("/search");
+    goTo("/");
   };
 
   useEffect(() => {
