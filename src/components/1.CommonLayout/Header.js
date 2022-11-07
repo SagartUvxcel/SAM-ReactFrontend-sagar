@@ -1,7 +1,18 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { checkStatus } from "../../redux/ActionTypes";
 
 function Header() {
+  const dispatch = useDispatch();
+  const loginStatus = useSelector((state) => state.login_status);
+  const goTo = useNavigate();
+  const logOut = () => {
+    alert("Logged Out Successfully");
+    dispatch(checkStatus(false));
+    goTo("/");
+  };
   return (
     <header className="header-wrapper">
       <nav className="navbar navbar-expand-lg fixed-top">
@@ -40,16 +51,32 @@ function Header() {
                   Account
                 </a>
               </li>
-              <li className="nav-item ps-lg-2">
-                <NavLink to="/login" className="nav-link">
-                  Login
-                </NavLink>
-              </li>
-              <li className="nav-item ps-lg-2">
-                <NavLink to="/register" className="nav-link">
-                  Registration
-                </NavLink>
-              </li>
+              {!loginStatus ? (
+                <>
+                  <li className="nav-item ps-lg-2">
+                    <NavLink to="/login" className="nav-link">
+                      Login
+                    </NavLink>
+                  </li>
+                  <li className="nav-item ps-lg-2">
+                    <NavLink to="/register" className="nav-link">
+                      Registration
+                    </NavLink>
+                  </li>
+                </>
+              ) : (
+                <>
+                  <li className="nav-item ps-lg-2">
+                    <span
+                      style={{ cursor: "pointer" }}
+                      className="nav-link"
+                      onClick={logOut}
+                    >
+                      Logout
+                    </span>
+                  </li>
+                </>
+              )}
             </ul>
           </div>
         </div>

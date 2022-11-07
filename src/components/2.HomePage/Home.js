@@ -5,7 +5,6 @@ import Properties from "./Properties";
 import axios from "axios";
 import { useState } from "react";
 import { Link } from "react-scroll";
-import { useSelector } from "react-redux";
 
 function Home() {
   // useState to store data of each field e.g all states, all banks etc.
@@ -17,7 +16,6 @@ function Home() {
     banks: "",
   });
 
-  const loginStatus = useSelector((state) => state.login_status);
   // useState to store values of each select box for search functionality.
   const [fieldValuesToPost, setFieldValuesToPost] = useState({
     state_id: "",
@@ -152,7 +150,6 @@ function Home() {
 
   // This will run every time we refresh page or if some state change occurs.
   useEffect(() => {
-    console.log(loginStatus);
     getSearchDetails();
     // navbar color change on scroll
     let nav = document.querySelector(".navbar");
