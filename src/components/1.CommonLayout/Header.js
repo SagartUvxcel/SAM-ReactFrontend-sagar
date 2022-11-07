@@ -22,7 +22,7 @@ function Header() {
     } else if (localStorage.getItem("isLoggedIn") === "true") {
       setLoginStatus(true);
     }
-  }, []);
+  });
 
   return (
     <header className="header-wrapper">
