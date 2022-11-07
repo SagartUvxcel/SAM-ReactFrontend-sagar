@@ -2,11 +2,10 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "../1.CommonLayout/Layout";
 
-const LoginMainPage = ({ setIsLoggedIn }) => {
+const LoginMainPage = () => {
   const goTo = useNavigate();
   const onLogin = (e) => {
     e.preventDefault();
-    setIsLoggedIn(true);
     goTo("/");
   };
   return (
