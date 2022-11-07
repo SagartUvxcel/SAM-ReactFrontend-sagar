@@ -4,7 +4,7 @@ import CommonFormFields from "./CommonFormFields";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const Registration = ({ setToken }) => {
+const Registration = () => {
   // These are used for the functionality of selecting either individual form or organization form.
   const toggleIndividualForm = useRef();
   const toggleOrganizationForm = useRef();
@@ -242,7 +242,6 @@ const Registration = ({ setToken }) => {
 
   const onIndividualFormSubmit = (e) => {
     e.preventDefault();
-    console.log(formData);
     if (
       aadhaarValidationColor === "danger" ||
       panValidationColor === "danger" ||
@@ -252,17 +251,14 @@ const Registration = ({ setToken }) => {
     ) {
       alert("form is not Valid");
     } else {
-      alert("Registration Successful Please check your Email !");
+      alert("Registration Successful Please verify your Email !");
       console.log(formData);
-      setToken(formData.emailAddress + "1234");
       goTo("/register/reset-password");
     }
   };
 
   const onOrganizationFormSubmit = (e) => {
     e.preventDefault();
-    console.log(formData);
-    // alert("This is the Organization's Form");
     if (
       emailValidationColor === "danger" ||
       landlineValidationColor === "danger" ||
