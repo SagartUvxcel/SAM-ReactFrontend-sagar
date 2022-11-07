@@ -16,7 +16,7 @@ function App() {
           <Route path="/search" element={<Home />} />
           <Route path="/property" element={<ViewPropertyDetails />} />
           <Route path="/register/*" element={<Registration />} />
-          <Route path="/login" element={<LoginMainPage simple={something} />} />
+          <Route path="/login" element={<LoginMainPage />} />
           <Route path="/register/reset-password" element={<ResetPassword />} />
         </Routes>
       </ScrollToTop>
