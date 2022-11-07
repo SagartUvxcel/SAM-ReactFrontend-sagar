@@ -1,5 +1,7 @@
 import React from "react";
+import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { MainContext } from "../../App";
 import Layout from "../1.CommonLayout/Layout";
 
 const LoginMainPage = () => {
@@ -8,6 +10,7 @@ const LoginMainPage = () => {
     e.preventDefault();
     goTo("/");
   };
+
   return (
     <Layout>
       <section className="login-wrapper min-100vh section-padding">
