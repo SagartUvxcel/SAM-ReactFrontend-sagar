@@ -243,7 +243,6 @@ const Registration = ({ setToken }) => {
   const onIndividualFormSubmit = (e) => {
     e.preventDefault();
     console.log(formData);
-    // alert("This is the Individual's Form");
     if (
       aadhaarValidationColor === "danger" ||
       panValidationColor === "danger" ||
@@ -253,10 +252,10 @@ const Registration = ({ setToken }) => {
     ) {
       alert("form is not Valid");
     } else {
-      alert("Registration Successful !");
+      alert("Registration Successful Please check your Email !");
       console.log(formData);
       setToken(formData.emailAddress + "1234");
-      goTo("/register/verify");
+      goTo("/register/reset-password");
     }
   };
 

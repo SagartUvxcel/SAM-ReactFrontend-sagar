@@ -4,7 +4,7 @@ import "./App.css";
 import Home from "./components/2.HomePage/Home";
 import ViewPropertyDetails from "./components/2.HomePage/ViewPropertyDetails";
 import LoginMainPage from "./components/6.Login/LoginMainPage";
-import ResetPassword from "./components/6.Login/ResetPassword";
+import ResetPassword from "./components/7.Registration/ResetPassword";
 import Registration from "./components/7.Registration/RegistrationMainPage";
 import VerifyToken from "./components/7.Registration/VerifyToken";
 import ScrollToTop from "./components/ScrollToTop";
