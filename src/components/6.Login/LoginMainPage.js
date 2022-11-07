@@ -20,7 +20,7 @@ const LoginMainPage = () => {
         <div className="container-fluid mt-5">
           <div className="row justify-content-center">
             <div className="col-lg-4 col-md-7">
-              <form onClick={onLogin} action="" className="card p-5">
+              <form action="" className="card p-5">
                 <h6 className="fw-bold">Login with Email</h6>
                 <div className="row">
                   <div className="col-lg-12 mb-3">
@@ -57,7 +57,9 @@ const LoginMainPage = () => {
                 </div>
                 <hr />
                 <div className="text-center mt-3">
-                  <button className="btn btn-primary">Login</button>
+                  <button className="btn btn-primary" onClick={onLogin}>
+                    Login
+                  </button>
                 </div>
               </form>
             </div>
