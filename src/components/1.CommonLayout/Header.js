@@ -1,18 +1,29 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { checkStatus } from "../../redux/ActionTypes";
+import { useState } from "react";
 
 function Header() {
   const dispatch = useDispatch();
-  const loginStatus = useSelector((state) => state.login_status);
+  let InitialStatus = useSelector((state) => state.login_status);
+  const [loginStatus, setLoginStatus] = useState(InitialStatus);
   const goTo = useNavigate();
   const logOut = () => {
     alert("Logged Out Successfully");
     dispatch(checkStatus(false));
-    goTo("/");
+    goTo("/search");
   };
+
+  useEffect(() => {
+    if (localStorage.getItem("isLoggedIn") === "false") {
+      setLoginStatus(false);
+    } else if (localStorage.getItem("isLoggedIn") === "true") {
+      setLoginStatus(true);
+    }
+  });
+
   return (
     <header className="header-wrapper">
       <nav className="navbar navbar-expand-lg fixed-top">
