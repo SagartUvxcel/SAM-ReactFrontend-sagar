@@ -16,12 +16,16 @@ function Header() {
     goTo("/");
   };
 
-  useEffect(() => {
+  const saveLoginStatus = () => {
     if (localStorage.getItem("isLoggedIn") === "false") {
       setLoginStatus(false);
     } else if (localStorage.getItem("isLoggedIn") === "true") {
       setLoginStatus(true);
     }
+  };
+
+  useEffect(() => {
+    saveLoginStatus();
   });
 
   return (
