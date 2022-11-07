@@ -1,13 +1,16 @@
 import React from "react";
-import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { MainContext } from "../../App";
 import Layout from "../1.CommonLayout/Layout";
+import { useDispatch } from "react-redux";
+import { checkStatus } from "../../redux/ActionTypes";
 
 const LoginMainPage = () => {
+  const dispatch = useDispatch();
+
   const goTo = useNavigate();
   const onLogin = (e) => {
     e.preventDefault();
+    dispatch(checkStatus(true));
     goTo("/");
   };
 
