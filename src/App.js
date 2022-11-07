@@ -8,7 +8,6 @@ import Registration from "./components/7.Registration/RegistrationMainPage";
 import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
-  const something = "ok";
   return (
     <BrowserRouter>
       <ScrollToTop>
