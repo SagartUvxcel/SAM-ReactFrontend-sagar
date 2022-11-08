@@ -4,7 +4,7 @@ import CommonFormFields from "./CommonFormFields";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const Registration = () => {
+const Registration = ({ setToken }) => {
   // These are used for the functionality of selecting either individual form or organization form.
   const toggleIndividualForm = useRef();
   const toggleOrganizationForm = useRef();
@@ -31,21 +31,21 @@ const Registration = () => {
     mobileNumber: "",
   });
 
-  const {
-    firstName,
-    middleName,
-    lastName,
-    aadhaarNumber,
-    panNumber,
-    houseNumber,
-    locality,
-    city,
-    zipCode,
-    state,
-    emailAddress,
-    landlineNumber,
-    mobileNumber,
-  } = formData;
+  // const {
+  //   firstName,
+  //   middleName,
+  //   lastName,
+  //   aadhaarNumber,
+  //   panNumber,
+  //   houseNumber,
+  //   locality,
+  //   city,
+  //   zipCode,
+  //   state,
+  //   emailAddress,
+  //   landlineNumber,
+  //   mobileNumber,
+  // } = formData;
 
   // Store validation message and validation color based on input field.
   const [validationDetails, setValidationDetails] = useState({
@@ -66,16 +66,16 @@ const Registration = () => {
   const {
     aadhaarValidationMessage,
     panValidationMessage,
-    emailValidationMessage,
-    landlineValidationMessage,
-    mobileValidationMessage,
-    zipCodeValidationMessage,
+    // emailValidationMessage,
+    // landlineValidationMessage,
+    // mobileValidationMessage,
+    // zipCodeValidationMessage,
     aadhaarValidationColor,
     panValidationColor,
     emailValidationColor,
     landlineValidationColor,
     mobileValidationColor,
-    zipCodeValidationColor,
+    // zipCodeValidationColor,
   } = validationDetails;
 
   // Function to show backend validation on outside click of input filed.
@@ -251,9 +251,10 @@ const Registration = () => {
     ) {
       alert("form is not Valid");
     } else {
-      alert("Registration Successful Please verify your Email !");
-      console.log(formData);
-      goTo("/register/reset-password");
+      alert("Registration Successful Please Check Your Email For Token !");
+      setToken(formData.emailAddress + "1234");
+      localStorage.setItem("token", formData.emailAddress + "1234");
+      goTo("/register/verify");
     }
   };
 
