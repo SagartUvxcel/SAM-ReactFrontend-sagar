@@ -17,6 +17,7 @@ function Header() {
   // Logout function
   const logOut = () => {
     alert("Logged Out Successfully");
+    // false -  means user is logged out so that we are setting logged in status as false
     dispatch(checkStatus(false));
     goTo("/");
   };

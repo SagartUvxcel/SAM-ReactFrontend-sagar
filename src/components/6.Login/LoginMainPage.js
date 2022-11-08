@@ -5,11 +5,14 @@ import { useDispatch } from "react-redux";
 import { checkStatus } from "../../redux/ActionTypes";
 
 const LoginMainPage = () => {
+  // Used to dispatch actions to redux-store.
   const dispatch = useDispatch();
-
+  // It is used to navigate to particular route.
   const goTo = useNavigate();
+  // Login Function
   const onLogin = (e) => {
     e.preventDefault();
+    // true -  means user is logged in so that we are setting logged in status as true
     dispatch(checkStatus(true));
     goTo("/");
   };
