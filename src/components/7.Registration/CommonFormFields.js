@@ -201,7 +201,7 @@ const CommonFormFields = ({
         </div>
       </div>
       {/* Form submit or Cancel */}
-      <div className="row submitCancelRow mt-4">
+      <div className="row submitCancelRow mt-4 mb-4 mb-md-0">
         <div className="offset-lg-2 col-lg-2 col-md-4 col-6">
           <button className="btn btn-primary text-white">
             <i className="me-1 bi bi-check-lg"></i>

@@ -36,9 +36,13 @@ const VerifyToken = ({ token }) => {
       <section className="verify-token-wrapper min-100vh section-padding">
         <div className="container">
           <div className="row justify-content-center wrapper">
-            <div className="col-xl-4 col-lg-5">
+            <div className="col-xl-4 col-lg-5 col-md-7">
               <form onSubmit={verifyUserToken} action="" className="card p-5">
-                <div className="row">
+                <h3 className="card-title text-center fw-bold">
+                  Verify Your Token
+                </h3>
+                <hr />
+                <div className="row mt-3">
                   <div className="col-12">
                     <div className="form-group mb-3">
                       <input
@@ -52,7 +56,7 @@ const VerifyToken = ({ token }) => {
                   <div className="col-12">
                     <div className="form-group">
                       <button className="btn common-btn w-100">
-                        VerifyToken
+                        Verify Token
                       </button>
                     </div>
                   </div>

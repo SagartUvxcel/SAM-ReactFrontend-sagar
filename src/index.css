@@ -305,6 +305,13 @@ input[type="number"] {
 /* <----- Registration ----> */
 .registration-wrapper .form-wrapper-card {
   border: none !important;
+  position: relative;
+}
+
+.token-verify-link {
+  position: absolute;
+  bottom: 22px;
+  right: 30px;
 }
 
 .form-text {
@@ -407,6 +414,10 @@ input[type="number"] {
   }
   .w-18 {
     width: 20% !important;
+  }
+  .token-verify-link {
+    bottom: 10px;
+    right: 15px;
   }
 }
 

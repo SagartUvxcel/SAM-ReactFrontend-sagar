@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import Layout from "../1.CommonLayout/Layout";
 import CommonFormFields from "./CommonFormFields";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 const Registration = ({ setToken }) => {
   // These are used for the functionality of selecting either individual form or organization form.
@@ -570,6 +570,10 @@ const Registration = ({ setToken }) => {
                     </div>
                   </div>
                 </div>
+                <small className="token-verify-link">
+                  Already have Token?
+                  <NavLink to="/register/verify" className="fw-bold ps-1">click here to verify</NavLink>
+                </small>
               </div>
             </div>
           </div>
