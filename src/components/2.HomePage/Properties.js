@@ -29,13 +29,14 @@ const Properties = ({ propertyData }) => {
                         </span>
                         <br />
                         <span className="text-capitalize">
-                          Location - {property.city_name}
+                          Location: {property.city_name}
                         </span>
                         <br />
                         <span className="text-capitalize">
-                          Ranging from {parseInt(property.minvalue) / 100000}{" "}
-                          Lac
-                          {/* to {parseInt(property.maxvalue) / 10000000} Cr */}
+                         Market Value: {parseInt(property.market_value)/10000000 + " Cr."}
+                        </span><br />
+                        <span className="text-capitalize">
+                         Range: {property.range}
                         </span>
                         <br />
                         <div className="mt-3">
