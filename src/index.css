@@ -386,6 +386,9 @@ input[type="number"] {
   padding: 0.2rem 0.1rem !important;
 }
 
+.reset-password-wrapper .form-control:focus {
+  border-color: lightgray;
+}
 .reset-password-wrapper .form-group {
   position: relative;
 }

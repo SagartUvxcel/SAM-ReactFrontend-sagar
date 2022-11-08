@@ -60,9 +60,19 @@ const ResetPassword = () => {
   const onPasswordsChange = (e) => {
     const { name, value } = e.target;
     if (name === "resetPassword") {
-      setDetails({ ...details, invalidColor1: "", invalidMessage1: "" });
+      setDetails({
+        ...details,
+        invalidColor1: "",
+        invalidColor2: "",
+        invalidMessage1: "",
+      });
     } else if (name === "confirmPassword") {
-      setDetails({ ...details, confirmPassword: value, invalidColor2: "" });
+      setDetails({
+        ...details,
+        confirmPassword: value,
+        invalidColor2: "",
+        invalidColor1: "",
+      });
     }
   };
 

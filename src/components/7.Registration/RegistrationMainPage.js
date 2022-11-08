@@ -73,7 +73,6 @@ const Registration = ({ setToken }) => {
     aadhaarValidationColor,
     panValidationColor,
     emailValidationColor,
-    landlineValidationColor,
     mobileValidationColor,
     // zipCodeValidationColor,
   } = validationDetails;
@@ -210,24 +209,26 @@ const Registration = ({ setToken }) => {
           emailValidationColor: "danger",
         });
       }
-    } else if (name === "landlineNumber") {
-      // Landline frontend validation.
-      let landlineNumberLength = value.length;
-      if (landlineNumberLength >= 7 && landlineNumberLength <= 11) {
-        setValidationDetails({
-          ...validationDetails,
-          landlineValidationMessage: "",
-          landlineValidationColor: "success",
-        });
-      } else {
-        setValidationDetails({
-          ...validationDetails,
-          landlineValidationMessage:
-            "Landline No. is not valid, Please Enter 7 to 11 Digit.",
-          landlineValidationColor: "danger",
-        });
-      }
-    } else if (name === "zipCode") {
+    }
+    // else if (name === "landlineNumber") {
+    //   // Landline frontend validation.
+    //   let landlineNumberLength = value.length;
+    //   if (landlineNumberLength >= 7 && landlineNumberLength <= 11) {
+    //     setValidationDetails({
+    //       ...validationDetails,
+    //       landlineValidationMessage: "",
+    //       landlineValidationColor: "success",
+    //     });
+    //   } else {
+    //     setValidationDetails({
+    //       ...validationDetails,
+    //       landlineValidationMessage:
+    //         "Landline No. is not valid, Please Enter 7 to 11 Digit.",
+    //       landlineValidationColor: "danger",
+    //     });
+    //   }
+    // }
+    else if (name === "zipCode") {
       setFormData({ ...formData, zipCode: value });
       if (IdOfState !== "") {
         zipValidationByState(value, parseInt(IdOfState));
@@ -246,7 +247,6 @@ const Registration = ({ setToken }) => {
       aadhaarValidationColor === "danger" ||
       panValidationColor === "danger" ||
       emailValidationColor === "danger" ||
-      landlineValidationColor === "danger" ||
       mobileValidationColor === "danger"
     ) {
       alert("form is not Valid");
@@ -262,7 +262,6 @@ const Registration = ({ setToken }) => {
     e.preventDefault();
     if (
       emailValidationColor === "danger" ||
-      landlineValidationColor === "danger" ||
       mobileValidationColor === "danger"
     ) {
       alert("form is not Valid");
