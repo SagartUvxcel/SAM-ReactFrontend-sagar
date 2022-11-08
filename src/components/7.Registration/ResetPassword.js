@@ -63,7 +63,6 @@ const ResetPassword = () => {
       setDetails({
         ...details,
         invalidColor1: "",
-        invalidColor2: "",
         invalidMessage1: "",
       });
     } else if (name === "confirmPassword") {
@@ -71,7 +70,6 @@ const ResetPassword = () => {
         ...details,
         confirmPassword: value,
         invalidColor2: "",
-        invalidColor1: "",
       });
     }
   };
@@ -83,7 +81,6 @@ const ResetPassword = () => {
       alert("Password and confirm password not matching");
       setDetails({
         ...details,
-        invalidColor1: "danger",
         invalidColor2: "danger",
         eyeIcon: "eye",
         passwordType1: "text",
@@ -92,14 +89,16 @@ const ResetPassword = () => {
       });
     } else if (newPassword === confirmPassword && invalidColor1 === "danger") {
       alert("Invalid Password");
-    } else {
-      alert("Password Changed Successfully !");
       setDetails({
         ...details,
-        invalidColor1: "",
-        invalidColor2: "",
-        invalidMessage1: "",
+        invalidColor2: "danger",
+        eyeIcon: "eye",
+        passwordType1: "text",
+        eyeIcon2: "eye",
+        passwordType2: "text",
       });
+    } else {
+      alert("Password Changed Successfully !");
       goTo("/login");
     }
   };
