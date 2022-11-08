@@ -126,6 +126,10 @@ input[type="number"] {
   justify-content: center;
 }
 
+/* .home-wrapper .five-section-col{
+  width: 200px;
+} */
+
 .home-wrapper .five-box-row {
   background-color: rgba(255, 255, 255, 0.658);
   height: 140px;
@@ -137,6 +141,7 @@ input[type="number"] {
 .home-wrapper .five-section-col .inner-box {
   border-radius: 14px;
   border: 2px solid;
+  min-width: 140px;
 }
 
 .home-wrapper .five-section-col .inner-box label {
