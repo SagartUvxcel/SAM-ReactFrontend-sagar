@@ -7,6 +7,7 @@ const CommonFormFields = ({
   onInputChange,
   onInputBlur,
 }) => {
+  // Getting only required validation details from RegisterMainPage.
   const {
     emailValidationMessage,
     landlineValidationMessage,
@@ -18,7 +19,9 @@ const CommonFormFields = ({
     zipCodeValidationColor,
   } = validationDetails;
 
+  // useState to store all states coming from api.
   const [states, setStates] = useState([]);
+  // Function to get all states from api so that we can map states in select state field.
   const getAllSates = async () => {
     const allStates = await axios.get(
       `http://host.docker.internal:3000/sam/v1/property/by-state`
