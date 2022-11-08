@@ -572,7 +572,9 @@ const Registration = ({ setToken }) => {
                 </div>
                 <small className="token-verify-link">
                   Already have Token?
-                  <NavLink to="/register/verify" className="fw-bold ps-1">click here to verify</NavLink>
+                  <NavLink to="/register/verify" className="fw-bold ps-1">
+                    click here to verify
+                  </NavLink>
                 </small>
               </div>
             </div>
