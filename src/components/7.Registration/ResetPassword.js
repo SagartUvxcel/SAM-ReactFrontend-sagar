@@ -103,7 +103,7 @@ const ResetPassword = () => {
     }
   };
 
-  // Toggle icon to show and hide password for field 1.
+  // Toggle the eye-icon to show and hide password for field 1.
   const changeEyeIcon1 = () => {
     if (eyeIcon === "eye-slash") {
       setDetails({ ...details, eyeIcon: "eye", passwordType1: "text" });
@@ -116,7 +116,7 @@ const ResetPassword = () => {
     }
   };
 
-  // Toggle icon to show and hide password for field 2.
+  // Toggle the eye-icon to show and hide password for field 2.
   const changeEyeIcon2 = () => {
     if (eyeIcon2 === "eye-slash") {
       setDetails({ ...details, eyeIcon2: "eye", passwordType2: "text" });

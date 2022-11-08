@@ -4,10 +4,15 @@ import { useNavigate } from "react-router-dom";
 import Layout from "../1.CommonLayout/Layout";
 
 const VerifyToken = ({ token }) => {
+  // useState to save token received after registration.
   const [savedToken, setSavedToken] = useState("");
+  // useState to save token entered by user.
   const [enteredToken, setEnteredToken] = useState("");
+
+  // To navigate to particular route.
   const goTo = useNavigate();
 
+  // Function to save token.
   const saveToken = () => {
     if (token) {
       setSavedToken(token);
@@ -20,6 +25,7 @@ const VerifyToken = ({ token }) => {
     saveToken();
   });
 
+  // Function to compare and verify user entered token with original token.
   const verifyUserToken = (e) => {
     e.preventDefault();
     console.log(savedToken, enteredToken);
