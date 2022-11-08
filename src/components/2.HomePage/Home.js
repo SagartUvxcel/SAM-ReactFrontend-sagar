@@ -42,6 +42,7 @@ function Home() {
     batch_number,
   } = fieldValuesToPost;
 
+  // It will fetch all states, banks, assets from api and will map those values to respective select fields.
   const getSearchDetails = async () => {
     // Get all states from api.
     const allStates = await axios.get(
@@ -151,14 +152,6 @@ function Home() {
   // This will run every time we refresh page or if some state change occurs.
   useEffect(() => {
     getSearchDetails();
-    // if (JSON.parse(localStorage.getItem("searchedData"))) {
-    //   if (JSON.parse(localStorage.getItem("searchedData")).length > 0) {
-    //     setPropertyData(JSON.parse(localStorage.getItem("searchedData")));
-    //     document.querySelectorAll(".display-on-search").forEach((item) => {
-    //       item.classList.remove("d-none");
-    //     });
-    //   }
-    // }
     // navbar color change on scroll
     let nav = document.querySelector(".navbar");
     nav.style.backgroundColor = "#5857579a";
