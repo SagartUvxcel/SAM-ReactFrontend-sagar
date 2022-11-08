@@ -6,16 +6,22 @@ import { checkStatus } from "../../redux/ActionTypes";
 import { useState } from "react";
 
 function Header() {
+  // It is to dispatch actions to the redux store
   const dispatch = useDispatch();
+  // Initial state from redux
   let InitialStatus = useSelector((state) => state.login_status);
+  // To save status of login i.e. true or false
   const [loginStatus, setLoginStatus] = useState(InitialStatus);
+  // To navigate to particular route
   const goTo = useNavigate();
+  // Logout function
   const logOut = () => {
     alert("Logged Out Successfully");
     dispatch(checkStatus(false));
     goTo("/");
   };
 
+  // Save status of login
   const saveLoginStatus = () => {
     if (localStorage.getItem("isLoggedIn") === "false") {
       setLoginStatus(false);
