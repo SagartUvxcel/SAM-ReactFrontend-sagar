@@ -33,10 +33,17 @@ const Properties = ({ propertyData }) => {
                         </span>
                         <br />
                         <span className="text-capitalize">
-                         Market Value: {parseInt(property.market_value)/10000000 + " Cr."}
-                        </span><br />
+                          Market Value:{" "}
+                          {parseInt(property.market_value) / 10000000 + " Cr."}
+                        </span>
+                        <br />
                         <span className="text-capitalize">
-                         Range: {property.range}
+                          Range:{" "}
+                          {parseInt(property.range.split("-")[0]) / 10000000 +
+                            " Cr." +
+                            " - " +
+                            parseInt(property.range.split("-")[1]) / 10000000 +
+                            " Cr."}
                         </span>
                         <br />
                         <div className="mt-3">
