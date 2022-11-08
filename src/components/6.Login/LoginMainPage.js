@@ -9,10 +9,10 @@ const LoginMainPage = () => {
   const dispatch = useDispatch();
   // It is used to navigate to particular route.
   const goTo = useNavigate();
-  // Login Function
+  // Login Function.
   const onLogin = (e) => {
     e.preventDefault();
-    // true -  means user is logged in so that we are setting logged in status as true
+    // true -  means user is logged in so that we are setting logged in status as true.
     dispatch(checkStatus(true));
     goTo("/");
   };

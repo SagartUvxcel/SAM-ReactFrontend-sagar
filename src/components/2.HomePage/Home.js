@@ -141,7 +141,6 @@ function Home() {
       .then((res) => {
         // Store Searched results into propertyData useState.
         setPropertyData(res.data);
-        // localStorage.setItem("searchedData", JSON.stringify(res.data));
       });
     // Unhide div and display search results in card format.
     document.querySelectorAll(".display-on-search").forEach((item) => {
@@ -152,7 +151,7 @@ function Home() {
   // This will run every time we refresh page or if some state change occurs.
   useEffect(() => {
     getSearchDetails();
-    // navbar color change on scroll
+    // navbar color change on scroll.
     let nav = document.querySelector(".navbar");
     nav.style.backgroundColor = "#5857579a";
     window.onscroll = function () {

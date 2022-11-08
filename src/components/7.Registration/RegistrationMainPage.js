@@ -11,7 +11,10 @@ const Registration = ({ setToken }) => {
   const individualCheck = useRef();
   const organizationCheck = useRef();
 
+  // useState to store ID of state so that we can validate zipCodes for each state.
   const [IdOfState, SetIdOfState] = useState("");
+
+  // 
   const goTo = useNavigate();
 
   // useState to store each field's data from form.
@@ -30,22 +33,6 @@ const Registration = ({ setToken }) => {
     landlineNumber: "",
     mobileNumber: "",
   });
-
-  // const {
-  //   firstName,
-  //   middleName,
-  //   lastName,
-  //   aadhaarNumber,
-  //   panNumber,
-  //   houseNumber,
-  //   locality,
-  //   city,
-  //   zipCode,
-  //   state,
-  //   emailAddress,
-  //   landlineNumber,
-  //   mobileNumber,
-  // } = formData;
 
   // Store validation message and validation color based on input field.
   const [validationDetails, setValidationDetails] = useState({

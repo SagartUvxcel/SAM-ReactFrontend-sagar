@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const Properties = ({ propertyData }) => {
+  // To navigate to particular route.
   const goTo = useNavigate();
   const viewProperty = () => {
     goTo("/property");
