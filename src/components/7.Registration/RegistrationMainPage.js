@@ -212,12 +212,15 @@ const Registration = ({ setToken }) => {
     //     });
     //   }
     // }
+    // If we are typing zipCode and if state is already selected then we are calling zipValidationByState Function.
     else if (name === "zipCode") {
       setFormData({ ...formData, zipCode: value });
       if (IdOfState !== "") {
         zipValidationByState(value, parseInt(IdOfState));
       }
-    } else if (name === "state") {
+    }
+    // If we selected state then we are saving state Id in IdOfState variable and if zipCode value is also available then we are calling zipValidationByState Function.
+    else if (name === "state") {
       SetIdOfState(value);
       if (formData.zipCode !== "") {
         zipValidationByState(formData.zipCode, parseInt(value));
@@ -225,8 +228,10 @@ const Registration = ({ setToken }) => {
     }
   };
 
+  // Function will run after Individual Form submit button is clicked.
   const onIndividualFormSubmit = (e) => {
     e.preventDefault();
+    // If there is any validation error then the form is not valid.
     if (
       aadhaarValidationColor === "danger" ||
       panValidationColor === "danger" ||
@@ -242,6 +247,7 @@ const Registration = ({ setToken }) => {
     }
   };
 
+  // Function will run after Organization Form submit button is clicked.
   const onOrganizationFormSubmit = (e) => {
     e.preventDefault();
     if (
@@ -254,11 +260,11 @@ const Registration = ({ setToken }) => {
     }
   };
 
-  // Function to show individual form or organization from on click of label.
+  // Function to show individual form or organization form on click of label.
   const onTopCheckLabelClick = (e) => {
     const attrOfForm = e.target.getAttribute("name");
     if (attrOfForm === "organization") {
-      // Reset from fields and validations.
+      // Reset form fields and validations.
       setValidationDetails({});
       document.getElementById("individualForm").reset();
       // Make checkbox of label organization checked.
@@ -273,6 +279,7 @@ const Registration = ({ setToken }) => {
       // Hide Individual form.
       toggleIndividualForm.current.classList.add("d-none");
     } else if (attrOfForm === "individual") {
+      // Reset form fields and validations.
       setValidationDetails({});
       document.getElementById("organizationForm").reset();
       // Make checkbox of label individual checked.
