@@ -138,15 +138,15 @@ const CommonFormFields = ({
       {/* Contact */}
       <div className="row contactRow mt-lg-3 mt-4">
         <div className="col-lg-2 mb-lg-0 mb-2">
-          Contact Number<span className="text-danger">*</span>
+          Contact Number
+          {/* <span className="text-danger">*</span> */}
         </div>
         <div className="col-lg-2 mb-lg-0 mb-2">
           <input
             onChange={onInputChange}
             name="landlineNumber"
             type="Number"
-            placeholder="Landline Number"
-            required
+            placeholder="Landline Number (Optional)"
             className={`form-control border-${landlineValidationColor}`}
           />
           {landlineValidationMessage ? (
