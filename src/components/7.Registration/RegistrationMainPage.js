@@ -14,7 +14,7 @@ const Registration = ({ setToken }) => {
   // useState to store ID of state so that we can validate zipCodes for each state.
   const [IdOfState, SetIdOfState] = useState("");
 
-  // 
+  // To navigate to particular route.
   const goTo = useNavigate();
 
   // useState to store each field's data from form.
@@ -50,18 +50,14 @@ const Registration = ({ setToken }) => {
     zipCodeValidationColor: "",
   });
 
+  // Object destructuring.
   const {
     aadhaarValidationMessage,
     panValidationMessage,
-    // emailValidationMessage,
-    // landlineValidationMessage,
-    // mobileValidationMessage,
-    // zipCodeValidationMessage,
     aadhaarValidationColor,
     panValidationColor,
     emailValidationColor,
     mobileValidationColor,
-    // zipCodeValidationColor,
   } = validationDetails;
 
   // Function to show backend validation on outside click of input filed.
@@ -95,14 +91,14 @@ const Registration = ({ setToken }) => {
             // Store validation message and validation color.
             setValidationDetails({
               ...validationDetails,
-              mobileValidationMessage: "Mobile number already exists",
+              mobileValidationMessage: "Mobile number already exists.",
               mobileValidationColor: "danger",
             });
           } else if (res.data.status === 2) {
             // Store validation message and validation color.
             setValidationDetails({
               ...validationDetails,
-              mobileValidationMessage: "Invalid Mobile Number Entered",
+              mobileValidationMessage: "Invalid Mobile Number Entered.",
               mobileValidationColor: "danger",
             });
           } else {
@@ -121,6 +117,7 @@ const Registration = ({ setToken }) => {
     }
   };
 
+  // Function to validate zipCodes.
   const zipValidationByState = async (zipValue, stateId) => {
     await axios
       .post(
@@ -131,7 +128,7 @@ const Registration = ({ setToken }) => {
         if (res.data.status === 0) {
           setValidationDetails({
             ...validationDetails,
-            zipCodeValidationMessage: "Invalid ZipCode",
+            zipCodeValidationMessage: "Invalid ZipCode.",
             zipCodeValidationColor: "danger",
           });
         } else {
