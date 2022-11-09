@@ -64,7 +64,7 @@ function Home() {
       if (value) {
         setDataToPost({ ...dataToPost, state_id: parseInt(value) });
       } else {
-        setDataToPost({ ...dataToPost });
+        delete dataToPost.state_id
       }
       const cityByState = await axios.post(
         `http://host.docker.internal:3000/sam/v1/property/by-city`,
@@ -84,7 +84,7 @@ function Home() {
       if (value) {
         setDataToPost({ ...dataToPost, city_id: parseInt(value) });
       } else {
-        setDataToPost({ ...dataToPost });
+        delete dataToPost.city_id
       }
       // If input is cities then post selected city id to api for getting locality info. based on selected city.
       const localityByCity = await axios.post(
@@ -105,21 +105,21 @@ function Home() {
       if (value) {
         setDataToPost({ ...dataToPost, locality: value });
       } else {
-        setDataToPost({ ...dataToPost });
+        delete dataToPost.locality
       }
     } else if (name === "asset") {
       // Store asset type id ( if available ) into dataToPost useState (It is required for search functionality).
       if (value) {
         setDataToPost({ ...dataToPost, type_id: parseInt(value) });
       } else {
-        setDataToPost({ ...dataToPost });
+        delete dataToPost.type_id;
       }
     } else if (name === "bank") {
       // Store bank id ( if available ) into dataToPost useState (It is required for search functionality).
       if (value) {
         setDataToPost({ ...dataToPost, bank_id: parseInt(value) });
       } else {
-        setDataToPost({ ...dataToPost });
+        delete dataToPost.bank_id;
       }
     }
   };
