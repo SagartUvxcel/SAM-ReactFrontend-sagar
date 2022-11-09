@@ -279,11 +279,18 @@ const Registration = ({ setToken }) => {
     }
   };
 
+  const deleteLandlineNumberIfEmpty = () => {
+    let landlineNumber = formData.contact_details.landline_number;
+    if (landlineNumber === "") {
+      delete formData.contact_details.landline_number;
+    }
+  };
+
   // Function will run after Individual Form submit button is clicked.
   const onIndividualFormSubmit = async (e) => {
     e.preventDefault();
+    deleteLandlineNumberIfEmpty();
     console.log(formData);
-
     await axios
       .post(
         `http://host.docker.internal:3000/sam/v1/customer-registration/individual-customer`,
@@ -307,8 +314,8 @@ const Registration = ({ setToken }) => {
   // Function will run after Organization Form submit button is clicked.
   const onOrganizationFormSubmit = async (e) => {
     e.preventDefault();
+    deleteLandlineNumberIfEmpty();
     console.log(formData);
-
     await axios
       .post(
         `http://host.docker.internal:3000/sam/v1/customer-registration/org-customer`,
