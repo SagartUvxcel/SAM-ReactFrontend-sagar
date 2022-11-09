@@ -144,7 +144,7 @@ function Home() {
     });
   };
 
-  // Get saved properties data from local storage
+  // Get saved properties data from local storage.
   const getDataFromLocal = () => {
     let localData = JSON.parse(localStorage.getItem("propertyDataFromLocal"));
     if (localData !== null) {
