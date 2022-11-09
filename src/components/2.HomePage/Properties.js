@@ -12,7 +12,7 @@ const Properties = ({ propertyData }) => {
     <section className="property-wrapper" id="properties">
       <div className="container-fluid d-none display-on-search wrapper">
         <div className="row">
-          {propertyData? (
+          {propertyData ? (
             propertyData.map((property, Index) => {
               return (
                 <div className="col-lg-3 col-md-4" key={Index}>
