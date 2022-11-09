@@ -301,6 +301,7 @@ const Registration = ({ setToken }) => {
           alert(`${formData.user_type} Added Successfully !`);
           e.target.reset();
           setValidationDetails({});
+          SetIdOfState("");
         } else {
           alert("Form is Invalid");
         }
@@ -326,6 +327,7 @@ const Registration = ({ setToken }) => {
           alert(`${formData.user_type} Added Successfully !`);
           e.target.reset();
           setValidationDetails({});
+          SetIdOfState("");
         } else {
           alert("Form is Invalid");
         }
@@ -336,6 +338,7 @@ const Registration = ({ setToken }) => {
   const onTopCheckLabelClick = (e) => {
     const attrOfForm = e.target.getAttribute("name");
     if (attrOfForm === "organization") {
+      SetIdOfState("");
       setFormData({ ...formData, user_type: "Organizational User" });
       // Reset form fields and validations.
       setValidationDetails({});
@@ -352,6 +355,7 @@ const Registration = ({ setToken }) => {
       // Hide Individual form.
       toggleIndividualForm.current.classList.add("d-none");
     } else if (attrOfForm === "individual") {
+      SetIdOfState("");
       setFormData({ ...formData, user_type: "Individual User" });
       // Reset form fields and validations.
       setValidationDetails({});
@@ -562,7 +566,9 @@ const Registration = ({ setToken }) => {
                                 onChange={onInputChange}
                                 required
                               >
-                                <option value="">Select Type</option>
+                                <option value="" style={{ color: "gray" }}>
+                                  Select Type
+                                </option>
                                 <option value="Proprietor">Proprietor</option>
                                 <option value="LLP">LLP</option>
                                 <option value="Partnership/Joint Venture">
