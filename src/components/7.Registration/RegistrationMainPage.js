@@ -158,6 +158,7 @@ const Registration = ({ setToken }) => {
     } else if (name === "last_name") {
       setFormData({ ...formData, [name]: value });
     } else if (name === "aadhar_number") {
+      setFormData({ ...formData, [name]: value });
       // Aadhaar frontend validation.
       let aadhaarFormat = /^[2-9]{1}[0-9]{3}[0-9]{4}[0-9]{4}$/;
       if (aadhaarFormat.test(value)) {
@@ -166,7 +167,6 @@ const Registration = ({ setToken }) => {
           aadhaarValidationMessage: "",
           aadhaarValidationColor: "success",
         });
-        setFormData({ ...formData, [name]: value });
       } else {
         setValidationDetails({
           ...validationDetails,
@@ -175,6 +175,7 @@ const Registration = ({ setToken }) => {
         });
       }
     } else if (name === "pan_number") {
+      setFormData({ ...formData, [name]: value });
       // Pan frontend validation.
       let panFormat = /^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?$/;
       if (panFormat.test(value)) {
@@ -183,7 +184,6 @@ const Registration = ({ setToken }) => {
           panValidationMessage: "",
           panValidationColor: "success",
         });
-        setFormData({ ...formData, [name]: value });
       } else {
         setValidationDetails({
           ...validationDetails,
@@ -224,6 +224,7 @@ const Registration = ({ setToken }) => {
         ...formData,
         contact_details: { ...formData.contact_details, [name]: stateName },
       });
+      // If we selected state then we are saving state Id in IdOfState variable and if zipCode value is also available then we are calling zipValidationByState Function.
       SetIdOfState(value);
       // If zip value is entered then call zipValidationByState function.
       if (String(formData.contact_details.zip) !== "") {
@@ -241,6 +242,10 @@ const Registration = ({ setToken }) => {
         },
       });
     } else if (name === "email") {
+      setFormData({
+        ...formData,
+        contact_details: { ...formData.contact_details, [name]: value },
+      });
       // Email frontend validation.
       let emailFormat = /^\w+([-]?\w+)*@\w+([-]?\w+)*(\.\w{2,3})+$/;
       if (emailFormat.test(value)) {
@@ -248,10 +253,6 @@ const Registration = ({ setToken }) => {
           ...validationDetails,
           emailValidationMessage: "",
           emailValidationColor: "success",
-        });
-        setFormData({
-          ...formData,
-          contact_details: { ...formData.contact_details, [name]: value },
         });
       } else {
         setValidationDetails({
@@ -261,14 +262,21 @@ const Registration = ({ setToken }) => {
         });
       }
     }
-
-    // If we selected state then we are saving state Id in IdOfState variable and if zipCode value is also available then we are calling zipValidationByState Function.
   };
 
   // Function will run after Individual Form submit button is clicked.
-  const onIndividualFormSubmit = (e) => {
+  const onIndividualFormSubmit = async (e) => {
     e.preventDefault();
     console.log(formData);
+
+    await axios
+      .post(
+        `http://host.docker.internal:3000/sam/v1/customer-registration/individual-customer`,
+        formData
+      )
+      .then((res) => {
+        console.log(res);
+      });
     // If there is any validation error then the form is not valid.
     // if (
     //   aadhaarValidationColor === "danger" ||
