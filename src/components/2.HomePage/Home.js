@@ -127,8 +127,6 @@ function Home() {
   // This will run after Search button click.
   const getPropertyData = async (e) => {
     e.preventDefault();
-    console.log(dataToPost);
-
     // Post data and get Searched result from response.
     await axios
       .post(
