@@ -275,22 +275,16 @@ const Registration = ({ setToken }) => {
         formData
       )
       .then((res) => {
-        console.log(res);
+        if (res.data.status === 0) {
+          alert(`${formData.user_type} Added Successfully !`);
+        } else {
+          alert("Form is Invalid");
+        }
       });
-    // If there is any validation error then the form is not valid.
-    // if (
-    //   aadhaarValidationColor === "danger" ||
-    //   panValidationColor === "danger" ||
-    //   emailValidationColor === "danger" ||
-    //   mobileValidationColor === "danger"
-    // ) {
-    //   alert("form is not Valid");
-    // } else {
-    //   alert("Registration Successful Please Check Your Email For Token !");
-    //   setToken(formData.emailAddress + "1234");
-    //   localStorage.setItem("token", formData.emailAddress + "1234");
-    //   goTo("/register/verify");
-    // }
+
+    // setToken(formData.contact_details.email + "1234");
+    // localStorage.setItem("token", formData.emailAddress + "1234");
+    // goTo("/register/verify");
   };
 
   // Function will run after Organization Form submit button is clicked.
