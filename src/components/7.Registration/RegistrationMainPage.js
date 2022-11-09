@@ -66,7 +66,7 @@ const Registration = ({ setToken }) => {
   // Function to show backend validation on outside click of input filed.
   const onInputBlur = async (e) => {
     const { name, value } = e.target;
-    if (name === "emailAddress") {
+    if (name === "email") {
       // If input field is email then post its value to api for validating.
       await axios
         .post(
@@ -82,10 +82,10 @@ const Registration = ({ setToken }) => {
             });
           }
         });
-    } else if (name === "mobileNumber") {
+    } else if (name === "mobile_number") {
       setFormData({
         ...formData,
-        contact_details: { ...formData.contact_details, mobile_number: value },
+        contact_details: { ...formData.contact_details, [name]: value },
       });
       // If input field is mobile then post its value to api for validating.
       await axios
@@ -117,7 +117,7 @@ const Registration = ({ setToken }) => {
             });
           }
         });
-    } else if (name === "zipCode") {
+    } else if (name === "zip") {
       if (IdOfState === "" && value !== "") {
         alert("Please select State");
       }
@@ -151,13 +151,13 @@ const Registration = ({ setToken }) => {
   // This will run onchange of input field.
   const onInputChange = async (e) => {
     const { name, value } = e.target;
-    if (name === "firstName") {
-      setFormData({ ...formData, first_name: value });
-    } else if (name === "middleName") {
-      setFormData({ ...formData, middle_name: value });
-    } else if (name === "lastName") {
-      setFormData({ ...formData, last_name: value });
-    } else if (name === "aadhaarNumber") {
+    if (name === "first_name") {
+      setFormData({ ...formData, [name]: value });
+    } else if (name === "middle_name") {
+      setFormData({ ...formData, [name]: value });
+    } else if (name === "last_name") {
+      setFormData({ ...formData, [name]: value });
+    } else if (name === "aadhar_number") {
       // Aadhaar frontend validation.
       let aadhaarFormat = /^[2-9]{1}[0-9]{3}[0-9]{4}[0-9]{4}$/;
       if (aadhaarFormat.test(value)) {
@@ -166,7 +166,7 @@ const Registration = ({ setToken }) => {
           aadhaarValidationMessage: "",
           aadhaarValidationColor: "success",
         });
-        setFormData({ ...formData, aadhar_number: value });
+        setFormData({ ...formData, [name]: value });
       } else {
         setValidationDetails({
           ...validationDetails,
@@ -174,7 +174,7 @@ const Registration = ({ setToken }) => {
           aadhaarValidationColor: "danger",
         });
       }
-    } else if (name === "panNumber") {
+    } else if (name === "pan_number") {
       // Pan frontend validation.
       let panFormat = /^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?$/;
       if (panFormat.test(value)) {
@@ -183,7 +183,7 @@ const Registration = ({ setToken }) => {
           panValidationMessage: "",
           panValidationColor: "success",
         });
-        setFormData({ ...formData, pan_number: value });
+        setFormData({ ...formData, [name]: value });
       } else {
         setValidationDetails({
           ...validationDetails,
@@ -191,27 +191,30 @@ const Registration = ({ setToken }) => {
           panValidationColor: "danger",
         });
       }
-    } else if (name === "houseNumber") {
+    } else if (name === "address") {
       setFormData({
         ...formData,
-        contact_details: { ...formData.contact_details, address: value },
+        contact_details: { ...formData.contact_details, [name]: value },
       });
     } else if (name === "locality") {
       setFormData({
         ...formData,
-        contact_details: { ...formData.contact_details, locality: value },
+        contact_details: { ...formData.contact_details, [name]: value },
       });
     } else if (name === "city") {
       setFormData({
         ...formData,
-        contact_details: { ...formData.contact_details, city: value },
+        contact_details: { ...formData.contact_details, [name]: value },
       });
-    } // If we are typing zipCode and if state is already selected then we are calling zipValidationByState Function.
-    else if (name === "zipCode") {
+    } else if (name === "zip") {
       setFormData({
         ...formData,
-        contact_details: { ...formData.contact_details, zip: parseInt(value) },
+        contact_details: {
+          ...formData.contact_details,
+          [name]: parseInt(value),
+        },
       });
+      // If we are typing zipCode and if state is already selected then we are calling zipValidationByState Function.
       if (IdOfState !== "") {
         zipValidationByState(value, parseInt(IdOfState));
       }
@@ -219,24 +222,25 @@ const Registration = ({ setToken }) => {
       let stateName = document.getElementById(`state-name-${value}`).innerText;
       setFormData({
         ...formData,
-        contact_details: { ...formData.contact_details, state: stateName },
+        contact_details: { ...formData.contact_details, [name]: stateName },
       });
       SetIdOfState(value);
+      // If zip value is entered then call zipValidationByState function.
       if (String(formData.contact_details.zip) !== "") {
         zipValidationByState(
           String(formData.contact_details.zip),
           parseInt(value)
         );
       }
-    } else if (name === "landlineNumber") {
+    } else if (name === "landline_number") {
       setFormData({
         ...formData,
         contact_details: {
           ...formData.contact_details,
-          landline_number: parseInt(value),
+          [name]: parseInt(value),
         },
       });
-    } else if (name === "emailAddress") {
+    } else if (name === "email") {
       // Email frontend validation.
       let emailFormat = /^\w+([-]?\w+)*@\w+([-]?\w+)*(\.\w{2,3})+$/;
       if (emailFormat.test(value)) {
@@ -247,7 +251,7 @@ const Registration = ({ setToken }) => {
         });
         setFormData({
           ...formData,
-          contact_details: { ...formData.contact_details, email: value },
+          contact_details: { ...formData.contact_details, [name]: value },
         });
       } else {
         setValidationDetails({
@@ -406,7 +410,7 @@ const Registration = ({ setToken }) => {
                             <div className="col-lg-2 mb-lg-0 mb-2">
                               <input
                                 onChange={onInputChange}
-                                name="firstName"
+                                name="first_name"
                                 type="text"
                                 placeholder="First Name"
                                 className="form-control"
@@ -416,7 +420,7 @@ const Registration = ({ setToken }) => {
                             <div className="col-lg-2 mb-lg-0 mb-2">
                               <input
                                 onChange={onInputChange}
-                                name="middleName"
+                                name="middle_name"
                                 type="text"
                                 placeholder="Middle Name"
                                 className="form-control"
@@ -425,7 +429,7 @@ const Registration = ({ setToken }) => {
                             </div>
                             <div className="col-lg-2">
                               <input
-                                name="lastName"
+                                name="last_name"
                                 onChange={onInputChange}
                                 type="text"
                                 placeholder="Last Name"
@@ -442,7 +446,7 @@ const Registration = ({ setToken }) => {
                             <div className="col-lg-2 mb-lg-0 mb-3">
                               <input
                                 onChange={onInputChange}
-                                name="aadhaarNumber"
+                                name="aadhar_number"
                                 type="Number"
                                 placeholder="•••• •••• •••• ••••"
                                 required
@@ -469,7 +473,7 @@ const Registration = ({ setToken }) => {
                             <div className="col-lg-2 mb-lg-0">
                               <input
                                 onChange={onInputChange}
-                                name="panNumber"
+                                name="pan_number"
                                 type="text"
                                 placeholder="PAN Number"
                                 required

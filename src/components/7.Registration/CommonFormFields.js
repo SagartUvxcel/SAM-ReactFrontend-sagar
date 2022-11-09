@@ -41,7 +41,7 @@ const CommonFormFields = ({
         <div className="col-lg-2 mb-lg-0 mb-2">
           <input
             onChange={onInputChange}
-            name="houseNumber"
+            name="address"
             type="text"
             className="form-control"
             placeholder="Block-House No Street"
@@ -104,7 +104,7 @@ const CommonFormFields = ({
             onChange={onInputChange}
             onBlur={onInputBlur}
             placeholder="Zipcode"
-            name="zipCode"
+            name="zip"
             className={`form-control border-${zipCodeValidationColor}`}
             required
           ></input>
@@ -126,7 +126,7 @@ const CommonFormFields = ({
           <input
             onChange={onInputChange}
             onBlur={onInputBlur}
-            name="emailAddress"
+            name="email"
             type="email"
             className={`form-control border-${emailValidationColor}`}
             placeholder="XXX@YYY.com"
@@ -151,7 +151,7 @@ const CommonFormFields = ({
         <div className="col-lg-2 mb-lg-0 mb-2">
           <input
             onChange={onInputChange}
-            name="landlineNumber"
+            name="landline_number"
             type="Number"
             placeholder="Landline Number (Optional)"
             className={`form-control border-${landlineValidationColor}`}
@@ -168,7 +168,7 @@ const CommonFormFields = ({
           <input
             onChange={onInputChange}
             onBlur={onInputBlur}
-            name="mobileNumber"
+            name="mobile_number"
             type="Number"
             placeholder="Mobile Number"
             required
