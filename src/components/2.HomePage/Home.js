@@ -17,12 +17,7 @@ function Home() {
   });
 
   // useState to store values of each select box for search functionality.
-  const [fieldValuesToPost, setFieldValuesToPost] = useState({
-    state_id: "",
-    city_id: "",
-    bank_id: "",
-    locality: "",
-    type_id: "",
+  const [dataToPost, setDataToPost] = useState({
     batch_size: 10,
     batch_number: 1,
   });
@@ -32,15 +27,6 @@ function Home() {
 
   // Object destructuring.
   const { states, assetCategory, cities, localities, banks } = searchFields;
-  const {
-    state_id,
-    city_id,
-    bank_id,
-    locality,
-    type_id,
-    batch_size,
-    batch_number,
-  } = fieldValuesToPost;
 
   // It will fetch all states, banks, assets from api and will map those values to respective select fields.
   const getSearchDetails = async () => {
@@ -74,14 +60,18 @@ function Home() {
     const fiveSectionCol = document.querySelectorAll(".five-section-col");
     // If input is state then post selected state id to api for getting cities based on selected state.
     if (name === "states") {
+      // Store state id ( if available ) into dataToPost useState (It is required for search functionality).
+      if (value) {
+        setDataToPost({ ...dataToPost, state_id: parseInt(value) });
+      } else {
+        setDataToPost({ ...dataToPost });
+      }
       const cityByState = await axios.post(
         `http://host.docker.internal:3000/sam/v1/property/by-city`,
         { state_id: parseInt(value) }
       );
       // Store cities data into searchField useState.
       setSearchFields({ ...searchFields, cities: cityByState.data });
-      // Store state id into fieldValuesToPost useState (It is required for search functionality).
-      setFieldValuesToPost({ ...fieldValuesToPost, state_id: parseInt(value) });
       // Unhide city select box when we select state.
       document.getElementById("city-col").classList.remove("d-none");
       // This is to set width of background white box based on number of select input boxes.
@@ -90,6 +80,12 @@ function Home() {
         col.classList.add("w-22");
       });
     } else if (name === "cities") {
+      // Store city id ( if available ) into dataToPost useState (It is required for search functionality).
+      if (value) {
+        setDataToPost({ ...dataToPost, city_id: parseInt(value) });
+      } else {
+        setDataToPost({ ...dataToPost });
+      }
       // If input is cities then post selected city id to api for getting locality info. based on selected city.
       const localityByCity = await axios.post(
         `http://host.docker.internal:3000/sam/v1/property/by-address`,
@@ -97,8 +93,6 @@ function Home() {
       );
       // Store locality data into searchField useState.
       setSearchFields({ ...searchFields, localities: localityByCity.data });
-      // Store city id into fieldValuesToPost useState (It is required for search functionality).
-      setFieldValuesToPost({ ...fieldValuesToPost, city_id: parseInt(value) });
       // Unhide select box when we select city.
       document.getElementById("locality-col").classList.remove("d-none");
       // This is to set width of background white box based on number of select input boxes.
@@ -107,30 +101,33 @@ function Home() {
         col.classList.add("w-18");
       });
     } else if (name === "localities") {
-      // Store locality value into fieldValuesToPost useState (It is required for search functionality).
-      setFieldValuesToPost({ ...fieldValuesToPost, locality: value });
+      // Store locality value ( if available ) into dataToPost useState (It is required for search functionality).
+      if (value) {
+        setDataToPost({ ...dataToPost, locality: value });
+      } else {
+        setDataToPost({ ...dataToPost });
+      }
     } else if (name === "asset") {
-      // Store asset category id into fieldValuesToPost useState (It is required for search functionality).
-      setFieldValuesToPost({ ...fieldValuesToPost, type_id: parseInt(value) });
+      // Store asset type id ( if available ) into dataToPost useState (It is required for search functionality).
+      if (value) {
+        setDataToPost({ ...dataToPost, type_id: parseInt(value) });
+      } else {
+        setDataToPost({ ...dataToPost });
+      }
     } else if (name === "bank") {
-      // Store bank id into fieldValuesToPost useState (It is required for search functionality).
-      setFieldValuesToPost({ ...fieldValuesToPost, bank_id: parseInt(value) });
+      // Store bank id ( if available ) into dataToPost useState (It is required for search functionality).
+      if (value) {
+        setDataToPost({ ...dataToPost, bank_id: parseInt(value) });
+      } else {
+        setDataToPost({ ...dataToPost });
+      }
     }
   };
 
   // This will run after Search button click.
   const getPropertyData = async (e) => {
     e.preventDefault();
-    // Data to post - These values are the values stored in the fieldValuesToPost useState.
-    const dataToPost = {
-      state_id: state_id,
-      city_id: city_id,
-      locality: locality,
-      type_id: type_id,
-      bank_id: bank_id,
-      batch_size: batch_size,
-      batch_number: batch_number,
-    };
+    console.log(dataToPost);
 
     // Post data and get Searched result from response.
     await axios
