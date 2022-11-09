@@ -277,6 +277,8 @@ const Registration = ({ setToken }) => {
       .then((res) => {
         if (res.data.status === 0) {
           alert(`${formData.user_type} Added Successfully !`);
+          e.target.reset();
+          setValidationDetails({});
         } else {
           alert("Form is Invalid");
         }
