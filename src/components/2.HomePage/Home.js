@@ -144,6 +144,7 @@ function Home() {
     });
   };
 
+  // Get saved properties data from local storage
   const getDataFromLocal = () => {
     let localData = JSON.parse(localStorage.getItem("propertyDataFromLocal"));
     if (localData !== null) {
@@ -156,11 +157,8 @@ function Home() {
     }
   };
 
-  // This will run every time we refresh page or if some state change occurs.
-  useEffect(() => {
-    getSearchDetails();
-    getDataFromLocal();
-    // navbar color change on scroll.
+  // Change navbar color on scroll on HomePage only.
+  const changeNavBarColor = () => {
     let nav = document.querySelector(".navbar");
     nav.style.backgroundColor = "#5857579a";
     window.onscroll = function () {
@@ -170,6 +168,13 @@ function Home() {
         nav.classList.remove("header-scrolled");
       }
     };
+  };
+
+  // This will run every time we refresh page or if some state change occurs.
+  useEffect(() => {
+    getSearchDetails();
+    getDataFromLocal();
+    changeNavBarColor();
     // eslint-disable-next-line
   }, []);
 
