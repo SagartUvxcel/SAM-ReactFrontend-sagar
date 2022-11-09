@@ -86,7 +86,11 @@ const CommonFormFields = ({
             {states
               ? states.map((state, Index) => {
                   return (
-                    <option key={Index} value={state.state_id}>
+                    <option
+                      id={`state-name-${state.state_id}`}
+                      key={Index}
+                      value={state.state_id}
+                    >
                       {state.state_name}
                     </option>
                   );

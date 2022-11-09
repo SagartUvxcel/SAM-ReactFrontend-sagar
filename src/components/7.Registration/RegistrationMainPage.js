@@ -19,19 +19,22 @@ const Registration = ({ setToken }) => {
 
   // useState to store each field's data from form.
   const [formData, setFormData] = useState({
-    firstName: "",
-    middleName: "",
-    lastName: "",
-    aadhaarNumber: "",
-    panNumber: "",
-    houseNumber: "",
-    locality: "",
-    city: "",
-    zipCode: "",
-    state: "",
-    emailAddress: "",
-    landlineNumber: "",
-    mobileNumber: "",
+    user_type: "Individual User",
+    first_name: "",
+    middle_name: "",
+    last_name: "",
+    aadhar_number: "",
+    pan_number: "",
+    contact_details: {
+      address: "",
+      locality: "",
+      city: "",
+      zip: "",
+      state: "",
+      email: "",
+      landline_number: "",
+      mobile_number: "",
+    },
   });
 
   // Store validation message and validation color based on input field.
@@ -80,6 +83,10 @@ const Registration = ({ setToken }) => {
           }
         });
     } else if (name === "mobileNumber") {
+      setFormData({
+        ...formData,
+        contact_details: { ...formData.contact_details, mobile_number: value },
+      });
       // If input field is mobile then post its value to api for validating.
       await axios
         .post(
@@ -143,9 +150,14 @@ const Registration = ({ setToken }) => {
 
   // This will run onchange of input field.
   const onInputChange = async (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
     const { name, value } = e.target;
-    if (name === "aadhaarNumber") {
+    if (name === "firstName") {
+      setFormData({ ...formData, first_name: value });
+    } else if (name === "middleName") {
+      setFormData({ ...formData, middle_name: value });
+    } else if (name === "lastName") {
+      setFormData({ ...formData, last_name: value });
+    } else if (name === "aadhaarNumber") {
       // Aadhaar frontend validation.
       let aadhaarFormat = /^[2-9]{1}[0-9]{3}[0-9]{4}[0-9]{4}$/;
       if (aadhaarFormat.test(value)) {
@@ -154,6 +166,7 @@ const Registration = ({ setToken }) => {
           aadhaarValidationMessage: "",
           aadhaarValidationColor: "success",
         });
+        setFormData({ ...formData, aadhar_number: value });
       } else {
         setValidationDetails({
           ...validationDetails,
@@ -170,6 +183,7 @@ const Registration = ({ setToken }) => {
           panValidationMessage: "",
           panValidationColor: "success",
         });
+        setFormData({ ...formData, pan_number: value });
       } else {
         setValidationDetails({
           ...validationDetails,
@@ -177,6 +191,51 @@ const Registration = ({ setToken }) => {
           panValidationColor: "danger",
         });
       }
+    } else if (name === "houseNumber") {
+      setFormData({
+        ...formData,
+        contact_details: { ...formData.contact_details, address: value },
+      });
+    } else if (name === "locality") {
+      setFormData({
+        ...formData,
+        contact_details: { ...formData.contact_details, locality: value },
+      });
+    } else if (name === "city") {
+      setFormData({
+        ...formData,
+        contact_details: { ...formData.contact_details, city: value },
+      });
+    } // If we are typing zipCode and if state is already selected then we are calling zipValidationByState Function.
+    else if (name === "zipCode") {
+      setFormData({
+        ...formData,
+        contact_details: { ...formData.contact_details, zip: parseInt(value) },
+      });
+      if (IdOfState !== "") {
+        zipValidationByState(value, parseInt(IdOfState));
+      }
+    } else if (name === "state") {
+      let stateName = document.getElementById(`state-name-${value}`).innerText;
+      setFormData({
+        ...formData,
+        contact_details: { ...formData.contact_details, state: stateName },
+      });
+      SetIdOfState(value);
+      if (String(formData.contact_details.zip) !== "") {
+        zipValidationByState(
+          String(formData.contact_details.zip),
+          parseInt(value)
+        );
+      }
+    } else if (name === "landlineNumber") {
+      setFormData({
+        ...formData,
+        contact_details: {
+          ...formData.contact_details,
+          landline_number: parseInt(value),
+        },
+      });
     } else if (name === "emailAddress") {
       // Email frontend validation.
       let emailFormat = /^\w+([-]?\w+)*@\w+([-]?\w+)*(\.\w{2,3})+$/;
@@ -186,6 +245,10 @@ const Registration = ({ setToken }) => {
           emailValidationMessage: "",
           emailValidationColor: "success",
         });
+        setFormData({
+          ...formData,
+          contact_details: { ...formData.contact_details, email: value },
+        });
       } else {
         setValidationDetails({
           ...validationDetails,
@@ -194,57 +257,28 @@ const Registration = ({ setToken }) => {
         });
       }
     }
-    // else if (name === "landlineNumber") {
-    //   // Landline frontend validation.
-    //   let landlineNumberLength = value.length;
-    //   if (landlineNumberLength >= 7 && landlineNumberLength <= 11) {
-    //     setValidationDetails({
-    //       ...validationDetails,
-    //       landlineValidationMessage: "",
-    //       landlineValidationColor: "success",
-    //     });
-    //   } else {
-    //     setValidationDetails({
-    //       ...validationDetails,
-    //       landlineValidationMessage:
-    //         "Landline No. is not valid, Please Enter 7 to 11 Digit.",
-    //       landlineValidationColor: "danger",
-    //     });
-    //   }
-    // }
-    // If we are typing zipCode and if state is already selected then we are calling zipValidationByState Function.
-    else if (name === "zipCode") {
-      setFormData({ ...formData, zipCode: value });
-      if (IdOfState !== "") {
-        zipValidationByState(value, parseInt(IdOfState));
-      }
-    }
+
     // If we selected state then we are saving state Id in IdOfState variable and if zipCode value is also available then we are calling zipValidationByState Function.
-    else if (name === "state") {
-      SetIdOfState(value);
-      if (formData.zipCode !== "") {
-        zipValidationByState(formData.zipCode, parseInt(value));
-      }
-    }
   };
 
   // Function will run after Individual Form submit button is clicked.
   const onIndividualFormSubmit = (e) => {
     e.preventDefault();
+    console.log(formData);
     // If there is any validation error then the form is not valid.
-    if (
-      aadhaarValidationColor === "danger" ||
-      panValidationColor === "danger" ||
-      emailValidationColor === "danger" ||
-      mobileValidationColor === "danger"
-    ) {
-      alert("form is not Valid");
-    } else {
-      alert("Registration Successful Please Check Your Email For Token !");
-      setToken(formData.emailAddress + "1234");
-      localStorage.setItem("token", formData.emailAddress + "1234");
-      goTo("/register/verify");
-    }
+    // if (
+    //   aadhaarValidationColor === "danger" ||
+    //   panValidationColor === "danger" ||
+    //   emailValidationColor === "danger" ||
+    //   mobileValidationColor === "danger"
+    // ) {
+    //   alert("form is not Valid");
+    // } else {
+    //   alert("Registration Successful Please Check Your Email For Token !");
+    //   setToken(formData.emailAddress + "1234");
+    //   localStorage.setItem("token", formData.emailAddress + "1234");
+    //   goTo("/register/verify");
+    // }
   };
 
   // Function will run after Organization Form submit button is clicked.
@@ -279,6 +313,7 @@ const Registration = ({ setToken }) => {
       // Hide Individual form.
       toggleIndividualForm.current.classList.add("d-none");
     } else if (attrOfForm === "individual") {
+      setFormData({ ...formData, user_type: "Individual User" });
       // Reset form fields and validations.
       setValidationDetails({});
       document.getElementById("organizationForm").reset();
