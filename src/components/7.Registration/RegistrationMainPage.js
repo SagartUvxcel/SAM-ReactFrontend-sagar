@@ -25,6 +25,11 @@ const Registration = ({ setToken }) => {
     last_name: "",
     aadhar_number: "",
     pan_number: "",
+    organization_type: "",
+    company_name: "",
+    gst_number: "",
+    tan_number: "",
+    cin_number: "",
     contact_details: {
       address: "",
       locality: "",
@@ -156,6 +161,16 @@ const Registration = ({ setToken }) => {
     } else if (name === "middle_name") {
       setFormData({ ...formData, [name]: value });
     } else if (name === "last_name") {
+      setFormData({ ...formData, [name]: value });
+    } else if (name === "organization_type") {
+      setFormData({ ...formData, [name]: value });
+    } else if (name === "company_name") {
+      setFormData({ ...formData, [name]: value });
+    } else if (name === "gst_number") {
+      setFormData({ ...formData, [name]: value });
+    } else if (name === "tan_number") {
+      setFormData({ ...formData, [name]: value });
+    } else if (name === "cin_number") {
       setFormData({ ...formData, [name]: value });
     } else if (name === "aadhar_number") {
       setFormData({ ...formData, [name]: value });
@@ -290,22 +305,31 @@ const Registration = ({ setToken }) => {
   };
 
   // Function will run after Organization Form submit button is clicked.
-  const onOrganizationFormSubmit = (e) => {
+  const onOrganizationFormSubmit = async (e) => {
     e.preventDefault();
-    if (
-      emailValidationColor === "danger" ||
-      mobileValidationColor === "danger"
-    ) {
-      alert("form is not Valid");
-    } else {
-      alert("Form is valid");
-    }
+    console.log(formData);
+
+    await axios
+      .post(
+        `http://host.docker.internal:3000/sam/v1/customer-registration/org-customer`,
+        formData
+      )
+      .then((res) => {
+        if (res.data.status === 0) {
+          alert(`${formData.user_type} Added Successfully !`);
+          e.target.reset();
+          setValidationDetails({});
+        } else {
+          alert("Form is Invalid");
+        }
+      });
   };
 
   // Function to show individual form or organization form on click of label.
   const onTopCheckLabelClick = (e) => {
     const attrOfForm = e.target.getAttribute("name");
     if (attrOfForm === "organization") {
+      setFormData({ ...formData, user_type: "Organizational User" });
       // Reset form fields and validations.
       setValidationDetails({});
       document.getElementById("individualForm").reset();
@@ -525,8 +549,10 @@ const Registration = ({ setToken }) => {
                             </div>
                             <div className="col-lg-2">
                               <select
+                                name="organization_type"
                                 className="form-select"
                                 aria-label="Default select example"
+                                onChange={onInputChange}
                                 required
                               >
                                 <option value="">Select Type</option>
@@ -549,9 +575,11 @@ const Registration = ({ setToken }) => {
                             </div>
                             <div className="col-lg-2 mb-lg-0 mb-2">
                               <input
+                                name="company_name"
                                 type="text"
                                 placeholder="Company Name"
                                 className="form-control"
+                                onChange={onInputChange}
                                 required
                               />
                             </div>
@@ -560,9 +588,11 @@ const Registration = ({ setToken }) => {
                             </div>
                             <div className="col-lg-2">
                               <input
+                                name="gst_number"
                                 type="text"
                                 placeholder="GST Number"
                                 className="form-control"
+                                onChange={onInputChange}
                                 required
                               />
                             </div>
@@ -575,9 +605,11 @@ const Registration = ({ setToken }) => {
                             </div>
                             <div className="col-lg-2">
                               <input
+                                name="tan_number"
                                 type="text"
                                 placeholder="TAN Number"
                                 className="form-control"
+                                onChange={onInputChange}
                                 required
                               />
                             </div>
@@ -586,9 +618,11 @@ const Registration = ({ setToken }) => {
                             </div>
                             <div className="col-lg-2">
                               <input
+                                name="cin_number"
                                 type="text"
                                 placeholder="CIN Number"
                                 className="form-control"
+                                onChange={onInputChange}
                                 required
                               />
                             </div>
