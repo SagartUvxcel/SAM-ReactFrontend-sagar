@@ -127,10 +127,7 @@ function Home() {
   // This will run after Search button click.
   const getPropertyData = async (e) => {
     e.preventDefault();
-    let lengthOfDataToPost = Object.keys(dataToPost).length;
-    console.log();
     // Post data and get Searched result from response.
-    localStorage.setItem("dataToPost", JSON.stringify(dataToPost));
     await axios
       .post(
         `http://host.docker.internal:3000/sam/v1/property/count-category`,
@@ -162,7 +159,7 @@ function Home() {
   // This will run every time we refresh page or if some state change occurs.
   useEffect(() => {
     getSearchDetails();
-    // getDataFromLocal();
+    getDataFromLocal();
     // navbar color change on scroll.
     let nav = document.querySelector(".navbar");
     nav.style.backgroundColor = "#5857579a";
