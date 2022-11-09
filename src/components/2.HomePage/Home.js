@@ -64,7 +64,7 @@ function Home() {
       if (value) {
         setDataToPost({ ...dataToPost, state_id: parseInt(value) });
       } else {
-        delete dataToPost.state_id
+        delete dataToPost.state_id;
       }
       const cityByState = await axios.post(
         `http://host.docker.internal:3000/sam/v1/property/by-city`,
@@ -84,7 +84,7 @@ function Home() {
       if (value) {
         setDataToPost({ ...dataToPost, city_id: parseInt(value) });
       } else {
-        delete dataToPost.city_id
+        delete dataToPost.city_id;
       }
       // If input is cities then post selected city id to api for getting locality info. based on selected city.
       const localityByCity = await axios.post(
@@ -105,7 +105,7 @@ function Home() {
       if (value) {
         setDataToPost({ ...dataToPost, locality: value });
       } else {
-        delete dataToPost.locality
+        delete dataToPost.locality;
       }
     } else if (name === "asset") {
       // Store asset type id ( if available ) into dataToPost useState (It is required for search functionality).
@@ -135,6 +135,7 @@ function Home() {
       )
       .then((res) => {
         // Store Searched results into propertyData useState.
+        localStorage.setItem("propertyDataFromLocal", JSON.stringify(res.data));
         setPropertyData(res.data);
       });
     // Unhide div and display search results in card format.
@@ -143,9 +144,22 @@ function Home() {
     });
   };
 
+  const getDataFromLocal = () => {
+    let localData = JSON.parse(localStorage.getItem("propertyDataFromLocal"));
+    if (localData !== null) {
+      setPropertyData(localData);
+      if (localData.length > 0) {
+        document.querySelectorAll(".display-on-search").forEach((item) => {
+          item.classList.remove("d-none");
+        });
+      }
+    }
+  };
+
   // This will run every time we refresh page or if some state change occurs.
   useEffect(() => {
     getSearchDetails();
+    getDataFromLocal();
     // navbar color change on scroll.
     let nav = document.querySelector(".navbar");
     nav.style.backgroundColor = "#5857579a";
