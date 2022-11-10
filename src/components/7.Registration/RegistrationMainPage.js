@@ -50,12 +50,18 @@ const Registration = ({ setToken }) => {
     landlineValidationMessage: "",
     mobileValidationMessage: "",
     zipCodeValidationMessage: "",
+    gstValidationMessage: "",
+    cinValidationMessage: "",
+    tanValidationMessage: "",
     aadhaarValidationColor: "",
     panValidationColor: "",
     emailValidationColor: "",
     landlineValidationColor: "",
     mobileValidationColor: "",
     zipCodeValidationColor: "",
+    gstValidationColor: "",
+    cinValidationColor: "",
+    tanValidationColor: "",
   });
 
   // Object destructuring.
@@ -64,8 +70,12 @@ const Registration = ({ setToken }) => {
     panValidationMessage,
     aadhaarValidationColor,
     panValidationColor,
-    emailValidationColor,
-    mobileValidationColor,
+    gstValidationMessage,
+    gstValidationColor,
+    tanValidationColor,
+    tanValidationMessage,
+    cinValidationColor,
+    cinValidationMessage,
   } = validationDetails;
 
   // Function to show backend validation on outside click of input filed.
@@ -125,6 +135,53 @@ const Registration = ({ setToken }) => {
     } else if (name === "zip") {
       if (IdOfState === "" && value !== "") {
         alert("Please select State");
+      }
+    } else if (name === "gst_number") {
+      let gst_format =
+        /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+      if (gst_format.test(value)) {
+        setValidationDetails({
+          ...validationDetails,
+          gstValidationMessage: "",
+          gstValidationColor: "",
+        });
+      } else {
+        setValidationDetails({
+          ...validationDetails,
+          gstValidationMessage: "Invalid GST Number Entered",
+          gstValidationColor: "danger",
+        });
+      }
+    } else if (name === "tan_number") {
+      let tan_format = /^[a-zA-Z]{4}[0-9]{5}[a-zA-Z]{1}$/;
+      if (tan_format.test(value)) {
+        setValidationDetails({
+          ...validationDetails,
+          tanValidationMessage: "",
+          tanValidationColor: "",
+        });
+      } else {
+        setValidationDetails({
+          ...validationDetails,
+          tanValidationMessage: "Invalid TAN Number Entered",
+          tanValidationColor: "danger",
+        });
+      }
+    } else if (name === "cin_number") {
+      let cin_format =
+        /^[a-zA-Z]{1}[0-9]{5}[a-zA-Z]{2}[0-9]{4}[a-zA-Z]{3}[0-9]{6}$/;
+      if (cin_format.test(value)) {
+        setValidationDetails({
+          ...validationDetails,
+          cinValidationMessage: "",
+          cinValidationColor: "",
+        });
+      } else {
+        setValidationDetails({
+          ...validationDetails,
+          cinValidationMessage: "Invalid CIN Number Entered",
+          cinValidationColor: "danger",
+        });
       }
     }
   };
@@ -604,10 +661,20 @@ const Registration = ({ setToken }) => {
                                 name="gst_number"
                                 type="text"
                                 placeholder="GST Number"
-                                className="form-control"
+                                className={`form-control border-${gstValidationColor}`}
                                 onChange={onInputChange}
+                                onBlur={onInputBlur}
                                 required
                               />
+                              {gstValidationMessage ? (
+                                <span
+                                  className={`pe-1 text-${gstValidationColor}`}
+                                >
+                                  {gstValidationMessage}
+                                </span>
+                              ) : (
+                                <span className="d-none"></span>
+                              )}
                             </div>
                           </div>
 
@@ -621,10 +688,20 @@ const Registration = ({ setToken }) => {
                                 name="tan_number"
                                 type="text"
                                 placeholder="TAN Number"
-                                className="form-control"
+                                className={`form-control text-uppercase border-${tanValidationColor}`}
                                 onChange={onInputChange}
+                                onBlur={onInputBlur}
                                 required
                               />
+                              {tanValidationMessage ? (
+                                <span
+                                  className={`pe-1 text-${tanValidationColor}`}
+                                >
+                                  {tanValidationMessage}
+                                </span>
+                              ) : (
+                                <span className="d-none"></span>
+                              )}
                             </div>
                             <div className="col-lg-2 my-lg-0 my-2">
                               CIN Number
@@ -634,10 +711,20 @@ const Registration = ({ setToken }) => {
                                 name="cin_number"
                                 type="text"
                                 placeholder="CIN Number"
-                                className="form-control"
+                                className={`form-control text-uppercase border-${cinValidationColor}`}
                                 onChange={onInputChange}
+                                onBlur={onInputBlur}
                                 required
                               />
+                              {cinValidationMessage ? (
+                                <span
+                                  className={`pe-1 text-${cinValidationColor}`}
+                                >
+                                  {cinValidationMessage}
+                                </span>
+                              ) : (
+                                <span className="d-none"></span>
+                              )}
                             </div>
                           </div>
                           <CommonFormFields
