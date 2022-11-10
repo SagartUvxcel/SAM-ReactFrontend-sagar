@@ -77,6 +77,73 @@ const Registration = ({ setToken }) => {
     cinValidationColor,
   } = validationDetails;
 
+  const resetValues = () => {
+    setValidationDetails({});
+    SetIdOfState("");
+  };
+
+  // Function to show individual form or organization form on click of label.
+  const changeForm = (e) => {
+    const attrOfForm = e.target.getAttribute("name");
+    if (attrOfForm === "organization") {
+      resetValues();
+      setFormData({ ...formData, user_type: "Organizational User" });
+      // Reset form fields and validations.
+      document.getElementById("individualForm").reset();
+      // Make checkbox of label organization checked.
+      individualCheck.current.classList.remove(
+        "individual-and-organization-check"
+      );
+      organizationCheck.current.classList.add(
+        "individual-and-organization-check"
+      );
+      // Unhide organization form.
+      toggleOrganizationForm.current.classList.remove("d-none");
+      // Hide Individual form.
+      toggleIndividualForm.current.classList.add("d-none");
+    } else if (attrOfForm === "individual") {
+      setFormData({ ...formData, user_type: "Individual User" });
+      // Reset form fields and validations.
+      resetValues();
+      document.getElementById("organizationForm").reset();
+      // Make checkbox of label individual checked.
+      individualCheck.current.classList.add(
+        "individual-and-organization-check"
+      );
+      organizationCheck.current.classList.remove(
+        "individual-and-organization-check"
+      );
+      // Hide organization form.
+      toggleOrganizationForm.current.classList.add("d-none");
+      // Unhide Individual form.
+      toggleIndividualForm.current.classList.remove("d-none");
+    }
+  };
+
+  // Function to validate zipCodes.
+  const zipValidationByState = async (zipValue, stateId) => {
+    await axios
+      .post(
+        `http://host.docker.internal:3000/sam/v1/customer-registration/zipcode-validation`,
+        { zipcode: zipValue, state_id: stateId }
+      )
+      .then((res) => {
+        if (res.data.status === 0) {
+          setValidationDetails({
+            ...validationDetails,
+            zipCodeValidationMessage: "Invalid ZipCode.",
+            zipCodeValidationColor: "danger",
+          });
+        } else {
+          setValidationDetails({
+            ...validationDetails,
+            zipCodeValidationMessage: "",
+            zipCodeValidationColor: "",
+          });
+        }
+      });
+  };
+
   // Function to show backend validation on outside click of input filed.
   const onInputBlur = async (e) => {
     const { name, value } = e.target;
@@ -296,30 +363,6 @@ const Registration = ({ setToken }) => {
     }
   };
 
-  // Function to validate zipCodes.
-  const zipValidationByState = async (zipValue, stateId) => {
-    await axios
-      .post(
-        `http://host.docker.internal:3000/sam/v1/customer-registration/zipcode-validation`,
-        { zipcode: zipValue, state_id: stateId }
-      )
-      .then((res) => {
-        if (res.data.status === 0) {
-          setValidationDetails({
-            ...validationDetails,
-            zipCodeValidationMessage: "Invalid ZipCode.",
-            zipCodeValidationColor: "danger",
-          });
-        } else {
-          setValidationDetails({
-            ...validationDetails,
-            zipCodeValidationMessage: "",
-            zipCodeValidationColor: "",
-          });
-        }
-      });
-  };
-
   // This will run onchange of input field.
   const onInputChange = async (e) => {
     const { name } = e.target;
@@ -395,8 +438,7 @@ const Registration = ({ setToken }) => {
         if (res.data.status === 0) {
           alert(`${formData.user_type} Added Successfully !`);
           e.target.reset();
-          setValidationDetails({});
-          SetIdOfState("");
+          resetValues();
         } else {
           alert("Form is Invalid");
         }
@@ -421,52 +463,11 @@ const Registration = ({ setToken }) => {
         if (res.data.status === 0) {
           alert(`${formData.user_type} Added Successfully !`);
           e.target.reset();
-          setValidationDetails({});
-          SetIdOfState("");
+          resetValues();
         } else {
           alert("Form is Invalid");
         }
       });
-  };
-
-  // Function to show individual form or organization form on click of label.
-  const onTopCheckLabelClick = (e) => {
-    const attrOfForm = e.target.getAttribute("name");
-    if (attrOfForm === "organization") {
-      SetIdOfState("");
-      setFormData({ ...formData, user_type: "Organizational User" });
-      // Reset form fields and validations.
-      setValidationDetails({});
-      document.getElementById("individualForm").reset();
-      // Make checkbox of label organization checked.
-      individualCheck.current.classList.remove(
-        "individual-and-organization-check"
-      );
-      organizationCheck.current.classList.add(
-        "individual-and-organization-check"
-      );
-      // Unhide organization form.
-      toggleOrganizationForm.current.classList.remove("d-none");
-      // Hide Individual form.
-      toggleIndividualForm.current.classList.add("d-none");
-    } else if (attrOfForm === "individual") {
-      SetIdOfState("");
-      setFormData({ ...formData, user_type: "Individual User" });
-      // Reset form fields and validations.
-      setValidationDetails({});
-      document.getElementById("organizationForm").reset();
-      // Make checkbox of label individual checked.
-      individualCheck.current.classList.add(
-        "individual-and-organization-check"
-      );
-      organizationCheck.current.classList.remove(
-        "individual-and-organization-check"
-      );
-      // Hide organization form.
-      toggleOrganizationForm.current.classList.add("d-none");
-      // Unhide Individual form.
-      toggleIndividualForm.current.classList.remove("d-none");
-    }
   };
 
   return (
@@ -499,7 +500,7 @@ const Registration = ({ setToken }) => {
                           className="form-check-label toggle-label"
                           htmlFor="individual"
                           name="individual"
-                          onClick={onTopCheckLabelClick}
+                          onClick={changeForm}
                         >
                           Individual
                         </label>
@@ -518,7 +519,7 @@ const Registration = ({ setToken }) => {
                           className="form-check-label toggle-label"
                           htmlFor="organization"
                           name="organization"
-                          onClick={onTopCheckLabelClick}
+                          onClick={changeForm}
                         >
                           Organization
                         </label>
