@@ -660,7 +660,7 @@ const Registration = ({ setToken }) => {
                             </div>
                             <div className="col-lg-2">
                               <select
-                                onChange={onInputChange}
+                                onBlur={onInputBlur}
                                 name="organization_type"
                                 className="form-select"
                                 aria-label="Default select example"
@@ -688,7 +688,7 @@ const Registration = ({ setToken }) => {
                             </div>
                             <div className="col-lg-2 mb-lg-0 mb-2">
                               <input
-                                onChange={onInputChange}
+                                onBlur={onInputBlur}
                                 name="company_name"
                                 type="text"
                                 placeholder="Company Name"
