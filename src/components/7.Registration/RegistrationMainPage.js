@@ -110,7 +110,15 @@ const Registration = ({ setToken }) => {
       // Hide Individual form.
       toggleIndividualForm.current.classList.add("d-none");
     } else if (attrOfForm === "individual") {
-      setFormData({ ...formData, user_type: "Individual User" });
+      setFormData({
+        ...formData,
+        user_type: "Individual User",
+        organization_type: "",
+        company_name: "",
+        gst_number: "",
+        tan_number: "",
+        cin_number: "",
+      });
       // Reset form fields and validations.
       resetValues();
       document.getElementById("organizationForm").reset();
