@@ -104,7 +104,7 @@ const Registration = ({ setToken }) => {
         });
       }
     } else if (name === "pan_number") {
-      setFormData({ ...formData, [name]: value });
+      setFormData({ ...formData, [name]: value.toUpperCase() });
       // Pan frontend validation.
       let panFormat = /^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?$/;
       if (panFormat.test(value)) {
@@ -125,9 +125,9 @@ const Registration = ({ setToken }) => {
     } else if (name === "company_name") {
       setFormData({ ...formData, [name]: value });
     } else if (name === "gst_number") {
-      setFormData({ ...formData, [name]: value });
+      setFormData({ ...formData, [name]: value.toUpperCase() });
       let gst_format =
-        /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+        /^[0-9]{2}[A-Za-z]{5}[0-9]{4}[A-Za-z]{1}[1-9A-Za-z]{1}Z[0-9A-Za-z]{1}$/;
       if (gst_format.test(value)) {
         setValidationDetails({
           ...validationDetails,
@@ -142,7 +142,7 @@ const Registration = ({ setToken }) => {
         });
       }
     } else if (name === "tan_number") {
-      setFormData({ ...formData, [name]: value });
+      setFormData({ ...formData, [name]: value.toUpperCase() });
       let tan_format = /^[a-zA-Z]{4}[0-9]{5}[a-zA-Z]{1}$/;
       if (tan_format.test(value)) {
         setValidationDetails({
@@ -158,7 +158,7 @@ const Registration = ({ setToken }) => {
         });
       }
     } else if (name === "cin_number") {
-      setFormData({ ...formData, [name]: value });
+      setFormData({ ...formData, [name]: value.toUpperCase() });
       let cin_format =
         /^[a-zA-Z]{1}[0-9]{5}[a-zA-Z]{2}[0-9]{4}[a-zA-Z]{3}[0-9]{6}$/;
       if (cin_format.test(value)) {
@@ -706,7 +706,7 @@ const Registration = ({ setToken }) => {
                                 name="gst_number"
                                 type="text"
                                 placeholder="GST Number"
-                                className={`form-control border-${gstValidationColor}`}
+                                className={`form-control text-uppercase border-${gstValidationColor}`}
                                 required
                               />
                               {gstValidationMessage ? (
