@@ -270,7 +270,13 @@ const Registration = ({ setToken }) => {
         zipValidationByState(value, parseInt(IdOfState));
       }
     } else if (name === "state") {
-      let stateName = document.getElementById(`state-name-${value}`).innerText;
+      let stateName = "";
+      let getStateName = document.getElementById(
+        `state-name-${value}`
+      ).innerText;
+      if (getStateName !== "") {
+        stateName = getStateName;
+      }
       setFormData({
         ...formData,
         contact_details: { ...formData.contact_details, [name]: stateName },
