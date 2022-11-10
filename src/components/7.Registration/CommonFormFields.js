@@ -10,11 +10,9 @@ const CommonFormFields = ({
   // Getting only required validation details from RegisterMainPage.
   const {
     emailValidationMessage,
-    landlineValidationMessage,
     mobileValidationMessage,
     zipCodeValidationMessage,
     emailValidationColor,
-    landlineValidationColor,
     mobileValidationColor,
     zipCodeValidationColor,
   } = validationDetails;
@@ -155,15 +153,8 @@ const CommonFormFields = ({
             name="landline_number"
             type="Number"
             placeholder="Landline Number (Optional)"
-            className={`form-control border-${landlineValidationColor}`}
+            className="form-control "
           />
-          {landlineValidationMessage ? (
-            <span className={`pe-1 text-${landlineValidationColor}`}>
-              {landlineValidationMessage}
-            </span>
-          ) : (
-            <span className="d-none"></span>
-          )}
         </div>
         <div className="col-lg-2 mb-lg-0 mb-2">
           <input

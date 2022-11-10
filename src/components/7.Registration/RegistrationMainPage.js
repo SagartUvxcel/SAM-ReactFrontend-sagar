@@ -46,36 +46,35 @@ const Registration = ({ setToken }) => {
   const [validationDetails, setValidationDetails] = useState({
     aadhaarValidationMessage: "",
     panValidationMessage: "",
-    emailValidationMessage: "",
-    landlineValidationMessage: "",
-    mobileValidationMessage: "",
-    zipCodeValidationMessage: "",
     gstValidationMessage: "",
     cinValidationMessage: "",
     tanValidationMessage: "",
+    zipCodeValidationMessage: "",
+    emailValidationMessage: "",
+    mobileValidationMessage: "",
+
     aadhaarValidationColor: "",
     panValidationColor: "",
-    emailValidationColor: "",
-    landlineValidationColor: "",
-    mobileValidationColor: "",
-    zipCodeValidationColor: "",
     gstValidationColor: "",
     cinValidationColor: "",
     tanValidationColor: "",
+    zipCodeValidationColor: "",
+    emailValidationColor: "",
+    mobileValidationColor: "",
   });
 
   // Object destructuring.
   const {
     aadhaarValidationMessage,
     panValidationMessage,
+    gstValidationMessage,
+    tanValidationMessage,
+    cinValidationMessage,
     aadhaarValidationColor,
     panValidationColor,
-    gstValidationMessage,
     gstValidationColor,
     tanValidationColor,
-    tanValidationMessage,
     cinValidationColor,
-    cinValidationMessage,
   } = validationDetails;
 
   // Function to show backend validation on outside click of input filed.
@@ -230,11 +229,24 @@ const Registration = ({ setToken }) => {
           JSON.stringify({ email: value })
         )
         .then((res) => {
+          var emailFormat = /^\w+([-]?\w+)*@\w+([-]?\w+)*(\.\w{2,3})+$/;
           if (res.data.status === 1) {
             setValidationDetails({
               ...validationDetails,
               emailValidationMessage: "Email id already exists.",
               emailValidationColor: "danger",
+            });
+          } else if (!emailFormat.test(value)) {
+            setValidationDetails({
+              ...validationDetails,
+              emailValidationColor: "danger",
+              emailValidationMessage: "Invalid email Id.",
+            });
+          } else {
+            setValidationDetails({
+              ...validationDetails,
+              emailValidationColor: "",
+              emailValidationMessage: "",
             });
           }
         });
@@ -310,7 +322,56 @@ const Registration = ({ setToken }) => {
 
   // This will run onchange of input field.
   const onInputChange = async (e) => {
-    const { name, value } = e.target;
+    const { name } = e.target;
+    if (name === "aadhar_number") {
+      setValidationDetails({
+        ...validationDetails,
+        aadhaarValidationColor: "",
+        aadhaarValidationMessage: "",
+      });
+    } else if (name === "pan_number") {
+      setValidationDetails({
+        ...validationDetails,
+        panValidationColor: "",
+        panValidationMessage: "",
+      });
+    } else if (name === "gst_number") {
+      setValidationDetails({
+        ...validationDetails,
+        gstValidationColor: "",
+        gstValidationMessage: "",
+      });
+    } else if (name === "tan_number") {
+      setValidationDetails({
+        ...validationDetails,
+        tanValidationColor: "",
+        tanValidationMessage: "",
+      });
+    } else if (name === "cin_number") {
+      setValidationDetails({
+        ...validationDetails,
+        cinValidationColor: "",
+        cinValidationMessage: "",
+      });
+    } else if (name === "zip") {
+      setValidationDetails({
+        ...validationDetails,
+        zipCodeValidationColor: "",
+        zipCodeValidationMessage: "",
+      });
+    } else if (name === "email") {
+      setValidationDetails({
+        ...validationDetails,
+        emailValidationColor: "",
+        emailValidationMessage: "",
+      });
+    } else if (name === "mobile_number") {
+      setValidationDetails({
+        ...validationDetails,
+        mobileValidationColor: "",
+        mobileValidationMessage: "",
+      });
+    }
   };
 
   const deleteLandlineNumberIfEmpty = () => {
