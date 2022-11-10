@@ -87,7 +87,15 @@ const Registration = ({ setToken }) => {
     const attrOfForm = e.target.getAttribute("name");
     if (attrOfForm === "organization") {
       resetValues();
-      setFormData({ ...formData, user_type: "Organizational User" });
+      setFormData({
+        ...formData,
+        user_type: "Organizational User",
+        first_name: "",
+        middle_name: "",
+        last_name: "",
+        aadhar_number: "",
+        pan_number: "",
+      });
       // Reset form fields and validations.
       document.getElementById("individualForm").reset();
       // Make checkbox of label organization checked.
