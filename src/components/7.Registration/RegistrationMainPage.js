@@ -87,16 +87,6 @@ const Registration = ({ setToken }) => {
       setFormData({ ...formData, [name]: value });
     } else if (name === "last_name") {
       setFormData({ ...formData, [name]: value });
-    } else if (name === "organization_type") {
-      setFormData({ ...formData, [name]: value });
-    } else if (name === "company_name") {
-      setFormData({ ...formData, [name]: value });
-    } else if (name === "gst_number") {
-      setFormData({ ...formData, [name]: value });
-    } else if (name === "tan_number") {
-      setFormData({ ...formData, [name]: value });
-    } else if (name === "cin_number") {
-      setFormData({ ...formData, [name]: value });
     } else if (name === "aadhar_number") {
       setFormData({ ...formData, [name]: value });
       // Aadhaar frontend validation.
@@ -131,6 +121,103 @@ const Registration = ({ setToken }) => {
           panValidationColor: "danger",
         });
       }
+    } else if (name === "organization_type") {
+      setFormData({ ...formData, [name]: value });
+    } else if (name === "company_name") {
+      setFormData({ ...formData, [name]: value });
+    } else if (name === "gst_number") {
+      setFormData({ ...formData, [name]: value });
+      let gst_format =
+        /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+      if (gst_format.test(value)) {
+        setValidationDetails({
+          ...validationDetails,
+          gstValidationMessage: "",
+          gstValidationColor: "",
+        });
+      } else {
+        setValidationDetails({
+          ...validationDetails,
+          gstValidationMessage: "Invalid GST Number Entered",
+          gstValidationColor: "danger",
+        });
+      }
+    } else if (name === "tan_number") {
+      setFormData({ ...formData, [name]: value });
+      let tan_format = /^[a-zA-Z]{4}[0-9]{5}[a-zA-Z]{1}$/;
+      if (tan_format.test(value)) {
+        setValidationDetails({
+          ...validationDetails,
+          tanValidationMessage: "",
+          tanValidationColor: "",
+        });
+      } else {
+        setValidationDetails({
+          ...validationDetails,
+          tanValidationMessage: "Invalid TAN Number Entered",
+          tanValidationColor: "danger",
+        });
+      }
+    } else if (name === "cin_number") {
+      setFormData({ ...formData, [name]: value });
+      let cin_format =
+        /^[a-zA-Z]{1}[0-9]{5}[a-zA-Z]{2}[0-9]{4}[a-zA-Z]{3}[0-9]{6}$/;
+      if (cin_format.test(value)) {
+        setValidationDetails({
+          ...validationDetails,
+          cinValidationMessage: "",
+          cinValidationColor: "",
+        });
+      } else {
+        setValidationDetails({
+          ...validationDetails,
+          cinValidationMessage: "Invalid CIN Number Entered",
+          cinValidationColor: "danger",
+        });
+      }
+    } else if (name === "address") {
+      setFormData({
+        ...formData,
+        contact_details: { ...formData.contact_details, [name]: value },
+      });
+    } else if (name === "locality") {
+      setFormData({
+        ...formData,
+        contact_details: { ...formData.contact_details, [name]: value },
+      });
+    } else if (name === "city") {
+      setFormData({
+        ...formData,
+        contact_details: { ...formData.contact_details, [name]: value },
+      });
+    } else if (name === "zip") {
+      setFormData({
+        ...formData,
+        contact_details: {
+          ...formData.contact_details,
+          [name]: parseInt(value),
+        },
+      });
+      if (IdOfState === "" && value !== "") {
+        alert("Please select State");
+      } else if (IdOfState !== "" && value !== "") {
+        zipValidationByState(value, parseInt(IdOfState));
+      }
+    } else if (name === "state") {
+      let stateName = document.getElementById(`state-name-${value}`).innerText;
+      setFormData({
+        ...formData,
+        contact_details: { ...formData.contact_details, [name]: stateName },
+      });
+      // If we selected state then we are saving state Id in IdOfState variable and if zipCode value is also available then we are calling zipValidationByState Function.
+      SetIdOfState(value);
+      // If zip value is entered then call zipValidationByState function.
+      if (String(formData.contact_details.zip) !== "") {
+        zipValidationByState(
+          String(formData.contact_details.zip),
+          parseInt(value)
+        );
+      }
     } else if (name === "email") {
       setFormData({
         ...formData,
@@ -151,6 +238,14 @@ const Registration = ({ setToken }) => {
             });
           }
         });
+    } else if (name === "landline_number") {
+      setFormData({
+        ...formData,
+        contact_details: {
+          ...formData.contact_details,
+          [name]: parseInt(value),
+        },
+      });
     } else if (name === "mobile_number") {
       setFormData({
         ...formData,
@@ -186,104 +281,6 @@ const Registration = ({ setToken }) => {
             });
           }
         });
-    } else if (name === "landline_number") {
-      setFormData({
-        ...formData,
-        contact_details: {
-          ...formData.contact_details,
-          [name]: parseInt(value),
-        },
-      });
-    } else if (name === "zip") {
-      setFormData({
-        ...formData,
-        contact_details: {
-          ...formData.contact_details,
-          [name]: parseInt(value),
-        },
-      });
-      if (IdOfState === "" && value !== "") {
-        alert("Please select State");
-      } else if (IdOfState !== "" && value !== "") {
-        zipValidationByState(value, parseInt(IdOfState));
-      }
-    } else if (name === "gst_number") {
-      let gst_format =
-        /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
-      if (gst_format.test(value)) {
-        setValidationDetails({
-          ...validationDetails,
-          gstValidationMessage: "",
-          gstValidationColor: "",
-        });
-      } else {
-        setValidationDetails({
-          ...validationDetails,
-          gstValidationMessage: "Invalid GST Number Entered",
-          gstValidationColor: "danger",
-        });
-      }
-    } else if (name === "tan_number") {
-      let tan_format = /^[a-zA-Z]{4}[0-9]{5}[a-zA-Z]{1}$/;
-      if (tan_format.test(value)) {
-        setValidationDetails({
-          ...validationDetails,
-          tanValidationMessage: "",
-          tanValidationColor: "",
-        });
-      } else {
-        setValidationDetails({
-          ...validationDetails,
-          tanValidationMessage: "Invalid TAN Number Entered",
-          tanValidationColor: "danger",
-        });
-      }
-    } else if (name === "cin_number") {
-      let cin_format =
-        /^[a-zA-Z]{1}[0-9]{5}[a-zA-Z]{2}[0-9]{4}[a-zA-Z]{3}[0-9]{6}$/;
-      if (cin_format.test(value)) {
-        setValidationDetails({
-          ...validationDetails,
-          cinValidationMessage: "",
-          cinValidationColor: "",
-        });
-      } else {
-        setValidationDetails({
-          ...validationDetails,
-          cinValidationMessage: "Invalid CIN Number Entered",
-          cinValidationColor: "danger",
-        });
-      }
-    } else if (name === "address") {
-      setFormData({
-        ...formData,
-        contact_details: { ...formData.contact_details, [name]: value },
-      });
-    } else if (name === "locality") {
-      setFormData({
-        ...formData,
-        contact_details: { ...formData.contact_details, [name]: value },
-      });
-    } else if (name === "city") {
-      setFormData({
-        ...formData,
-        contact_details: { ...formData.contact_details, [name]: value },
-      });
-    } else if (name === "state") {
-      let stateName = document.getElementById(`state-name-${value}`).innerText;
-      setFormData({
-        ...formData,
-        contact_details: { ...formData.contact_details, [name]: stateName },
-      });
-      // If we selected state then we are saving state Id in IdOfState variable and if zipCode value is also available then we are calling zipValidationByState Function.
-      SetIdOfState(value);
-      // If zip value is entered then call zipValidationByState function.
-      if (String(formData.contact_details.zip) !== "") {
-        zipValidationByState(
-          String(formData.contact_details.zip),
-          parseInt(value)
-        );
-      }
     }
   };
 
