@@ -40,7 +40,7 @@ const CommonFormFields = ({
         <div className="col-lg-2 mb-lg-0 mb-2">Address</div>
         <div className="col-lg-2 mb-lg-0 mb-2">
           <input
-            onChange={onInputChange}
+            onBlur={onInputBlur}
             name="address"
             type="text"
             className="form-control"
@@ -50,7 +50,7 @@ const CommonFormFields = ({
         </div>
         <div className="col-lg-2 mb-lg-0 mb-2">
           <input
-            onChange={onInputChange}
+            onBlur={onInputBlur}
             name="locality"
             type="text"
             className="form-control"
@@ -63,7 +63,7 @@ const CommonFormFields = ({
       <div className="row addressRow2 mt-lg-3 mt-md-0">
         <div className="offset-lg-2 col-lg-2 mb-lg-0 mb-2">
           <input
-            onChange={onInputChange}
+            onBlur={onInputBlur}
             name="city"
             type="text"
             className="form-control"
@@ -74,6 +74,7 @@ const CommonFormFields = ({
         <div className="col-lg-2 mb-lg-0 mb-2">
           <select
             onChange={onInputChange}
+            onBlur={onInputBlur}
             name="state"
             type="text"
             className="form-select"
@@ -150,7 +151,7 @@ const CommonFormFields = ({
         </div>
         <div className="col-lg-2 mb-lg-0 mb-2">
           <input
-            onChange={onInputChange}
+            onBlur={onInputBlur}
             name="landline_number"
             type="Number"
             placeholder="Landline Number (Optional)"

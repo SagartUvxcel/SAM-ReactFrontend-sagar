@@ -81,138 +81,6 @@ const Registration = ({ setToken }) => {
   // Function to show backend validation on outside click of input filed.
   const onInputBlur = async (e) => {
     const { name, value } = e.target;
-    if (name === "email") {
-      // If input field is email then post its value to api for validating.
-      await axios
-        .post(
-          `http://host.docker.internal:3000/sam/v1/customer-registration/email-validation`,
-          JSON.stringify({ email: value })
-        )
-        .then((res) => {
-          if (res.data.status === 1) {
-            setValidationDetails({
-              ...validationDetails,
-              emailValidationMessage: "Email id already exists.",
-              emailValidationColor: "danger",
-            });
-          }
-        });
-    } else if (name === "mobile_number") {
-      setFormData({
-        ...formData,
-        contact_details: { ...formData.contact_details, [name]: value },
-      });
-      // If input field is mobile then post its value to api for validating.
-      await axios
-        .post(
-          `http://host.docker.internal:3000/sam/v1/customer-registration/mobilenumber-validation`,
-          JSON.stringify({ mobile_number: value })
-        )
-        .then((res) => {
-          if (res.data.status === 1) {
-            // Store validation message and validation color.
-            setValidationDetails({
-              ...validationDetails,
-              mobileValidationMessage: "Mobile number already exists.",
-              mobileValidationColor: "danger",
-            });
-          } else if (res.data.status === 2) {
-            // Store validation message and validation color.
-            setValidationDetails({
-              ...validationDetails,
-              mobileValidationMessage: "Invalid Mobile Number Entered.",
-              mobileValidationColor: "danger",
-            });
-          } else {
-            // Store validation message and validation color.
-            setValidationDetails({
-              ...validationDetails,
-              mobileValidationMessage: "",
-              mobileValidationColor: "",
-            });
-          }
-        });
-    } else if (name === "zip") {
-      if (IdOfState === "" && value !== "") {
-        alert("Please select State");
-      }
-    } else if (name === "gst_number") {
-      let gst_format =
-        /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
-      if (gst_format.test(value)) {
-        setValidationDetails({
-          ...validationDetails,
-          gstValidationMessage: "",
-          gstValidationColor: "",
-        });
-      } else {
-        setValidationDetails({
-          ...validationDetails,
-          gstValidationMessage: "Invalid GST Number Entered",
-          gstValidationColor: "danger",
-        });
-      }
-    } else if (name === "tan_number") {
-      let tan_format = /^[a-zA-Z]{4}[0-9]{5}[a-zA-Z]{1}$/;
-      if (tan_format.test(value)) {
-        setValidationDetails({
-          ...validationDetails,
-          tanValidationMessage: "",
-          tanValidationColor: "",
-        });
-      } else {
-        setValidationDetails({
-          ...validationDetails,
-          tanValidationMessage: "Invalid TAN Number Entered",
-          tanValidationColor: "danger",
-        });
-      }
-    } else if (name === "cin_number") {
-      let cin_format =
-        /^[a-zA-Z]{1}[0-9]{5}[a-zA-Z]{2}[0-9]{4}[a-zA-Z]{3}[0-9]{6}$/;
-      if (cin_format.test(value)) {
-        setValidationDetails({
-          ...validationDetails,
-          cinValidationMessage: "",
-          cinValidationColor: "",
-        });
-      } else {
-        setValidationDetails({
-          ...validationDetails,
-          cinValidationMessage: "Invalid CIN Number Entered",
-          cinValidationColor: "danger",
-        });
-      }
-    }
-  };
-
-  // Function to validate zipCodes.
-  const zipValidationByState = async (zipValue, stateId) => {
-    await axios
-      .post(
-        `http://host.docker.internal:3000/sam/v1/customer-registration/zipcode-validation`,
-        { zipcode: zipValue, state_id: stateId }
-      )
-      .then((res) => {
-        if (res.data.status === 0) {
-          setValidationDetails({
-            ...validationDetails,
-            zipCodeValidationMessage: "Invalid ZipCode.",
-            zipCodeValidationColor: "danger",
-          });
-        } else {
-          setValidationDetails({
-            ...validationDetails,
-            zipCodeValidationMessage: "",
-            zipCodeValidationColor: "",
-          });
-        }
-      });
-  };
-
-  // This will run onchange of input field.
-  const onInputChange = async (e) => {
-    const { name, value } = e.target;
     if (name === "first_name") {
       setFormData({ ...formData, [name]: value });
     } else if (name === "middle_name") {
@@ -263,6 +131,129 @@ const Registration = ({ setToken }) => {
           panValidationColor: "danger",
         });
       }
+    } else if (name === "email") {
+      setFormData({
+        ...formData,
+        contact_details: { ...formData.contact_details, [name]: value },
+      });
+      // If input field is email then post its value to api for validating.
+      await axios
+        .post(
+          `http://host.docker.internal:3000/sam/v1/customer-registration/email-validation`,
+          JSON.stringify({ email: value })
+        )
+        .then((res) => {
+          if (res.data.status === 1) {
+            setValidationDetails({
+              ...validationDetails,
+              emailValidationMessage: "Email id already exists.",
+              emailValidationColor: "danger",
+            });
+          }
+        });
+    } else if (name === "mobile_number") {
+      setFormData({
+        ...formData,
+        contact_details: { ...formData.contact_details, [name]: value },
+      });
+      // If input field is mobile then post its value to api for validating.
+      await axios
+        .post(
+          `http://host.docker.internal:3000/sam/v1/customer-registration/mobilenumber-validation`,
+          JSON.stringify({ mobile_number: value })
+        )
+        .then((res) => {
+          if (res.data.status === 1) {
+            // Store validation message and validation color.
+            setValidationDetails({
+              ...validationDetails,
+              mobileValidationMessage: "Mobile number already exists.",
+              mobileValidationColor: "danger",
+            });
+          } else if (res.data.status === 2) {
+            // Store validation message and validation color.
+            setValidationDetails({
+              ...validationDetails,
+              mobileValidationMessage: "Invalid Mobile Number Entered.",
+              mobileValidationColor: "danger",
+            });
+          } else {
+            // Store validation message and validation color.
+            setValidationDetails({
+              ...validationDetails,
+              mobileValidationMessage: "",
+              mobileValidationColor: "",
+            });
+          }
+        });
+    } else if (name === "landline_number") {
+      setFormData({
+        ...formData,
+        contact_details: {
+          ...formData.contact_details,
+          [name]: parseInt(value),
+        },
+      });
+    } else if (name === "zip") {
+      setFormData({
+        ...formData,
+        contact_details: {
+          ...formData.contact_details,
+          [name]: parseInt(value),
+        },
+      });
+      if (IdOfState === "" && value !== "") {
+        alert("Please select State");
+      } else if (IdOfState !== "" && value !== "") {
+        zipValidationByState(value, parseInt(IdOfState));
+      }
+    } else if (name === "gst_number") {
+      let gst_format =
+        /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+      if (gst_format.test(value)) {
+        setValidationDetails({
+          ...validationDetails,
+          gstValidationMessage: "",
+          gstValidationColor: "",
+        });
+      } else {
+        setValidationDetails({
+          ...validationDetails,
+          gstValidationMessage: "Invalid GST Number Entered",
+          gstValidationColor: "danger",
+        });
+      }
+    } else if (name === "tan_number") {
+      let tan_format = /^[a-zA-Z]{4}[0-9]{5}[a-zA-Z]{1}$/;
+      if (tan_format.test(value)) {
+        setValidationDetails({
+          ...validationDetails,
+          tanValidationMessage: "",
+          tanValidationColor: "",
+        });
+      } else {
+        setValidationDetails({
+          ...validationDetails,
+          tanValidationMessage: "Invalid TAN Number Entered",
+          tanValidationColor: "danger",
+        });
+      }
+    } else if (name === "cin_number") {
+      let cin_format =
+        /^[a-zA-Z]{1}[0-9]{5}[a-zA-Z]{2}[0-9]{4}[a-zA-Z]{3}[0-9]{6}$/;
+      if (cin_format.test(value)) {
+        setValidationDetails({
+          ...validationDetails,
+          cinValidationMessage: "",
+          cinValidationColor: "",
+        });
+      } else {
+        setValidationDetails({
+          ...validationDetails,
+          cinValidationMessage: "Invalid CIN Number Entered",
+          cinValidationColor: "danger",
+        });
+      }
     } else if (name === "address") {
       setFormData({
         ...formData,
@@ -278,18 +269,6 @@ const Registration = ({ setToken }) => {
         ...formData,
         contact_details: { ...formData.contact_details, [name]: value },
       });
-    } else if (name === "zip") {
-      setFormData({
-        ...formData,
-        contact_details: {
-          ...formData.contact_details,
-          [name]: parseInt(value),
-        },
-      });
-      // If we are typing zipCode and if state is already selected then we are calling zipValidationByState Function.
-      if (IdOfState !== "") {
-        zipValidationByState(value, parseInt(IdOfState));
-      }
     } else if (name === "state") {
       let stateName = document.getElementById(`state-name-${value}`).innerText;
       setFormData({
@@ -305,35 +284,36 @@ const Registration = ({ setToken }) => {
           parseInt(value)
         );
       }
-    } else if (name === "landline_number") {
-      setFormData({
-        ...formData,
-        contact_details: {
-          ...formData.contact_details,
-          [name]: parseInt(value),
-        },
-      });
-    } else if (name === "email") {
-      setFormData({
-        ...formData,
-        contact_details: { ...formData.contact_details, [name]: value },
-      });
-      // Email frontend validation.
-      let emailFormat = /^\w+([-]?\w+)*@\w+([-]?\w+)*(\.\w{2,3})+$/;
-      if (emailFormat.test(value)) {
-        setValidationDetails({
-          ...validationDetails,
-          emailValidationMessage: "",
-          emailValidationColor: "",
-        });
-      } else {
-        setValidationDetails({
-          ...validationDetails,
-          emailValidationMessage: "Invalid Email Id.",
-          emailValidationColor: "danger",
-        });
-      }
     }
+  };
+
+  // Function to validate zipCodes.
+  const zipValidationByState = async (zipValue, stateId) => {
+    await axios
+      .post(
+        `http://host.docker.internal:3000/sam/v1/customer-registration/zipcode-validation`,
+        { zipcode: zipValue, state_id: stateId }
+      )
+      .then((res) => {
+        if (res.data.status === 0) {
+          setValidationDetails({
+            ...validationDetails,
+            zipCodeValidationMessage: "Invalid ZipCode.",
+            zipCodeValidationColor: "danger",
+          });
+        } else {
+          setValidationDetails({
+            ...validationDetails,
+            zipCodeValidationMessage: "",
+            zipCodeValidationColor: "",
+          });
+        }
+      });
+  };
+
+  // This will run onchange of input field.
+  const onInputChange = async (e) => {
+    const { name, value } = e.target;
   };
 
   const deleteLandlineNumberIfEmpty = () => {
@@ -506,6 +486,7 @@ const Registration = ({ setToken }) => {
                             <div className="col-lg-2 mb-lg-0 mb-2">
                               <input
                                 onChange={onInputChange}
+                                onBlur={onInputBlur}
                                 name="first_name"
                                 type="text"
                                 placeholder="First Name"
@@ -516,6 +497,7 @@ const Registration = ({ setToken }) => {
                             <div className="col-lg-2 mb-lg-0 mb-2">
                               <input
                                 onChange={onInputChange}
+                                onBlur={onInputBlur}
                                 name="middle_name"
                                 type="text"
                                 placeholder="Middle Name"
@@ -525,8 +507,9 @@ const Registration = ({ setToken }) => {
                             </div>
                             <div className="col-lg-2">
                               <input
-                                name="last_name"
                                 onChange={onInputChange}
+                                onBlur={onInputBlur}
+                                name="last_name"
                                 type="text"
                                 placeholder="Last Name"
                                 className="form-control"
@@ -542,6 +525,7 @@ const Registration = ({ setToken }) => {
                             <div className="col-lg-2 mb-lg-0 mb-3">
                               <input
                                 onChange={onInputChange}
+                                onBlur={onInputBlur}
                                 name="aadhar_number"
                                 type="Number"
                                 placeholder="•••• •••• •••• ••••"
@@ -569,6 +553,7 @@ const Registration = ({ setToken }) => {
                             <div className="col-lg-2 mb-lg-0">
                               <input
                                 onChange={onInputChange}
+                                onBlur={onInputBlur}
                                 name="pan_number"
                                 type="text"
                                 placeholder="PAN Number"
@@ -617,10 +602,10 @@ const Registration = ({ setToken }) => {
                             </div>
                             <div className="col-lg-2">
                               <select
+                                onChange={onInputChange}
                                 name="organization_type"
                                 className="form-select"
                                 aria-label="Default select example"
-                                onChange={onInputChange}
                                 required
                               >
                                 <option value="" style={{ color: "gray" }}>
@@ -645,11 +630,11 @@ const Registration = ({ setToken }) => {
                             </div>
                             <div className="col-lg-2 mb-lg-0 mb-2">
                               <input
+                                onChange={onInputChange}
                                 name="company_name"
                                 type="text"
                                 placeholder="Company Name"
                                 className="form-control"
-                                onChange={onInputChange}
                                 required
                               />
                             </div>
@@ -658,12 +643,12 @@ const Registration = ({ setToken }) => {
                             </div>
                             <div className="col-lg-2">
                               <input
+                                onChange={onInputChange}
+                                onBlur={onInputBlur}
                                 name="gst_number"
                                 type="text"
                                 placeholder="GST Number"
                                 className={`form-control border-${gstValidationColor}`}
-                                onChange={onInputChange}
-                                onBlur={onInputBlur}
                                 required
                               />
                               {gstValidationMessage ? (
@@ -685,12 +670,12 @@ const Registration = ({ setToken }) => {
                             </div>
                             <div className="col-lg-2">
                               <input
+                                onChange={onInputChange}
+                                onBlur={onInputBlur}
                                 name="tan_number"
                                 type="text"
                                 placeholder="TAN Number"
                                 className={`form-control text-uppercase border-${tanValidationColor}`}
-                                onChange={onInputChange}
-                                onBlur={onInputBlur}
                                 required
                               />
                               {tanValidationMessage ? (
@@ -708,12 +693,12 @@ const Registration = ({ setToken }) => {
                             </div>
                             <div className="col-lg-2">
                               <input
+                                onChange={onInputChange}
+                                onBlur={onInputBlur}
                                 name="cin_number"
                                 type="text"
                                 placeholder="CIN Number"
                                 className={`form-control text-uppercase border-${cinValidationColor}`}
-                                onChange={onInputChange}
-                                onBlur={onInputBlur}
                                 required
                               />
                               {cinValidationMessage ? (
