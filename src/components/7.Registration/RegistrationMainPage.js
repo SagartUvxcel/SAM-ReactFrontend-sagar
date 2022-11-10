@@ -128,7 +128,7 @@ const Registration = ({ setToken }) => {
             setValidationDetails({
               ...validationDetails,
               mobileValidationMessage: "",
-              mobileValidationColor: "success",
+              mobileValidationColor: "",
             });
           }
         });
@@ -204,7 +204,7 @@ const Registration = ({ setToken }) => {
           setValidationDetails({
             ...validationDetails,
             zipCodeValidationMessage: "",
-            zipCodeValidationColor: "success",
+            zipCodeValidationColor: "",
           });
         }
       });
@@ -237,7 +237,7 @@ const Registration = ({ setToken }) => {
         setValidationDetails({
           ...validationDetails,
           aadhaarValidationMessage: "",
-          aadhaarValidationColor: "success",
+          aadhaarValidationColor: "",
         });
       } else {
         setValidationDetails({
@@ -254,7 +254,7 @@ const Registration = ({ setToken }) => {
         setValidationDetails({
           ...validationDetails,
           panValidationMessage: "",
-          panValidationColor: "success",
+          panValidationColor: "",
         });
       } else {
         setValidationDetails({
@@ -324,7 +324,7 @@ const Registration = ({ setToken }) => {
         setValidationDetails({
           ...validationDetails,
           emailValidationMessage: "",
-          emailValidationColor: "success",
+          emailValidationColor: "",
         });
       } else {
         setValidationDetails({

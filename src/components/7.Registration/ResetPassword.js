@@ -42,7 +42,7 @@ const ResetPassword = () => {
         setDetails({
           ...details,
           newPassword: value,
-          invalidColor1: "success",
+          invalidColor1: "",
           invalidMessage1: "",
         });
       } else {
