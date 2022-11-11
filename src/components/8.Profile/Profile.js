@@ -209,38 +209,38 @@ const Profile = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="col-12 mt-3">
+                      <div className="col-12 my-3">
                         <span className="text-muted">
                           Lorem ipsum dolor sit:{" "}
                         </span>
                         <span>5</span>
                       </div>
-                      <div className="col-6 mt-2 text-center">
+                      <div className="col-6">
                         <span class="badge rounded-pill bg-warning text-dark">
                           text1
                         </span>
                       </div>
-                      <div className="col-6 mt-2 text-center">
+                      <div className="col-6">
                         <span class="badge rounded-pill bg-outline-warning text-dark">
                           text2
                         </span>
                       </div>
-                      <div className="col-6 mt-2 text-center">
+                      <div className="col-6 mt-2">
                         <span class="badge rounded-pill bg-warning text-dark">
                           text3
                         </span>
                       </div>
-                      <div className="col-6 mt-2 text-center">
+                      <div className="col-6 mt-2">
                         <span class="badge rounded-pill bg-outline-warning text-dark">
                           text4
                         </span>
                       </div>
-                      <div className="col-6 mt-2 text-center">
+                      <div className="col-6 mt-2">
                         <span class="badge rounded-pill bg-warning text-dark">
                           text5
                         </span>
                       </div>
-                      <div className="col-6 mt-2 text-center">
+                      <div className="col-6 mt-2">
                         <span class="badge rounded-pill bg-outline-warning text-dark">
                           text6
                         </span>
