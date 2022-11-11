@@ -14,6 +14,10 @@ code {
 
 /* Common css */
 
+p {
+  text-align: justify;
+}
+
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
