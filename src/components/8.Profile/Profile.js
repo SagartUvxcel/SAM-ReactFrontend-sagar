@@ -8,7 +8,7 @@ const Profile = () => {
         <div className="container-fluid wrapper">
           <div className="row justify-content-center">
             <div className="col-11">
-              <div className="row border p-xl-3">
+              <div className="row border p-xl-4 shadow">
                 {/* Profile image */}
                 <div className="col-xl-3">
                   <img src="profile.png" alt="Profile Pic" />
@@ -71,8 +71,78 @@ const Profile = () => {
                       aria-valuemax="100"
                       data-bs-toggle="tooltip"
                       data-bs-placement="top"
-                    >75%</div>
+                    >
+                      75%
+                    </div>
                   </div>
+                </div>
+              </div>
+              <div className="row mt-5">
+                <div className="col-xl-3 ps-xl-0">
+                  <div className="border border-2 px-xl-2 py-xl-3">
+                    <div className="row justify-content-center">
+                      <div className="col-1">
+                        <i className="bi bi-mortarboard-fill"></i>
+                      </div>
+                      <div className="col-11">
+                        <small className="text-muted">Some details</small>
+                        <br />
+                        <small className="text-muted">Heading1: </small>
+                        <small>Description1</small>
+                        <br />
+                        <small className="text-muted">Heading2: </small>
+                        <small>Description2</small>
+                        <br />
+                        <small className="text-muted">Heading3: </small>
+                        <small>Description3</small>
+                        <br />
+                        <small className="text-muted">Heading4: </small>
+                        <small>Description4</small>
+                        <br />
+                      </div>
+                      <div className="col-10">
+                        <hr />
+                      </div>
+                    </div>
+                    <div className="row justify-content-center">
+                      <div className="col-1">
+                        <i className="bi bi-person-fill"></i>
+                      </div>
+                      <div className="col-11">
+                        <small className="text-muted">
+                          Personal Information
+                        </small>
+                        <br />
+                        <small className="text-muted">Birth Date: </small>
+                        <small>March 17, 1989</small>
+                        <br />
+                        <small className="text-muted">Gender: </small>
+                        <small>Male</small>
+                        <br />
+                        <small className="text-muted">Nationality: </small>
+                        <small>Indian</small>
+                        <br />
+                        <small className="text-muted">Marital Status: </small>
+                        <small>Married</small>
+                        <br />
+                        <small className="text-muted">DL Number: </small>
+                        <small>HS0952363723</small>
+                        <br />
+                        <small className="text-muted">User Id: </small>
+                        <small>ABCD28998</small>
+                        <br />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-xl-3">
+                  <div className="border border-2">div1</div>
+                </div>
+                <div className="col-xl-3">
+                  <div className="border border-2">div1</div>
+                </div>
+                <div className="col-xl-3 pe-xl-0">
+                  <div className="border border-2">div1</div>
                 </div>
               </div>
             </div>
