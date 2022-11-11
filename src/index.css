@@ -423,6 +423,19 @@ input[type="number"] {
   height: 360px;
 }
 
+.profile-wrapper .circled-div {
+  border-radius: 50% !important;
+  height: 124px !important;
+  width: 100% !important;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.bg-outline-warning {
+  border: 2px solid yellow;
+  background-color: rgba(255, 255, 0, 0.251);
+}
+
 /* Media Queries */
 @media screen and (min-width: 992px) {
   .five-section-col {

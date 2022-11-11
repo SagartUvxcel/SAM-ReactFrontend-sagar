@@ -17,7 +17,9 @@ const Profile = () => {
                   {/* Name & designation */}
                   <div className="row">
                     <div className="col-xl-12">
-                      <span className="fw-bold fs-3">John Butler</span>
+                      <span className="fw-bold fs-3 text-success">
+                        John Butler
+                      </span>
                       <br />
                       <span className="text-muted">
                         Xyz Designation of user
@@ -62,7 +64,7 @@ const Profile = () => {
 
                   <div className="progress mt-4">
                     <div
-                      className="progress-bar bg-success"
+                      className="progress-bar bg-warning"
                       title="25%"
                       role="progressbar"
                       style={{ width: "75%" }}
@@ -192,6 +194,58 @@ const Profile = () => {
                 <div className="col-xl-3">
                   <div className="border border-2 shadow profile-details-div p-xl-3">
                     <span className="fw-bolder">Some Heading</span>
+                    <br />
+                    <div className="row justify-content-center">
+                      <div className="col-6 mt-3">
+                        <div class="progress circled-div">
+                          <div
+                            class="progress-bar bg-warning"
+                            role="progressbar"
+                            style={{ width: "89%" }}
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                          >
+                            +89%
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-12 mt-3">
+                        <span className="text-muted">
+                          Lorem ipsum dolor sit:{" "}
+                        </span>
+                        <span>5</span>
+                      </div>
+                      <div className="col-6 mt-2 text-center">
+                        <span class="badge rounded-pill bg-warning text-dark">
+                          text1
+                        </span>
+                      </div>
+                      <div className="col-6 mt-2 text-center">
+                        <span class="badge rounded-pill bg-outline-warning text-dark">
+                          text2
+                        </span>
+                      </div>
+                      <div className="col-6 mt-2 text-center">
+                        <span class="badge rounded-pill bg-warning text-dark">
+                          text3
+                        </span>
+                      </div>
+                      <div className="col-6 mt-2 text-center">
+                        <span class="badge rounded-pill bg-outline-warning text-dark">
+                          text4
+                        </span>
+                      </div>
+                      <div className="col-6 mt-2 text-center">
+                        <span class="badge rounded-pill bg-warning text-dark">
+                          text1
+                        </span>
+                      </div>
+                      <div className="col-6 mt-2 text-center">
+                        <span class="badge rounded-pill bg-outline-warning text-dark">
+                          text2
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <div className="col-xl-3 pe-xl-0">
