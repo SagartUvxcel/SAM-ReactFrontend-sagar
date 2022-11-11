@@ -18,6 +18,13 @@ p {
   text-align: justify;
 }
 
+.bi-circle-fill::before {
+  content: "\f287";
+  font-size: 8px;
+  padding-left: 4px;
+  color: gray;
+}
+
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
@@ -408,6 +415,12 @@ input[type="number"] {
 
 .password-condition {
   font-size: 10px;
+}
+
+/* Profile */
+
+.profile-wrapper .profile-details-div {
+  height: 360px;
 }
 
 /* Media Queries */

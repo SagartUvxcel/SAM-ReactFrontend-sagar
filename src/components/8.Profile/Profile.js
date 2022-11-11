@@ -79,7 +79,7 @@ const Profile = () => {
               </div>
               <div className="row mt-5">
                 <div className="col-xl-3 ps-xl-0">
-                  <div className="border border-2 px-xl-2 py-xl-3">
+                  <div className="border border-2 shadow profile-details-div p-xl-3">
                     <div className="row justify-content-center">
                       <div className="col-1">
                         <i className="bi bi-mortarboard-fill"></i>
@@ -100,7 +100,7 @@ const Profile = () => {
                         <small>Description4</small>
                         <br />
                       </div>
-                      <div className="col-10">
+                      <div className="col-12">
                         <hr />
                       </div>
                     </div>
@@ -129,20 +129,75 @@ const Profile = () => {
                         <small>HS0952363723</small>
                         <br />
                         <small className="text-muted">User Id: </small>
-                        <small>ABCD28998</small>
+                        <small>ABCD28998</small>w
                         <br />
                       </div>
                     </div>
                   </div>
                 </div>
                 <div className="col-xl-3">
-                  <div className="border border-2">div1</div>
+                  <div className="border border-2 shadow profile-details-div p-xl-3">
+                    <div className="row justify-content-center">
+                      <div className="col-1">
+                        <i className="bi bi-person-workspace"></i>
+                      </div>
+                      <div className="col-11">
+                        <small className="">Other details</small>
+                      </div>
+                      <div className="col-1">
+                        <i className="bi bi-circle-fill"></i>
+                      </div>
+                      <div className="col-11">
+                        <small className="text-muted">Some details</small>
+                        <br />
+                        <small className="text-muted">detail 1 example</small>
+                        <br />
+                        <small className="text-muted">
+                          detail 2 example Lorem ipsum dolor sit.
+                        </small>
+                      </div>
+                      <div className="col-12">
+                        <hr />
+                      </div>
+                      <div className="col-1">
+                        <i className="bi bi-circle-fill"></i>
+                      </div>
+                      <div className="col-11">
+                        <small className="text-muted">Some details</small>
+                        <br />
+                        <small className="text-muted">detail 1 example</small>
+                        <br />
+                        <small className="text-muted">
+                          detail 2 example Lorem ipsum dolor sit.
+                        </small>
+                      </div>
+                      <div className="col-12">
+                        <hr />
+                      </div>
+                      <div className="col-1">
+                        <i className="bi bi-circle-fill"></i>
+                      </div>
+                      <div className="col-11">
+                        <small className="text-muted">Some details</small>
+                        <br />
+                        <small className="text-muted">detail 1 example</small>
+                        <br />
+                        <small className="text-muted">
+                          detail 2 example Lorem ipsum dolor sit.
+                        </small>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <div className="col-xl-3">
-                  <div className="border border-2">div1</div>
+                  <div className="border border-2 shadow profile-details-div p-xl-3">
+                    <span className="fw-bolder">Some Heading</span>
+                  </div>
                 </div>
                 <div className="col-xl-3 pe-xl-0">
-                  <div className="border border-2">div1</div>
+                  <div className="border border-2 shadow profile-details-div p-xl-3">
+                    div1
+                  </div>
                 </div>
               </div>
             </div>
