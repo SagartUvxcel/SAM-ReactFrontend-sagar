@@ -216,32 +216,32 @@ const Profile = () => {
                         <span>5</span>
                       </div>
                       <div className="col-6">
-                        <span class="badge rounded-pill bg-warning text-dark">
+                        <span class="badge w-100 rounded-pill bg-warning text-dark">
                           text1
                         </span>
                       </div>
                       <div className="col-6">
-                        <span class="badge rounded-pill bg-outline-warning text-dark">
+                        <span class="badge w-100 rounded-pill bg-outline-warning text-dark">
                           text2
                         </span>
                       </div>
                       <div className="col-6 mt-2">
-                        <span class="badge rounded-pill bg-warning text-dark">
+                        <span class="badge w-100 rounded-pill bg-warning text-dark">
                           text3
                         </span>
                       </div>
                       <div className="col-6 mt-2">
-                        <span class="badge rounded-pill bg-outline-warning text-dark">
+                        <span class="badge w-100 rounded-pill bg-outline-warning text-dark">
                           text4
                         </span>
                       </div>
                       <div className="col-6 mt-2">
-                        <span class="badge rounded-pill bg-warning text-dark">
+                        <span class="badge w-100 rounded-pill bg-warning text-dark">
                           text5
                         </span>
                       </div>
                       <div className="col-6 mt-2">
-                        <span class="badge rounded-pill bg-outline-warning text-dark">
+                        <span class="badge w-100 rounded-pill bg-outline-warning text-dark">
                           text6
                         </span>
                       </div>
@@ -250,7 +250,70 @@ const Profile = () => {
                 </div>
                 <div className="col-xl-3 pe-xl-0">
                   <div className="border border-2 shadow profile-details-div p-xl-3">
-                    div1
+                    <span className="fw-bolder">Some Heading</span>
+                    <br />
+                    <div className="row justify-content-center">
+                      <div className="col-6 mt-3">
+                        <div class="progress circled-div">
+                          <div
+                            class="progress-bar bg-warning"
+                            role="progressbar"
+                            style={{ width: "79%" }}
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                          >
+                            +79%
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-12 my-3">
+                        <span className="text-muted">Specials:</span>
+                      </div>
+                      <div className="col-6">
+                        <button
+                          type="button"
+                          class="btn fourth-div-btn btn-warning btn-sm position-relative"
+                        >
+                          Inbox
+                          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info">
+                            79+
+                          </span>
+                        </button>
+                      </div>
+                      <div className="col-6">
+                        <button
+                          type="button"
+                          class="btn fourth-div-btn btn-outline-warning btn-sm position-relative"
+                        >
+                          Inbox
+                          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info">
+                            79+
+                          </span>
+                        </button>
+                      </div>
+                      <div className="col-6 mt-3">
+                        <button
+                          type="button"
+                          class="btn fourth-div-btn btn-warning btn-sm position-relative"
+                        >
+                          Inbox
+                          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info">
+                            79+
+                          </span>
+                        </button>
+                      </div>
+                      <div className="col-6 mt-3">
+                        <button
+                          type="button"
+                          class="btn fourth-div-btn btn-outline-warning btn-sm position-relative"
+                        >
+                          Inbox
+                          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info">
+                            79+
+                          </span>
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
