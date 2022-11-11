@@ -17,7 +17,7 @@ const Profile = () => {
                   {/* Name & designation */}
                   <div className="row">
                     <div className="col-xl-12">
-                      <span className="fw-bold fs-3 text-success">
+                      <span className="fw-bold fs-3 text-warning">
                         John Butler
                       </span>
                       <br />
