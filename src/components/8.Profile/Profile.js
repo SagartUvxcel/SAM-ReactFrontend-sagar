@@ -250,7 +250,7 @@ const Profile = () => {
                 </div>
                 <div className="col-xl-3 pe-xl-0">
                   <div className="border border-2 shadow profile-details-div p-xl-3">
-                    <span className="fw-bolder">Some Heading</span>
+                    <span className="fw-bolder">Other Heading</span>
                     <br />
                     <div className="row justify-content-center">
                       <div className="col-6 mt-3">
@@ -274,7 +274,7 @@ const Profile = () => {
                           type="button"
                           class="btn fourth-div-btn btn-warning btn-sm position-relative"
                         >
-                          Inbox
+                          Text 1
                           <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info">
                             79+
                           </span>
@@ -285,7 +285,7 @@ const Profile = () => {
                           type="button"
                           class="btn fourth-div-btn btn-outline-warning btn-sm position-relative"
                         >
-                          Inbox
+                          Text 2
                           <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info">
                             79+
                           </span>
@@ -296,7 +296,7 @@ const Profile = () => {
                           type="button"
                           class="btn fourth-div-btn btn-warning btn-sm position-relative"
                         >
-                          Inbox
+                          Text 3
                           <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info">
                             79+
                           </span>
@@ -307,7 +307,7 @@ const Profile = () => {
                           type="button"
                           class="btn fourth-div-btn btn-outline-warning btn-sm position-relative"
                         >
-                          Inbox
+                          Text 4
                           <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info">
                             79+
                           </span>
