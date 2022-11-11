@@ -237,12 +237,12 @@ const Profile = () => {
                       </div>
                       <div className="col-6 mt-2 text-center">
                         <span class="badge rounded-pill bg-warning text-dark">
-                          text1
+                          text5
                         </span>
                       </div>
                       <div className="col-6 mt-2 text-center">
                         <span class="badge rounded-pill bg-outline-warning text-dark">
-                          text2
+                          text6
                         </span>
                       </div>
                     </div>

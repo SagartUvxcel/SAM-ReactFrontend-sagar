@@ -431,6 +431,10 @@ input[type="number"] {
   font-size: 18px;
 }
 
+.profile-wrapper .badge {
+  width: 100%;
+}
+
 .bg-outline-warning {
   border: 2px solid yellow;
   background-color: rgba(255, 255, 0, 0.251);
