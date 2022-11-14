@@ -494,6 +494,11 @@ input[type="number"] {
   .five-section-col {
     width: 100% !important;
   }
+
+  .profile-wrapper .profile-details-div {
+    height: fit-content;
+  }
+
   .property-icons-div .icons {
     height: 44px;
     width: 47px;
