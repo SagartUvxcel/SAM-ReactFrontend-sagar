@@ -8,9 +8,9 @@ const Profile = () => {
         <div className="container-fluid wrapper">
           <div className="row justify-content-center">
             <div className="col-11">
-              <div className="row border p-md-4 shadow">
+              <div className="row border p-4 shadow">
                 {/* Profile image */}
-                <div className="col-md-3">
+                <div className="col-md-3 text-center text-md-start">
                   <img
                     src="profile.png"
                     alt="Profile Pic"
@@ -20,7 +20,7 @@ const Profile = () => {
                 <div className="col-xl-9 col-md-9">
                   {/* Name & designation */}
                   <div className="row">
-                    <div className="col-xl-12">
+                    <div className="col-xl-12 text-center text-md-start">
                       <span className="fw-bold fs-3 text-warning">
                         John Butler
                       </span>
@@ -31,7 +31,7 @@ const Profile = () => {
                     </div>
                   </div>
                   {/* Other details */}
-                  <div className="row mt-md-4">
+                  <div className="row mt-4">
                     <div className="col-md-4">
                       <p className="text-muted">About</p>
                       <p>
@@ -39,29 +39,29 @@ const Profile = () => {
                         elit. Nam corporis eos architecto, ducimus, consectetur
                       </p>
                     </div>
-                    <div className="offset-md-1 col-md-3">
+                    <div className="offset-md-1 col-md-3 mt-4 mt-md-0">
                       <div>
                         <p className="text-muted">Some Heading</p>
                         <p>Lorem ipsum dolor sit.</p>
                       </div>
-                      <div className="mt-5">
+                      <div className="mt-4 mt-md-5">
                         <p className="text-muted">Some Heading</p>
                         <p>Lorem ipsum dolor sit.</p>
                       </div>
                     </div>
                     <div className="col-md-3">
-                      <div>
+                      <div className="mt-4 mt-md-0">
                         <p className="text-muted">Some Heading</p>
                         <p>Lorem ipsum dolor sit.</p>
                       </div>
-                      <div className="mt-5">
+                      <div className="mt-4 mt-md-5">
                         <p className="text-muted">Some Heading</p>
                         <p>Lorem ipsum dolor sit.</p>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="col-md-6">
+                <div className="col-md-6 mt-4 mt-md-0">
                   <p className="text-muted">
                     some text Lorem ipsum dolor sit amet.
                   </p>
@@ -84,7 +84,7 @@ const Profile = () => {
                 </div>
               </div>
               <div className="row mt-5">
-                <div className="col-lg-3 col-md-6 ps-0">
+                <div className="col-lg-3 col-md-6 ps-lg-0">
                   <div className="border border-2 shadow profile-details-div p-3">
                     <div className="row justify-content-center">
                       <div className="col-1">
@@ -141,7 +141,7 @@ const Profile = () => {
                     </div>
                   </div>
                 </div>
-                <div className="col-lg-3 col-md-6">
+                <div className="col-lg-3 col-md-6 mt-4 mt-md-0">
                   <div className="border border-2 shadow profile-details-div p-3">
                     <div className="row justify-content-center">
                       <div className="col-1">
@@ -195,7 +195,7 @@ const Profile = () => {
                     </div>
                   </div>
                 </div>
-                <div className="col-lg-3 col-md-6">
+                <div className="col-lg-3 col-md-6  mt-4 mt-lg-0">
                   <div className="border border-2 shadow profile-details-div p-3">
                     <span className="fw-bolder">Some Heading</span>
                     <br />
@@ -252,7 +252,7 @@ const Profile = () => {
                     </div>
                   </div>
                 </div>
-                <div className="col-lg-3 col-md-6 pe-0">
+                <div className="col-lg-3 col-md-6 mt-4 mt-lg-0 pe-lg-0">
                   <div className="border border-2 shadow profile-details-div p-3">
                     <span className="fw-bolder">Other Heading</span>
                     <br />

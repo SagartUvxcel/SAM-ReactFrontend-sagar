@@ -464,6 +464,9 @@ input[type="number"] {
   .profile-wrapper .profile-details-div {
     height: 390px;
   }
+  .profile-wrapper .circled-div {
+    height: 130px;
+  }
 }
 
 @media screen and (max-width: 767px) {
