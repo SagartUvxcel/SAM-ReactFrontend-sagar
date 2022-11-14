@@ -84,7 +84,7 @@ const Profile = () => {
                 </div>
               </div>
               <div className="row mt-5">
-                <div className="col-lg-3 col-md-6 ps-lg-0">
+                <div className="col-xl-4 col-md-6 ps-xl-0">
                   <div className="border border-2 shadow profile-details-div p-3">
                     <div className="row justify-content-center">
                       <div className="col-1">
@@ -141,7 +141,7 @@ const Profile = () => {
                     </div>
                   </div>
                 </div>
-                <div className="col-lg-3 col-md-6 mt-4 mt-md-0">
+                <div className="col-xl-4 col-md-6 mt-4 mt-md-0">
                   <div className="border border-2 shadow profile-details-div p-3">
                     <div className="row justify-content-center">
                       <div className="col-1">
@@ -195,12 +195,12 @@ const Profile = () => {
                     </div>
                   </div>
                 </div>
-                <div className="col-lg-3 col-md-6  mt-4 mt-lg-0">
+                <div className="col-xl-4 col-md-6  mt-4 mt-xl-0">
                   <div className="border border-2 shadow profile-details-div p-3">
                     <span className="fw-bolder">Some Heading</span>
                     <br />
                     <div className="row justify-content-center">
-                      <div className="col-6 mt-3">
+                      <div className="col-5 mt-3">
                         <div class="progress circled-div">
                           <div
                             class="progress-bar bg-warning"
@@ -252,12 +252,12 @@ const Profile = () => {
                     </div>
                   </div>
                 </div>
-                <div className="col-lg-3 col-md-6 mt-4 mt-lg-0 pe-lg-0">
+                <div className="col-xl-4 col-md-6 mt-4 ps-xl-0">
                   <div className="border border-2 shadow profile-details-div p-3">
                     <span className="fw-bolder">Other Heading</span>
                     <br />
                     <div className="row justify-content-center">
-                      <div className="col-6 mt-3">
+                      <div className="col-5 mt-3">
                         <div class="progress circled-div">
                           <div
                             class="progress-bar bg-warning"
