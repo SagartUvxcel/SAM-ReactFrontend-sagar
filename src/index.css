@@ -425,7 +425,7 @@ input[type="number"] {
 
 .profile-wrapper .circled-div {
   border-radius: 50% !important;
-  height: 124px !important;
+  height: 134px !important;
   width: 100% !important;
   font-weight: bold;
   font-size: 18px;
@@ -478,7 +478,7 @@ input[type="number"] {
     height: 390px;
   }
   .profile-wrapper .circled-div {
-    height: 130px;
+    height: 120px !important;
   }
 }
 
@@ -497,5 +497,9 @@ input[type="number"] {
   .property-icons-div .icons {
     height: 44px;
     width: 47px;
+  }
+
+  .profile-wrapper .circled-div {
+    height: 106px !important;
   }
 }
