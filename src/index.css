@@ -441,9 +441,22 @@ input[type="number"] {
 }
 
 /* Media Queries */
+
+@media (min-width: 768px) {
+  .col-md-6 {
+    width: 48.5% !important;
+  }
+}
+
 @media screen and (min-width: 992px) {
   .five-section-col {
     flex: 0 0 auto !important;
+  }
+}
+
+@media (min-width: 1200px) {
+  .col-xl-4 {
+    width: 32% !important;
   }
 }
 

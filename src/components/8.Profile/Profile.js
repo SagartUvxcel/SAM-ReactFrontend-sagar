@@ -83,9 +83,9 @@ const Profile = () => {
                   </div>
                 </div>
               </div>
-              <div className="row mt-5">
-                <div className="col-xl-4 col-md-6 ps-xl-0">
-                  <div className="border border-2 shadow profile-details-div p-3">
+              <div className="row mt-5 justify-content-between">
+                <div className="col-xl-4 col-md-6 border border-2 shadow profile-details-div">
+                  <div className="p-3">
                     <div className="row justify-content-center">
                       <div className="col-1">
                         <i className="bi bi-mortarboard-fill"></i>
@@ -141,8 +141,8 @@ const Profile = () => {
                     </div>
                   </div>
                 </div>
-                <div className="col-xl-4 col-md-6 mt-4 mt-md-0">
-                  <div className="border border-2 shadow profile-details-div p-3">
+                <div className="col-xl-4 col-md-6 mt-4 mt-md-0 border border-2 shadow profile-details-div">
+                  <div className="p-3">
                     <div className="row justify-content-center">
                       <div className="col-1">
                         <i className="bi bi-person-workspace"></i>
@@ -195,8 +195,8 @@ const Profile = () => {
                     </div>
                   </div>
                 </div>
-                <div className="col-xl-4 col-md-6  mt-4 mt-xl-0">
-                  <div className="border border-2 shadow profile-details-div p-3">
+                <div className="col-xl-4 col-md-6  mt-4 mt-xl-0 border border-2 shadow profile-details-div ">
+                  <div className="p-3">
                     <span className="fw-bolder">Some Heading</span>
                     <br />
                     <div className="row justify-content-center">
@@ -252,8 +252,8 @@ const Profile = () => {
                     </div>
                   </div>
                 </div>
-                <div className="col-xl-4 col-md-6 mt-4 ps-xl-0">
-                  <div className="border border-2 shadow profile-details-div p-3">
+                <div className="col-xl-4 col-md-6 mt-4 border border-2 shadow profile-details-div ">
+                  <div className="p-3">
                     <span className="fw-bolder">Other Heading</span>
                     <br />
                     <div className="row justify-content-center">
