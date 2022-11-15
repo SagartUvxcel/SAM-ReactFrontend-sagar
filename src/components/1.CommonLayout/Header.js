@@ -52,19 +52,19 @@ function Header() {
                 </NavLink>
               </li>
               <li className="nav-item ps-lg-2">
-                <a className="nav-link" href="/">
+                <NavLink className="nav-link" to="/about">
                   About
-                </a>
+                </NavLink>
               </li>
               <li className="nav-item ps-lg-2">
-                <a className="nav-link" href="/">
+                <NavLink className="nav-link" to="/contact">
                   Contact
-                </a>
+                </NavLink>
               </li>
               <li className="nav-item ps-lg-2">
-                <a className="nav-link" href="/">
+                <NavLink className="nav-link" to="/account">
                   Account
-                </a>
+                </NavLink>
               </li>
               {!loginStatus ? (
                 <>
