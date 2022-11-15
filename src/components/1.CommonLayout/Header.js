@@ -12,6 +12,7 @@ function Header() {
     // Clear localStorage.
     localStorage.clear();
     setLoginStatus(false);
+    window.location.reload();
     goTo("/");
   };
 
