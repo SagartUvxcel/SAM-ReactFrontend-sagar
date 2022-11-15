@@ -463,9 +463,9 @@ const Registration = ({ setToken }) => {
         }
       });
 
-    // setToken(formData.contact_details.email + "1234");
-    // localStorage.setItem("token", formData.emailAddress + "1234");
-    // goTo("/register/verify");
+    setToken(formData.contact_details.email + "1234");
+    localStorage.setItem("token", formData.emailAddress + "1234");
+    goTo("/register/verify");
   };
 
   // Function will run after Organization Form submit button is clicked.

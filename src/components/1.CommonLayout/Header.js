@@ -81,9 +81,9 @@ function Header() {
               ) : (
                 <>
                   <li className="nav-item ps-lg-2">
-                    <span style={{ cursor: "pointer" }} className="nav-link">
+                    <NavLink to="/profile" className="nav-link">
                       Profile
-                    </span>
+                    </NavLink>
                   </li>
                   <li className="nav-item ps-lg-2">
                     <span

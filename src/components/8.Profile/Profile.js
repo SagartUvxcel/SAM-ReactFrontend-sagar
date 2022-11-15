@@ -1,7 +1,19 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Layout from "../1.CommonLayout/Layout";
 
 const Profile = () => {
+  const goTo = useNavigate();
+  const checkStatusOfLogin = () => {
+    const statusOfLogin = localStorage.getItem("isLoggedIn");
+    if (statusOfLogin === null) {
+      goTo("/");
+    }
+  };
+  useEffect(() => {
+    checkStatusOfLogin();
+  });
+
   return (
     <Layout>
       <section className="profile-wrapper section-padding min-100vh">
@@ -201,9 +213,9 @@ const Profile = () => {
                     <br />
                     <div className="row justify-content-center">
                       <div className="col-5 mt-3">
-                        <div class="progress circled-div">
+                        <div className="progress circled-div">
                           <div
-                            class="progress-bar bg-warning"
+                            className="progress-bar bg-warning"
                             role="progressbar"
                             style={{ width: "89%" }}
                             aria-valuemin="0"
@@ -220,32 +232,32 @@ const Profile = () => {
                         <span>5</span>
                       </div>
                       <div className="col-6">
-                        <span class="badge w-100 rounded-pill bg-warning text-dark">
+                        <span className="badge w-100 rounded-pill bg-warning text-dark">
                           text1
                         </span>
                       </div>
                       <div className="col-6">
-                        <span class="badge w-100 rounded-pill bg-outline-warning text-dark">
+                        <span className="badge w-100 rounded-pill bg-outline-warning text-dark">
                           text2
                         </span>
                       </div>
                       <div className="col-6 mt-2">
-                        <span class="badge w-100 rounded-pill bg-warning text-dark">
+                        <span className="badge w-100 rounded-pill bg-warning text-dark">
                           text3
                         </span>
                       </div>
                       <div className="col-6 mt-2">
-                        <span class="badge w-100 rounded-pill bg-outline-warning text-dark">
+                        <span className="badge w-100 rounded-pill bg-outline-warning text-dark">
                           text4
                         </span>
                       </div>
                       <div className="col-6 mt-2">
-                        <span class="badge w-100 rounded-pill bg-warning text-dark">
+                        <span className="badge w-100 rounded-pill bg-warning text-dark">
                           text5
                         </span>
                       </div>
                       <div className="col-6 mt-2">
-                        <span class="badge w-100 rounded-pill bg-outline-warning text-dark">
+                        <span className="badge w-100 rounded-pill bg-outline-warning text-dark">
                           text6
                         </span>
                       </div>
@@ -258,9 +270,9 @@ const Profile = () => {
                     <br />
                     <div className="row justify-content-center">
                       <div className="col-5 mt-3">
-                        <div class="progress circled-div">
+                        <div className="progress circled-div">
                           <div
-                            class="progress-bar bg-warning"
+                            className="progress-bar bg-warning"
                             role="progressbar"
                             style={{ width: "79%" }}
                             aria-valuemin="0"
@@ -276,10 +288,10 @@ const Profile = () => {
                       <div className="col-6">
                         <button
                           type="button"
-                          class="btn fourth-div-btn btn-warning btn-sm position-relative"
+                          className="btn fourth-div-btn btn-warning btn-sm position-relative"
                         >
                           Text 1
-                          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info">
+                          <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info">
                             79+
                           </span>
                         </button>
@@ -287,10 +299,10 @@ const Profile = () => {
                       <div className="col-6">
                         <button
                           type="button"
-                          class="btn fourth-div-btn btn-outline-warning btn-sm position-relative"
+                          className="btn fourth-div-btn btn-outline-warning btn-sm position-relative"
                         >
                           Text 2
-                          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info">
+                          <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info">
                             79+
                           </span>
                         </button>
@@ -298,10 +310,10 @@ const Profile = () => {
                       <div className="col-6 mt-3">
                         <button
                           type="button"
-                          class="btn fourth-div-btn btn-warning btn-sm position-relative"
+                          className="btn fourth-div-btn btn-warning btn-sm position-relative"
                         >
                           Text 3
-                          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info">
+                          <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info">
                             79+
                           </span>
                         </button>
@@ -309,10 +321,10 @@ const Profile = () => {
                       <div className="col-6 mt-3">
                         <button
                           type="button"
-                          class="btn fourth-div-btn btn-outline-warning btn-sm position-relative"
+                          className="btn fourth-div-btn btn-outline-warning btn-sm position-relative"
                         >
                           Text 4
-                          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info">
+                          <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info">
                             79+
                           </span>
                         </button>
