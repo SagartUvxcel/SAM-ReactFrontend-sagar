@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "../1.CommonLayout/Layout";
 
-const VerifyToken = ({ token }) => {
+const VerifyToken = () => {
   // useState to save token received after registration.
   const [savedToken, setSavedToken] = useState("");
   // useState to save token entered by user.
@@ -14,10 +14,9 @@ const VerifyToken = ({ token }) => {
 
   // Function to save token.
   const saveToken = () => {
+    let token = localStorage.getItem("token");
     if (token) {
       setSavedToken(token);
-    } else {
-      setSavedToken(localStorage.getItem("token"));
     }
   };
 

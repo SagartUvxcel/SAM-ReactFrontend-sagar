@@ -4,7 +4,7 @@ import CommonFormFields from "./CommonFormFields";
 import axios from "axios";
 import { NavLink, useNavigate } from "react-router-dom";
 
-const Registration = ({ setToken }) => {
+const Registration = () => {
   // These are used for the functionality of selecting either individual form or organization form.
   const toggleIndividualForm = useRef();
   const toggleOrganizationForm = useRef();
@@ -463,7 +463,6 @@ const Registration = ({ setToken }) => {
         }
       });
 
-    setToken(formData.contact_details.email + "1234");
     localStorage.setItem("token", formData.emailAddress + "1234");
     goTo("/register/verify");
   };
