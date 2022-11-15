@@ -1,19 +1,7 @@
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React from "react";
 import Layout from "../1.CommonLayout/Layout";
 
 const Profile = () => {
-  const goTo = useNavigate();
-  const checkStatusOfLogin = () => {
-    const statusOfLogin = localStorage.getItem("isLoggedIn");
-    if (statusOfLogin === null) {
-      goTo("/");
-    }
-  };
-  useEffect(() => {
-    checkStatusOfLogin();
-  });
-
   return (
     <Layout>
       <section className="profile-wrapper section-padding min-100vh">

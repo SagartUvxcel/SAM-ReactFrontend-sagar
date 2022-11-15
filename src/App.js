@@ -9,6 +9,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import { useState } from "react";
 import VerifyToken from "./components/7.Registration/VerifyToken";
 import Profile from "./components/8.Profile/Profile";
+import Protected from "./Protected";
 
 function App() {
   const [token, setToken] = useState("");
@@ -30,7 +31,14 @@ function App() {
           />
           <Route path="/login" element={<LoginMainPage />} />
           <Route path="/register/reset-password" element={<ResetPassword />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route
+            path="/profile"
+            element={
+              <Protected>
+                <Profile />
+              </Protected>
+            }
+          />
         </Routes>
       </ScrollToTop>
     </>
