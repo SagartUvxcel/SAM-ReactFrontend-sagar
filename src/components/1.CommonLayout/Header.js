@@ -1,38 +1,30 @@
-import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { checkStatus } from "../../redux/ActionTypes";
-import { useState } from "react";
 
 function Header() {
-  // It is to dispatch actions to the redux store.
-  const dispatch = useDispatch();
-  // Initial state from redux
-  let InitialStatus = useSelector((state) => state.login_status);
   // To save status of login i.e. true or false.
-  const [loginStatus, setLoginStatus] = useState(InitialStatus);
+  const [loginStatus, setLoginStatus] = useState(false);
   // To navigate to particular route.
   const goTo = useNavigate();
-  // Logout function
+  // Logout function.
   const logOut = () => {
     alert("Logged Out Successfully");
-    // false -  means user is logged out so that we are setting logged in status as false.
-    dispatch(checkStatus(false));
+    // Clear localStorage.
+    localStorage.clear();
+    setLoginStatus(false);
     goTo("/");
   };
 
   // Save status of login.
-  const saveLoginStatus = () => {
-    if (localStorage.getItem("isLoggedIn") === "false") {
-      setLoginStatus(false);
-    } else if (localStorage.getItem("isLoggedIn") === "true") {
+  const setStatusOfLogin = () => {
+    const statusOfLogin = localStorage.getItem("isLoggedIn");
+    if (statusOfLogin) {
       setLoginStatus(true);
     }
   };
 
   useEffect(() => {
-    saveLoginStatus();
+    setStatusOfLogin();
   });
 
   return (
