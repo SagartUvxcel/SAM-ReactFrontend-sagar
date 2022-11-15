@@ -139,10 +139,10 @@ const Registration = ({ setToken }) => {
   // Function to validate zipCodes.
   const zipValidationByState = async (zipValue, stateId) => {
     await axios
-      .post(
-        `http://host.docker.internal:3000/sam/v1/customer-registration/zipcode-validation`,
-        { zipcode: zipValue, state_id: stateId }
-      )
+      .post(`/sam/v1/customer-registration/zipcode-validation`, {
+        zipcode: zipValue,
+        state_id: stateId,
+      })
       .then((res) => {
         if (res.data.status === 0) {
           setValidationDetails({
@@ -314,7 +314,7 @@ const Registration = ({ setToken }) => {
       // If input field is email then post its value to api for validating.
       await axios
         .post(
-          `http://host.docker.internal:3000/sam/v1/customer-registration/email-validation`,
+          `/sam/v1/customer-registration/email-validation`,
           JSON.stringify({ email: value })
         )
         .then((res) => {
@@ -355,7 +355,7 @@ const Registration = ({ setToken }) => {
       // If input field is mobile then post its value to api for validating.
       await axios
         .post(
-          `http://host.docker.internal:3000/sam/v1/customer-registration/mobilenumber-validation`,
+          `/sam/v1/customer-registration/mobilenumber-validation`,
           JSON.stringify({ mobile_number: value })
         )
         .then((res) => {
@@ -452,10 +452,7 @@ const Registration = ({ setToken }) => {
     deleteLandlineNumberIfEmpty();
     console.log(formData);
     await axios
-      .post(
-        `http://host.docker.internal:3000/sam/v1/customer-registration/individual-customer`,
-        formData
-      )
+      .post(`/sam/v1/customer-registration/individual-customer`, formData)
       .then((res) => {
         if (res.data.status === 0) {
           alert(`${formData.user_type} Added Successfully !`);
@@ -477,10 +474,7 @@ const Registration = ({ setToken }) => {
     deleteLandlineNumberIfEmpty();
     console.log(formData);
     await axios
-      .post(
-        `http://host.docker.internal:3000/sam/v1/customer-registration/org-customer`,
-        formData
-      )
+      .post(`/sam/v1/customer-registration/org-customer`, formData)
       .then((res) => {
         if (res.data.status === 0) {
           alert(`${formData.user_type} Added Successfully !`);

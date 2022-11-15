@@ -31,19 +31,13 @@ function Home() {
   // It will fetch all states, banks, assets from api and will map those values to respective select fields.
   const getSearchDetails = async () => {
     // Get all states from api.
-    const allStates = await axios.get(
-      `http://host.docker.internal:3000/sam/v1/property/by-state`
-    );
+    const allStates = await axios.get(`/sam/v1/property/by-state`);
 
     // Get all banks from api.
-    const allBanks = await axios.get(
-      `http://host.docker.internal:3000/sam/v1/property/by-bank`
-    );
+    const allBanks = await axios.get(`/sam/v1/property/by-bank`);
 
     // Get all asset Categories from api.
-    const assetCategories = await axios.get(
-      `http://host.docker.internal:3000/sam/v1/property/by-category`
-    );
+    const assetCategories = await axios.get(`/sam/v1/property/by-category`);
 
     // store states, banks and asset categories into searchFields useState.
     setSearchFields({
@@ -66,10 +60,9 @@ function Home() {
       } else {
         delete dataToPost.state_id;
       }
-      const cityByState = await axios.post(
-        `http://host.docker.internal:3000/sam/v1/property/by-city`,
-        { state_id: parseInt(value) }
-      );
+      const cityByState = await axios.post(`/sam/v1/property/by-city`, {
+        state_id: parseInt(value),
+      });
       // Store cities data into searchField useState.
       setSearchFields({ ...searchFields, cities: cityByState.data });
       // Unhide city select box when we select state.
@@ -87,10 +80,9 @@ function Home() {
         delete dataToPost.city_id;
       }
       // If input is cities then post selected city id to api for getting locality info. based on selected city.
-      const localityByCity = await axios.post(
-        `http://host.docker.internal:3000/sam/v1/property/by-address`,
-        { city_id: parseInt(value) }
-      );
+      const localityByCity = await axios.post(`/sam/v1/property/by-address`, {
+        city_id: parseInt(value),
+      });
       // Store locality data into searchField useState.
       setSearchFields({ ...searchFields, localities: localityByCity.data });
       // Unhide select box when we select city.
@@ -129,10 +121,7 @@ function Home() {
     e.preventDefault();
     // Post data and get Searched result from response.
     await axios
-      .post(
-        `http://host.docker.internal:3000/sam/v1/property/count-category`,
-        dataToPost
-      )
+      .post(`/sam/v1/property/count-category`, dataToPost)
       .then((res) => {
         // Store Searched results into propertyData useState.
         localStorage.setItem("propertyDataFromLocal", JSON.stringify(res.data));
