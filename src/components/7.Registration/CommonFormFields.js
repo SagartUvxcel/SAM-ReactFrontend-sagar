@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
 
 // Receiving validationDetails, onInputChange, onInputBlur as a props from organization/individual main form.
 const CommonFormFields = ({
@@ -177,7 +178,7 @@ const CommonFormFields = ({
       {/* SAM T & C */}
       <div className="row SamTermsConditionsRow mt-3">
         <div className="offset-lg-2 col-lg-4">
-          <a href="/">SAM Terms and Conditions</a>
+          <NavLink to="/">SAM Terms and Conditions</NavLink>
         </div>
       </div>
       {/* Agree T & C */}

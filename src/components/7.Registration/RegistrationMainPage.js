@@ -1,8 +1,9 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Layout from "../1.CommonLayout/Layout";
 import CommonFormFields from "./CommonFormFields";
 import axios from "axios";
 import { NavLink } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Registration = () => {
   // These are used for the functionality of selecting either individual form or organization form.
@@ -266,7 +267,7 @@ const Registration = () => {
         },
       });
       if (IdOfState === "" && value !== "") {
-        alert("Please select State");
+        toast.error("Please select State");
       } else if (IdOfState !== "" && value !== "") {
         zipValidationByState(value, parseInt(IdOfState));
       }
@@ -456,11 +457,11 @@ const Registration = () => {
             .then((res) => {
               console.log(res.data);
             });
-          alert(`Success: Please check your email for verification.`);
+          toast.success(`Success: Please check your email for verification.`);
           e.target.reset();
           resetValues();
         } else {
-          alert("Form is Invalid");
+          toast.error("Form is Invalid");
         }
       });
   };
@@ -493,14 +494,18 @@ const Registration = () => {
             .then((res) => {
               console.log(res.data);
             });
-          alert(`Success: Please check your email for verification.`);
+          toast.success(`Success: Please check your email for verification.`);
           e.target.reset();
           resetValues();
         } else {
-          alert("Form is Invalid");
+          toast.error("Form is Invalid");
         }
       });
   };
+
+  useEffect(() => {
+    resetValues();
+  }, []);
 
   return (
     <Layout>

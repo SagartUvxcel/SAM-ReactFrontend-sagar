@@ -1,6 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import Layout from "../1.CommonLayout/Layout";
 
 const ResetPassword = () => {
@@ -78,7 +79,7 @@ const ResetPassword = () => {
   const onResetPasswordFormSubmit = (e) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
-      alert("Password and confirm password not matching");
+      toast.error("Password and confirm password not matching");
       setDetails({
         ...details,
         invalidColor2: "danger",
@@ -88,7 +89,7 @@ const ResetPassword = () => {
         passwordType2: "text",
       });
     } else if (newPassword === confirmPassword && invalidColor1 === "danger") {
-      alert("Invalid Password");
+      toast.error("Invalid Password");
       setDetails({
         ...details,
         invalidColor2: "danger",
@@ -98,7 +99,7 @@ const ResetPassword = () => {
         passwordType2: "text",
       });
     } else {
-      alert("Password Changed Successfully !");
+      toast.success("Password Changed Successfully !");
       goTo("/login");
     }
   };

@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import Layout from "../1.CommonLayout/Layout";
 
 const VerifyToken = () => {
@@ -29,10 +30,10 @@ const VerifyToken = () => {
     e.preventDefault();
     console.log(savedToken, enteredToken);
     if (savedToken === enteredToken) {
-      alert("User Verification Successful !");
+      toast.success("User Verification Successful !");
       goTo("/register/reset-password");
     } else {
-      alert("Invalid Token");
+      toast.error("Invalid Token");
     }
   };
 
