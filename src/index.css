@@ -14,6 +14,20 @@ code {
 
 /* Common css */
 
+/* React toast */
+.toast-container {
+  position: fixed;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translateX(-50%) translateY(-50%) !important;
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  padding-top: 21% !important;
+  padding-right: 38% !important;
+  padding-left: 38% !important;
+  height: 100%;
+  width: 100% !important;
+}
+
 p {
   text-align: justify;
 }
@@ -461,6 +475,11 @@ input[type="number"] {
 }
 
 @media screen and (max-width: 992px) {
+  .toast-container {
+    padding-right: 30% !important;
+    padding-left: 30% !important;
+  }
+
   .home-wrapper {
     background-attachment: unset;
   }
@@ -483,6 +502,11 @@ input[type="number"] {
 }
 
 @media screen and (max-width: 767px) {
+  .toast-container {
+    padding-right: 11% !important;
+    padding-left: 11% !important;
+  }
+
   .home-wrapper {
     padding: 100px 0 50px 0;
     background-attachment: fixed;

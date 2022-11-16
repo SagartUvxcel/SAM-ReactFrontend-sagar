@@ -9,10 +9,12 @@ import ScrollToTop from "./components/ScrollToTop";
 import VerifyToken from "./components/7.Registration/VerifyToken";
 import Profile from "./components/8.Profile/Profile";
 import Protected from "./Protected";
+import { ToastContainer } from "react-toastify";
 
 function App() {
   return (
     <>
+      <ToastContainer className="toast-container" />
       <ScrollToTop>
         <Routes>
           <Route path="/" element={<Home />} />

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 function Header() {
   // To save status of login i.e. true or false.
@@ -8,11 +9,14 @@ function Header() {
   const goTo = useNavigate();
   // Logout function.
   const logOut = () => {
-    alert("Logged Out Successfully");
+    // alert("Logged Out Successfully");
+    toast.success("Logged Out Successfully");
     // Clear localStorage.
     localStorage.clear();
     setLoginStatus(false);
-    window.location.reload();
+    setTimeout(() => {
+      window.location.reload();
+    }, 2500);
     goTo("/");
   };
 
