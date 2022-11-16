@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import Layout from "../1.CommonLayout/Layout";
 import CommonFormFields from "./CommonFormFields";
 import axios from "axios";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 const Registration = () => {
   // These are used for the functionality of selecting either individual form or organization form.
@@ -13,9 +13,6 @@ const Registration = () => {
 
   // useState to store ID of state so that we can validate zipCodes for each state.
   const [IdOfState, SetIdOfState] = useState("");
-
-  // To navigate to particular route.
-  const goTo = useNavigate();
 
   // useState to store each field's data from form.
   const [formData, setFormData] = useState({
