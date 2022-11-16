@@ -19,18 +19,8 @@ const Registration = () => {
 
   // useState to store each field's data from form.
   const [formData, setFormData] = useState({
-    user_type: "Individual User",
-    first_name: "",
-    middle_name: "",
-    last_name: "",
-    aadhar_number: "",
-    pan_number: "",
-    organization_type: "",
-    company_name: "",
-    gst_number: "",
-    tan_number: "",
-    cin_number: "",
     contact_details: {
+      user_type: "Individual User",
       address: "",
       locality: "",
       city: "",
@@ -89,13 +79,9 @@ const Registration = () => {
       resetValues();
       setFormData({
         ...formData,
-        user_type: "Organizational User",
-        first_name: "",
-        middle_name: "",
-        last_name: "",
-        aadhar_number: "",
-        pan_number: "",
+        contact_details: { user_type: "Organizational User" },
       });
+
       // Reset form fields and validations.
       document.getElementById("individualForm").reset();
       // Make checkbox of label organization checked.
@@ -112,13 +98,9 @@ const Registration = () => {
     } else if (attrOfForm === "individual") {
       setFormData({
         ...formData,
-        user_type: "Individual User",
-        organization_type: "",
-        company_name: "",
-        gst_number: "",
-        tan_number: "",
-        cin_number: "",
+        contact_details: { user_type: "Individual User" },
       });
+
       // Reset form fields and validations.
       resetValues();
       document.getElementById("organizationForm").reset();
@@ -446,6 +428,16 @@ const Registration = () => {
   // Function will run after Individual Form submit button is clicked.
   const onIndividualFormSubmit = async (e) => {
     e.preventDefault();
+    const fieldsToDelete = [
+      "organization_type",
+      "company_name",
+      "gst_number",
+      "tan_number",
+      "cin_number",
+    ];
+    fieldsToDelete.forEach((field) => {
+      delete formData[field];
+    });
     console.log(formData);
     let userEmail = formData.contact_details.email;
     let redirectUrl = "http://localhost:5000/register/verify";
@@ -468,14 +460,21 @@ const Registration = () => {
           alert("Form is Invalid");
         }
       });
-
-    // localStorage.setItem("token", formData.emailAddress + "1234");
-    // goTo("/register/verify");
   };
 
   // Function will run after Organization Form submit button is clicked.
   const onOrganizationFormSubmit = async (e) => {
     e.preventDefault();
+    const fieldsToDelete = [
+      "first_name",
+      "middle_name",
+      "last_name",
+      "aadhar_number",
+      "pan_number",
+    ];
+    fieldsToDelete.forEach((field) => {
+      delete formData[field];
+    });
     let userEmail = formData.contact_details.email;
     let redirectUrl = "http://localhost:5000/register/verify";
     console.log(formData);
