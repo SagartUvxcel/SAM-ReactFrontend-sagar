@@ -69,49 +69,55 @@ const Registration = () => {
     SetIdOfState("");
   };
 
+  const showOrganizationForm = () => {
+    resetValues();
+    setFormData({
+      ...formData,
+      contact_details: { user_type: "Organizational User" },
+    });
+
+    // Reset form fields and validations.
+    document.getElementById("individualForm").reset();
+    // Make checkbox of label organization checked.
+    individualCheck.current.classList.remove(
+      "individual-and-organization-check"
+    );
+    organizationCheck.current.classList.add(
+      "individual-and-organization-check"
+    );
+    // Unhide organization form.
+    toggleOrganizationForm.current.classList.remove("d-none");
+    // Hide Individual form.
+    toggleIndividualForm.current.classList.add("d-none");
+  };
+
+  const showIndividualForm = () => {
+    setFormData({
+      ...formData,
+      contact_details: { user_type: "Individual User" },
+    });
+
+    // Reset form fields and validations.
+    resetValues();
+    document.getElementById("organizationForm").reset();
+    // Make checkbox of label individual checked.
+    individualCheck.current.classList.add("individual-and-organization-check");
+    organizationCheck.current.classList.remove(
+      "individual-and-organization-check"
+    );
+    // Hide organization form.
+    toggleOrganizationForm.current.classList.add("d-none");
+    // Unhide Individual form.
+    toggleIndividualForm.current.classList.remove("d-none");
+  };
+
   // Function to show individual form or organization form on click of label.
   const changeForm = (e) => {
     const attrOfForm = e.target.getAttribute("name");
     if (attrOfForm === "organization") {
-      resetValues();
-      setFormData({
-        ...formData,
-        contact_details: { user_type: "Organizational User" },
-      });
-
-      // Reset form fields and validations.
-      document.getElementById("individualForm").reset();
-      // Make checkbox of label organization checked.
-      individualCheck.current.classList.remove(
-        "individual-and-organization-check"
-      );
-      organizationCheck.current.classList.add(
-        "individual-and-organization-check"
-      );
-      // Unhide organization form.
-      toggleOrganizationForm.current.classList.remove("d-none");
-      // Hide Individual form.
-      toggleIndividualForm.current.classList.add("d-none");
+      showOrganizationForm();
     } else if (attrOfForm === "individual") {
-      setFormData({
-        ...formData,
-        contact_details: { user_type: "Individual User" },
-      });
-
-      // Reset form fields and validations.
-      resetValues();
-      document.getElementById("organizationForm").reset();
-      // Make checkbox of label individual checked.
-      individualCheck.current.classList.add(
-        "individual-and-organization-check"
-      );
-      organizationCheck.current.classList.remove(
-        "individual-and-organization-check"
-      );
-      // Hide organization form.
-      toggleOrganizationForm.current.classList.add("d-none");
-      // Unhide Individual form.
-      toggleIndividualForm.current.classList.remove("d-none");
+      showIndividualForm();
     }
   };
 
