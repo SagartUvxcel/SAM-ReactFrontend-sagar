@@ -37,8 +37,8 @@ const Registration = () => {
       zip: "",
       state: "",
       email: "",
-      landline_number: "",
       mobile_number: "",
+      landline_number: "",
     },
   });
 
@@ -340,13 +340,17 @@ const Registration = () => {
           }
         });
     } else if (name === "landline_number") {
-      setFormData({
-        ...formData,
-        contact_details: {
-          ...formData.contact_details,
-          [name]: parseInt(value),
-        },
-      });
+      if (value !== "") {
+        setFormData({
+          ...formData,
+          contact_details: {
+            ...formData.contact_details,
+            [name]: parseInt(value),
+          },
+        });
+      } else {
+        delete formData.contact_details.landline_number;
+      }
     } else if (name === "mobile_number") {
       setFormData({
         ...formData,
@@ -439,23 +443,25 @@ const Registration = () => {
     }
   };
 
-  const deleteLandlineNumberIfEmpty = () => {
-    let landlineNumber = formData.contact_details.landline_number;
-    if (landlineNumber === "") {
-      delete formData.contact_details.landline_number;
-    }
-  };
-
   // Function will run after Individual Form submit button is clicked.
   const onIndividualFormSubmit = async (e) => {
     e.preventDefault();
-    deleteLandlineNumberIfEmpty();
     console.log(formData);
+    let userEmail = formData.contact_details.email;
+    let redirectUrl = "http://localhost:5000/register/verify";
     await axios
       .post(`/sam/v1/customer-registration/individual-customer`, formData)
-      .then((res) => {
+      .then(async (res) => {
         if (res.data.status === 0) {
-          alert(`${formData.user_type} Added Successfully !`);
+          await axios
+            .post(
+              `/sam/v1/customer-registration/email-verification`,
+              JSON.stringify({ email: userEmail, url: redirectUrl })
+            )
+            .then((res) => {
+              console.log(res.data);
+            });
+          alert(`Success: Please check your email for verification.`);
           e.target.reset();
           resetValues();
         } else {
@@ -463,20 +469,29 @@ const Registration = () => {
         }
       });
 
-    localStorage.setItem("token", formData.emailAddress + "1234");
-    goTo("/register/verify");
+    // localStorage.setItem("token", formData.emailAddress + "1234");
+    // goTo("/register/verify");
   };
 
   // Function will run after Organization Form submit button is clicked.
   const onOrganizationFormSubmit = async (e) => {
     e.preventDefault();
-    deleteLandlineNumberIfEmpty();
+    let userEmail = formData.contact_details.email;
+    let redirectUrl = "http://localhost:5000/register/verify";
     console.log(formData);
     await axios
       .post(`/sam/v1/customer-registration/org-customer`, formData)
       .then((res) => {
         if (res.data.status === 0) {
-          alert(`${formData.user_type} Added Successfully !`);
+          axios
+            .post(
+              `/sam/v1/customer-registration/email-verification`,
+              JSON.stringify({ email: userEmail, url: redirectUrl })
+            )
+            .then((res) => {
+              console.log(res.data);
+            });
+          alert(`Success: Please check your email for verification.`);
           e.target.reset();
           resetValues();
         } else {
