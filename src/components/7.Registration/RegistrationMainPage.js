@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Layout from "../1.CommonLayout/Layout";
 import CommonFormFields from "./CommonFormFields";
 import axios from "axios";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const Registration = () => {
@@ -14,6 +14,8 @@ const Registration = () => {
 
   // useState to store ID of state so that we can validate zipCodes for each state.
   const [IdOfState, SetIdOfState] = useState("");
+
+  const goTo = useNavigate();
 
   // useState to store each field's data from form.
   const [formData, setFormData] = useState({
@@ -460,6 +462,7 @@ const Registration = () => {
           toast.success(`Success: Please check your email for verification.`);
           e.target.reset();
           resetValues();
+          goTo("/register/verify");
         } else {
           toast.error("Form is Invalid");
         }
@@ -497,6 +500,7 @@ const Registration = () => {
           toast.success(`Success: Please check your email for verification.`);
           e.target.reset();
           resetValues();
+          goTo("/register/verify");
         } else {
           toast.error("Form is Invalid");
         }

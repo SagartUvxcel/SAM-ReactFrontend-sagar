@@ -56,6 +56,7 @@ const VerifyToken = () => {
                         className="form-control"
                         placeholder="Enter Your Token"
                         onChange={(e) => setEnteredToken(e.target.value)}
+                        required
                       />
                     </div>
                   </div>
