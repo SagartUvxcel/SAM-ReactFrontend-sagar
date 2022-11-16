@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import Layout from "../1.CommonLayout/Layout";
 
 const LoginMainPage = () => {
@@ -19,7 +19,7 @@ const LoginMainPage = () => {
         <div className="container-fluid mt-5">
           <div className="row justify-content-center">
             <div className="col-lg-4 col-md-7">
-              <form action="" className="card p-5">
+              <form action="" className="card form-card position-relative p-5">
                 <h6 className="fw-bold">Login with Email</h6>
                 <div className="row">
                   <div className="col-lg-12 mb-3">
@@ -55,11 +55,17 @@ const LoginMainPage = () => {
                   </div>
                 </div>
                 <hr />
-                <div className="text-center mt-3">
+                <div className="text-center my-3">
                   <button className="btn btn-primary" onClick={onLogin}>
                     Login
                   </button>
                 </div>
+                <small className="register-link position-absolute fixed-bottom text-end px-3 py-2 fw-bold">
+                  Not Registered ?
+                  <NavLink className="ps-1" to="/register">
+                    Click here.
+                  </NavLink>
+                </small>
               </form>
             </div>
           </div>
