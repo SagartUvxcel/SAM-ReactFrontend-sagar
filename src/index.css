@@ -476,6 +476,7 @@ input[type="number"] {
 
 @media screen and (max-width: 992px) {
   .toast-container {
+    padding-top: 50% !important;
     padding-right: 30% !important;
     padding-left: 30% !important;
   }
@@ -503,6 +504,7 @@ input[type="number"] {
 
 @media screen and (max-width: 767px) {
   .toast-container {
+    padding-top: 70% !important;
     padding-right: 11% !important;
     padding-left: 11% !important;
   }
