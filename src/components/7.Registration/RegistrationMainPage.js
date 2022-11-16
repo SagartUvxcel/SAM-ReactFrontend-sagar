@@ -481,9 +481,9 @@ const Registration = () => {
     console.log(formData);
     await axios
       .post(`/sam/v1/customer-registration/org-customer`, formData)
-      .then((res) => {
+      .then(async (res) => {
         if (res.data.status === 0) {
-          axios
+          await axios
             .post(
               `/sam/v1/customer-registration/email-verification`,
               JSON.stringify({ email: userEmail, url: redirectUrl })
