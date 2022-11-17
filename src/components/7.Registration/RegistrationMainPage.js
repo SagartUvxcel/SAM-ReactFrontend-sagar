@@ -445,20 +445,11 @@ const Registration = () => {
       delete formData[field];
     });
     console.log(formData);
-    let userEmail = formData.contact_details.email;
-    let redirectUrl = "http://localhost:5000/register/verify";
+
     await axios
       .post(`/sam/v1/customer-registration/individual-customer`, formData)
       .then(async (res) => {
         if (res.data.status === 0) {
-          await axios
-            .post(
-              `/sam/v1/customer-registration/email-verification`,
-              JSON.stringify({ email: userEmail, url: redirectUrl })
-            )
-            .then((res) => {
-              console.log(res.data);
-            });
           toast.success(`Success: Please check your email for verification.`);
           e.target.reset();
           resetValues();
@@ -482,21 +473,11 @@ const Registration = () => {
     fieldsToDelete.forEach((field) => {
       delete formData[field];
     });
-    let userEmail = formData.contact_details.email;
-    let redirectUrl = "http://localhost:5000/register/verify";
     console.log(formData);
     await axios
       .post(`/sam/v1/customer-registration/org-customer`, formData)
       .then(async (res) => {
         if (res.data.status === 0) {
-          await axios
-            .post(
-              `/sam/v1/customer-registration/email-verification`,
-              JSON.stringify({ email: userEmail, url: redirectUrl })
-            )
-            .then((res) => {
-              console.log(res.data);
-            });
           toast.success(`Success: Please check your email for verification.`);
           e.target.reset();
           resetValues();
