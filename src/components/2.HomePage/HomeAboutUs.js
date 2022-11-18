@@ -5,7 +5,7 @@ import WhyChooseUs from "../../images/3.png";
 const HomeAboutUs = () => {
   return (
     <>
-      <section className="home-about-wrapper">
+      <section id="about" className="home-about-wrapper">
         <div className="container-fluid">
           <div className="row">
             <div className="col-md-6 about-details-col bg-white common-col order-md-1 order-1">

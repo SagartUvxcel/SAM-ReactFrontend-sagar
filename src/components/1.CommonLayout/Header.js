@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import { Link } from "react-scroll";
 import { toast } from "react-toastify";
 
 function Header() {
@@ -51,24 +52,30 @@ function Header() {
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav ms-auto">
               <li className="nav-item">
-                <NavLink to="/search" className="nav-link">
+                <NavLink to="/" className="nav-link">
                   Search
                 </NavLink>
               </li>
               <li className="nav-item ps-lg-2">
-                <NavLink className="nav-link" to="/about">
+                <Link
+                  style={{ cursor: "pointer" }}
+                  className="nav-link"
+                  to="about"
+                >
                   About
-                </NavLink>
+                </Link>
               </li>
               <li className="nav-item ps-lg-2">
-                <NavLink className="nav-link" to="/contact">
+                <Link
+                  style={{ cursor: "pointer" }}
+                  className="nav-link"
+                  to="contact"
+                >
                   Contact
-                </NavLink>
+                </Link>
               </li>
               <li className="nav-item ps-lg-2">
-                <NavLink className="nav-link" to="/account">
-                  Account
-                </NavLink>
+                <span className="nav-link">Account</span>
               </li>
               {!loginStatus ? (
                 <>

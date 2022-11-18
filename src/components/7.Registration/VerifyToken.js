@@ -1,40 +1,33 @@
-import React, { useEffect } from "react";
+import axios from "axios";
+import React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Layout from "../1.CommonLayout/Layout";
 
 const VerifyToken = () => {
-  // useState to save token received after registration.
-  const [savedToken, setSavedToken] = useState("");
   // useState to save token entered by user.
   const [enteredToken, setEnteredToken] = useState("");
 
   // To navigate to particular route.
   const goTo = useNavigate();
 
-  // Function to save token.
-  const saveToken = () => {
-    let token = localStorage.getItem("token");
-    if (token) {
-      setSavedToken(token);
-    }
-  };
-
-  useEffect(() => {
-    saveToken();
-  });
-
   // Function to compare and verify user entered token with original token.
-  const verifyUserToken = (e) => {
+  const verifyUserToken = async (e) => {
     e.preventDefault();
-    console.log(savedToken, enteredToken);
-    if (savedToken === enteredToken) {
-      toast.success("User Verification Successful !");
-      goTo("/register/reset-password");
-    } else {
-      toast.error("Invalid Token");
-    }
+    await axios
+      .post(
+        `/sam/v1/customer-registration/verify-token`,
+        JSON.stringify({ token: enteredToken })
+      )
+      .then((res) => {
+        if (res.data.status === 0) {
+          toast.success("Verification Successful !");
+          goTo("/register/reset-password");
+        } else {
+          toast.error("Invalid Token Entered");
+        }
+      });
   };
 
   return (
