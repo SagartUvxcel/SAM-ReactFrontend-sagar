@@ -23,6 +23,7 @@ const VerifyToken = () => {
       .then((res) => {
         if (res.data.status === 0) {
           toast.success("Verification Successful !");
+          localStorage.setItem("token", enteredToken);
           goTo("/register/reset-password");
         } else {
           toast.error("Invalid Token Entered");

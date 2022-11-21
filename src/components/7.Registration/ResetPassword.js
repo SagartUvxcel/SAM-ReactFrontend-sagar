@@ -1,3 +1,4 @@
+import axios from "axios";
 import React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -76,7 +77,7 @@ const ResetPassword = () => {
   };
 
   // On reset Button click this function will run.
-  const onResetPasswordFormSubmit = (e) => {
+  const onResetPasswordFormSubmit = async (e) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
       toast.error("Password and confirm password not matching");
@@ -99,6 +100,17 @@ const ResetPassword = () => {
         passwordType2: "text",
       });
     } else {
+      await axios
+        .post(
+          `/sam/v1/customer-registration/reset-password`,
+          JSON.stringify({
+            password: newPassword,
+            token: localStorage.getItem("token"),
+          })
+        )
+        .then((res) => {
+          console.log(res.data.status);
+        });
       toast.success("Password Changed Successfully !");
       goTo("/login");
     }
