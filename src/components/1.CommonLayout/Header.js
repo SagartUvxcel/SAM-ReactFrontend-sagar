@@ -17,7 +17,7 @@ function Header() {
     setLoginStatus(false);
     setTimeout(() => {
       window.location.reload();
-    }, 2500);
+    }, 2000);
     goTo("/");
   };
 

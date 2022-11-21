@@ -14,7 +14,7 @@ import { ToastContainer } from "react-toastify";
 function App() {
   return (
     <>
-      <ToastContainer className="toast-container" autoClose="2000" />
+      <ToastContainer className="toast-container" autoClose="1500" />
       <ScrollToTop>
         <Routes>
           <Route path="/" element={<Home />} />
