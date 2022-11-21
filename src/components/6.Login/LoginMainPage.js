@@ -23,20 +23,25 @@ const LoginMainPage = () => {
   // Login Function.
   const onLogin = async (e) => {
     e.preventDefault();
-    await axios
-      .post(
-        `/sam/v1/customer-registration/login`,
-        JSON.stringify({ username: email, password: password })
-      )
-      .then((res) => {
-        if (res.data.status === 0) {
-          localStorage.setItem("isLoggedIn", true);
-          toast.success("Logged in Successfully !");
-          goTo("/");
-        } else {
-          toast.error("Invalid Username or Password");
-        }
-      });
+    try {
+      await axios
+        .post(
+          `/sam/v1/customer-registration/login`,
+          JSON.stringify({ username: email, password: password })
+        )
+        .then((res) => {
+          console.log(res);
+          // if (res.data.status === 0) {
+          //   localStorage.setItem("isLoggedIn", true);
+          //   toast.success("Logged in Successfully !");
+          //   goTo("/");
+          // } else {
+          //   toast.error("Invalid Username or Password");
+          // }
+        });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
