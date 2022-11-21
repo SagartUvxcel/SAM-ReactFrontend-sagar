@@ -98,6 +98,11 @@ function Header() {
                     </NavLink>
                   </li>
                   <li className="nav-item ps-lg-2">
+                    <span className="nav-link">
+                      Welcome, {localStorage.getItem("user")}
+                    </span>
+                  </li>
+                  <li className="nav-item ps-lg-2">
                     <span
                       style={{ cursor: "pointer" }}
                       className="nav-link"

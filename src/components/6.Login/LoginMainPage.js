@@ -33,6 +33,7 @@ const LoginMainPage = () => {
         if (res.data.status === 0) {
           localStorage.setItem("isLoggedIn", true);
           toast.success("Logged in Successfully !");
+          localStorage.setItem("user", email);
           goTo("/");
         } else if (res.data.status === 1) {
           toast.error("Invalid Password Entered");
