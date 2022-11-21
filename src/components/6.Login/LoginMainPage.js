@@ -37,8 +37,8 @@ const LoginMainPage = () => {
           goTo("/");
         } else if (res.data.status === 1) {
           toast.error("Invalid Password Entered");
-        } else {
-          toast.error("Invalid Username or Password");
+        } else if (res.data.status === 2) {
+          toast.error("Invalid Username Entered");
         }
       });
   };
