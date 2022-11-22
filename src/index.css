@@ -479,10 +479,6 @@ input[type="number"] {
   padding-left: 0 !important;
 }
 
-.edit-details-wrapper .editable-values {
-  background-color: white !important;
-}
-
 /* Media Queries */
 
 @media (min-width: 768px) {
