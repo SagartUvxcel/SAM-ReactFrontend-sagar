@@ -8,15 +8,27 @@ const LoginMainPage = () => {
   // It is used to navigate to particular route.
   const goTo = useNavigate();
 
-  const [loginDetails, setLoginDetails] = useState({ email: "", password: "" });
+  const [loginDetails, setLoginDetails] = useState({
+    email: "",
+    password: "",
+  });
+
+  const [alertDetails, setAlertDetails] = useState({
+    alertVisible: false,
+    alertMsg: "",
+    alertClr: "",
+  });
   const { email, password } = loginDetails;
+  const { alertMsg, alertClr, alertVisible } = alertDetails;
 
   const onUserNameAndPasswordChange = (e) => {
     const { name, value } = e.target;
     if (name === "email") {
       setLoginDetails({ ...loginDetails, [name]: value });
+      setAlertDetails({ ...alertDetails, alertVisible: false });
     } else if (name === "password") {
       setLoginDetails({ ...loginDetails, [name]: value });
+      setAlertDetails({ ...alertDetails, alertVisible: false });
     }
   };
 
@@ -36,9 +48,21 @@ const LoginMainPage = () => {
           localStorage.setItem("user", email);
           goTo("/");
         } else if (res.data.status === 1) {
-          toast.error("Invalid Password Entered");
+          // toast.error("Invalid Password Entered");
+          setAlertDetails({
+            ...alertDetails,
+            alertVisible: true,
+            alertMsg: "Invalid Password Entered.",
+            alertClr: "danger",
+          });
         } else if (res.data.status === 2) {
-          toast.error("Invalid Username Entered");
+          // toast.error("Invalid Username Entered");
+          setAlertDetails({
+            ...alertDetails,
+            alertVisible: true,
+            alertMsg: "Invalid Username Entered.",
+            alertClr: "danger",
+          });
         }
       });
   };
@@ -48,12 +72,29 @@ const LoginMainPage = () => {
       <section className="login-wrapper min-100vh section-padding">
         <div className="container-fluid mt-5">
           <div className="row justify-content-center">
-            <div className="col-lg-4 col-md-7">
+            <div className="col-lg-5 col-xl-4 col-md-7">
               <form
                 onSubmit={onLogin}
                 action=""
                 className="card form-card position-relative p-5"
               >
+                <h3 className="text-center fw-bold">Login</h3>
+                <hr />
+                {alertVisible ? (
+                  <div
+                    className={`login-alert alert alert-${alertClr} alert-dismissible show`}
+                    role="alert"
+                  >
+                    <small className="fw-bold">{alertMsg}</small>
+
+                    <i
+                      data-bs-dismiss="alert"
+                      className="bi bi-x login-alert-close-btn close"
+                    ></i>
+                  </div>
+                ) : (
+                  <div className="d-none"></div>
+                )}
                 <h6 className="fw-bold">Login with Email</h6>
                 <div className="row">
                   <div className="col-lg-12 mb-3">
