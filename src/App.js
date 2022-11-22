@@ -36,9 +36,9 @@ function App() {
           <Route
             path="/profile/edit"
             element={
-              <Protected>
+              // <Protected>
                 <EditUserDetails />
-              </Protected>
+              // </Protected>
             }
           />
         </Routes>
