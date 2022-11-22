@@ -14,28 +14,30 @@ const EditUserDetails = () => {
   const state = "Maharashtra";
   const zip = "411015";
 
-  const [isDisabled, setIsDisabled] = useState(false);
+  const [allStates, setAllStates] = useState({
+    isDisabled: false,
+    editClassName: "editable-values",
+    cancelUpdateBtnClassName: "d-none",
+  });
+
+  const { isDisabled, editClassName, cancelUpdateBtnClassName } = allStates;
 
   const editDetails = () => {
-    const allFields = document.querySelectorAll(
-      ".edit-details-wrapper .form-control"
-    );
-    allFields.forEach((field) => {
-      field.classList.remove("editable-values");
+    setAllStates({
+      ...allStates,
+      isDisabled: true,
+      editClassName: "",
+      cancelUpdateBtnClassName: "",
     });
-    setIsDisabled(true);
-    document.getElementById("update-cancel").classList.remove("d-none");
   };
 
   const cancelEditing = () => {
-    const allFields = document.querySelectorAll(
-      ".edit-details-wrapper .form-control"
-    );
-    allFields.forEach((field) => {
-      field.classList.add("editable-values");
+    setAllStates({
+      ...allStates,
+      isDisabled: false,
+      editClassName: "editable-values",
+      cancelUpdateBtnClassName: "d-none",
     });
-    setIsDisabled(false);
-    document.getElementById("update-cancel").classList.add("d-none");
   };
 
   return (
@@ -62,7 +64,7 @@ const EditUserDetails = () => {
                         <input
                           name="first_name"
                           type="text"
-                          className="form-control editable-values"
+                          className={`form-control ${editClassName}`}
                           id="firstName"
                           defaultValue={firstName}
                         />
@@ -74,7 +76,7 @@ const EditUserDetails = () => {
                         <input
                           name="middle_name"
                           type="text"
-                          className="form-control editable-values"
+                          className={`form-control ${editClassName}`}
                           id="middleName"
                         />
                       </div>
@@ -85,7 +87,7 @@ const EditUserDetails = () => {
                         <input
                           name="last_name"
                           type="text"
-                          className="form-control editable-values"
+                          className={`form-control ${editClassName}`}
                           id="lastName"
                         />
                       </div>
@@ -95,7 +97,7 @@ const EditUserDetails = () => {
                         <label htmlFor="eMail">Email</label>
                         <input
                           type="email"
-                          className="form-control editable-values"
+                          className={`form-control ${editClassName}`}
                           id="eMail"
                         />
                       </div>
@@ -105,7 +107,7 @@ const EditUserDetails = () => {
                         <label htmlFor="phone">Phone</label>
                         <input
                           type="text"
-                          className="form-control editable-values"
+                          className={`form-control ${editClassName}`}
                           id="phone"
                         />
                       </div>
@@ -115,7 +117,7 @@ const EditUserDetails = () => {
                         <label htmlFor="website">PAN Number</label>
                         <input
                           type="url"
-                          className="form-control editable-values"
+                          className={`form-control ${editClassName}`}
                           id="website"
                           defaultValue={pan}
                           disabled={isDisabled}
@@ -127,7 +129,7 @@ const EditUserDetails = () => {
                         <label htmlFor="website">Aadhaar Number</label>
                         <input
                           type="url"
-                          className="form-control editable-values"
+                          className={`form-control ${editClassName}`}
                           id="website"
                         />
                       </div>
@@ -142,7 +144,7 @@ const EditUserDetails = () => {
                         <label htmlFor="Street">Street/Locality</label>
                         <input
                           type="name"
-                          className="form-control editable-values"
+                          className={`form-control ${editClassName}`}
                           id="Street"
                         />
                       </div>
@@ -152,7 +154,7 @@ const EditUserDetails = () => {
                         <label htmlFor="ciTy">City</label>
                         <input
                           type="name"
-                          className="form-control editable-values"
+                          className={`form-control ${editClassName}`}
                           id="ciTy"
                         />
                       </div>
@@ -162,7 +164,7 @@ const EditUserDetails = () => {
                         <label htmlFor="sTate">State</label>
                         <input
                           type="text"
-                          className="form-control editable-values"
+                          className={`form-control ${editClassName}`}
                           id="sTate"
                         />
                       </div>
@@ -172,13 +174,16 @@ const EditUserDetails = () => {
                         <label htmlFor="zIp">Zip Code</label>
                         <input
                           type="text"
-                          className="form-control editable-values"
+                          className={`form-control ${editClassName}`}
                           id="zIp"
                         />
                       </div>
                     </div>
                   </div>
-                  <div className="row mt-4 d-none" id="update-cancel">
+                  <div
+                    className={`row mt-4 ${cancelUpdateBtnClassName}`}
+                    id="update-cancel"
+                  >
                     <div className="col-12">
                       <div className="text-end">
                         <button
