@@ -64,7 +64,7 @@ const EditUserDetails = () => {
   const updateDetails = (e) => {
     e.preventDefault();
     toast.success("Details Updated Successfully");
-    goTo("/profile");
+    goTo("/");
   };
 
   return (
