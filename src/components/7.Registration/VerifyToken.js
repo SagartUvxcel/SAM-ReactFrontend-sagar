@@ -1,18 +1,22 @@
 import axios from "axios";
-import React, { useContext } from "react";
+import React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Layout from "../1.CommonLayout/Layout";
-import { AlertDetails } from "../../App";
 
-const VerifyToken = ({ setAlertDetails }) => {
+const VerifyToken = () => {
   // useState to save token entered by user.
   const [enteredToken, setEnteredToken] = useState("");
 
   // To navigate to particular route.
   const goTo = useNavigate();
-  const alertDetails = useContext(AlertDetails);
+  const [alertDetails, setAlertDetails] = useState({
+    alertVisible: false,
+    alertMsg: "",
+    alertClr: "",
+  });
+  const { alertMsg, alertClr, alertVisible } = alertDetails;
 
   // Function to compare and verify user entered token with original token.
   const verifyUserToken = async (e) => {
@@ -50,12 +54,12 @@ const VerifyToken = ({ setAlertDetails }) => {
                   Verify Your Token
                 </h3>
                 <hr />
-                {alertDetails.alertVisible ? (
+                {alertVisible ? (
                   <div
-                    className={`login-alert alert alert-${alertDetails.alertClr} alert-dismissible show`}
+                    className={`login-alert alert alert-${alertClr} alert-dismissible show`}
                     role="alert"
                   >
-                    <small className="fw-bold">{alertDetails.alertMsg}</small>
+                    <small className="fw-bold">{alertMsg}</small>
 
                     <i
                       data-bs-dismiss="alert"
