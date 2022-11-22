@@ -78,6 +78,7 @@ const EditUserDetails = () => {
                           type="text"
                           className={`form-control ${editClassName}`}
                           id="middleName"
+                          defaultValue={middleName}
                         />
                       </div>
                     </div>
@@ -89,6 +90,7 @@ const EditUserDetails = () => {
                           type="text"
                           className={`form-control ${editClassName}`}
                           id="lastName"
+                          defaultValue={lastName}
                         />
                       </div>
                     </div>
@@ -96,9 +98,12 @@ const EditUserDetails = () => {
                       <div className="form-group mb-3">
                         <label htmlFor="eMail">Email</label>
                         <input
+                          name="email"
                           type="email"
                           className={`form-control ${editClassName}`}
                           id="eMail"
+                          defaultValue={email}
+                          disabled={isDisabled}
                         />
                       </div>
                     </div>
@@ -106,19 +111,22 @@ const EditUserDetails = () => {
                       <div className="form-group mb-3">
                         <label htmlFor="phone">Phone</label>
                         <input
-                          type="text"
+                          name="mobile_number"
+                          type="number"
                           className={`form-control ${editClassName}`}
                           id="phone"
+                          defaultValue={phone}
                         />
                       </div>
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
-                        <label htmlFor="website">PAN Number</label>
+                        <label htmlFor="pan">PAN Number</label>
                         <input
-                          type="url"
+                          type="text"
+                          name="pan_number"
                           className={`form-control ${editClassName}`}
-                          id="website"
+                          id="pan"
                           defaultValue={pan}
                           disabled={isDisabled}
                         />
@@ -126,11 +134,14 @@ const EditUserDetails = () => {
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
-                        <label htmlFor="website">Aadhaar Number</label>
+                        <label htmlFor="aadhaar">Aadhaar Number</label>
                         <input
-                          type="url"
+                          name="aadhar_number"
+                          type="number"
                           className={`form-control ${editClassName}`}
-                          id="website"
+                          id="aadhaar"
+                          defaultValue={aadhaar}
+                          disabled={isDisabled}
                         />
                       </div>
                     </div>
@@ -143,9 +154,11 @@ const EditUserDetails = () => {
                       <div className="form-group mb-3">
                         <label htmlFor="Street">Street/Locality</label>
                         <input
-                          type="name"
+                          name="address"
+                          type="text"
                           className={`form-control ${editClassName}`}
                           id="Street"
+                          defaultValue={street}
                         />
                       </div>
                     </div>
@@ -153,9 +166,11 @@ const EditUserDetails = () => {
                       <div className="form-group mb-3">
                         <label htmlFor="ciTy">City</label>
                         <input
-                          type="name"
+                          name="city"
+                          type="text"
                           className={`form-control ${editClassName}`}
                           id="ciTy"
+                          defaultValue={city}
                         />
                       </div>
                     </div>
@@ -163,9 +178,11 @@ const EditUserDetails = () => {
                       <div className="form-group mb-3">
                         <label htmlFor="sTate">State</label>
                         <input
+                          name="state"
                           type="text"
                           className={`form-control ${editClassName}`}
                           id="sTate"
+                          defaultValue={state}
                         />
                       </div>
                     </div>
