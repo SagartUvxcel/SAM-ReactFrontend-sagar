@@ -10,6 +10,7 @@ import VerifyToken from "./components/7.Registration/VerifyToken";
 import Profile from "./components/8.Profile/Profile";
 import Protected from "./Protected";
 import { ToastContainer } from "react-toastify";
+import EditUserDetails from "./components/8.Profile/EditUserDetails";
 
 function App() {
   return (
@@ -25,10 +26,18 @@ function App() {
           <Route path="/login" element={<LoginMainPage />} />
           <Route path="/register/reset-password" element={<ResetPassword />} />
           <Route
-            path="/profile"
+            path="/profile/*"
             element={
               <Protected>
                 <Profile />
+              </Protected>
+            }
+          />
+          <Route
+            path="/profile/edit"
+            element={
+              <Protected>
+                <EditUserDetails />
               </Protected>
             }
           />
