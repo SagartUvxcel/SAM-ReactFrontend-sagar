@@ -31,13 +31,13 @@ const VerifyToken = () => {
           toast.success("Verification Successful !");
           localStorage.setItem("token", enteredToken);
           goTo("/register/reset-password");
-        } else if (res.data.status === 2) {
+        } else if (res.data.status === 1) {
           setAlertDetails({
             alertVisible: true,
             alertMsg: "Token is Expired.",
             alertClr: "danger",
           });
-        } else {
+        } else if (res.data.status === 2) {
           setAlertDetails({
             alertVisible: true,
             alertMsg: "Token is Invalid.",
