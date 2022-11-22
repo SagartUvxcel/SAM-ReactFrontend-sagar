@@ -18,9 +18,17 @@ const EditUserDetails = () => {
     isDisabled: false,
     editClassName: "editable-values",
     cancelUpdateBtnClassName: "d-none",
+    defaultStateClassName: "",
+    selectStateClassName: "d-none",
   });
 
-  const { isDisabled, editClassName, cancelUpdateBtnClassName } = allStates;
+  const {
+    isDisabled,
+    editClassName,
+    cancelUpdateBtnClassName,
+    defaultStateClassName,
+    selectStateClassName,
+  } = allStates;
 
   const editDetails = () => {
     setAllStates({
@@ -28,6 +36,8 @@ const EditUserDetails = () => {
       isDisabled: true,
       editClassName: "",
       cancelUpdateBtnClassName: "",
+      defaultStateClassName: "d-none",
+      selectStateClassName: "",
     });
   };
 
@@ -37,6 +47,8 @@ const EditUserDetails = () => {
       isDisabled: false,
       editClassName: "editable-values",
       cancelUpdateBtnClassName: "d-none",
+      defaultStateClassName: "",
+      selectStateClassName: "d-none",
     });
   };
 
@@ -116,6 +128,7 @@ const EditUserDetails = () => {
                           className={`form-control ${editClassName}`}
                           id="phone"
                           defaultValue={phone}
+                          disabled={isDisabled}
                         />
                       </div>
                     </div>
@@ -175,7 +188,9 @@ const EditUserDetails = () => {
                       </div>
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
-                      <div className="form-group mb-3">
+                      <div
+                        className={`form-group mb-3 ${defaultStateClassName}`}
+                      >
                         <label htmlFor="sTate">State</label>
                         <input
                           name="state"
@@ -184,6 +199,18 @@ const EditUserDetails = () => {
                           id="sTate"
                           defaultValue={state}
                         />
+                      </div>
+                      <div
+                        className={`form-group mb-3 ${selectStateClassName}`}
+                      >
+                        <label htmlFor="sTate">State</label>
+                        <select name="state" id="" className="form-select">
+                          <option defaultValue={state}>{state}</option>
+                          <option value="Goa">Goa</option>
+                          <option value="Punjab">Punjab</option>
+                          <option value="Karnataka">Karnataka</option>
+                          <option value="Gujrat">Gujrat</option>
+                        </select>
                       </div>
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
