@@ -19,6 +19,7 @@ const EditUserDetails = () => {
   const goTo = useNavigate();
 
   const [allStates, setAllStates] = useState({
+    isReadOnly: true,
     isDisabled: false,
     editClassName: "editable-values",
     cancelUpdateBtnClassName: "d-none",
@@ -27,6 +28,7 @@ const EditUserDetails = () => {
   });
 
   const {
+    isReadOnly,
     isDisabled,
     editClassName,
     cancelUpdateBtnClassName,
@@ -37,6 +39,7 @@ const EditUserDetails = () => {
   const editDetails = () => {
     setAllStates({
       ...allStates,
+      isReadOnly: false,
       isDisabled: true,
       editClassName: "",
       cancelUpdateBtnClassName: "",
@@ -48,6 +51,7 @@ const EditUserDetails = () => {
   const cancelEditing = () => {
     setAllStates({
       ...allStates,
+      isReadOnly: true,
       isDisabled: false,
       editClassName: "editable-values",
       cancelUpdateBtnClassName: "d-none",
@@ -89,6 +93,7 @@ const EditUserDetails = () => {
                           className={`form-control ${editClassName}`}
                           id="firstName"
                           defaultValue={firstName}
+                          readOnly={isReadOnly}
                         />
                       </div>
                     </div>
@@ -101,6 +106,7 @@ const EditUserDetails = () => {
                           className={`form-control ${editClassName}`}
                           id="middleName"
                           defaultValue={middleName}
+                          readOnly={isReadOnly}
                         />
                       </div>
                     </div>
@@ -113,6 +119,7 @@ const EditUserDetails = () => {
                           className={`form-control ${editClassName}`}
                           id="lastName"
                           defaultValue={lastName}
+                          readOnly={isReadOnly}
                         />
                       </div>
                     </div>
@@ -126,6 +133,7 @@ const EditUserDetails = () => {
                           id="eMail"
                           defaultValue={email}
                           disabled={isDisabled}
+                          readOnly
                         />
                       </div>
                     </div>
@@ -139,6 +147,7 @@ const EditUserDetails = () => {
                           id="phone"
                           defaultValue={phone}
                           disabled={isDisabled}
+                          readOnly
                         />
                       </div>
                     </div>
@@ -152,6 +161,7 @@ const EditUserDetails = () => {
                           id="pan"
                           defaultValue={pan}
                           disabled={isDisabled}
+                          readOnly
                         />
                       </div>
                     </div>
@@ -165,6 +175,7 @@ const EditUserDetails = () => {
                           id="aadhaar"
                           defaultValue={aadhaar}
                           disabled={isDisabled}
+                          readOnly
                         />
                       </div>
                     </div>
@@ -182,6 +193,7 @@ const EditUserDetails = () => {
                           className={`form-control ${editClassName}`}
                           id="Street"
                           defaultValue={street}
+                          readOnly={isReadOnly}
                         />
                       </div>
                     </div>
@@ -194,6 +206,7 @@ const EditUserDetails = () => {
                           className={`form-control ${editClassName}`}
                           id="ciTy"
                           defaultValue={city}
+                          readOnly={isReadOnly}
                         />
                       </div>
                     </div>
@@ -206,6 +219,7 @@ const EditUserDetails = () => {
                           className={`form-control ${editClassName}`}
                           id="sTate1"
                           defaultValue={state}
+                          readOnly
                         />
                       </div>
                       <div
@@ -230,6 +244,7 @@ const EditUserDetails = () => {
                           className={`form-control ${editClassName}`}
                           id="zIp"
                           defaultValue={zip}
+                          readOnly={isReadOnly}
                         />
                       </div>
                     </div>

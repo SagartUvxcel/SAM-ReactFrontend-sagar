@@ -45,16 +45,10 @@ const LoginMainPage = () => {
           toast.success("Logged in Successfully !");
           localStorage.setItem("user", email);
           goTo("/profile/edit");
-        } else if (res.data.status === 1) {
+        } else {
           setAlertDetails({
             alertVisible: true,
-            alertMsg: "Invalid Password Entered.",
-            alertClr: "danger",
-          });
-        } else if (res.data.status === 2) {
-          setAlertDetails({
-            alertVisible: true,
-            alertMsg: "Invalid Username Entered.",
+            alertMsg: "Invalid Username or Password Entered.",
             alertClr: "danger",
           });
         }
