@@ -1,16 +1,18 @@
 import axios from "axios";
-import React from "react";
+import React, { useContext } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Layout from "../1.CommonLayout/Layout";
+import { AlertDetails } from "../../App";
 
-const VerifyToken = () => {
+const VerifyToken = ({ setAlertDetails }) => {
   // useState to save token entered by user.
   const [enteredToken, setEnteredToken] = useState("");
 
   // To navigate to particular route.
   const goTo = useNavigate();
+  const alertDetails = useContext(AlertDetails);
 
   // Function to compare and verify user entered token with original token.
   const verifyUserToken = async (e) => {
@@ -26,7 +28,13 @@ const VerifyToken = () => {
           localStorage.setItem("token", enteredToken);
           goTo("/register/reset-password");
         } else {
-          toast.error("Invalid Token Entered");
+          // toast.error("Invalid Token Entered");
+          setAlertDetails({
+            ...alertDetails,
+            alertVisible: true,
+            alertMsg: "Invalid Token Entered",
+            alertClr: "danger",
+          });
         }
       });
   };
@@ -42,6 +50,21 @@ const VerifyToken = () => {
                   Verify Your Token
                 </h3>
                 <hr />
+                {alertDetails.alertVisible ? (
+                  <div
+                    className={`login-alert alert alert-${alertDetails.alertClr} alert-dismissible show`}
+                    role="alert"
+                  >
+                    <small className="fw-bold">{alertDetails.alertMsg}</small>
+
+                    <i
+                      data-bs-dismiss="alert"
+                      className="bi bi-x login-alert-close-btn close"
+                    ></i>
+                  </div>
+                ) : (
+                  <div className="d-none"></div>
+                )}
                 <div className="row mt-3">
                   <div className="col-12">
                     <div className="form-group mb-3">
@@ -49,7 +72,13 @@ const VerifyToken = () => {
                         type="text"
                         className="form-control"
                         placeholder="Enter Your Token"
-                        onChange={(e) => setEnteredToken(e.target.value)}
+                        onChange={(e) => {
+                          setEnteredToken(e.target.value);
+                          setAlertDetails({
+                            ...alertDetails,
+                            alertVisible: false,
+                          });
+                        }}
                         required
                       />
                     </div>
