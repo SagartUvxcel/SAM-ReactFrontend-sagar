@@ -15,7 +15,7 @@ const EditUserDetails = () => {
   const zip = "411015";
   return (
     <Layout>
-      <section className="profile-wrapper section-padding min-100vh">
+      <section className="edit-details-wrapper section-padding min-100vh">
         <div className="container-fluid wrapper">
           <div className="row justify-content-center">
             <div className="col-xl-10 col-lg-10 col-md-12 col-sm-12 col-12">
@@ -31,8 +31,9 @@ const EditUserDetails = () => {
                         <input
                           name="first_name"
                           type="text"
-                          className="form-control"
+                          className="form-control editable-values"
                           id="firstName"
+                          value={firstName}
                         />
                       </div>
                     </div>
@@ -42,7 +43,7 @@ const EditUserDetails = () => {
                         <input
                           name="middle_name"
                           type="text"
-                          className="form-control"
+                          className="form-control editable-values"
                           id="middleName"
                         />
                       </div>
@@ -53,7 +54,7 @@ const EditUserDetails = () => {
                         <input
                           name="last_name"
                           type="text"
-                          className="form-control"
+                          className="form-control editable-values"
                           id="lastName"
                         />
                       </div>
@@ -63,7 +64,7 @@ const EditUserDetails = () => {
                         <label for="eMail">Email</label>
                         <input
                           type="email"
-                          className="form-control"
+                          className="form-control editable-values"
                           id="eMail"
                         />
                       </div>
@@ -73,7 +74,7 @@ const EditUserDetails = () => {
                         <label for="phone">Phone</label>
                         <input
                           type="text"
-                          className="form-control"
+                          className="form-control editable-values"
                           id="phone"
                         />
                       </div>
@@ -83,8 +84,9 @@ const EditUserDetails = () => {
                         <label for="website">PAN Number</label>
                         <input
                           type="url"
-                          className="form-control"
+                          className="form-control editable-values"
                           id="website"
+                          value={pan}
                         />
                       </div>
                     </div>
@@ -93,7 +95,7 @@ const EditUserDetails = () => {
                         <label for="website">Aadhaar Number</label>
                         <input
                           type="url"
-                          className="form-control"
+                          className="form-control editable-values"
                           id="website"
                         />
                       </div>
@@ -108,7 +110,7 @@ const EditUserDetails = () => {
                         <label for="Street">Street/Locality</label>
                         <input
                           type="name"
-                          className="form-control"
+                          className="form-control editable-values"
                           id="Street"
                         />
                       </div>
@@ -116,7 +118,11 @@ const EditUserDetails = () => {
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
                         <label for="ciTy">City</label>
-                        <input type="name" className="form-control" id="ciTy" />
+                        <input
+                          type="name"
+                          className="form-control editable-values"
+                          id="ciTy"
+                        />
                       </div>
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
@@ -124,7 +130,7 @@ const EditUserDetails = () => {
                         <label for="sTate">State</label>
                         <input
                           type="text"
-                          className="form-control"
+                          className="form-control editable-values"
                           id="sTate"
                         />
                       </div>
@@ -132,7 +138,11 @@ const EditUserDetails = () => {
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
                         <label for="zIp">Zip Code</label>
-                        <input type="text" className="form-control" id="zIp" />
+                        <input
+                          type="text"
+                          className="form-control editable-values"
+                          id="zIp"
+                        />
                       </div>
                     </div>
                   </div>
