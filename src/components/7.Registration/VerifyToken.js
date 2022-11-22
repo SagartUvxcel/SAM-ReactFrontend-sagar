@@ -31,12 +31,18 @@ const VerifyToken = () => {
           toast.success("Verification Successful !");
           localStorage.setItem("token", enteredToken);
           goTo("/register/reset-password");
-        } else {
-          // toast.error("Invalid Token Entered");
+        } else if (res.data.status === 2) {
           setAlertDetails({
             ...alertDetails,
             alertVisible: true,
-            alertMsg: "Invalid Token Entered",
+            alertMsg: "Token is Expired.",
+            alertClr: "danger",
+          });
+        } else {
+          setAlertDetails({
+            ...alertDetails,
+            alertVisible: true,
+            alertMsg: "Token is Invalid.",
             alertClr: "danger",
           });
         }
