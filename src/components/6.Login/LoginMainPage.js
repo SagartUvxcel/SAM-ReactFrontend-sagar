@@ -25,10 +25,8 @@ const LoginMainPage = () => {
     const { name, value } = e.target;
     if (name === "email") {
       setLoginDetails({ ...loginDetails, [name]: value });
-      setAlertDetails({ ...alertDetails, alertVisible: false });
     } else if (name === "password") {
       setLoginDetails({ ...loginDetails, [name]: value });
-      setAlertDetails({ ...alertDetails, alertVisible: false });
     }
   };
 
@@ -48,17 +46,13 @@ const LoginMainPage = () => {
           localStorage.setItem("user", email);
           goTo("/profile/edit");
         } else if (res.data.status === 1) {
-          // toast.error("Invalid Password Entered");
           setAlertDetails({
-            ...alertDetails,
             alertVisible: true,
             alertMsg: "Invalid Password Entered.",
             alertClr: "danger",
           });
         } else if (res.data.status === 2) {
-          // toast.error("Invalid Username Entered");
           setAlertDetails({
-            ...alertDetails,
             alertVisible: true,
             alertMsg: "Invalid Username Entered.",
             alertClr: "danger",

@@ -33,14 +33,12 @@ const VerifyToken = () => {
           goTo("/register/reset-password");
         } else if (res.data.status === 2) {
           setAlertDetails({
-            ...alertDetails,
             alertVisible: true,
             alertMsg: "Token is Expired.",
             alertClr: "danger",
           });
         } else {
           setAlertDetails({
-            ...alertDetails,
             alertVisible: true,
             alertMsg: "Token is Invalid.",
             alertClr: "danger",
@@ -82,13 +80,7 @@ const VerifyToken = () => {
                         type="text"
                         className="form-control"
                         placeholder="Enter Your Token"
-                        onChange={(e) => {
-                          setEnteredToken(e.target.value);
-                          setAlertDetails({
-                            ...alertDetails,
-                            alertVisible: false,
-                          });
-                        }}
+                        onChange={(e) => setEnteredToken(e.target.value)}
                         required
                       />
                     </div>
