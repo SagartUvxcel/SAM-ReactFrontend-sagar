@@ -66,7 +66,7 @@ const VerifyToken = () => {
                     <small className="fw-bold">{alertMsg}</small>
 
                     <i
-                      data-bs-dismiss="alert"
+                      onClick={() => setAlertDetails({ alertVisible: false })}
                       className="bi bi-x login-alert-close-btn close"
                     ></i>
                   </div>
