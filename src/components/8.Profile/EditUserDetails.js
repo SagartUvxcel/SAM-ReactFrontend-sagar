@@ -191,12 +191,10 @@ const EditUserDetails = () => {
                       <div
                         className={`form-group mb-3 ${defaultStateClassName}`}
                       >
-                        <label htmlFor="sTate">State</label>
+                        <label htmlFor="sTate1">State</label>
                         <input
-                          name="state"
-                          type="text"
                           className={`form-control ${editClassName}`}
-                          id="sTate"
+                          id="sTate1"
                           defaultValue={state}
                         />
                       </div>
@@ -204,7 +202,7 @@ const EditUserDetails = () => {
                         className={`form-group mb-3 ${selectStateClassName}`}
                       >
                         <label htmlFor="sTate">State</label>
-                        <select name="state" id="" className="form-select">
+                        <select name="state" id="sTate" className="form-select">
                           <option defaultValue={state}>{state}</option>
                           <option value="Goa">Goa</option>
                           <option value="Punjab">Punjab</option>
