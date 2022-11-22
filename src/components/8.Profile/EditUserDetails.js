@@ -190,9 +190,11 @@ const EditUserDetails = () => {
                       <div className="form-group mb-3">
                         <label htmlFor="zIp">Zip Code</label>
                         <input
-                          type="text"
+                          name="zip"
+                          type="number"
                           className={`form-control ${editClassName}`}
                           id="zIp"
+                          defaultValue={zip}
                         />
                       </div>
                     </div>
