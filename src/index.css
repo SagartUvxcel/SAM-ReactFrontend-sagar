@@ -475,6 +475,7 @@ input[type="number"] {
 
 .edit-details-wrapper .editable-values {
   border: none !important;
+  box-shadow: none !important;
   padding-left: 0 !important;
 }
 
