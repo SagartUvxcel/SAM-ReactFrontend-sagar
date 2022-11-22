@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import Layout from "../1.CommonLayout/Layout";
 
 const EditUserDetails = () => {
@@ -13,6 +15,8 @@ const EditUserDetails = () => {
   const city = "Pune";
   const state = "Maharashtra";
   const zip = "411015";
+
+  const goTo = useNavigate();
 
   const [allStates, setAllStates] = useState({
     isDisabled: false,
@@ -52,13 +56,19 @@ const EditUserDetails = () => {
     });
   };
 
+  const updateDetails = (e) => {
+    e.preventDefault();
+    toast.success("Details Updated Successfully");
+    goTo("/profile");
+  };
+
   return (
     <Layout>
       <section className="edit-details-wrapper section-padding min-100vh">
         <div className="container-fluid wrapper">
           <div className="row justify-content-center">
             <div className="col-xl-10 col-lg-10 col-md-12 col-sm-12 col-12">
-              <div className="card h-100">
+              <form onSubmit={updateDetails} className="card h-100">
                 <div className="card-body">
                   <div className="row gutters">
                     <div className="col-8">
@@ -233,14 +243,12 @@ const EditUserDetails = () => {
                         <button
                           onClick={cancelEditing}
                           type="button"
-                          id="submit"
-                          name="submit"
                           className="btn btn-secondary me-2"
                         >
                           Cancel
                         </button>
                         <button
-                          type="button"
+                          type="submit"
                           id="submit"
                           name="submit"
                           className="btn btn-primary"
@@ -251,7 +259,7 @@ const EditUserDetails = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </form>
             </div>
           </div>
         </div>
