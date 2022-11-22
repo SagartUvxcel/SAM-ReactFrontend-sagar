@@ -49,15 +49,16 @@ const EditUserDetails = () => {
   };
 
   const cancelEditing = () => {
-    setAllStates({
-      ...allStates,
-      isReadOnly: true,
-      isDisabled: false,
-      editClassName: "editable-values",
-      cancelUpdateBtnClassName: "d-none",
-      defaultStateClassName: "",
-      selectStateClassName: "d-none",
-    });
+    window.location.reload();
+    // setAllStates({
+    //   ...allStates,
+    //   isReadOnly: true,
+    //   isDisabled: false,
+    //   editClassName: "editable-values",
+    //   cancelUpdateBtnClassName: "d-none",
+    //   defaultStateClassName: "",
+    //   selectStateClassName: "d-none",
+    // });
   };
 
   const updateDetails = (e) => {
