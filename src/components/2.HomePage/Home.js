@@ -149,7 +149,7 @@ function Home() {
   // Change navbar color on scroll on HomePage only.
   const changeNavBarColor = () => {
     let nav = document.querySelector(".navbar");
-    nav.style.backgroundColor = "#5857579a";
+    nav.style.background = "#5857579a";
     window.onscroll = function () {
       if (document.documentElement.scrollTop > 150) {
         nav.classList.add("header-scrolled");

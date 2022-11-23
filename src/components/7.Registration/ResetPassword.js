@@ -10,8 +10,6 @@ const ResetPassword = () => {
   const [details, setDetails] = useState({
     newPassword: "",
     confirmPassword: "",
-    invalidColor1: "",
-    invalidColor2: "",
     invalidMessage1: "",
     eyeIcon: "eye-slash",
     eyeIcon2: "eye-slash",
@@ -31,9 +29,7 @@ const ResetPassword = () => {
   const {
     newPassword,
     confirmPassword,
-    invalidColor1,
     invalidMessage1,
-    invalidColor2,
     eyeIcon,
     eyeIcon2,
     passwordType1,
@@ -50,13 +46,11 @@ const ResetPassword = () => {
         setDetails({
           ...details,
           newPassword: value,
-          invalidColor1: "",
           invalidMessage1: "",
         });
       } else {
         setDetails({
           ...details,
-          invalidColor1: "danger",
           newPassword: value,
           invalidMessage1: "Invalid Password",
         });
@@ -70,14 +64,13 @@ const ResetPassword = () => {
     if (name === "resetPassword") {
       setDetails({
         ...details,
-        invalidColor1: "",
+        newPassword: value,
         invalidMessage1: "",
       });
     } else if (name === "confirmPassword") {
       setDetails({
         ...details,
         confirmPassword: value,
-        invalidColor2: "",
       });
     }
   };
@@ -85,7 +78,10 @@ const ResetPassword = () => {
   // On reset Button click this function will run.
   const onResetPasswordFormSubmit = async (e) => {
     e.preventDefault();
-    if (newPassword !== confirmPassword && invalidColor1 !== "danger") {
+    if (
+      newPassword !== confirmPassword &&
+      invalidMessage1 !== "Invalid Password"
+    ) {
       setAlertDetails({
         alertVisible: true,
         alertMsg: "Password and confirm password does not match.",
@@ -93,8 +89,6 @@ const ResetPassword = () => {
       });
       setDetails({
         ...details,
-        invalidColor1: "danger",
-        invalidColor2: "danger",
         eyeIcon: "eye",
         passwordType1: "text",
         eyeIcon2: "eye",
@@ -103,16 +97,17 @@ const ResetPassword = () => {
     } else if (newPassword !== confirmPassword) {
       setDetails({
         ...details,
-        invalidColor2: "danger",
         eyeIcon: "eye",
         passwordType1: "text",
         eyeIcon2: "eye",
         passwordType2: "text",
       });
-    } else if (newPassword === confirmPassword && invalidColor1 === "danger") {
+    } else if (
+      newPassword === confirmPassword &&
+      invalidMessage1 === "Invalid Password"
+    ) {
       setDetails({
         ...details,
-        invalidColor2: "danger",
         eyeIcon: "eye",
         passwordType1: "text",
         eyeIcon2: "eye",
@@ -197,7 +192,7 @@ const ResetPassword = () => {
                         id="reset-password"
                         name="resetPassword"
                         type={passwordType1}
-                        className={`form-control border-${invalidColor1}`}
+                        className="form-control"
                         onBlur={onPasswordsBlur}
                         onChange={onPasswordsChange}
                         required
@@ -231,7 +226,7 @@ const ResetPassword = () => {
                         id="confirm-password"
                         name="confirmPassword"
                         type={passwordType2}
-                        className={`form-control border-${invalidColor2}`}
+                        className="form-control"
                         onChange={onPasswordsChange}
                         required
                       />
