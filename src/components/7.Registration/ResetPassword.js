@@ -100,11 +100,6 @@ const ResetPassword = () => {
         passwordType2: "text",
       });
     } else if (newPassword === confirmPassword && invalidColor1 === "danger") {
-      setAlertDetails({
-        alertVisible: true,
-        alertMsg: "Invalid Password.",
-        alertClr: "danger",
-      });
       setDetails({
         ...details,
         invalidColor2: "danger",
