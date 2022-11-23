@@ -26,10 +26,10 @@ const HomeAboutUs = () => {
             <div className="col-md-6 common-col order-md-3 order-4">
               <img src={WhyChooseUs} alt="why-choose-us" />
             </div>
-            <div className="col-md-6 why-choose-us-col common-col order-md-4 order-3">
-              <div className="px-md-3 px-lg-0">
-                <h1 className="text-center text-white">WHY CHOOSE US ?</h1>
-                <ul className="text-justify text-white">
+            <div className="col-md-6 why-choose-us-col bg-white common-col order-md-4 order-3">
+              <div className="px-md-3 px-lg-0 text-dark">
+                <h1 className="text-center">WHY CHOOSE US ?</h1>
+                <ul className="text-justify">
                   <li>We have a strong track record of succesful project</li>
                   <li>
                     We have a dedicated team with the expertise and skills

@@ -65,7 +65,6 @@ input[type="number"] {
   filter: drop-shadow(18px 18px 3px rgba(0, 0, 0, 0.4));
   color: #fff !important;
   font-size: 18px !important;
-  background: rgb(0, 153, 255);
   background: linear-gradient(0deg, rgba(2, 48, 251) 0%, rgb(0, 191, 255) 100%);
   transition: 0.3s ease-in-out !important;
   border: 2px solid #c797eb !important;
@@ -79,7 +78,12 @@ input[type="number"] {
 }
 
 .common-full-page-bg {
-  background-color: #3f444c !important;
+  /* background-color: #3f444c !important; */
+  background: linear-gradient(
+    0deg,
+    rgba(2, 48, 251, 0.779) 0%,
+    rgb(0, 157, 255) 100%
+  ) !important;
 }
 
 .form-control:focus,
@@ -108,7 +112,12 @@ input[type="number"] {
 }
 
 .header-scrolled {
-  background-color: #585757 !important;
+  background: linear-gradient(
+    0deg,
+    rgba(2, 48, 251) 0%,
+    rgb(0, 157, 255) 100%
+  ) !important;
+  /* background-color: #585757 !important; */
   position: fixed !important;
   top: 0 !important;
   left: 0 !important;
@@ -325,9 +334,9 @@ input[type="number"] {
   font-size: 30px;
   height: 50px;
   width: 50px;
-  color: gray;
+  color: white;
   cursor: pointer;
-  background-color: black;
+  background-color: red;
   margin: 0 10px;
 }
 
