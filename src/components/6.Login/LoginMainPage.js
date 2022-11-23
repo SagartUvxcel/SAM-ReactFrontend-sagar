@@ -11,6 +11,8 @@ const LoginMainPage = () => {
   const [loginDetails, setLoginDetails] = useState({
     email: "",
     password: "",
+    eyeIcon: "eye-slash",
+    passwordType: "password",
   });
 
   const [alertDetails, setAlertDetails] = useState({
@@ -18,7 +20,7 @@ const LoginMainPage = () => {
     alertMsg: "",
     alertClr: "",
   });
-  const { email, password } = loginDetails;
+  const { email, password, eyeIcon, passwordType } = loginDetails;
   const { alertMsg, alertClr, alertVisible } = alertDetails;
 
   const onUserNameAndPasswordChange = (e) => {
@@ -27,6 +29,23 @@ const LoginMainPage = () => {
       setLoginDetails({ ...loginDetails, [name]: value });
     } else if (name === "password") {
       setLoginDetails({ ...loginDetails, [name]: value });
+    }
+  };
+
+  // Toggle the eye-icon to show and hide password.
+  const changeEyeIcon1 = () => {
+    if (eyeIcon === "eye-slash") {
+      setLoginDetails({
+        ...loginDetails,
+        eyeIcon: "eye",
+        passwordType: "text",
+      });
+    } else if (eyeIcon === "eye") {
+      setLoginDetails({
+        ...loginDetails,
+        eyeIcon: "eye-slash",
+        passwordType: "password",
+      });
     }
   };
 
@@ -98,16 +117,21 @@ const LoginMainPage = () => {
                       required
                     />
                   </div>
-                  <div className="col-lg-12 mb-3">
+                  <div className="col-lg-12 mb-3 position-relative">
                     <input
                       onChange={onUserNameAndPasswordChange}
                       name="password"
-                      type="password"
+                      type={passwordType}
                       className="form-control"
                       id="exampleInputPassword1"
                       placeholder="Password"
                       required
                     />
+                    <i
+                      placeholder={eyeIcon}
+                      onClick={changeEyeIcon1}
+                      className={`icon-eye-login bi bi-${eyeIcon}`}
+                    ></i>
                   </div>
                   <h6 className="text-center fw-bold">OR</h6>
                 </div>

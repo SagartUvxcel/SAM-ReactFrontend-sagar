@@ -184,7 +184,7 @@ const ResetPassword = () => {
                 )}
                 <div className="row mt-3">
                   <div className="col-lg-12 mb-4">
-                    <div className="form-group">
+                    <div className="form-group position-relative">
                       <label className="text-muted" htmlFor="reset-password">
                         New Password<span className="text-danger ps-1">*</span>
                       </label>
@@ -221,7 +221,7 @@ const ResetPassword = () => {
                       Confirm Password
                       <span className="text-danger ps-1">*</span>
                     </label>
-                    <div className="form-group">
+                    <div className="form-group position-relative">
                       <input
                         id="confirm-password"
                         name="confirmPassword"
