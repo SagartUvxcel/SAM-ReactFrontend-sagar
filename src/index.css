@@ -29,7 +29,8 @@ code {
 }
 
 .common-full-page-bg {
-  background: #575757;
+  /* background: #575757; */
+  background: rgba(135, 207, 235, 0.25);
 }
 
 p {

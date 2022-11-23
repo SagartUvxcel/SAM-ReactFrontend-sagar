@@ -64,7 +64,7 @@ const LoginMainPage = () => {
           toast.success("Logged in Successfully !");
           localStorage.setItem("user", email);
           setTimeout(() => {
-            goTo("/profile/edit");
+            goTo("/profile/edit-individual");
           }, 3000);
         } else {
           setAlertDetails({

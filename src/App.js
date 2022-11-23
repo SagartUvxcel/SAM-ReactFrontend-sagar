@@ -11,6 +11,7 @@ import Profile from "./components/8.Profile/Profile";
 import Protected from "./Protected";
 import { ToastContainer } from "react-toastify";
 import EditUserDetails from "./components/8.Profile/EditUserDetails";
+import EditOrganizationDetails from "./components/8.Profile/EditOrganizationDetails";
 
 function App() {
   return (
@@ -34,10 +35,18 @@ function App() {
             }
           />
           <Route
-            path="/profile/edit"
+            path="/profile/edit-individual"
             element={
               // <Protected>
-                <EditUserDetails />
+              <EditUserDetails />
+              // </Protected>
+            }
+          />
+          <Route
+            path="/profile/edit-organization"
+            element={
+              // <Protected>
+              <EditOrganizationDetails />
               // </Protected>
             }
           />

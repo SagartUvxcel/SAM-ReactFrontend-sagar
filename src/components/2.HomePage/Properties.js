@@ -20,7 +20,7 @@ const Properties = ({ propertyData }) => {
                     <div className="card mb-4">
                       <div className="top-line"></div>
                       <img className="card-img-top" src="images1.jpg" alt="" />
-                      <div className="card-body text-white">
+                      <div className="card-body">
                         <h3 className="card-title text-uppercase">
                           {property.title}
                         </h3>
