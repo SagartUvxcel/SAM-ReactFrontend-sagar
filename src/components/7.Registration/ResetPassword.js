@@ -19,6 +19,12 @@ const ResetPassword = () => {
     passwordType2: "password",
   });
 
+  const [alertDetails, setAlertDetails] = useState({
+    alertVisible: false,
+    alertMsg: "",
+    alertClr: "",
+  });
+  const { alertMsg, alertClr, alertVisible } = alertDetails;
   // Used to navigate to particular page.
   const goTo = useNavigate();
 
@@ -80,7 +86,11 @@ const ResetPassword = () => {
   const onResetPasswordFormSubmit = async (e) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
-      toast.error("Password and confirm password not matching");
+      setAlertDetails({
+        alertVisible: true,
+        alertMsg: "Password and confirm password does not match.",
+        alertClr: "danger",
+      });
       setDetails({
         ...details,
         invalidColor2: "danger",
@@ -90,7 +100,11 @@ const ResetPassword = () => {
         passwordType2: "text",
       });
     } else if (newPassword === confirmPassword && invalidColor1 === "danger") {
-      toast.error("Invalid Password");
+      setAlertDetails({
+        alertVisible: true,
+        alertMsg: "Invalid Password.",
+        alertClr: "danger",
+      });
       setDetails({
         ...details,
         invalidColor2: "danger",
@@ -149,10 +163,25 @@ const ResetPassword = () => {
       <section className="reset-password-wrapper section-padding min-100vh">
         <div className="container wrapper">
           <div className="row justify-content-center">
-            <div className="col-lg-5 col-xl-4 col-md-7">
+            <div className="col-xl-5 col-lg-6 col-xl-4 col-md-7">
               <form onSubmit={onResetPasswordFormSubmit} className="card p-5">
                 <h3 className="text-center fw-bold">Reset Password</h3>
                 <hr />
+                {alertVisible ? (
+                  <div
+                    className={`login-alert alert alert-${alertClr} alert-dismissible show`}
+                    role="alert"
+                  >
+                    <small className="fw-bold">{alertMsg}</small>
+
+                    <i
+                      onClick={() => setAlertDetails({ alertVisible: false })}
+                      className="bi bi-x login-alert-close-btn close"
+                    ></i>
+                  </div>
+                ) : (
+                  <div className="d-none"></div>
+                )}
                 <div className="row mt-3">
                   <div className="col-lg-12 mb-4">
                     <div className="form-group">
