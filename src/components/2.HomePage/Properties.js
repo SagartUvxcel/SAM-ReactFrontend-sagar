@@ -18,7 +18,7 @@ const Properties = ({ propertyData }) => {
                 <div className="col-lg-3 col-md-4" key={Index}>
                   <div className="property-card-wrapper">
                     <div className="card mb-4">
-                      <hr />
+                      <div className="top-line"></div>
                       <img className="card-img-top" src="images1.jpg" alt="" />
                       <div className="card-body text-white">
                         <h3 className="card-title text-uppercase">

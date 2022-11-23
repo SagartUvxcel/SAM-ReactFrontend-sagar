@@ -2,7 +2,7 @@ import React from "react";
 
 function Footers() {
   return (
-    <footer id="contact" className="footer-wrapper common-full-page-bg">
+    <footer id="contact" className="footer-wrapper footer-bg">
       <div className="container-fluid fluid-div">
         <div className="row justify-content-center">
           <div className="col-12 mt-4">
