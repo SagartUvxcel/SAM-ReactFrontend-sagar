@@ -281,6 +281,7 @@ input[type="number"] {
 
 .home-about-wrapper .common-col {
   height: 320px;
+  width: 50% !important;
   padding: 0 !important;
 }
 
@@ -551,6 +552,10 @@ input[type="number"] {
     padding: 2rem 0;
   }
   .five-section-col {
+    width: 100% !important;
+  }
+
+  .home-about-wrapper .common-col {
     width: 100% !important;
   }
 
