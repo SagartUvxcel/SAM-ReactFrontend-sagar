@@ -30,7 +30,9 @@ const VerifyToken = () => {
         if (res.data.status === 0) {
           toast.success("Verification Successful !");
           localStorage.setItem("token", enteredToken);
-          goTo("/register/reset-password");
+          setTimeout(() => {
+            goTo("/register/reset-password");
+          }, 3000);
         } else if (res.data.status === 1) {
           setAlertDetails({
             alertVisible: true,

@@ -453,7 +453,9 @@ const Registration = () => {
           toast.success(`Success: Please check your email for verification.`);
           e.target.reset();
           resetValues();
-          goTo("/register/verify");
+          setTimeout(() => {
+            goTo("/register/verify");
+          }, 3000);
         } else {
           toast.error("Form is Invalid");
         }
@@ -481,7 +483,9 @@ const Registration = () => {
           toast.success(`Success: Please check your email for verification.`);
           e.target.reset();
           resetValues();
-          goTo("/register/verify");
+          setTimeout(() => {
+            goTo("/register/verify");
+          }, 3000);
         } else {
           toast.error("Form is Invalid");
         }

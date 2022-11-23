@@ -112,7 +112,9 @@ const ResetPassword = () => {
           console.log(res.data.status);
         });
       toast.success("Password Changed Successfully !");
-      goTo("/login");
+      setTimeout(() => {
+        goTo("/login");
+      }, 3000);
     }
   };
 
