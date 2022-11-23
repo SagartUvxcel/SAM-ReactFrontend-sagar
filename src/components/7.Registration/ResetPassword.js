@@ -85,12 +85,22 @@ const ResetPassword = () => {
   // On reset Button click this function will run.
   const onResetPasswordFormSubmit = async (e) => {
     e.preventDefault();
-    if (newPassword !== confirmPassword) {
+    if (newPassword !== confirmPassword && invalidColor1 !== "danger") {
       setAlertDetails({
         alertVisible: true,
         alertMsg: "Password and confirm password does not match.",
         alertClr: "danger",
       });
+      setDetails({
+        ...details,
+        invalidColor1: "danger",
+        invalidColor2: "danger",
+        eyeIcon: "eye",
+        passwordType1: "text",
+        eyeIcon2: "eye",
+        passwordType2: "text",
+      });
+    } else if (newPassword !== confirmPassword) {
       setDetails({
         ...details,
         invalidColor2: "danger",
