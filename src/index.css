@@ -110,7 +110,11 @@ input[type="number"] {
 
 /* Navbar */
 .navbar {
-  background-color: #585757;
+  background: linear-gradient(
+    0deg,
+    rgb(2, 77, 251) 0%,
+    rgb(0, 157, 255) 100%
+  ) !important;
   transition: 0.3s ease-in-out;
 }
 
