@@ -17,6 +17,8 @@ const ResetPassword = () => {
     passwordType2: "password",
   });
 
+  const [resetBtnClassName, setResetBtnClassName] = useState("");
+
   const [alertDetails, setAlertDetails] = useState({
     alertVisible: false,
     alertMsg: "",
@@ -125,6 +127,7 @@ const ResetPassword = () => {
         .then((res) => {
           console.log(res.data.status);
         });
+      setResetBtnClassName("disabled");
       toast.success("Password Changed Successfully !");
       setTimeout(() => {
         goTo("/login");
@@ -238,7 +241,9 @@ const ResetPassword = () => {
                     </div>
                   </div>
                   <div className="col-lg-12">
-                    <button className="btn common-btn w-100">
+                    <button
+                      className={`btn common-btn w-100 ${resetBtnClassName}`}
+                    >
                       Reset Password
                     </button>
                   </div>
