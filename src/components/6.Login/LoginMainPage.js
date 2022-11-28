@@ -8,6 +8,8 @@ const LoginMainPage = () => {
   // It is used to navigate to particular route.
   const goTo = useNavigate();
 
+  const [loginBtnClassName, setLoginBtnClassName] = useState("");
+
   const [loginDetails, setLoginDetails] = useState({
     email: "",
     password: "",
@@ -63,7 +65,7 @@ const LoginMainPage = () => {
           localStorage.setItem("isLoggedIn", true);
           toast.success("Logged in Successfully !");
           localStorage.setItem("user", email);
-          e.target.classList.add("disabled");
+          setLoginBtnClassName("disabled");
           setTimeout(() => {
             goTo("/profile/edit-individual");
           }, 3000);
@@ -83,7 +85,11 @@ const LoginMainPage = () => {
         <div className="container-fluid mt-5">
           <div className="row justify-content-center">
             <div className="col-lg-5 col-xl-4 col-md-7">
-              <form action="" className="card form-card position-relative p-5">
+              <form
+                onSubmit={onLogin}
+                action=""
+                className="card form-card position-relative p-5"
+              >
                 <h3 className="text-center fw-bold">Login</h3>
                 <hr />
                 {alertVisible ? (
@@ -148,7 +154,7 @@ const LoginMainPage = () => {
                 </div>
                 <hr />
                 <div className="text-center my-3">
-                  <button onClick={onLogin} className="btn btn-primary">
+                  <button className={`btn btn-primary ${loginBtnClassName}`}>
                     Login
                   </button>
                 </div>
