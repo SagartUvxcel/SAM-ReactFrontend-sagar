@@ -12,6 +12,7 @@ import Protected from "./Protected";
 import { ToastContainer } from "react-toastify";
 import EditUserDetails from "./components/8.Profile/EditUserDetails";
 import EditOrganizationDetails from "./components/8.Profile/EditOrganizationDetails";
+import ProtectAfterLogin from "./ProtectAfterLogin";
 
 function App() {
   return (
@@ -22,10 +23,38 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/search" element={<Home />} />
           <Route path="/property" element={<ViewPropertyDetails />} />
-          <Route path="/register/*" element={<Registration />} />
-          <Route path="/register/verify" element={<VerifyToken />} />
-          <Route path="/login" element={<LoginMainPage />} />
-          <Route path="/register/reset-password" element={<ResetPassword />} />
+          <Route
+            path="/register/*"
+            element={
+              <ProtectAfterLogin>
+                <Registration />
+              </ProtectAfterLogin>
+            }
+          />
+          <Route
+            path="/register/verify"
+            element={
+              <ProtectAfterLogin>
+                <VerifyToken />
+              </ProtectAfterLogin>
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              <ProtectAfterLogin>
+                <LoginMainPage />
+              </ProtectAfterLogin>
+            }
+          />
+          <Route
+            path="/register/reset-password"
+            element={
+              <ProtectAfterLogin>
+                <ResetPassword />
+              </ProtectAfterLogin>
+            }
+          />
           <Route
             path="/profile/*"
             element={
