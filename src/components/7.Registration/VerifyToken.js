@@ -8,6 +8,7 @@ import Layout from "../1.CommonLayout/Layout";
 const VerifyToken = () => {
   // useState to save token entered by user.
   const [enteredToken, setEnteredToken] = useState("");
+  const [verifyButtonClass, setVerifyButtonClass] = useState("");
 
   // To navigate to particular route.
   const goTo = useNavigate();
@@ -28,6 +29,7 @@ const VerifyToken = () => {
       )
       .then((res) => {
         if (res.data.status === 0) {
+          setVerifyButtonClass("disabled");
           toast.success("Verification Successful !");
           localStorage.setItem("token", enteredToken);
           setTimeout(() => {
@@ -89,7 +91,9 @@ const VerifyToken = () => {
                   </div>
                   <div className="col-12">
                     <div className="form-group">
-                      <button className="btn common-btn w-100">
+                      <button
+                        className={`btn common-btn w-100 ${verifyButtonClass}`}
+                      >
                         Verify Token
                       </button>
                     </div>

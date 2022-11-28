@@ -15,6 +15,8 @@ const Registration = () => {
   // useState to store ID of state so that we can validate zipCodes for each state.
   const [IdOfState, SetIdOfState] = useState("");
 
+  const [submitButtonClass, setSubmitButtonClass] = useState("");
+
   const goTo = useNavigate();
 
   // useState to store each field's data from form.
@@ -70,6 +72,7 @@ const Registration = () => {
   const resetValues = () => {
     setValidationDetails({});
     SetIdOfState("");
+    setSubmitButtonClass("");
   };
 
   const showOrganizationForm = () => {
