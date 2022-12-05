@@ -32,8 +32,8 @@ const ScrollButton = () => {
       /> */}
       <i
         onClick={scrollToTop}
-        style={{ display: visible ? "inline" : "none" }}
-        className="bi bi-arrow-up-square"
+        style={{ display: visible ? "" : "none" }}
+        className="bi bi-arrow-up-short"
       ></i>
     </span>
   );
