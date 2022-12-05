@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Layout from "../1.CommonLayout/Layout";
+import login from "../../images/loginsvg.svg";
 
 const LoginMainPage = () => {
   // It is used to navigate to particular route.
@@ -83,7 +84,10 @@ const LoginMainPage = () => {
     <Layout>
       <section className="login-wrapper min-100vh section-padding">
         <div className="container-fluid mt-5">
-          <div className="row justify-content-center">
+          <div className="row justify-content-evenly">
+            <div className="col-lg-5 col-xl-5 mb-5">
+              <img src={login} alt="" className="login-img" />
+            </div>
             <div className="col-lg-5 col-xl-4 col-md-7">
               <form
                 onSubmit={onLogin}
