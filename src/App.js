@@ -13,6 +13,7 @@ import { ToastContainer } from "react-toastify";
 import EditUserDetails from "./components/8.Profile/EditUserDetails";
 import EditOrganizationDetails from "./components/8.Profile/EditOrganizationDetails";
 import ProtectAfterLogin from "./ProtectAfterLogin";
+import ScrollButton from "./components/ScrollButton";
 
 function App() {
   return (
@@ -81,6 +82,7 @@ function App() {
           />
         </Routes>
       </ScrollToTop>
+      <ScrollButton />
     </>
   );
 }
