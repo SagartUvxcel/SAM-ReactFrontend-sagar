@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-// import { Button } from './Styles';
 
 const ScrollButton = () => {
   const [visible, setVisible] = useState(false);
@@ -17,8 +16,6 @@ const ScrollButton = () => {
     window.scrollTo({
       top: 0,
       behavior: "smooth",
-      /* you can also use 'auto' behaviour
-               in place of 'smooth' */
     });
   };
 
@@ -26,10 +23,6 @@ const ScrollButton = () => {
 
   return (
     <span className="scroll-top">
-      {/* <FaArrowCircleUp
-        onClick={scrollToTop}
-        style={{ display: visible ? "inline" : "none" }}
-      /> */}
       <i
         onClick={scrollToTop}
         style={{ display: visible ? "" : "none" }}
