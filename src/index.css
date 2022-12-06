@@ -340,12 +340,34 @@ input[type="number"] {
   position: relative;
 }
 
+.contact-first-row {
+  padding-left: 55px;
+}
+
 .contact-title {
   font-size: 3.6rem;
 }
 
 .contact-subtitle {
   font-size: 18px !important;
+}
+
+.contact-social-icons {
+  position: absolute;
+  display: flex;
+  bottom: 48px;
+  left: 70px;
+}
+
+.contact-icon {
+  color: white;
+  font-size: 1.6rem;
+  transition: 0.2s ease-in-out;
+}
+
+.contact-icon:hover {
+  transform: scale(1.4);
+  transition: 0.2s ease-in-out;
 }
 
 /* Footer */
