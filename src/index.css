@@ -552,6 +552,9 @@ input[type="number"] {
   .reset-pass-img {
     height: 435px;
   }
+  .login-img {
+    height: 515px;
+  }
 }
 
 @media (min-width: 1200px) {
