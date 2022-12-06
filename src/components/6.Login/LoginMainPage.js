@@ -144,7 +144,7 @@ const LoginMainPage = () => {
                 </div>
                 <h6 className="fw-bold mt-3 mt-md-0">Login with OTP</h6>
                 <div className="row">
-                  <div className="col-md-8 mb-3">
+                  <div className="col-md-7 col-xl-8 mb-3">
                     <input
                       type="Number"
                       className="form-control"
@@ -152,7 +152,7 @@ const LoginMainPage = () => {
                       placeholder="Mobile Number"
                     />
                   </div>
-                  <div className="col-md-4 text-md-end text-center">
+                  <div className="col-md-5 col-xl-4 text-md-end text-center">
                     <button className="btn btn-primary">Send OTP</button>
                   </div>
                 </div>
