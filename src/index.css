@@ -14,6 +14,10 @@ code {
 
 /* Common css */
 
+small {
+  font-size: 0.775em !important;
+}
+
 /* scroll to top button */
 .scroll-top {
   position: fixed;
@@ -595,6 +599,10 @@ input[type="number"] {
 }
 
 @media screen and (max-width: 767px) {
+  small {
+    font-size: 0.5em !important;
+  }
+
   .toast-container {
     padding-top: 70% !important;
     padding-right: 11% !important;
