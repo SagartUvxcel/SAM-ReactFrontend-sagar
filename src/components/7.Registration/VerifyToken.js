@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Layout from "../1.CommonLayout/Layout";
+import verifyTokenImg from "../../images/verifytoken.svg";
 
 const VerifyToken = () => {
   // useState to save token entered by user.
@@ -55,8 +56,8 @@ const VerifyToken = () => {
     <Layout>
       <section className="verify-token-wrapper min-100vh section-padding">
         <div className="container">
-          <div className="row justify-content-center wrapper">
-            <div className="col-xl-4 col-lg-5 col-md-7">
+          <div className="row justify-content-evenly mt-5">
+            <div className="col-xl-4 col-lg-5 col-md-6">
               <form onSubmit={verifyUserToken} action="" className="card p-5">
                 <h3 className="card-title text-center fw-bold">
                   Verify Your Token
@@ -100,6 +101,9 @@ const VerifyToken = () => {
                   </div>
                 </div>
               </form>
+            </div>
+            <div className="col-xl-4 col-lg-5 col-md-6 mt-5 mt-md-0">
+              <img src={verifyTokenImg} alt="" className="verify-token-img" />
             </div>
           </div>
         </div>

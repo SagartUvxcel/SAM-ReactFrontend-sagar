@@ -492,6 +492,13 @@ input[type="number"] {
   width: 94%;
 }
 
+/* Verify Token */
+
+.verify-token-img {
+  height: 100%;
+  width: 100%;
+}
+
 /* Profile */
 
 .profile-wrapper .profile-details-div {
