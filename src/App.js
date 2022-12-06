@@ -14,6 +14,7 @@ import EditUserDetails from "./components/8.Profile/EditUserDetails";
 import EditOrganizationDetails from "./components/8.Profile/EditOrganizationDetails";
 import ProtectAfterLogin from "./ProtectAfterLogin";
 import ScrollButton from "./components/ScrollButton";
+import Contact from "./components/4.Contact/Contact";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/search" element={<Home />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="/property" element={<ViewPropertyDetails />} />
           <Route
             path="/register/*"

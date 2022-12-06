@@ -169,7 +169,7 @@ function Home() {
 
   return (
     <Layout>
-      <section className="full-home-page-section common-full-page-bg">
+      <section className="full-home-page-section skyblue-bg">
         <section className="home-wrapper">
           <div className="container-fluid">
             {/* 5 select boxes */}

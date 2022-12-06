@@ -54,8 +54,7 @@ small {
   width: 100% !important;
 }
 
-.common-full-page-bg {
-  /* background: #575757; */
+.skyblue-bg {
   background: rgba(135, 207, 235, 0.25);
 }
 
@@ -324,6 +323,29 @@ input[type="number"] {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+/* Contact */
+
+.contact-bg-img {
+  width: 100%;
+  height: auto;
+  min-height: 418px;
+  background-image: url("images/bgblue.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed;
+  padding: 100px 0;
+  position: relative;
+}
+
+.contact-title {
+  font-size: 3.6rem;
+}
+
+.contact-subtitle {
+  font-size: 18px !important;
 }
 
 /* Footer */
