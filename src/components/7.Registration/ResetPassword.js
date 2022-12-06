@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Layout from "../1.CommonLayout/Layout";
+import resetPassImg from "../../images/resetpass.svg";
 
 const ResetPassword = () => {
   //  Important variables for storing password data as well as validation data.
@@ -164,9 +165,9 @@ const ResetPassword = () => {
   return (
     <Layout>
       <section className="reset-password-wrapper section-padding min-100vh">
-        <div className="container wrapper">
-          <div className="row justify-content-center">
-            <div className="col-xl-5 col-lg-6 col-md-7">
+        <div className="container mt-5">
+          <div className="row justify-content-lg-between justify-content-center">
+            <div className="col-xl-5 col-lg-6 col-md-8 order-2 order-lg-1 mt-5 mt-lg-0">
               <form onSubmit={onResetPasswordFormSubmit} className="card p-5">
                 <h3 className="text-center fw-bold">Reset Password</h3>
                 <hr />
@@ -249,6 +250,9 @@ const ResetPassword = () => {
                   </div>
                 </div>
               </form>
+            </div>
+            <div className="col-xl-5 col-lg-6 col-md-8 order-1 order-lg-2 mb-md-5 mb-lg-0">
+              <img src={resetPassImg} alt="" className="reset-pass-img" />
             </div>
           </div>
         </div>
