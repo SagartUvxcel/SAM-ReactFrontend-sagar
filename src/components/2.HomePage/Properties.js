@@ -61,7 +61,7 @@ const Properties = ({ propertyData }) => {
               );
             })
           ) : (
-            <div className="py-5 text-center text-white">
+            <div className="py-5 text-center">
               <h2 className="text-capitalize">Sorry! No result found :(</h2>
               <span className="">Please try with another options</span>
             </div>
