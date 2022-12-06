@@ -489,7 +489,7 @@ input[type="number"] {
 
 .reset-pass-img {
   height: 100%;
-  width: 94%;
+  width: 100%;
 }
 
 /* Verify Token */
@@ -548,12 +548,18 @@ input[type="number"] {
   }
 }
 
+@media (min-width: 1024px) {
+  .reset-pass-img {
+    height: 435px;
+  }
+}
+
 @media (min-width: 1200px) {
   .col-xl-4 {
     width: 32% !important;
   }
   .reset-pass-img {
-    width: 84%;
+    height: 441px;
   }
 }
 
