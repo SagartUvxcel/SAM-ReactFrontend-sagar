@@ -26,6 +26,13 @@ const Contact = () => {
             </div>
           </div>
         </div>
+        <div className="container position-relative">
+          <div className="row">
+            <div className="col-xl-10">
+              <form className="card bg-white shadow contact-form">form</form>
+            </div>
+          </div>
+        </div>
       </section>
     </Layout>
   );

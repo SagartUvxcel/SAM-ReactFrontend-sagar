@@ -370,6 +370,14 @@ input[type="number"] {
   transition: 0.2s ease-in-out;
 }
 
+.contact-form {
+  position: absolute !important;
+  min-height: 300px !important;
+  right: 4rem;
+  left: 20rem;
+  top: -7rem;
+}
+
 /* Footer */
 
 .footer-wrapper {
