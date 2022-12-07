@@ -65,7 +65,10 @@ const Contact = () => {
                           placeholder="Message"
                         ></textarea>
                       </div>
-                      <button className="btn btn-primary w-100">
+                      <button
+                        className="btn btn-primary w-100"
+                        style={{ borderRadius: "0" }}
+                      >
                         Send Now <i className="bi bi-arrow-right ps-2"></i>
                       </button>
                     </div>
