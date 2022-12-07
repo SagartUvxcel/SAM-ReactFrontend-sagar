@@ -28,17 +28,48 @@ const Contact = () => {
         </div>
         <div className="container position-relative">
           <div className="row">
-            <div className="col-xl-10">
+            <div className="col-xl-12">
               <form className="card bg-white shadow contact-form py-3 px-2">
                 <div className="container-fluid">
                   <div className="row">
-                    <div className="col-7">
-                      <span>
-                        <i class="bi bi-person-vcard"></i>
-                      </span>
-                      <span className="fw-bold fs-5 getintouch-text">Get In Touch</span>
+                    <div className="col-5">
+                      <div className="form-title mb-4">
+                        <span>
+                          <i className="bi bi-person-vcard"></i>
+                        </span>
+                        <span className="fw-bold fs-5 getintouch-text">
+                          Get In Touch
+                        </span>
+                      </div>
+                      <div className="form-group mb-3">
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Your Name"
+                        />
+                      </div>
+                      <div className="form-group mb-3">
+                        <input
+                          type="email"
+                          className="form-control"
+                          placeholder="Email Address"
+                        />
+                      </div>
+                      <div className="form-group mb-4">
+                        <textarea
+                          style={{ resize: "none" }}
+                          name="message"
+                          id=""
+                          rows="5"
+                          className="form-control"
+                          placeholder="Message"
+                        ></textarea>
+                      </div>
+                      <button className="btn btn-primary w-100">
+                        Send Now <i className="bi bi-arrow-right ps-2"></i>
+                      </button>
                     </div>
-                    <div className="col-5 bg-light">col-5</div>
+                    <div className="col-7 bg-light">col-5</div>
                   </div>
                 </div>
               </form>
