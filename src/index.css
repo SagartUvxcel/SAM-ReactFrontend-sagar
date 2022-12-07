@@ -370,13 +370,6 @@ input[type="number"] {
   transition: 0.2s ease-in-out;
 }
 
-.contact-form {
-  position: absolute !important;
-  right: 7rem;
-  left: 24rem;
-  top: -10rem;
-}
-
 .contact-form .bi-person-vcard {
   font-size: 1.5rem;
   position: absolute;
@@ -629,6 +622,17 @@ input[type="number"] {
   .login-img {
     height: 515px;
   }
+
+  .contact-form-wrapper {
+    min-height: 70vh;
+  }
+
+  .contact-form {
+    position: absolute !important;
+    right: 2rem;
+    left: 14rem;
+    top: -8rem;
+  }
 }
 
 @media (min-width: 1200px) {
@@ -637,6 +641,12 @@ input[type="number"] {
   }
   .reset-pass-img {
     height: 441px;
+  }
+
+  .contact-form {
+    right: 7rem;
+    left: 21rem;
+    top: -10rem;
   }
 }
 
