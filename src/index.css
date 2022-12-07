@@ -378,6 +378,16 @@ input[type="number"] {
   top: -7rem;
 }
 
+.contact-form .bi-person-vcard {
+  font-size: 1.5rem;
+  position: absolute;
+  top: 0.9rem;
+}
+
+.getintouch-text {
+  padding-left: 2.2rem;
+}
+
 /* Footer */
 
 .footer-wrapper {

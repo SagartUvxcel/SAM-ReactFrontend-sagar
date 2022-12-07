@@ -29,7 +29,19 @@ const Contact = () => {
         <div className="container position-relative">
           <div className="row">
             <div className="col-xl-10">
-              <form className="card bg-white shadow contact-form">form</form>
+              <form className="card bg-white shadow contact-form py-3 px-2">
+                <div className="container-fluid">
+                  <div className="row">
+                    <div className="col-7">
+                      <span>
+                        <i class="bi bi-person-vcard"></i>
+                      </span>
+                      <span className="fw-bold fs-5 getintouch-text">Get In Touch</span>
+                    </div>
+                    <div className="col-5 bg-light">col-5</div>
+                  </div>
+                </div>
+              </form>
             </div>
           </div>
         </div>
