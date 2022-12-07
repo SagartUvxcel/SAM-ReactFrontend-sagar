@@ -698,6 +698,9 @@ input[type="number"] {
   .profile-wrapper .circled-div {
     height: 120px !important;
   }
+  .contact-wrapper {
+    min-height: 88vh;
+  }
 }
 
 @media screen and (max-width: 767px) {

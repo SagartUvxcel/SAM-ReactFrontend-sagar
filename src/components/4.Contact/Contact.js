@@ -4,7 +4,7 @@ import Layout from "../1.CommonLayout/Layout";
 const Contact = () => {
   return (
     <Layout>
-      <section className="contact-wrapper min-100vh">
+      <section className="contact-wrapper">
         <div className="contact-bg-img">
           <div className="container-fluid text-white">
             <div className="row contact-first-row">
