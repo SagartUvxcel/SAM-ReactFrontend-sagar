@@ -352,13 +352,6 @@ input[type="number"] {
   font-size: 18px !important;
 }
 
-.contact-social-icons {
-  position: absolute;
-  display: flex;
-  bottom: 48px;
-  left: 70px;
-}
-
 .contact-icon {
   color: white;
   font-size: 2.1rem;
@@ -607,11 +600,32 @@ input[type="number"] {
   .col-md-6 {
     width: 48.5% !important;
   }
+  .contact-form-wrapper {
+    min-height: 50vh;
+  }
+
+  .contact-social-icons {
+    position: absolute;
+    display: flex;
+    bottom: 98px;
+    left: 70px;
+  }
+
+  .contact-form {
+    position: absolute !important;
+    right: 0rem;
+    left: 2.59rem;
+    top: -4rem;
+  }
 }
 
 @media screen and (min-width: 992px) {
   .five-section-col {
     flex: 0 0 auto !important;
+  }
+  .contact-social-icons {
+    bottom: 48px;
+    left: 70px;
   }
 }
 
@@ -623,12 +637,7 @@ input[type="number"] {
     height: 515px;
   }
 
-  .contact-form-wrapper {
-    min-height: 70vh;
-  }
-
   .contact-form {
-    position: absolute !important;
     right: 2rem;
     left: 14rem;
     top: -8rem;
