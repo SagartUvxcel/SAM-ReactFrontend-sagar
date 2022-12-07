@@ -330,7 +330,7 @@ input[type="number"] {
 .contact-bg-img {
   width: 100%;
   height: auto;
-  min-height: 350px;
+  min-height: 360px;
   background-image: url("images/bgblue.png");
   background-repeat: no-repeat;
   background-position: center;
@@ -372,9 +372,9 @@ input[type="number"] {
 
 .contact-form {
   position: absolute !important;
-  right: 7rem;
-  left: 13rem;
-  top: -7rem;
+  right: 5rem;
+  left: 24rem;
+  top: -10rem;
 }
 
 .contact-form .bi-person-vcard {
