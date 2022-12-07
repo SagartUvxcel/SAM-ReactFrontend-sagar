@@ -26,10 +26,10 @@ const Contact = () => {
             </div>
           </div>
         </div>
-        <div className="container position-relative">
+        <div className="container position-relative vh-100">
           <div className="row">
             <div className="col-xl-12">
-              <form className="card bg-white shadow contact-form py-3 px-2">
+              <form className="card bg-white shadow contact-form py-5 px-3">
                 <div className="container-fluid">
                   <div className="row">
                     <div className="col-5">
@@ -69,7 +69,10 @@ const Contact = () => {
                         Send Now <i className="bi bi-arrow-right ps-2"></i>
                       </button>
                     </div>
-                    <div className="col-7 bg-light">col-5</div>
+                    <div className="col-2 d-flex justify-content-center">
+                      <div className="vr"></div>
+                    </div>
+                    <div className="col-5 bg-light">col-5</div>
                   </div>
                 </div>
               </form>
