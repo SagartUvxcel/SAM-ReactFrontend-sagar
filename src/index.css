@@ -352,6 +352,11 @@ input[type="number"] {
   font-size: 18px !important;
 }
 
+.contact-social-icons {
+  position: absolute;
+  display: flex;
+}
+
 .contact-icon {
   color: white;
   font-size: 2.1rem;
@@ -596,16 +601,13 @@ input[type="number"] {
 
 /* Media Queries */
 
-@media (min-width: 280px) {
-  .contact-social-icons {
-    position: absolute;
-    display: flex;
-  }
-}
-
 @media (min-width: 768px) {
   .col-md-6 {
     width: 48.5% !important;
+  }
+
+  .contact-form-wrapper {
+    min-height: 0vh;
   }
 
   .contact-social-icons {
