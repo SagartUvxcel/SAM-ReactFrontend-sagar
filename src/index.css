@@ -596,14 +596,19 @@ input[type="number"] {
 
 /* Media Queries */
 
+@media (min-width: 280px) {
+  .contact-social-icons {
+    position: absolute;
+    display: flex;
+  }
+}
+
 @media (min-width: 768px) {
   .col-md-6 {
     width: 48.5% !important;
   }
 
   .contact-social-icons {
-    position: absolute;
-    display: flex;
     bottom: 98px;
     left: 70px;
   }
