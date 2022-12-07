@@ -70,9 +70,24 @@ const Contact = () => {
                       </button>
                     </div>
                     <div className="col-2 d-flex justify-content-center">
-                      <div className="vr"></div>
+                      <div className="vr bg-secondary"></div>
                     </div>
-                    <div className="col-5 bg-light">col-5</div>
+                    <div className="col-5 d-flex align-items-center">
+                      <div className="contact-details">
+                        <p>
+                          <i class="pe-3 bi bi-envelope-fill text-primary"></i>
+                          example@mail.com
+                        </p>
+                        <p>
+                          <i class="pe-3 bi bi-telephone-fill text-primary"></i>
+                          464066935, 4567869394
+                        </p>
+                        <p>
+                          <i class="pe-3 bi bi-geo-alt-fill text-primary"></i>
+                          Example Address, Location
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </form>
