@@ -26,13 +26,13 @@ const Contact = () => {
             </div>
           </div>
         </div>
-        <div className="container contact-form-wrapper position-relative">
+        <div className="container contact-form-wrapper position-relative py-5 py-md-0">
           <div className="row">
             <div className="col-xl-12">
               <form className="card bg-white shadow contact-form py-5 px-3">
                 <div className="container-fluid">
                   <div className="row">
-                    <div className="col-5">
+                    <div className="col-md-5">
                       <div className="form-title mb-4">
                         <span>
                           <i className="bi bi-person-vcard"></i>
@@ -72,10 +72,10 @@ const Contact = () => {
                         Send Now <i className="bi bi-arrow-right ps-2"></i>
                       </button>
                     </div>
-                    <div className="col-2 d-flex justify-content-center">
+                    <div className="col-md-2 d-md-flex d-none justify-content-center">
                       <div className="vr bg-secondary"></div>
                     </div>
-                    <div className="col-5 d-flex align-items-center">
+                    <div className="col-md-5 d-flex align-items-center mt-5 mt-md-0">
                       <div className="contact-details">
                         <p>
                           <i class="pe-3 bi bi-envelope-fill text-primary"></i>

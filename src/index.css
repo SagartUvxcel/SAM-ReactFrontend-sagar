@@ -737,4 +737,8 @@ input[type="number"] {
   .profile-wrapper .circled-div {
     height: 106px !important;
   }
+
+  .contact-form-wrapper {
+    min-height: 100vh;
+  }
 }
