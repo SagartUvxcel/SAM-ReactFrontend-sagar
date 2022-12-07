@@ -330,13 +330,13 @@ input[type="number"] {
 .contact-bg-img {
   width: 100%;
   height: auto;
-  min-height: 418px;
+  min-height: 350px;
   background-image: url("images/bgblue.png");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
   background-attachment: fixed;
-  padding: 100px 0;
+  padding: 90px 0;
   position: relative;
 }
 
@@ -345,7 +345,7 @@ input[type="number"] {
 }
 
 .contact-title {
-  font-size: 3.6rem;
+  font-size: 3rem;
 }
 
 .contact-subtitle {
@@ -361,7 +361,7 @@ input[type="number"] {
 
 .contact-icon {
   color: white;
-  font-size: 1.6rem;
+  font-size: 2.1rem;
   transition: 0.2s ease-in-out;
 }
 
@@ -372,8 +372,8 @@ input[type="number"] {
 
 .contact-form {
   position: absolute !important;
-  right: 4rem;
-  left: 24rem;
+  right: 7rem;
+  left: 13rem;
   top: -7rem;
 }
 
