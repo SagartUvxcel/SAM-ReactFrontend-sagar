@@ -26,7 +26,7 @@ const Contact = () => {
             </div>
           </div>
         </div>
-        <div className="container contact-form-wrapper position-relative py-5 py-md-0">
+        <div className="container contact-form-wrapper position-relative py-4 py-md-0">
           <div className="row">
             <div className="col-xl-12">
               <form className="card bg-white shadow contact-form py-5 px-3">

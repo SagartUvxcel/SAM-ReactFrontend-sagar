@@ -376,8 +376,8 @@ input[type="number"] {
 .contact-form .form-control,
 .contact-form .form-control:focus {
   border-radius: 0;
-  border-color: rgba(220, 220, 220, 0.3);
-  background: rgba(220, 220, 220, 0.3);
+  border-color: rgba(220, 220, 220, 0.4);
+  background: rgba(220, 220, 220, 0.4);
   font-size: 12px;
   padding: 13px 0 13px 13px;
 }
@@ -738,7 +738,24 @@ input[type="number"] {
     height: 106px !important;
   }
 
+  .contact-bg-img {
+    min-height: 279px;
+  }
+
   .contact-form-wrapper {
     min-height: 100vh;
+  }
+
+  .contact-first-row {
+    padding-left: 0px;
+  }
+
+  .contact-title {
+    font-size: 2.4rem;
+  }
+
+  .contact-social-icons {
+    bottom: 1rem;
+    left: 0.8rem;
   }
 }
