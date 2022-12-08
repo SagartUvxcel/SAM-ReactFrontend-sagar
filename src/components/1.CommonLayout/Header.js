@@ -58,6 +58,9 @@ function Header() {
               </li>
               <li className="nav-item ps-lg-2">
                 <Link
+                  onClick={() => {
+                    localStorage.clear();
+                  }}
                   style={{ cursor: "pointer" }}
                   className="nav-link"
                   to="about"
