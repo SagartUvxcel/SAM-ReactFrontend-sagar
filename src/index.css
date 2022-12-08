@@ -700,7 +700,7 @@ input[type="number"] {
   }
 }
 
-@media (min-width: 1200px) {
+@media (min-width: 1280px) {
   .col-xl-4 {
     width: 32% !important;
   }
@@ -719,7 +719,13 @@ input[type="number"] {
   }
 
   .page-not-found-wrapper {
-    padding: 210px 0 0 0;
+    padding: 235px 0 0 0;
+  }
+}
+
+@media (min-width: 1300px) {
+  .page-not-found-wrapper {
+    padding: 200px 0 0 0;
   }
 }
 
