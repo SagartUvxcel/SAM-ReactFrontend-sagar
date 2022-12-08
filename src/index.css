@@ -607,7 +607,6 @@ input[type="number"] {
 }
 
 .page-not-found-wrapper h1 {
-  font-size: 70px;
   color: #3f3d56;
 }
 
@@ -648,7 +647,7 @@ input[type="number"] {
   }
 
   .page-not-found-wrapper {
-    padding: 360px 0 0 0;
+    padding: 350px 0 0 0;
   }
 
   .page-not-found-wrapper h1 {
@@ -697,7 +696,7 @@ input[type="number"] {
   }
 
   .page-not-found-wrapper {
-    padding: 110px 0 100px 0;
+    padding: 125px 0 0 0;
   }
 }
 
@@ -720,7 +719,7 @@ input[type="number"] {
   }
 
   .page-not-found-wrapper {
-    padding: 200px 0 100px 0;
+    padding: 210px 0 0 0;
   }
 }
 
@@ -818,5 +817,13 @@ input[type="number"] {
 
   .page-not-found-wrapper {
     background-size: contain;
+  }
+
+  .page-not-found-wrapper {
+    padding: 258px 0 0 0;
+  }
+
+  .page-not-found-wrapper h1 {
+    font-size: 20px;
   }
 }

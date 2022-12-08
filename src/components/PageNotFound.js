@@ -9,7 +9,7 @@ const PageNotFound = () => {
           <div className="col-xl-6">
             <h1 className="text-center fw-bolder">Page Not Found</h1>
             <div className="text-center">
-              <NavLink to="/" className="btn btn-home mt-3">
+              <NavLink to="/" className="btn btn-home mt-md-3 mt-1">
                 Back to home <i className="bi bi-arrow-right ps-2"></i>
               </NavLink>
             </div>
