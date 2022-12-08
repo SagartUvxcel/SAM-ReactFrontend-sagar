@@ -35,11 +35,6 @@ small {
   transition: 0.3s ease-in-out;
 }
 
-.scroll-top:hover .bi-arrow-up-short::before {
-  background: linear-gradient(0deg, rgb(251, 102, 2) 0%, rgb(255, 162, 0) 100%);
-  transition: 0.3s ease-in-out;
-}
-
 /* React toast */
 .toast-container {
   position: fixed;
