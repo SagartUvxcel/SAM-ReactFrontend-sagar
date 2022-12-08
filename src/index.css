@@ -603,7 +603,6 @@ input[type="number"] {
   background-repeat: no-repeat;
   background-position: center;
   background-attachment: fixed;
-  padding: 200px 0 100px 0;
   position: relative;
 }
 
@@ -647,9 +646,29 @@ input[type="number"] {
     left: 2.59rem;
     top: -4rem;
   }
+
+  .page-not-found-wrapper {
+    padding: 360px 0 0 0;
+  }
+
+  .page-not-found-wrapper h1 {
+    font-size: 60px;
+  }
 }
 
-@media screen and (min-width: 992px) {
+@media screen and (min-width: 820px) {
+  .page-not-found-wrapper {
+    padding: 421px 0 0 0;
+  }
+}
+
+@media screen and (min-width: 912px) {
+  .page-not-found-wrapper {
+    padding: 515px 0 0 0;
+  }
+}
+
+@media (min-width: 1024px) {
   .five-section-col {
     flex: 0 0 auto !important;
   }
@@ -658,12 +677,11 @@ input[type="number"] {
     bottom: 48px;
     left: 70px;
   }
-}
 
-@media (min-width: 1024px) {
   .reset-pass-img {
     height: 435px;
   }
+
   .login-img {
     height: 515px;
   }
@@ -676,6 +694,10 @@ input[type="number"] {
     right: 2rem;
     left: 14rem;
     top: -8rem;
+  }
+
+  .page-not-found-wrapper {
+    padding: 110px 0 100px 0;
   }
 }
 
@@ -695,6 +717,10 @@ input[type="number"] {
     right: 7rem;
     left: 21rem;
     top: -10rem;
+  }
+
+  .page-not-found-wrapper {
+    padding: 200px 0 100px 0;
   }
 }
 
