@@ -15,6 +15,7 @@ import EditOrganizationDetails from "./components/8.Profile/EditOrganizationDeta
 import ProtectAfterLogin from "../src/components/ProtectAfterLogin";
 import ScrollButton from "./components/ScrollButton";
 import Contact from "./components/4.Contact/Contact";
+import PageNotFound from "./components/PageNotFound";
 
 function App() {
   return (
@@ -82,6 +83,7 @@ function App() {
               // </Protected>
             }
           />
+          <Route path="*" element={<PageNotFound />} />
         </Routes>
       </ScrollToTop>
       <ScrollButton />
