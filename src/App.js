@@ -8,11 +8,11 @@ import Registration from "./components/7.Registration/RegistrationMainPage";
 import ScrollToTop from "./components/ScrollToTop";
 import VerifyToken from "./components/7.Registration/VerifyToken";
 import Profile from "./components/8.Profile/Profile";
-import Protected from "./Protected";
+import Protected from "../src/components/Protected";
 import { ToastContainer } from "react-toastify";
 import EditUserDetails from "./components/8.Profile/EditUserDetails";
 import EditOrganizationDetails from "./components/8.Profile/EditOrganizationDetails";
-import ProtectAfterLogin from "./ProtectAfterLogin";
+import ProtectAfterLogin from "../src/components/ProtectAfterLogin";
 import ScrollButton from "./components/ScrollButton";
 import Contact from "./components/4.Contact/Contact";
 

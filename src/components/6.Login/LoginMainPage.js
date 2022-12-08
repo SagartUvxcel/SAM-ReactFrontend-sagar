@@ -62,7 +62,8 @@ const LoginMainPage = () => {
         JSON.stringify({ username: email, password: password })
       )
       .then((res) => {
-        if (res.data.status === 0) {
+        const { email, token } = res.data;
+        if (email !== "" && token !== "") {
           localStorage.setItem("isLoggedIn", true);
           toast.success("Logged in Successfully !");
           localStorage.setItem("user", email);
