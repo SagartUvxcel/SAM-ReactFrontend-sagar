@@ -1,4 +1,5 @@
 import React from "react";
+import { NavLink } from "react-router-dom";
 
 const PageNotFound = () => {
   return (
@@ -8,9 +9,9 @@ const PageNotFound = () => {
           <div className="col-xl-6">
             <h1 className="text-center fw-bolder">Page Not Found</h1>
             <div className="text-center">
-              <button className="btn btn-home">
+              <NavLink to="/" className="btn btn-home mt-3">
                 Back to home <i className="bi bi-arrow-right ps-2"></i>
-              </button>
+              </NavLink>
             </div>
           </div>
         </div>
