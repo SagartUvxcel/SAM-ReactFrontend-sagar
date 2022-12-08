@@ -6,12 +6,6 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const Registration = () => {
-  // These are used for the functionality of selecting either individual form or organization form.
-  const toggleIndividualForm = useRef();
-  const toggleOrganizationForm = useRef();
-  const individualCheck = useRef();
-  const organizationCheck = useRef();
-
   // useState to store ID of state so that we can validate zipCodes for each state.
   const [IdOfState, SetIdOfState] = useState("");
 
@@ -53,6 +47,14 @@ const Registration = () => {
     mobileValidationColor: "",
   });
 
+  // Things to be changed when we change form i.e. either individual or organization.
+  const [toggleForms, setToggleForms] = useState({
+    individualSelected: true,
+    organizationSelected: false,
+    individualDisplay: "",
+    organizationDisplay: "d-none",
+  });
+
   // Object destructuring.
   const {
     aadhaarValidationMessage,
@@ -66,6 +68,13 @@ const Registration = () => {
     tanValidationColor,
     cinValidationColor,
   } = validationDetails;
+
+  const {
+    individualSelected,
+    organizationSelected,
+    individualDisplay,
+    organizationDisplay,
+  } = toggleForms;
 
   const resetValues = () => {
     setValidationDetails({});
@@ -82,16 +91,13 @@ const Registration = () => {
     // Reset form fields and validations.
     document.getElementById("individualForm").reset();
     // Make checkbox of label organization checked.
-    individualCheck.current.classList.remove(
-      "individual-and-organization-check"
-    );
-    organizationCheck.current.classList.add(
-      "individual-and-organization-check"
-    );
-    // Unhide organization form.
-    toggleOrganizationForm.current.classList.remove("d-none");
-    // Hide Individual form.
-    toggleIndividualForm.current.classList.add("d-none");
+    setToggleForms({
+      ...toggleForms,
+      organizationSelected: true,
+      organizationDisplay: "",
+      individualSelected: false,
+      individualDisplay: "d-none",
+    });
   };
 
   const showIndividualForm = () => {
@@ -104,14 +110,13 @@ const Registration = () => {
     resetValues();
     document.getElementById("organizationForm").reset();
     // Make checkbox of label individual checked.
-    individualCheck.current.classList.add("individual-and-organization-check");
-    organizationCheck.current.classList.remove(
-      "individual-and-organization-check"
-    );
-    // Hide organization form.
-    toggleOrganizationForm.current.classList.add("d-none");
-    // Unhide Individual form.
-    toggleIndividualForm.current.classList.remove("d-none");
+    setToggleForms({
+      ...toggleForms,
+      individualSelected: true,
+      individualDisplay: "",
+      organizationSelected: false,
+      organizationDisplay: "d-none",
+    });
   };
 
   // Function to show individual form or organization form on click of label.
@@ -514,13 +519,12 @@ const Registration = () => {
                     <div className="col-lg-12">
                       <div className="form-check form-check-inline">
                         <input
-                          className="form-check-input individual-and-organization-check"
+                          className="form-check-input"
                           type="checkbox"
                           id="individual"
                           value="individual"
-                          ref={individualCheck}
                           readOnly
-                          checked={false}
+                          checked={individualSelected}
                         />
                         <label
                           className="form-check-label toggle-label"
@@ -537,9 +541,8 @@ const Registration = () => {
                           type="checkbox"
                           id="organization"
                           value="organization"
-                          ref={organizationCheck}
                           readOnly
-                          checked={false}
+                          checked={organizationSelected}
                         />
                         <label
                           className="form-check-label toggle-label"
@@ -553,8 +556,7 @@ const Registration = () => {
                     </div>
                     {/* Individual Main Form */}
                     <div
-                      className="col-lg-12 individual-form-wrapper"
-                      ref={toggleIndividualForm}
+                      className={`col-lg-12 ${individualDisplay} individual-form-wrapper`}
                     >
                       <form
                         id="individualForm"
@@ -671,8 +673,7 @@ const Registration = () => {
                     </div>
                     {/* Organization Main Form */}
                     <div
-                      className="col-lg-12 d-none organization-form-wrapper"
-                      ref={toggleOrganizationForm}
+                      className={`col-lg-12 ${organizationDisplay} organization-form-wrapper`}
                     >
                       <form
                         id="organizationForm"
