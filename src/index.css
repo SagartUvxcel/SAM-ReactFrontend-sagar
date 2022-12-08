@@ -822,4 +822,8 @@ input[type="number"] {
   .page-not-found-wrapper {
     padding: 80px 0 0 0;
   }
+
+  .btn-home {
+    font-size: 14px !important;
+  }
 }
