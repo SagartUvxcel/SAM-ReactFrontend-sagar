@@ -12,6 +12,15 @@ code {
     monospace;
 }
 
+:root {
+  --bg-gradient-blue: linear-gradient(
+    0deg,
+    rgba(2, 48, 251) 0%,
+    rgb(0, 191, 255) 100%
+  );
+  --navbar-bg: linear-gradient(0deg, rgb(2, 77, 251) 0%, rgb(0, 157, 255) 100%);
+}
+
 /* Common css */
 
 small {
@@ -31,7 +40,7 @@ small {
 }
 
 .bi-arrow-up-short::before {
-  background: linear-gradient(0deg, rgba(2, 48, 251) 0%, rgb(0, 191, 255) 100%);
+  background: var(--bg-gradient-blue);
   transition: 0.3s ease-in-out;
 }
 
@@ -90,7 +99,7 @@ input[type="number"] {
   filter: drop-shadow(18px 18px 3px rgba(0, 0, 0, 0.4));
   color: #fff !important;
   font-size: 18px !important;
-  background: linear-gradient(0deg, rgba(2, 48, 251) 0%, rgb(0, 191, 255) 100%);
+  background: var(--bg-gradient-blue);
   transition: 0.3s ease-in-out !important;
   border: 2px solid #c797eb !important;
   border-radius: 9px !important;
@@ -131,16 +140,12 @@ input[type="number"] {
 
 /* Navbar */
 .navbar {
-  background: linear-gradient(0deg, rgb(2, 77, 251) 0%, rgb(0, 157, 255) 100%);
+  background: var(--navbar-bg);
   transition: 0.3s ease-in-out;
 }
 
 .header-scrolled {
-  background: linear-gradient(
-    0deg,
-    rgb(2, 77, 251) 0%,
-    rgb(0, 157, 255) 100%
-  ) !important;
+  background: var(--navbar-bg) !important;
   position: fixed !important;
   top: 0 !important;
   left: 0 !important;
