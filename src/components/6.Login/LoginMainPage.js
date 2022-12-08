@@ -63,6 +63,7 @@ const LoginMainPage = () => {
       )
       .then((res) => {
         const { email, token } = res.data;
+        console.log(res.data);
         if (email !== "" && token !== "") {
           localStorage.setItem("isLoggedIn", true);
           toast.success("Logged in Successfully !");
