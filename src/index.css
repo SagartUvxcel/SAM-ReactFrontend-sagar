@@ -647,7 +647,7 @@ input[type="number"] {
   }
 
   .page-not-found-wrapper {
-    padding: 350px 0 0 0;
+    padding: 355px 0 0 0;
   }
 
   .page-not-found-wrapper h1 {
@@ -657,13 +657,13 @@ input[type="number"] {
 
 @media screen and (min-width: 820px) {
   .page-not-found-wrapper {
-    padding: 421px 0 0 0;
+    padding: 435px 0 0 0;
   }
 }
 
 @media screen and (min-width: 912px) {
   .page-not-found-wrapper {
-    padding: 515px 0 0 0;
+    padding: 525px 0 0 0;
   }
 }
 
@@ -696,7 +696,7 @@ input[type="number"] {
   }
 
   .page-not-found-wrapper {
-    padding: 125px 0 0 0;
+    padding: 140px 0 0 0;
   }
 }
 
