@@ -9,10 +9,9 @@ const Registration = () => {
   // useState to store ID of state so that we can validate zipCodes for each state.
   const [IdOfState, SetIdOfState] = useState("");
 
-  // Navigate to the particular route.
   const goTo = useNavigate();
 
-  // useState to store contact details as well as other required details from form.
+  // useState to store each field's data from form.
   const [formData, setFormData] = useState({
     contact_details: {
       user_type: "Individual User",
@@ -27,10 +26,25 @@ const Registration = () => {
     },
   });
 
-  // Store validation message and validation color for zipCode field.
+  // Store validation message and validation color based on input field.
   const [validationDetails, setValidationDetails] = useState({
+    aadhaarValidationMessage: "",
+    panValidationMessage: "",
+    gstValidationMessage: "",
+    cinValidationMessage: "",
+    tanValidationMessage: "",
     zipCodeValidationMessage: "",
+    emailValidationMessage: "",
+    mobileValidationMessage: "",
+
+    aadhaarValidationColor: "",
+    panValidationColor: "",
+    gstValidationColor: "",
+    cinValidationColor: "",
+    tanValidationColor: "",
     zipCodeValidationColor: "",
+    emailValidationColor: "",
+    mobileValidationColor: "",
   });
 
   // Things to be changed when we change form i.e. either individual or organization.
@@ -43,26 +57,39 @@ const Registration = () => {
 
   // Object destructuring.
   const {
+    aadhaarValidationMessage,
+    panValidationMessage,
+    gstValidationMessage,
+    tanValidationMessage,
+    cinValidationMessage,
+    aadhaarValidationColor,
+    panValidationColor,
+    gstValidationColor,
+    tanValidationColor,
+    cinValidationColor,
+  } = validationDetails;
+
+  const {
     individualSelected,
     organizationSelected,
     individualDisplay,
     organizationDisplay,
   } = toggleForms;
 
-  // Function to reset validation details and id of state
   const resetValues = () => {
     setValidationDetails({});
     SetIdOfState("");
   };
 
   const showOrganizationForm = () => {
+    resetValues();
     setFormData({
       ...formData,
       contact_details: { user_type: "Organizational User" },
     });
+
     // Reset form fields and validations.
     document.getElementById("individualForm").reset();
-    resetValues();
     // Toggle checkbox and visibility of forms.
     setToggleForms({
       ...toggleForms,
@@ -78,9 +105,10 @@ const Registration = () => {
       ...formData,
       contact_details: { user_type: "Individual User" },
     });
+
     // Reset form fields and validations.
-    document.getElementById("organizationForm").reset();
     resetValues();
+    document.getElementById("organizationForm").reset();
 
     // Toggle checkbox and visibility of forms.
     setToggleForms({
@@ -102,19 +130,6 @@ const Registration = () => {
     }
   };
 
-  // Function to remove Validation details.
-  const removeValidations = (selectedInput, errMsg) => {
-    selectedInput.style.borderColor = "";
-    errMsg.classList.add("d-none");
-    errMsg.textContent = "";
-  };
-
-  // Function to add Validation details.
-  const addValidations = (selectedInput, errMsg) => {
-    selectedInput.style.borderColor = "red";
-    errMsg.classList.remove("d-none");
-  };
-
   // Function to validate zipCodes.
   const zipValidationByState = async (zipValue, stateId) => {
     await axios
@@ -125,13 +140,15 @@ const Registration = () => {
       .then((res) => {
         if (res.data.status === 0) {
           setValidationDetails({
+            ...validationDetails,
+            zipCodeValidationMessage: "Invalid ZipCode.",
             zipCodeValidationColor: "danger",
-            zipCodeValidationMessage: "Invalid Zipcode.",
           });
         } else {
           setValidationDetails({
-            zipCodeValidationColor: "",
+            ...validationDetails,
             zipCodeValidationMessage: "",
+            zipCodeValidationColor: "",
           });
         }
       });
@@ -140,13 +157,7 @@ const Registration = () => {
   // Function to show backend validation on outside click of input filed.
   const onInputBlur = async (e) => {
     const { name, value } = e.target;
-    // Get selected input box using its id. Note* - id is same as the name of input field.
-    const selectedInput = document.getElementById(name);
-    let errMsg = "";
-    // errMsg Means its a span tag just after all the input fields to show error message.
-    selectedInput ? (errMsg = selectedInput.nextElementSibling) : (errMsg = "");
     if (name === "first_name") {
-      // Saving field's value into formData useState.
       setFormData({ ...formData, [name]: value });
     } else if (name === "middle_name") {
       setFormData({ ...formData, [name]: value });
@@ -157,56 +168,88 @@ const Registration = () => {
       // Aadhaar frontend validation.
       let aadhaarFormat = /^[2-9]{1}[0-9]{3}[0-9]{4}[0-9]{4}$/;
       if (aadhaarFormat.test(value)) {
-        removeValidations(selectedInput, errMsg);
+        setValidationDetails({
+          ...validationDetails,
+          aadhaarValidationMessage: "",
+          aadhaarValidationColor: "",
+        });
       } else {
-        addValidations(selectedInput, errMsg);
-        errMsg.textContent = "Invalid Aadhaar Number.";
+        setValidationDetails({
+          ...validationDetails,
+          aadhaarValidationMessage: "Invalid Aadhaar Number.",
+          aadhaarValidationColor: "danger",
+        });
       }
     } else if (name === "pan_number") {
       setFormData({ ...formData, [name]: value.toUpperCase() });
       // Pan frontend validation.
       let panFormat = /^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?$/;
       if (panFormat.test(value)) {
-        removeValidations(selectedInput, errMsg);
+        setValidationDetails({
+          ...validationDetails,
+          panValidationMessage: "",
+          panValidationColor: "",
+        });
       } else {
-        addValidations(selectedInput, errMsg);
-        errMsg.textContent = "Invalid Pan Number.";
+        setValidationDetails({
+          ...validationDetails,
+          panValidationMessage: "Invalid Pan Number.",
+          panValidationColor: "danger",
+        });
       }
     } else if (name === "organization_type") {
       setFormData({ ...formData, [name]: value });
     } else if (name === "company_name") {
       setFormData({ ...formData, [name]: value });
     } else if (name === "gst_number") {
-      // Gst frontend validation.
       setFormData({ ...formData, [name]: value.toUpperCase() });
       let gst_format =
         /^[0-9]{2}[A-Za-z]{5}[0-9]{4}[A-Za-z]{1}[1-9A-Za-z]{1}Z[0-9A-Za-z]{1}$/;
       if (gst_format.test(value)) {
-        removeValidations(selectedInput, errMsg);
+        setValidationDetails({
+          ...validationDetails,
+          gstValidationMessage: "",
+          gstValidationColor: "",
+        });
       } else {
-        addValidations(selectedInput, errMsg);
-        errMsg.textContent = "Invalid GST Number Entered.";
+        setValidationDetails({
+          ...validationDetails,
+          gstValidationMessage: "Invalid GST Number Entered",
+          gstValidationColor: "danger",
+        });
       }
     } else if (name === "tan_number") {
-      // Tan frontend validation.
       setFormData({ ...formData, [name]: value.toUpperCase() });
       let tan_format = /^[a-zA-Z]{4}[0-9]{5}[a-zA-Z]{1}$/;
       if (tan_format.test(value)) {
-        removeValidations(selectedInput, errMsg);
+        setValidationDetails({
+          ...validationDetails,
+          tanValidationMessage: "",
+          tanValidationColor: "",
+        });
       } else {
-        addValidations(selectedInput, errMsg);
-        errMsg.textContent = "Invalid TAN Number Entered.";
+        setValidationDetails({
+          ...validationDetails,
+          tanValidationMessage: "Invalid TAN Number Entered",
+          tanValidationColor: "danger",
+        });
       }
     } else if (name === "cin_number") {
-      // Cin frontend validation.
       setFormData({ ...formData, [name]: value.toUpperCase() });
       let cin_format =
         /^[a-zA-Z]{1}[0-9]{5}[a-zA-Z]{2}[0-9]{4}[a-zA-Z]{3}[0-9]{6}$/;
       if (cin_format.test(value)) {
-        removeValidations(selectedInput, errMsg);
+        setValidationDetails({
+          ...validationDetails,
+          cinValidationMessage: "",
+          cinValidationColor: "",
+        });
       } else {
-        addValidations(selectedInput, errMsg);
-        errMsg.textContent = "Invalid CIN Number Entered.";
+        setValidationDetails({
+          ...validationDetails,
+          cinValidationMessage: "Invalid CIN Number Entered",
+          cinValidationColor: "danger",
+        });
       }
     } else if (name === "address") {
       setFormData({
@@ -231,25 +274,32 @@ const Registration = () => {
           [name]: parseInt(value),
         },
       });
-      // If state is not selected and Zip code is entered the showing message to select state.
       if (IdOfState === "" && value !== "") {
         toast.error("Please select State");
-        // If state is selected and then zip code is entered then calling zipValidationByState function.
       } else if (IdOfState !== "" && value !== "") {
         zipValidationByState(value, parseInt(IdOfState));
       }
     } else if (name === "state") {
       let stateName = "";
-      let getStateName = document.getElementById(`state-name-${value}`);
-      if (getStateName) {
-        stateName = getStateName.innerText;
+      let getStateName = document.getElementById(
+        `state-name-${value}`
+      ).innerText;
+      if (getStateName !== "") {
+        stateName = getStateName;
       }
       setFormData({
         ...formData,
         contact_details: { ...formData.contact_details, [name]: stateName },
       });
-      // Saving state Id in IdOfState variable.
+      // If we selected state then we are saving state Id in IdOfState variable and if zipCode value is also available then we are calling zipValidationByState Function.
       SetIdOfState(value);
+      // If zip value is entered then call zipValidationByState function.
+      if (String(formData.contact_details.zip) !== "") {
+        zipValidationByState(
+          String(formData.contact_details.zip),
+          parseInt(value)
+        );
+      }
     } else if (name === "email") {
       setFormData({
         ...formData,
@@ -264,13 +314,23 @@ const Registration = () => {
         .then((res) => {
           var emailFormat = /^\w+([-]?\w+)*@\w+([-]?\w+)*(\.\w{2,3})+$/;
           if (res.data.status === 1) {
-            addValidations(selectedInput, errMsg);
-            errMsg.textContent = "Email id already exists.";
+            setValidationDetails({
+              ...validationDetails,
+              emailValidationMessage: "Email id already exists.",
+              emailValidationColor: "danger",
+            });
           } else if (!emailFormat.test(value)) {
-            addValidations(selectedInput, errMsg);
-            errMsg.textContent = "Invalid email Id.";
+            setValidationDetails({
+              ...validationDetails,
+              emailValidationColor: "danger",
+              emailValidationMessage: "Invalid email Id.",
+            });
           } else {
-            removeValidations(selectedInput, errMsg);
+            setValidationDetails({
+              ...validationDetails,
+              emailValidationColor: "",
+              emailValidationMessage: "",
+            });
           }
         });
     } else if (name === "landline_number") {
@@ -298,15 +358,26 @@ const Registration = () => {
         )
         .then((res) => {
           if (res.data.status === 1) {
-            // Show validation message and set validation color for border and error message.
-            addValidations(selectedInput, errMsg);
-            errMsg.textContent = "Mobile number already exists.";
+            // Store validation message and validation color.
+            setValidationDetails({
+              ...validationDetails,
+              mobileValidationMessage: "Mobile number already exists.",
+              mobileValidationColor: "danger",
+            });
           } else if (res.data.status === 2) {
-            addValidations(selectedInput, errMsg);
-            errMsg.textContent = "Invalid Mobile Number Entered.";
+            // Store validation message and validation color.
+            setValidationDetails({
+              ...validationDetails,
+              mobileValidationMessage: "Invalid Mobile Number Entered.",
+              mobileValidationColor: "danger",
+            });
           } else {
-            // Remove validation details.
-            removeValidations(selectedInput, errMsg);
+            // Store validation message and validation color.
+            setValidationDetails({
+              ...validationDetails,
+              mobileValidationMessage: "",
+              mobileValidationColor: "",
+            });
           }
         });
     }
@@ -314,44 +385,61 @@ const Registration = () => {
 
   // This will run onchange of input field.
   const onInputChange = async (e) => {
-    const { name, value } = e.target;
-    const selectedInput = document.getElementById(name);
-    let errMsg = "";
-    selectedInput ? (errMsg = selectedInput.nextElementSibling) : (errMsg = "");
+    const { name } = e.target;
     if (name === "aadhar_number") {
-      removeValidations(selectedInput, errMsg);
+      setValidationDetails({
+        ...validationDetails,
+        aadhaarValidationColor: "",
+        aadhaarValidationMessage: "",
+      });
     } else if (name === "pan_number") {
-      removeValidations(selectedInput, errMsg);
+      setValidationDetails({
+        ...validationDetails,
+        panValidationColor: "",
+        panValidationMessage: "",
+      });
     } else if (name === "gst_number") {
-      removeValidations(selectedInput, errMsg);
+      setValidationDetails({
+        ...validationDetails,
+        gstValidationColor: "",
+        gstValidationMessage: "",
+      });
     } else if (name === "tan_number") {
-      removeValidations(selectedInput, errMsg);
+      setValidationDetails({
+        ...validationDetails,
+        tanValidationColor: "",
+        tanValidationMessage: "",
+      });
     } else if (name === "cin_number") {
-      removeValidations(selectedInput, errMsg);
+      setValidationDetails({
+        ...validationDetails,
+        cinValidationColor: "",
+        cinValidationMessage: "",
+      });
     } else if (name === "zip") {
       setValidationDetails({
+        ...validationDetails,
         zipCodeValidationColor: "",
         zipCodeValidationMessage: "",
       });
     } else if (name === "email") {
-      removeValidations(selectedInput, errMsg);
+      setValidationDetails({
+        ...validationDetails,
+        emailValidationColor: "",
+        emailValidationMessage: "",
+      });
     } else if (name === "mobile_number") {
-      removeValidations(selectedInput, errMsg);
-    } else if (name === "state") {
-      // If zipcode is entered and then state is selected then calling zipValidationByState function.
-      if (String(formData.contact_details.zip) !== "") {
-        zipValidationByState(
-          String(formData.contact_details.zip),
-          parseInt(value)
-        );
-      }
+      setValidationDetails({
+        ...validationDetails,
+        mobileValidationColor: "",
+        mobileValidationMessage: "",
+      });
     }
   };
 
   // Function will run after Individual Form submit button is clicked.
   const onIndividualFormSubmit = async (e) => {
     e.preventDefault();
-    // Removing organization form fields from formData useState.
     const fieldsToDelete = [
       "organization_type",
       "company_name",
@@ -362,7 +450,8 @@ const Registration = () => {
     fieldsToDelete.forEach((field) => {
       delete formData[field];
     });
-    // Posting form data to api.
+    console.log(formData);
+
     await axios
       .post(`/sam/v1/customer-registration/individual-customer`, formData)
       .then(async (res) => {
@@ -382,7 +471,6 @@ const Registration = () => {
   // Function will run after Organization Form submit button is clicked.
   const onOrganizationFormSubmit = async (e) => {
     e.preventDefault();
-    // Removing Individual form fields from formData useState.
     const fieldsToDelete = [
       "first_name",
       "middle_name",
@@ -393,8 +481,7 @@ const Registration = () => {
     fieldsToDelete.forEach((field) => {
       delete formData[field];
     });
-
-    // Posting form data to api.
+    console.log(formData);
     await axios
       .post(`/sam/v1/customer-registration/org-customer`, formData)
       .then(async (res) => {
@@ -523,13 +610,18 @@ const Registration = () => {
                               onChange={onInputChange}
                               onBlur={onInputBlur}
                               name="aadhar_number"
-                              id="aadhar_number"
                               type="Number"
                               placeholder="•••• •••• •••• ••••"
                               required
-                              className="form-control"
+                              className={`form-control border-${aadhaarValidationColor}`}
                             />
-                            <span className="pe-1 text-danger d-none"></span>
+                            <span
+                              className={`pe-1 ${
+                                aadhaarValidationMessage ? "" : "d-none"
+                              } text-${aadhaarValidationColor}`}
+                            >
+                              {aadhaarValidationMessage}
+                            </span>
                             <span className="form-text">
                               <small>
                                 (Please enter 12 digit aadhar number)
@@ -544,13 +636,19 @@ const Registration = () => {
                               onChange={onInputChange}
                               onBlur={onInputBlur}
                               name="pan_number"
-                              id="pan_number"
                               type="text"
                               placeholder="PAN Number"
                               required
-                              className="form-control text-uppercase"
+                              className={`form-control text-uppercase border-${panValidationColor}`}
                             />
-                            <span className="pe-1 text-danger d-none"></span>
+                            <span
+                              className={`pe-1 ${
+                                panValidationMessage ? "" : "d-none"
+                              } text-${panValidationColor}`}
+                            >
+                              {panValidationMessage}
+                            </span>
+
                             <span className="form-text">
                               <small>
                                 (Please refer ex:ERTYG1235E pan number)
@@ -624,13 +722,18 @@ const Registration = () => {
                               onChange={onInputChange}
                               onBlur={onInputBlur}
                               name="gst_number"
-                              id="gst_number"
                               type="text"
                               placeholder="GST Number"
-                              className="form-control text-uppercase"
+                              className={`form-control text-uppercase border-${gstValidationColor}`}
                               required
                             />
-                            <span className="pe-1 text-danger d-none"></span>
+                            <span
+                              className={`pe-1 ${
+                                gstValidationMessage ? "" : "d-none"
+                              } text-${gstValidationColor}`}
+                            >
+                              {gstValidationMessage}
+                            </span>
                           </div>
                         </div>
 
@@ -644,13 +747,18 @@ const Registration = () => {
                               onChange={onInputChange}
                               onBlur={onInputBlur}
                               name="tan_number"
-                              id="tan_number"
                               type="text"
                               placeholder="TAN Number"
-                              className="form-control text-uppercase"
+                              className={`form-control text-uppercase border-${tanValidationColor}`}
                               required
                             />
-                            <span className="pe-1 text-danger d-none"></span>
+                            <span
+                              className={`pe-1 ${
+                                tanValidationMessage ? "" : "d-none"
+                              } text-${tanValidationColor}`}
+                            >
+                              {tanValidationMessage}
+                            </span>
                           </div>
                           <div className="col-lg-2 my-lg-0 my-2">
                             CIN Number
@@ -660,13 +768,18 @@ const Registration = () => {
                               onChange={onInputChange}
                               onBlur={onInputBlur}
                               name="cin_number"
-                              id="cin_number"
                               type="text"
                               placeholder="CIN Number"
-                              className="form-control text-uppercase"
+                              className={`form-control text-uppercase border-${cinValidationColor}`}
                               required
                             />
-                            <span className="pe-1 text-danger d-none"></span>
+                            <span
+                              className={`pe-1 ${
+                                cinValidationMessage ? "" : "d-none"
+                              } text-${cinValidationColor}`}
+                            >
+                              {cinValidationMessage}
+                            </span>
                           </div>
                         </div>
                         <CommonFormFields

@@ -8,9 +8,15 @@ const CommonFormFields = ({
   onInputChange,
   onInputBlur,
 }) => {
-  // Getting zipCode validation details from RegisterMainPage.
-  const { zipCodeValidationMessage, zipCodeValidationColor } =
-    validationDetails;
+  // Getting only required validation details from RegisterMainPage.
+  const {
+    emailValidationMessage,
+    mobileValidationMessage,
+    zipCodeValidationMessage,
+    emailValidationColor,
+    mobileValidationColor,
+    zipCodeValidationColor,
+  } = validationDetails;
 
   // useState to store all states coming from api.
   const [states, setStates] = useState([]);
@@ -97,14 +103,13 @@ const CommonFormFields = ({
             onBlur={onInputBlur}
             placeholder="Zipcode"
             name="zip"
-            id="zip"
-            className={`form-control border-${zipCodeValidationColor} `}
+            className={`form-control border-${zipCodeValidationColor}`}
             required
           ></input>
           <span
             className={`pe-1 ${
               zipCodeValidationMessage ? "" : "d-none"
-            } text-danger`}
+            } text-${zipCodeValidationColor}`}
           >
             {zipCodeValidationMessage}
           </span>
@@ -120,13 +125,18 @@ const CommonFormFields = ({
             onChange={onInputChange}
             onBlur={onInputBlur}
             name="email"
-            id="email"
             type="email"
-            className="form-control"
+            className={`form-control border-${emailValidationColor}`}
             placeholder="XXX@YYY.com"
             required
           />
-          <span className="pe-1 text-danger d-none"></span>
+          <span
+            className={`pe-1 ${
+              emailValidationMessage ? "" : "d-none"
+            } text-${emailValidationColor}`}
+          >
+            {emailValidationMessage}
+          </span>
         </div>
       </div>
       {/* Contact */}
@@ -149,13 +159,20 @@ const CommonFormFields = ({
             onChange={onInputChange}
             onBlur={onInputBlur}
             name="mobile_number"
-            id="mobile_number"
             type="Number"
             placeholder="Mobile Number"
             required
-            className="form-control"
+            className={`form-control border-${mobileValidationColor}`}
           />
-          <span className="pe-1 text-danger d-none"></span>
+          <span
+            className={`pe-1 ${
+              mobileValidationMessage ? "" : "d-none"
+            } text-${mobileValidationColor}`}
+          >
+            {mobileValidationMessage}
+          </span>
+
+          <span className="form-text d-none"></span>
         </div>
       </div>
       {/* SAM T & C */}
