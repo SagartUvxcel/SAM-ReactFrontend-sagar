@@ -241,13 +241,6 @@ const Registration = () => {
       });
       // If we selected state then we are saving state Id in IdOfState variable and if zipCode value is also available then we are calling zipValidationByState Function.
       SetIdOfState(value);
-      // If zip value is entered then call zipValidationByState function.
-      if (String(formData.contact_details.zip) !== "") {
-        zipValidationByState(
-          String(formData.contact_details.zip),
-          parseInt(value)
-        );
-      }
     } else if (name === "email") {
       setFormData({
         ...formData,
