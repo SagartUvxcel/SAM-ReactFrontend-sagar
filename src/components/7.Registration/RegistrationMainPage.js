@@ -231,11 +231,9 @@ const Registration = () => {
       }
     } else if (name === "state") {
       let stateName = "";
-      let getStateName = document.getElementById(
-        `state-name-${value}`
-      ).innerText;
-      if (getStateName !== "") {
-        stateName = getStateName;
+      let getStateName = document.getElementById(`state-name-${value}`);
+      if (getStateName) {
+        stateName = getStateName.innerText;
       }
       setFormData({
         ...formData,
@@ -315,7 +313,7 @@ const Registration = () => {
 
   // This will run onchange of input field.
   const onInputChange = async (e) => {
-    const { name } = e.target;
+    const { name, value } = e.target;
     const selectedInput = document.getElementById(name);
     let errMsg = "";
     selectedInput ? (errMsg = selectedInput.nextElementSibling) : (errMsg = "");
@@ -338,6 +336,13 @@ const Registration = () => {
       removeValidations(selectedInput, errMsg);
     } else if (name === "mobile_number") {
       removeValidations(selectedInput, errMsg);
+    } else if (name === "state") {
+      if (String(formData.contact_details.zip) !== "") {
+        zipValidationByState(
+          String(formData.contact_details.zip),
+          parseInt(value)
+        );
+      }
     }
   };
 
