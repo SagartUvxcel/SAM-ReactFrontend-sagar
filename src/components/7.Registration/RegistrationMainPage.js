@@ -615,15 +615,15 @@ const Registration = () => {
                               required
                               className={`form-control border-${aadhaarValidationColor}`}
                             />
-                            {aadhaarValidationMessage ? (
-                              <span
-                                className={`pe-1 text-${aadhaarValidationColor}`}
-                              >
-                                {aadhaarValidationMessage}
-                              </span>
-                            ) : (
-                              <span className="d-none"></span>
-                            )}
+
+                            <span
+                              className={`pe-1 ${
+                                aadhaarValidationMessage ? "" : "d-none"
+                              } text-${aadhaarValidationColor}`}
+                            >
+                              {aadhaarValidationMessage}
+                            </span>
+
                             <span className="form-text">
                               <small>
                                 (Please enter 12 digit aadhar number)
@@ -643,15 +643,15 @@ const Registration = () => {
                               required
                               className={`form-control text-uppercase border-${panValidationColor}`}
                             />
-                            {panValidationMessage ? (
-                              <span
-                                className={`pe-1 text-${panValidationColor}`}
-                              >
-                                {panValidationMessage}
-                              </span>
-                            ) : (
-                              <span className="d-none"></span>
-                            )}
+
+                            <span
+                              className={`pe-1 ${
+                                panValidationMessage ? "" : "d-none"
+                              } text-${panValidationColor}`}
+                            >
+                              {panValidationMessage}
+                            </span>
+
                             <span className="form-text">
                               <small>
                                 (Please refer ex:ERTYG1235E pan number)
@@ -730,15 +730,14 @@ const Registration = () => {
                               className={`form-control text-uppercase border-${gstValidationColor}`}
                               required
                             />
-                            {gstValidationMessage ? (
-                              <span
-                                className={`pe-1 text-${gstValidationColor}`}
-                              >
-                                {gstValidationMessage}
-                              </span>
-                            ) : (
-                              <span className="d-none"></span>
-                            )}
+
+                            <span
+                              className={`pe-1 ${
+                                gstValidationMessage ? "" : "d-none"
+                              } text-${gstValidationColor}`}
+                            >
+                              {gstValidationMessage}
+                            </span>
                           </div>
                         </div>
 
@@ -757,15 +756,14 @@ const Registration = () => {
                               className={`form-control text-uppercase border-${tanValidationColor}`}
                               required
                             />
-                            {tanValidationMessage ? (
-                              <span
-                                className={`pe-1 text-${tanValidationColor}`}
-                              >
-                                {tanValidationMessage}
-                              </span>
-                            ) : (
-                              <span className="d-none"></span>
-                            )}
+
+                            <span
+                              className={`pe-1 ${
+                                tanValidationMessage ? "" : "d-none"
+                              } text-${tanValidationColor}`}
+                            >
+                              {tanValidationMessage}
+                            </span>
                           </div>
                           <div className="col-lg-2 my-lg-0 my-2">
                             CIN Number
@@ -780,15 +778,14 @@ const Registration = () => {
                               className={`form-control text-uppercase border-${cinValidationColor}`}
                               required
                             />
-                            {cinValidationMessage ? (
-                              <span
-                                className={`pe-1 text-${cinValidationColor}`}
-                              >
-                                {cinValidationMessage}
-                              </span>
-                            ) : (
-                              <span className="d-none"></span>
-                            )}
+
+                            <span
+                              className={`pe-1 ${
+                                cinValidationMessage ? "" : "d-none"
+                              } text-${cinValidationColor}`}
+                            >
+                              {cinValidationMessage}
+                            </span>
                           </div>
                         </div>
                         <CommonFormFields

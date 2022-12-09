@@ -106,13 +106,14 @@ const CommonFormFields = ({
             className={`form-control border-${zipCodeValidationColor}`}
             required
           ></input>
-          {zipCodeValidationMessage ? (
-            <span className={`pe-1 text-${zipCodeValidationColor}`}>
-              {zipCodeValidationMessage}
-            </span>
-          ) : (
-            <span className="d-none"></span>
-          )}
+
+          <span
+            className={`pe-1 ${
+              zipCodeValidationMessage ? "" : "d-none"
+            } text-${zipCodeValidationColor}`}
+          >
+            {zipCodeValidationMessage}
+          </span>
         </div>
       </div>
       {/* Email */}
@@ -130,14 +131,14 @@ const CommonFormFields = ({
             placeholder="XXX@YYY.com"
             required
           />
-          {emailValidationMessage ? (
-            <span className={`pe-1 text-${emailValidationColor}`}>
-              {emailValidationMessage}
-            </span>
-          ) : (
-            <span className="d-none"></span>
-          )}
-          <span className="form-text d-none"></span>
+
+          <span
+            className={`pe-1 ${
+              emailValidationMessage ? "" : "d-none"
+            } text-${emailValidationColor}`}
+          >
+            {emailValidationMessage}
+          </span>
         </div>
       </div>
       {/* Contact */}
@@ -165,14 +166,14 @@ const CommonFormFields = ({
             required
             className={`form-control border-${mobileValidationColor}`}
           />
-          {mobileValidationMessage ? (
-            <span className={`pe-1 text-${mobileValidationColor}`}>
-              {mobileValidationMessage}
-            </span>
-          ) : (
-            <span className="d-none"></span>
-          )}
-          <span className="form-text d-none"></span>
+
+          <span
+            className={`pe-1 ${
+              mobileValidationMessage ? "" : "d-none"
+            } text-${mobileValidationColor}`}
+          >
+            {mobileValidationMessage}
+          </span>
         </div>
       </div>
       {/* SAM T & C */}
