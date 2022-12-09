@@ -8,7 +8,7 @@ const CommonFormFields = ({
   onInputChange,
   onInputBlur,
 }) => {
-  // Getting only required validation details from RegisterMainPage.
+  // Getting zipCode validation details from RegisterMainPage.
   const { zipCodeValidationMessage, zipCodeValidationColor } =
     validationDetails;
 

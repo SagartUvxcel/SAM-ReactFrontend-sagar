@@ -9,9 +9,10 @@ const Registration = () => {
   // useState to store ID of state so that we can validate zipCodes for each state.
   const [IdOfState, SetIdOfState] = useState("");
 
+  // Navigate to the particular route.
   const goTo = useNavigate();
 
-  // useState to store each field's data from form.
+  // useState to store contact details as well as other required details from form.
   const [formData, setFormData] = useState({
     contact_details: {
       user_type: "Individual User",
@@ -26,7 +27,7 @@ const Registration = () => {
     },
   });
 
-  // Store validation message and validation color based on input field.
+  // Store validation message and validation color for zipCode field.
   const [validationDetails, setValidationDetails] = useState({
     zipCodeValidationMessage: "",
     zipCodeValidationColor: "",
@@ -41,7 +42,6 @@ const Registration = () => {
   });
 
   // Object destructuring.
-
   const {
     individualSelected,
     organizationSelected,
@@ -49,20 +49,20 @@ const Registration = () => {
     organizationDisplay,
   } = toggleForms;
 
+  // Function to reset validation details and id of state
   const resetValues = () => {
     setValidationDetails({});
     SetIdOfState("");
   };
 
   const showOrganizationForm = () => {
-    resetValues();
     setFormData({
       ...formData,
       contact_details: { user_type: "Organizational User" },
     });
-
     // Reset form fields and validations.
     document.getElementById("individualForm").reset();
+    resetValues();
     // Toggle checkbox and visibility of forms.
     setToggleForms({
       ...toggleForms,
@@ -78,10 +78,9 @@ const Registration = () => {
       ...formData,
       contact_details: { user_type: "Individual User" },
     });
-
     // Reset form fields and validations.
-    resetValues();
     document.getElementById("organizationForm").reset();
+    resetValues();
 
     // Toggle checkbox and visibility of forms.
     setToggleForms({
@@ -103,12 +102,14 @@ const Registration = () => {
     }
   };
 
+  // Function to remove Validation details.
   const removeValidations = (selectedInput, errMsg) => {
     selectedInput.style.borderColor = "";
     errMsg.classList.add("d-none");
     errMsg.textContent = "";
   };
 
+  // Function to add Validation details.
   const addValidations = (selectedInput, errMsg) => {
     selectedInput.style.borderColor = "red";
     errMsg.classList.remove("d-none");
@@ -139,10 +140,13 @@ const Registration = () => {
   // Function to show backend validation on outside click of input filed.
   const onInputBlur = async (e) => {
     const { name, value } = e.target;
+    // Get selected input box using its id. Note* - id is same as the name of input field.
     const selectedInput = document.getElementById(name);
     let errMsg = "";
+    // errMsg Means its a span tag just after all the input fields to show error message.
     selectedInput ? (errMsg = selectedInput.nextElementSibling) : (errMsg = "");
     if (name === "first_name") {
+      // Saving field's value into formData useState.
       setFormData({ ...formData, [name]: value });
     } else if (name === "middle_name") {
       setFormData({ ...formData, [name]: value });
@@ -173,6 +177,7 @@ const Registration = () => {
     } else if (name === "company_name") {
       setFormData({ ...formData, [name]: value });
     } else if (name === "gst_number") {
+      // Gst frontend validation.
       setFormData({ ...formData, [name]: value.toUpperCase() });
       let gst_format =
         /^[0-9]{2}[A-Za-z]{5}[0-9]{4}[A-Za-z]{1}[1-9A-Za-z]{1}Z[0-9A-Za-z]{1}$/;
@@ -183,6 +188,7 @@ const Registration = () => {
         errMsg.textContent = "Invalid GST Number Entered.";
       }
     } else if (name === "tan_number") {
+      // Tan frontend validation.
       setFormData({ ...formData, [name]: value.toUpperCase() });
       let tan_format = /^[a-zA-Z]{4}[0-9]{5}[a-zA-Z]{1}$/;
       if (tan_format.test(value)) {
@@ -192,6 +198,7 @@ const Registration = () => {
         errMsg.textContent = "Invalid TAN Number Entered.";
       }
     } else if (name === "cin_number") {
+      // Cin frontend validation.
       setFormData({ ...formData, [name]: value.toUpperCase() });
       let cin_format =
         /^[a-zA-Z]{1}[0-9]{5}[a-zA-Z]{2}[0-9]{4}[a-zA-Z]{3}[0-9]{6}$/;
@@ -224,8 +231,10 @@ const Registration = () => {
           [name]: parseInt(value),
         },
       });
+      // If state is not selected and Zip code is entered the showing message to select state.
       if (IdOfState === "" && value !== "") {
         toast.error("Please select State");
+        // If state is selected and then zip code is entered then calling zipValidationByState function.
       } else if (IdOfState !== "" && value !== "") {
         zipValidationByState(value, parseInt(IdOfState));
       }
@@ -239,7 +248,7 @@ const Registration = () => {
         ...formData,
         contact_details: { ...formData.contact_details, [name]: stateName },
       });
-      // If we selected state then we are saving state Id in IdOfState variable and if zipCode value is also available then we are calling zipValidationByState Function.
+      // Saving state Id in IdOfState variable.
       SetIdOfState(value);
     } else if (name === "email") {
       setFormData({
@@ -289,15 +298,14 @@ const Registration = () => {
         )
         .then((res) => {
           if (res.data.status === 1) {
-            // Store validation message and validation color.
+            // Show validation message and set validation color for border and error message.
             addValidations(selectedInput, errMsg);
             errMsg.textContent = "Mobile number already exists.";
           } else if (res.data.status === 2) {
-            // Store validation message and validation color.
             addValidations(selectedInput, errMsg);
             errMsg.textContent = "Invalid Mobile Number Entered.";
           } else {
-            // Store validation message and validation color.
+            // Remove validation details.
             removeValidations(selectedInput, errMsg);
           }
         });
@@ -330,6 +338,7 @@ const Registration = () => {
     } else if (name === "mobile_number") {
       removeValidations(selectedInput, errMsg);
     } else if (name === "state") {
+      // If zipcode is entered and then state is selected then calling zipValidationByState function.
       if (String(formData.contact_details.zip) !== "") {
         zipValidationByState(
           String(formData.contact_details.zip),
@@ -342,6 +351,7 @@ const Registration = () => {
   // Function will run after Individual Form submit button is clicked.
   const onIndividualFormSubmit = async (e) => {
     e.preventDefault();
+    // Removing organization form fields from formData useState.
     const fieldsToDelete = [
       "organization_type",
       "company_name",
@@ -352,8 +362,7 @@ const Registration = () => {
     fieldsToDelete.forEach((field) => {
       delete formData[field];
     });
-    console.log(formData);
-
+    // Posting form data to api.
     await axios
       .post(`/sam/v1/customer-registration/individual-customer`, formData)
       .then(async (res) => {
@@ -373,6 +382,7 @@ const Registration = () => {
   // Function will run after Organization Form submit button is clicked.
   const onOrganizationFormSubmit = async (e) => {
     e.preventDefault();
+    // Removing Individual form fields from formData useState.
     const fieldsToDelete = [
       "first_name",
       "middle_name",
@@ -383,7 +393,8 @@ const Registration = () => {
     fieldsToDelete.forEach((field) => {
       delete formData[field];
     });
-    console.log(formData);
+
+    // Posting form data to api.
     await axios
       .post(`/sam/v1/customer-registration/org-customer`, formData)
       .then(async (res) => {
