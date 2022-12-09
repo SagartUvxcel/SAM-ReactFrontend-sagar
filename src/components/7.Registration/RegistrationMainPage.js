@@ -28,23 +28,8 @@ const Registration = () => {
 
   // Store validation message and validation color based on input field.
   const [validationDetails, setValidationDetails] = useState({
-    aadhaarValidationMessage: "",
-    panValidationMessage: "",
-    gstValidationMessage: "",
-    cinValidationMessage: "",
-    tanValidationMessage: "",
     zipCodeValidationMessage: "",
-    emailValidationMessage: "",
-    mobileValidationMessage: "",
-
-    aadhaarValidationColor: "",
-    panValidationColor: "",
-    gstValidationColor: "",
-    cinValidationColor: "",
-    tanValidationColor: "",
     zipCodeValidationColor: "",
-    emailValidationColor: "",
-    mobileValidationColor: "",
   });
 
   // Things to be changed when we change form i.e. either individual or organization.
@@ -56,18 +41,6 @@ const Registration = () => {
   });
 
   // Object destructuring.
-  const {
-    aadhaarValidationMessage,
-    panValidationMessage,
-    gstValidationMessage,
-    tanValidationMessage,
-    cinValidationMessage,
-    aadhaarValidationColor,
-    panValidationColor,
-    gstValidationColor,
-    tanValidationColor,
-    cinValidationColor,
-  } = validationDetails;
 
   const {
     individualSelected,
@@ -130,6 +103,17 @@ const Registration = () => {
     }
   };
 
+  const removeValidations = (selectedInput, errMsg) => {
+    selectedInput.style.borderColor = "";
+    errMsg.classList.add("d-none");
+    errMsg.textContent = "";
+  };
+
+  const addValidations = (selectedInput, errMsg) => {
+    selectedInput.style.borderColor = "red";
+    errMsg.classList.remove("d-none");
+  };
+
   // Function to validate zipCodes.
   const zipValidationByState = async (zipValue, stateId) => {
     await axios
@@ -140,15 +124,13 @@ const Registration = () => {
       .then((res) => {
         if (res.data.status === 0) {
           setValidationDetails({
-            ...validationDetails,
-            zipCodeValidationMessage: "Invalid ZipCode.",
             zipCodeValidationColor: "danger",
+            zipCodeValidationMessage: "Invalid Zipcode.",
           });
         } else {
           setValidationDetails({
-            ...validationDetails,
-            zipCodeValidationMessage: "",
             zipCodeValidationColor: "",
+            zipCodeValidationMessage: "",
           });
         }
       });
@@ -157,6 +139,9 @@ const Registration = () => {
   // Function to show backend validation on outside click of input filed.
   const onInputBlur = async (e) => {
     const { name, value } = e.target;
+    const selectedInput = document.getElementById(name);
+    let errMsg = "";
+    selectedInput ? (errMsg = selectedInput.nextElementSibling) : (errMsg = "");
     if (name === "first_name") {
       setFormData({ ...formData, [name]: value });
     } else if (name === "middle_name") {
@@ -168,34 +153,20 @@ const Registration = () => {
       // Aadhaar frontend validation.
       let aadhaarFormat = /^[2-9]{1}[0-9]{3}[0-9]{4}[0-9]{4}$/;
       if (aadhaarFormat.test(value)) {
-        setValidationDetails({
-          ...validationDetails,
-          aadhaarValidationMessage: "",
-          aadhaarValidationColor: "",
-        });
+        removeValidations(selectedInput, errMsg);
       } else {
-        setValidationDetails({
-          ...validationDetails,
-          aadhaarValidationMessage: "Invalid Aadhaar Number.",
-          aadhaarValidationColor: "danger",
-        });
+        addValidations(selectedInput, errMsg);
+        errMsg.textContent = "Invalid Aadhaar Number.";
       }
     } else if (name === "pan_number") {
       setFormData({ ...formData, [name]: value.toUpperCase() });
       // Pan frontend validation.
       let panFormat = /^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?$/;
       if (panFormat.test(value)) {
-        setValidationDetails({
-          ...validationDetails,
-          panValidationMessage: "",
-          panValidationColor: "",
-        });
+        removeValidations(selectedInput, errMsg);
       } else {
-        setValidationDetails({
-          ...validationDetails,
-          panValidationMessage: "Invalid Pan Number.",
-          panValidationColor: "danger",
-        });
+        addValidations(selectedInput, errMsg);
+        errMsg.textContent = "Invalid Pan Number.";
       }
     } else if (name === "organization_type") {
       setFormData({ ...formData, [name]: value });
@@ -206,50 +177,29 @@ const Registration = () => {
       let gst_format =
         /^[0-9]{2}[A-Za-z]{5}[0-9]{4}[A-Za-z]{1}[1-9A-Za-z]{1}Z[0-9A-Za-z]{1}$/;
       if (gst_format.test(value)) {
-        setValidationDetails({
-          ...validationDetails,
-          gstValidationMessage: "",
-          gstValidationColor: "",
-        });
+        removeValidations(selectedInput, errMsg);
       } else {
-        setValidationDetails({
-          ...validationDetails,
-          gstValidationMessage: "Invalid GST Number Entered",
-          gstValidationColor: "danger",
-        });
+        addValidations(selectedInput, errMsg);
+        errMsg.textContent = "Invalid GST Number Entered.";
       }
     } else if (name === "tan_number") {
       setFormData({ ...formData, [name]: value.toUpperCase() });
       let tan_format = /^[a-zA-Z]{4}[0-9]{5}[a-zA-Z]{1}$/;
       if (tan_format.test(value)) {
-        setValidationDetails({
-          ...validationDetails,
-          tanValidationMessage: "",
-          tanValidationColor: "",
-        });
+        removeValidations(selectedInput, errMsg);
       } else {
-        setValidationDetails({
-          ...validationDetails,
-          tanValidationMessage: "Invalid TAN Number Entered",
-          tanValidationColor: "danger",
-        });
+        addValidations(selectedInput, errMsg);
+        errMsg.textContent = "Invalid TAN Number Entered.";
       }
     } else if (name === "cin_number") {
       setFormData({ ...formData, [name]: value.toUpperCase() });
       let cin_format =
         /^[a-zA-Z]{1}[0-9]{5}[a-zA-Z]{2}[0-9]{4}[a-zA-Z]{3}[0-9]{6}$/;
       if (cin_format.test(value)) {
-        setValidationDetails({
-          ...validationDetails,
-          cinValidationMessage: "",
-          cinValidationColor: "",
-        });
+        removeValidations(selectedInput, errMsg);
       } else {
-        setValidationDetails({
-          ...validationDetails,
-          cinValidationMessage: "Invalid CIN Number Entered",
-          cinValidationColor: "danger",
-        });
+        addValidations(selectedInput, errMsg);
+        errMsg.textContent = "Invalid CIN Number Entered.";
       }
     } else if (name === "address") {
       setFormData({
@@ -314,23 +264,13 @@ const Registration = () => {
         .then((res) => {
           var emailFormat = /^\w+([-]?\w+)*@\w+([-]?\w+)*(\.\w{2,3})+$/;
           if (res.data.status === 1) {
-            setValidationDetails({
-              ...validationDetails,
-              emailValidationMessage: "Email id already exists.",
-              emailValidationColor: "danger",
-            });
+            addValidations(selectedInput, errMsg);
+            errMsg.textContent = "Email id already exists.";
           } else if (!emailFormat.test(value)) {
-            setValidationDetails({
-              ...validationDetails,
-              emailValidationColor: "danger",
-              emailValidationMessage: "Invalid email Id.",
-            });
+            addValidations(selectedInput, errMsg);
+            errMsg.textContent = "Invalid email Id.";
           } else {
-            setValidationDetails({
-              ...validationDetails,
-              emailValidationColor: "",
-              emailValidationMessage: "",
-            });
+            removeValidations(selectedInput, errMsg);
           }
         });
     } else if (name === "landline_number") {
@@ -359,25 +299,15 @@ const Registration = () => {
         .then((res) => {
           if (res.data.status === 1) {
             // Store validation message and validation color.
-            setValidationDetails({
-              ...validationDetails,
-              mobileValidationMessage: "Mobile number already exists.",
-              mobileValidationColor: "danger",
-            });
+            addValidations(selectedInput, errMsg);
+            errMsg.textContent = "Mobile number already exists.";
           } else if (res.data.status === 2) {
             // Store validation message and validation color.
-            setValidationDetails({
-              ...validationDetails,
-              mobileValidationMessage: "Invalid Mobile Number Entered.",
-              mobileValidationColor: "danger",
-            });
+            addValidations(selectedInput, errMsg);
+            errMsg.textContent = "Invalid Mobile Number Entered.";
           } else {
             // Store validation message and validation color.
-            setValidationDetails({
-              ...validationDetails,
-              mobileValidationMessage: "",
-              mobileValidationColor: "",
-            });
+            removeValidations(selectedInput, errMsg);
           }
         });
     }
@@ -386,54 +316,28 @@ const Registration = () => {
   // This will run onchange of input field.
   const onInputChange = async (e) => {
     const { name } = e.target;
+    const selectedInput = document.getElementById(name);
+    let errMsg = "";
+    selectedInput ? (errMsg = selectedInput.nextElementSibling) : (errMsg = "");
     if (name === "aadhar_number") {
-      setValidationDetails({
-        ...validationDetails,
-        aadhaarValidationColor: "",
-        aadhaarValidationMessage: "",
-      });
+      removeValidations(selectedInput, errMsg);
     } else if (name === "pan_number") {
-      setValidationDetails({
-        ...validationDetails,
-        panValidationColor: "",
-        panValidationMessage: "",
-      });
+      removeValidations(selectedInput, errMsg);
     } else if (name === "gst_number") {
-      setValidationDetails({
-        ...validationDetails,
-        gstValidationColor: "",
-        gstValidationMessage: "",
-      });
+      removeValidations(selectedInput, errMsg);
     } else if (name === "tan_number") {
-      setValidationDetails({
-        ...validationDetails,
-        tanValidationColor: "",
-        tanValidationMessage: "",
-      });
+      removeValidations(selectedInput, errMsg);
     } else if (name === "cin_number") {
-      setValidationDetails({
-        ...validationDetails,
-        cinValidationColor: "",
-        cinValidationMessage: "",
-      });
+      removeValidations(selectedInput, errMsg);
     } else if (name === "zip") {
       setValidationDetails({
-        ...validationDetails,
         zipCodeValidationColor: "",
         zipCodeValidationMessage: "",
       });
     } else if (name === "email") {
-      setValidationDetails({
-        ...validationDetails,
-        emailValidationColor: "",
-        emailValidationMessage: "",
-      });
+      removeValidations(selectedInput, errMsg);
     } else if (name === "mobile_number") {
-      setValidationDetails({
-        ...validationDetails,
-        mobileValidationColor: "",
-        mobileValidationMessage: "",
-      });
+      removeValidations(selectedInput, errMsg);
     }
   };
 
@@ -610,20 +514,13 @@ const Registration = () => {
                               onChange={onInputChange}
                               onBlur={onInputBlur}
                               name="aadhar_number"
+                              id="aadhar_number"
                               type="Number"
                               placeholder="•••• •••• •••• ••••"
                               required
-                              className={`form-control border-${aadhaarValidationColor}`}
+                              className="form-control"
                             />
-
-                            <span
-                              className={`pe-1 ${
-                                aadhaarValidationMessage ? "" : "d-none"
-                              } text-${aadhaarValidationColor}`}
-                            >
-                              {aadhaarValidationMessage}
-                            </span>
-
+                            <span className="pe-1 text-danger d-none"></span>
                             <span className="form-text">
                               <small>
                                 (Please enter 12 digit aadhar number)
@@ -638,20 +535,13 @@ const Registration = () => {
                               onChange={onInputChange}
                               onBlur={onInputBlur}
                               name="pan_number"
+                              id="pan_number"
                               type="text"
                               placeholder="PAN Number"
                               required
-                              className={`form-control text-uppercase border-${panValidationColor}`}
+                              className="form-control text-uppercase"
                             />
-
-                            <span
-                              className={`pe-1 ${
-                                panValidationMessage ? "" : "d-none"
-                              } text-${panValidationColor}`}
-                            >
-                              {panValidationMessage}
-                            </span>
-
+                            <span className="pe-1 text-danger d-none"></span>
                             <span className="form-text">
                               <small>
                                 (Please refer ex:ERTYG1235E pan number)
@@ -725,19 +615,13 @@ const Registration = () => {
                               onChange={onInputChange}
                               onBlur={onInputBlur}
                               name="gst_number"
+                              id="gst_number"
                               type="text"
                               placeholder="GST Number"
-                              className={`form-control text-uppercase border-${gstValidationColor}`}
+                              className="form-control text-uppercase"
                               required
                             />
-
-                            <span
-                              className={`pe-1 ${
-                                gstValidationMessage ? "" : "d-none"
-                              } text-${gstValidationColor}`}
-                            >
-                              {gstValidationMessage}
-                            </span>
+                            <span className="pe-1 text-danger d-none"></span>
                           </div>
                         </div>
 
@@ -751,19 +635,13 @@ const Registration = () => {
                               onChange={onInputChange}
                               onBlur={onInputBlur}
                               name="tan_number"
+                              id="tan_number"
                               type="text"
                               placeholder="TAN Number"
-                              className={`form-control text-uppercase border-${tanValidationColor}`}
+                              className="form-control text-uppercase"
                               required
                             />
-
-                            <span
-                              className={`pe-1 ${
-                                tanValidationMessage ? "" : "d-none"
-                              } text-${tanValidationColor}`}
-                            >
-                              {tanValidationMessage}
-                            </span>
+                            <span className="pe-1 text-danger d-none"></span>
                           </div>
                           <div className="col-lg-2 my-lg-0 my-2">
                             CIN Number
@@ -773,19 +651,13 @@ const Registration = () => {
                               onChange={onInputChange}
                               onBlur={onInputBlur}
                               name="cin_number"
+                              id="cin_number"
                               type="text"
                               placeholder="CIN Number"
-                              className={`form-control text-uppercase border-${cinValidationColor}`}
+                              className="form-control text-uppercase"
                               required
                             />
-
-                            <span
-                              className={`pe-1 ${
-                                cinValidationMessage ? "" : "d-none"
-                              } text-${cinValidationColor}`}
-                            >
-                              {cinValidationMessage}
-                            </span>
+                            <span className="pe-1 text-danger d-none"></span>
                           </div>
                         </div>
                         <CommonFormFields
