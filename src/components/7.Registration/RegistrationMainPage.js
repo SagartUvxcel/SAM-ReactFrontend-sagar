@@ -281,11 +281,9 @@ const Registration = () => {
       }
     } else if (name === "state") {
       let stateName = "";
-      let getStateName = document.getElementById(
-        `state-name-${value}`
-      ).innerText;
-      if (getStateName !== "") {
-        stateName = getStateName;
+      let getStateName = document.getElementById(`state-name-${value}`);
+      if (getStateName) {
+        stateName = getStateName.innerText;
       }
       setFormData({
         ...formData,
