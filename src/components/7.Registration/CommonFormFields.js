@@ -7,6 +7,7 @@ const CommonFormFields = ({
   validationDetails,
   onInputChange,
   onInputBlur,
+  resetValues,
 }) => {
   // Getting only required validation details from RegisterMainPage.
   const {
@@ -207,7 +208,16 @@ const CommonFormFields = ({
           </button>
         </div>
         <div className="col-lg-2 col-md-4 col-6">
-          <button className="btn btn-secondary text-dark">Cancel</button>
+          <button
+            className="btn btn-secondary text-dark"
+            onClick={(e) => {
+              e.preventDefault();
+              e.target.closest("form").reset();
+              resetValues();
+            }}
+          >
+            Cancel
+          </button>
         </div>
       </div>
     </>

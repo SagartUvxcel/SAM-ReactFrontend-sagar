@@ -658,6 +658,7 @@ const Registration = () => {
                           validationDetails={validationDetails}
                           onInputChange={onInputChange}
                           onInputBlur={onInputBlur}
+                          resetValues={resetValues}
                         />
                       </div>
                     </form>
@@ -784,6 +785,7 @@ const Registration = () => {
                           validationDetails={validationDetails}
                           onInputChange={onInputChange}
                           onInputBlur={onInputBlur}
+                          resetValues={resetValues}
                         />
                       </div>
                     </form>
