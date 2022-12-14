@@ -9,7 +9,14 @@ import verifyTokenImg from "../../images/verifytoken.svg";
 const VerifyToken = () => {
   // useState to save token entered by user.
   const [enteredToken, setEnteredToken] = useState("");
-  const [verifyButtonClass, setVerifyButtonClass] = useState("");
+
+  const [loaderDetails, setLoaderDetails] = useState({
+    loading: false,
+    verifyBtnText: "Verify Token",
+    verifyButtonClass: "",
+  });
+
+  const { loading, verifyBtnText, verifyButtonClass } = loaderDetails;
 
   // To navigate to particular route.
   const goTo = useNavigate();
@@ -30,9 +37,23 @@ const VerifyToken = () => {
       )
       .then((res) => {
         if (res.data.status === 0) {
-          setVerifyButtonClass("disabled");
-          toast.success("Verification Successful !");
-          localStorage.setItem("token", enteredToken);
+          e.target.reset();
+          setLoaderDetails({
+            ...loaderDetails,
+            loading: true,
+            verifyBtnText: "Verifying...",
+            verifyButtonClass: "disabled",
+          });
+          setTimeout(() => {
+            setLoaderDetails({
+              ...loaderDetails,
+              loading: false,
+              verifyBtnText: "Verify Token",
+              verifyButtonClass: "disabled",
+            });
+            toast.success("Verification Successful !");
+            localStorage.setItem("token", enteredToken);
+          }, 1000);
           setTimeout(() => {
             goTo("/register/reset-password");
           }, 3000);
@@ -95,7 +116,14 @@ const VerifyToken = () => {
                       <button
                         className={`btn common-btn w-100 ${verifyButtonClass}`}
                       >
-                        Verify Token
+                        <span
+                          className={`${
+                            loading ? "" : "d-none"
+                          } spinner-grow spinner-grow-sm me-2`}
+                          role="status"
+                          aria-hidden="true"
+                        ></span>
+                        {verifyBtnText}
                       </button>
                     </div>
                   </div>

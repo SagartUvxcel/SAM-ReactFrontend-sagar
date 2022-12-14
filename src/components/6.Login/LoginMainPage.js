@@ -70,7 +70,7 @@ const LoginMainPage = () => {
           setLoginBtnClassName("disabled");
           setTimeout(() => {
             goTo("/profile/edit-individual");
-          }, 3000);
+          }, 2500);
         } else {
           setAlertDetails({
             alertVisible: true,

@@ -310,7 +310,7 @@ const Registration = () => {
           JSON.stringify({ email: value })
         )
         .then((res) => {
-          var emailFormat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+          var emailFormat = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
           if (res.data.status === 1) {
             setValidationDetails({
               ...validationDetails,

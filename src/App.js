@@ -20,7 +20,7 @@ import PageNotFound from "./components/PageNotFound";
 function App() {
   return (
     <>
-      <ToastContainer className="toast-container" autoClose="1500" />
+      <ToastContainer className="toast-container" autoClose="1000" />
       <ScrollToTop>
         <Routes>
           <Route path="/" element={<Home />} />
