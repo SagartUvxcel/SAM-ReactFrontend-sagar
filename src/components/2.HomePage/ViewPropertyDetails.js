@@ -1,7 +1,19 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Layout from "../1.CommonLayout/Layout";
 
 const ViewPropertyDetails = () => {
+  const goTo = useNavigate();
+  const checkStatusOfLogin = () => {
+    const statusOfLogin = localStorage.getItem("isLoggedIn");
+    if (statusOfLogin !== "true") {
+      goTo("/register");
+    }
+  };
+  useEffect(() => {
+    checkStatusOfLogin();
+  });
+
   return (
     <Layout>
       <section className="section-padding min-100vh view-property-wrapper">
