@@ -9,7 +9,11 @@ const LoginMainPage = () => {
   // It is used to navigate to particular route.
   const goTo = useNavigate();
 
-  const [loginBtnClassName, setLoginBtnClassName] = useState("");
+  const [loaderDetails, setLoaderDetails] = useState({
+    loading: false,
+    loginBtnTxt: "Login",
+    loginBtnClassName: "",
+  });
 
   const [loginDetails, setLoginDetails] = useState({
     email: "",
@@ -23,8 +27,10 @@ const LoginMainPage = () => {
     alertMsg: "",
     alertClr: "",
   });
+
   const { email, password, eyeIcon, passwordType } = loginDetails;
   const { alertMsg, alertClr, alertVisible } = alertDetails;
+  const { loading, loginBtnClassName, loginBtnTxt } = loaderDetails;
 
   const onUserNameAndPasswordChange = (e) => {
     const { name, value } = e.target;
@@ -64,10 +70,23 @@ const LoginMainPage = () => {
       .then((res) => {
         const { email, token } = res.data;
         if (email !== "" && token !== "") {
+          setLoaderDetails({
+            ...loaderDetails,
+            loading: true,
+            loginBtnTxt: "Loading...",
+            loginBtnClassName: "disabled",
+          });
           localStorage.setItem("isLoggedIn", true);
-          toast.success("Logged in Successfully !");
           localStorage.setItem("user", email);
-          setLoginBtnClassName("disabled");
+          setTimeout(() => {
+            setLoaderDetails({
+              ...loaderDetails,
+              loading: false,
+              loginBtnTxt: "Login",
+              loginBtnClassName: "disabled",
+            });
+            toast.success("Logged in Successfully !");
+          }, 1000);
           setTimeout(() => {
             goTo("/profile/edit-individual");
           }, 2500);
@@ -159,8 +178,15 @@ const LoginMainPage = () => {
                 </div>
                 <hr />
                 <div className="text-center my-3">
-                  <button className={`btn btn-primary ${loginBtnClassName}`}>
-                    Login
+                  <button className={`btn btn-primary ${loginBtnClassName} w-100`}>
+                    <span
+                      className={`${
+                        loading ? "" : "d-none"
+                      } spinner-grow spinner-grow-sm me-2`}
+                      role="status"
+                      aria-hidden="true"
+                    ></span>
+                    {loginBtnTxt}
                   </button>
                 </div>
                 <small className="register-link position-absolute fixed-bottom text-end px-3 py-2 fw-bold">
