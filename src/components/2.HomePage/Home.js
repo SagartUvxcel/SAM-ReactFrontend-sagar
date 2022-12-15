@@ -73,7 +73,6 @@ function Home() {
       cityAPI: `${url}/by-city`,
       addressAPI: `${url}/by-address`,
     };
-    console.log(url, headers, apis);
     const { name, value } = e.target;
     const fiveSectionCol = document.querySelectorAll(".five-section-col");
     // If input is state then post selected state id to api for getting cities based on selected state.
@@ -153,16 +152,15 @@ function Home() {
     e.preventDefault();
     const statusOfLogin = localStorage.getItem("isLoggedIn");
     const loginToken = localStorage.getItem("logintoken");
-    let headers = { Authorization: loginToken };
+    let headers =
+      statusOfLogin !== "true"
+        ? { "Content-Type": "Application/json" }
+        : { Authorization: loginToken };
+    let url = `/sam/v1/property${statusOfLogin !== "true" ? "" : `/auth`}`;
     let apis = {
-      searchAPI: `/sam/v1/property/auth/count-category`,
+      searchAPI: `${url}/count-category`,
     };
-    if (statusOfLogin !== "true") {
-      headers = { "Content-Type": "Application/json" };
-      apis = {
-        searchAPI: `/sam/v1/property/count-category`,
-      };
-    }
+    console.log(url, headers, apis);
     // Post data and get Searched result from response.
     await axios
       .post(apis.searchAPI, dataToPost, { headers: headers })
