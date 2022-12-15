@@ -33,21 +33,22 @@ function Home() {
     const statusOfLogin = localStorage.getItem("isLoggedIn");
     const loginToken = localStorage.getItem("logintoken");
     let headers = { Authorization: loginToken };
+    let url = `/sam/v1/property${statusOfLogin !== "true" ? "" : `/auth`}`;
     let apis = {
-      stateAPI: `/sam/v1/property/auth/by-state`,
-      bankAPI: `/sam/v1/property/auth/by-bank`,
-      categoryAPI: `/sam/v1/property/auth/by-category`,
+      stateAPI: `${url}/by-state`,
+      bankAPI: `${url}/by-bank`,
+      categoryAPI: `${url}/by-category`,
     };
-    if (statusOfLogin !== "true") {
-      headers = { "Content-Type": "Application/json" };
-      apis = {
-        stateAPI: `/sam/v1/property/by-state`,
-        bankAPI: `/sam/v1/property/by-bank`,
-        categoryAPI: `/sam/v1/property/by-category`,
-      };
-    }
+    // if (statusOfLogin !== "true") {
+    //   headers = { "Content-Type": "Application/json" };
+    //   apis = {
+    //     stateAPI: `/sam/v1/property/by-state`,
+    //     bankAPI: `/sam/v1/property/by-bank`,
+    //     categoryAPI: `/sam/v1/property/by-category`,
+    //   };
+    // }
 
-    console.log(headers, apis);
+    console.log(url, headers, apis);
     // Get all states from api.
     const allStates = await axios.get(apis.stateAPI, {
       headers: headers,
