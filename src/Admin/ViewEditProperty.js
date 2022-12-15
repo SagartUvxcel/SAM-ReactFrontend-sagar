@@ -8,16 +8,25 @@ const ViewEditProperty = () => {
   const { id } = useParams();
   const [property, setProperty] = useState([]);
 
-  const [editDetails, setEditDetails] = useState({
+  const [editViewDetails, setEditViewDetails] = useState({
     isReadOnly: true,
     isDisabled: false,
     editClassName: "editable-values",
     cancelUpdateBtnClassName: "d-none",
   });
 
+  const editDetails = () => {
+    setEditViewDetails({
+      isReadOnly: false,
+      isDisabled: true,
+      editClassName: "",
+      cancelUpdateBtnClassName: "",
+    });
+  };
+
   const { _id, count, category, city_name, market_value, range } = property;
   const { isReadOnly, isDisabled, editClassName, cancelUpdateBtnClassName } =
-    editDetails;
+    editViewDetails;
 
   const setCurrentProperty = () => {
     for (let i of propertyData) {
@@ -38,7 +47,10 @@ const ViewEditProperty = () => {
           <h2 className="text-center mb-4">View & Edit</h2>
           <div className="row justify-content-center">
             <div className="col-xl-9 col-lg-10 col-md-11">
-              <form action="" className="card shadow p-xl-5 p-lg-4 p-3">
+              <form action="" className="card shadow p-xl-5 p-lg-4 p-3 position-relative">
+                <div className="text-end position-absolute admin-property-edit-icon">
+                  <i onClick={editDetails} className="bi bi-pencil-square"></i>
+                </div>
                 <div className="row">
                   <div className="col-6">
                     <div className="form-group mb-3">

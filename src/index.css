@@ -625,6 +625,14 @@ input[type="number"] {
   transition: 0.3s ease-in-out !important;
 }
 
+/* Admin */
+
+/* Edit Property */
+.admin-property-edit-icon{
+  right: 15px;
+  top: 10px;
+}
+
 /* Media Queries */
 
 @media (min-width: 768px) {
