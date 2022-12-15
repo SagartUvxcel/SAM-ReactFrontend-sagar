@@ -16,6 +16,8 @@ import ProtectAfterLogin from "../src/components/ProtectAfterLogin";
 import ScrollButton from "./components/ScrollButton";
 import Contact from "./components/4.Contact/Contact";
 import PageNotFound from "./components/PageNotFound";
+import AdminHomePage from "./Admin/AdminHomePage";
+import ViewAllProperties from "./Admin/ViewAllProperties";
 
 function App() {
   return (
@@ -82,6 +84,12 @@ function App() {
               <EditOrganizationDetails />
               // </Protected>
             }
+          />
+          {/* Admin */}
+          <Route path="/admin/*" element={<AdminHomePage />} />
+          <Route
+            path="/admin/view-properties"
+            element={<ViewAllProperties />}
           />
           <Route path="*" element={<PageNotFound />} />
         </Routes>

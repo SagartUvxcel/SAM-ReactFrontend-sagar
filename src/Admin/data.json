@@ -1,0 +1,66 @@
+[
+  {
+    "id": "PROP1",
+    "count": 4,
+    "category": "Residential Property",
+    "city_name": "Pune",
+    "market_value": "10000000",
+    "range": "10000000-100000000"
+  },
+  {
+    "id": "PROP2",
+    "count": 2,
+    "category": "Residential Property",
+    "city_name": "Mumbai",
+    "market_value": "10000000",
+    "range": "10000000-100000000"
+  },
+  {
+    "id": "PROP3",
+    "count": 1,
+    "category": "Residential Property",
+    "city_name": "Mumbai",
+    "market_value": "10000000",
+    "range": "10000000-100000000"
+  },
+  {
+    "id": "PROP4",
+    "count": 4,
+    "category": "Residential Property",
+    "city_name": "Panjim",
+    "market_value": "10000000",
+    "range": "10000000-100000000"
+  },
+  {
+    "id": "PROP5",
+    "count": 3,
+    "category": "Residential Property",
+    "city_name": "Margao",
+    "market_value": "10000000",
+    "range": "10000000-100000000"
+  },
+  {
+    "id": "PROP6",
+    "count": 4,
+    "category": "Residential Property",
+    "city_name": "Pune",
+    "market_value": "10000000",
+    "range": "10000000-100000000"
+  },
+  {
+    "id": "PROP7",
+    "count": 1,
+    "category": "Residential Property",
+    "city_name": "Nashik",
+    "market_value": "10000000",
+    "range": "10000000-100000000"
+  },
+  {
+    "id": "PROP8",
+    "count": 2,
+    "category": "Residential Property",
+    "city_name": "Pune",
+    "market_value": "10000000",
+    "range": "10000000-100000000"
+  }
+]
