@@ -43,6 +43,7 @@ const ViewEditProperty = () => {
                         className="form-control"
                         type="text"
                         defaultValue={_id}
+                        disabled
                       />
                     </div>
                   </div>
@@ -106,36 +107,23 @@ const ViewEditProperty = () => {
                       />
                     </div>
                   </div>
-                </div>
-                <div className="row">
-                  <div className="col-lg-2">Range</div>
-                  <div className="col-lg-3">
+                  <div className="col-6">
                     <div className="form-group mb-3">
-                      <label htmlFor="min_value">Min</label>
+                      <label className="form-label" htmlFor="range">
+                        Range
+                      </label>
                       <input
-                        name="min_value"
-                        id="min_value"
+                        name="range"
+                        id="range"
                         className="form-control"
                         type="text"
                         defaultValue={
                           range
-                            ? Number(range.split("-")[0]) / 10000000 + " Cr."
-                            : range
-                        }
-                      />
-                    </div>
-                  </div>
-                  <div className="col-lg-3">
-                    <div className="form-group mb-3">
-                      <label htmlFor="max_value">Max</label>
-                      <input
-                        name="max_value"
-                        id="max_value"
-                        className="form-control"
-                        type="text"
-                        defaultValue={
-                          range
-                            ? Number(range.split("-")[1]) / 10000000 + " Cr."
+                            ? Number(range.split("-")[0]) / 10000000 +
+                              " Cr." +
+                              " - " +
+                              Number(range.split("-")[1]) / 10000000 +
+                              " Cr."
                             : range
                         }
                       />
