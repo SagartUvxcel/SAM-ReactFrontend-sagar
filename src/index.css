@@ -589,7 +589,7 @@ input[type="number"] {
   font-weight: 600;
 }
 
-.edit-details-wrapper .editable-values {
+.editable-values {
   border: none !important;
   box-shadow: none !important;
   padding-left: 0 !important;

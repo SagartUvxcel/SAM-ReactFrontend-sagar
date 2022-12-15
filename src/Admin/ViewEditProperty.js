@@ -1,6 +1,5 @@
 import React from "react";
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Layout from "../components/1.CommonLayout/Layout";
 import propertyData from "./data.json";
@@ -9,7 +8,16 @@ const ViewEditProperty = () => {
   const { id } = useParams();
   const [property, setProperty] = useState([]);
 
+  const [editDetails, setEditDetails] = useState({
+    isReadOnly: true,
+    isDisabled: false,
+    editClassName: "editable-values",
+    cancelUpdateBtnClassName: "d-none",
+  });
+
   const { _id, count, category, city_name, market_value, range } = property;
+  const { isReadOnly, isDisabled, editClassName, cancelUpdateBtnClassName } =
+    editDetails;
 
   const setCurrentProperty = () => {
     for (let i of propertyData) {
@@ -34,88 +42,96 @@ const ViewEditProperty = () => {
                 <div className="row">
                   <div className="col-6">
                     <div className="form-group mb-3">
-                      <label className="form-label" htmlFor="_id">
-                        ID
+                      <label className="form-label fw-bold" htmlFor="_id">
+                        ID:
                       </label>
                       <input
                         name="_id"
                         id="_id"
-                        className="form-control"
+                        className={`form-control ${editClassName}`}
                         type="text"
                         defaultValue={_id}
-                        disabled
+                        disabled={isDisabled}
+                        readOnly={isReadOnly}
                       />
                     </div>
                   </div>
                   <div className="col-6">
                     <div className="form-group mb-3">
-                      <label className="form-label" htmlFor="count">
-                        No of Properties
+                      <label className="form-label fw-bold" htmlFor="count">
+                        No of Properties:
                       </label>
                       <input
                         name="count"
                         id="count"
-                        className="form-control"
+                        className={`form-control ${editClassName}`}
                         type="number"
                         defaultValue={count}
+                        readOnly={isReadOnly}
                       />
                     </div>
                   </div>
                   <div className="col-6">
                     <div className="form-group mb-3">
-                      <label className="form-label" htmlFor="category">
-                        Category
+                      <label className="form-label fw-bold" htmlFor="category">
+                        Category:
                       </label>
                       <input
                         name="category"
                         id="category"
-                        className="form-control"
+                        className={`form-control ${editClassName}`}
                         type="text"
                         defaultValue={category}
+                        readOnly={isReadOnly}
                       />
                     </div>
                   </div>
                   <div className="col-6">
                     <div className="form-group mb-3">
-                      <label className="form-label" htmlFor="city_name">
-                        City
+                      <label className="form-label fw-bold" htmlFor="city_name">
+                        City:
                       </label>
                       <input
                         name="city_name"
                         id="city_name"
-                        className="form-control"
+                        className={`form-control ${editClassName}`}
                         type="text"
                         defaultValue={city_name}
+                        readOnly={isReadOnly}
                       />
                     </div>
                   </div>
                   <div className="col-6">
                     <div className="form-group mb-3">
-                      <label className="form-label" htmlFor="market_value">
-                        Market Value
+                      <label
+                        className="form-label fw-bold"
+                        htmlFor="market_value"
+                      >
+                        Market Value:
                       </label>
                       <input
                         name="market_value"
                         id="market_value"
-                        className="form-control"
+                        className={`form-control ${editClassName}`}
                         type="text"
                         defaultValue={
                           market_value !== undefined
                             ? Number(market_value) / 10000000 + " Cr."
                             : market_value
                         }
+                        readOnly={isReadOnly}
                       />
                     </div>
                   </div>
                   <div className="col-6">
                     <div className="form-group mb-3">
-                      <label className="form-label" htmlFor="range">
-                        Range
+                      <label className="form-label fw-bold" htmlFor="range">
+                        Range:
                       </label>
                       <input
                         name="range"
                         id="range"
-                        className="form-control"
+                        className={`form-control ${editClassName}`}
                         type="text"
                         defaultValue={
                           range
@@ -126,6 +142,7 @@ const ViewEditProperty = () => {
                               " Cr."
                             : range
                         }
+                        readOnly={isReadOnly}
                       />
                     </div>
                   </div>
