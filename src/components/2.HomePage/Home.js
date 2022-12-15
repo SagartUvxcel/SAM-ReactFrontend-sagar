@@ -25,17 +25,13 @@ function Home() {
   // After we click on search button It will store data/response from api into this useState.
   const [propertyData, setPropertyData] = useState([]);
 
-  const [localStorageData, setLocalStorageData] = useState({
-    statusOfLogin: "",
-    loginToken: "",
-  });
-
   // Object destructuring.
   const { states, assetCategory, cities, localities, banks } = searchFields;
-  const { statusOfLogin, loginToken } = localStorageData;
 
   // It will fetch all states, banks, assets from api and will map those values to respective select fields.
   const getSearchDetails = async () => {
+    const statusOfLogin = localStorage.getItem("isLoggedIn");
+    const loginToken = localStorage.getItem("logintoken");
     let headers = { Authorization: loginToken };
     let apis = {
       stateAPI: `/sam/v1/property/auth/by-state`,
@@ -53,7 +49,9 @@ function Home() {
 
     console.log(headers, apis);
     // Get all states from api.
-    const allStates = await axios.get(apis.stateAPI, { headers: headers });
+    const allStates = await axios.get(apis.stateAPI, {
+      headers: headers,
+    });
 
     // Get all banks from api.
     const allBanks = await axios.get(apis.bankAPI, { headers: headers });
@@ -74,6 +72,8 @@ function Home() {
 
   // This function will run on change of input fields.
   const onFieldsChange = async (e) => {
+    const statusOfLogin = localStorage.getItem("isLoggedIn");
+    const loginToken = localStorage.getItem("logintoken");
     let headers = { Authorization: loginToken };
     let apis = {
       cityAPI: `/sam/v1/property/auth/by-city`,
@@ -163,6 +163,8 @@ function Home() {
   // This will run after Search button click.
   const getPropertyData = async (e) => {
     e.preventDefault();
+    const statusOfLogin = localStorage.getItem("isLoggedIn");
+    const loginToken = localStorage.getItem("logintoken");
     let headers = { Authorization: loginToken };
     let apis = {
       searchAPI: `/sam/v1/property/auth/count-category`,
@@ -200,15 +202,6 @@ function Home() {
   //   }
   // };
 
-  const getDataFromLocalStorage = () => {
-    const statusOfLogin = localStorage.getItem("isLoggedIn");
-    const loginToken = localStorage.getItem("logintoken");
-    setLocalStorageData({
-      statusOfLogin: statusOfLogin,
-      loginToken: loginToken,
-    });
-  };
-
   // Change navbar color on scroll on HomePage only.
   const changeNavBarColor = () => {
     let nav = document.querySelector(".navbar");
@@ -224,7 +217,6 @@ function Home() {
 
   // This will run every time we refresh page or if some state change occurs.
   useEffect(() => {
-    getDataFromLocalStorage();
     getSearchDetails();
     // getDataFromLocal();
     changeNavBarColor();
