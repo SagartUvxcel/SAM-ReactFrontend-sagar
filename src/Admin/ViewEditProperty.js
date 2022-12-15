@@ -24,6 +24,18 @@ const ViewEditProperty = () => {
     });
   };
 
+  const cancelEditing = () => {
+    setEditViewDetails({
+      isReadOnly: true,
+      isDisabled: false,
+      editClassName: "editable-values",
+      cancelUpdateBtnClassName: "d-none",
+    });
+    let samp = document.querySelectorAll("input");
+    for (let i of samp) {
+      document.getElementById(i.name).value = property[i.name];
+    }
+  };
   const { _id, count, category, city_name, market_value, range } = property;
   const { isReadOnly, isDisabled, editClassName, cancelUpdateBtnClassName } =
     editViewDetails;
@@ -47,7 +59,10 @@ const ViewEditProperty = () => {
           <h2 className="text-center mb-4">View & Edit</h2>
           <div className="row justify-content-center">
             <div className="col-xl-9 col-lg-10 col-md-11">
-              <form action="" className="card shadow p-xl-5 p-lg-4 p-3 position-relative">
+              <form
+                action=""
+                className="card shadow p-xl-5 p-lg-4 p-3 position-relative"
+              >
                 <div className="text-end position-absolute admin-property-edit-icon">
                   <i onClick={editDetails} className="bi bi-pencil-square"></i>
                 </div>
@@ -126,11 +141,7 @@ const ViewEditProperty = () => {
                         id="market_value"
                         className={`form-control ${editClassName}`}
                         type="text"
-                        defaultValue={
-                          market_value !== undefined
-                            ? Number(market_value) / 10000000 + " Cr."
-                            : market_value
-                        }
+                        defaultValue={market_value}
                         readOnly={isReadOnly}
                       />
                     </div>
@@ -145,17 +156,34 @@ const ViewEditProperty = () => {
                         id="range"
                         className={`form-control ${editClassName}`}
                         type="text"
-                        defaultValue={
-                          range
-                            ? Number(range.split("-")[0]) / 10000000 +
-                              " Cr." +
-                              " - " +
-                              Number(range.split("-")[1]) / 10000000 +
-                              " Cr."
-                            : range
-                        }
+                        defaultValue={range}
                         readOnly={isReadOnly}
                       />
+                    </div>
+                  </div>
+                </div>
+                <div
+                  className={`row mt-4 ${cancelUpdateBtnClassName}`}
+                  id="update-cancel"
+                >
+                  <div className="col-12">
+                    <div className="text-end">
+                      <button
+                        onClick={cancelEditing}
+                        type="button"
+                        className="btn btn-secondary me-2"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                        }}
+                        type="submit"
+                        className="btn btn-primary"
+                      >
+                        Update
+                      </button>
                     </div>
                   </div>
                 </div>
