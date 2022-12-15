@@ -1,6 +1,6 @@
 [
   {
-    "id": "PROP1",
+    "_id": "PROP1",
     "count": 4,
     "category": "Residential Property",
     "city_name": "Pune",
@@ -8,7 +8,7 @@
     "range": "10000000-100000000"
   },
   {
-    "id": "PROP2",
+    "_id": "PROP2",
     "count": 2,
     "category": "Residential Property",
     "city_name": "Mumbai",
@@ -16,7 +16,7 @@
     "range": "10000000-100000000"
   },
   {
-    "id": "PROP3",
+    "_id": "PROP3",
     "count": 1,
     "category": "Residential Property",
     "city_name": "Mumbai",
@@ -24,7 +24,7 @@
     "range": "10000000-100000000"
   },
   {
-    "id": "PROP4",
+    "_id": "PROP4",
     "count": 4,
     "category": "Residential Property",
     "city_name": "Panjim",
@@ -32,7 +32,7 @@
     "range": "10000000-100000000"
   },
   {
-    "id": "PROP5",
+    "_id": "PROP5",
     "count": 3,
     "category": "Residential Property",
     "city_name": "Margao",
@@ -40,7 +40,7 @@
     "range": "10000000-100000000"
   },
   {
-    "id": "PROP6",
+    "_id": "PROP6",
     "count": 4,
     "category": "Residential Property",
     "city_name": "Pune",
@@ -48,7 +48,7 @@
     "range": "10000000-100000000"
   },
   {
-    "id": "PROP7",
+    "_id": "PROP7",
     "count": 1,
     "category": "Residential Property",
     "city_name": "Nashik",
@@ -56,7 +56,7 @@
     "range": "10000000-100000000"
   },
   {
-    "id": "PROP8",
+    "_id": "PROP8",
     "count": 2,
     "category": "Residential Property",
     "city_name": "Pune",
