@@ -7,7 +7,7 @@ const ViewPropertyDetails = () => {
   const checkStatusOfLogin = () => {
     const statusOfLogin = localStorage.getItem("isLoggedIn");
     if (statusOfLogin !== "true") {
-      goTo("/register");
+      goTo("/login");
     }
   };
   useEffect(() => {

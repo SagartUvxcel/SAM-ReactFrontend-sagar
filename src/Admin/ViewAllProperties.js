@@ -1,11 +1,10 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import Layout from "../components/1.CommonLayout/Layout";
 import propertyData from "./data.json";
 
 const ViewAllProperties = () => {
   return (
-    <Layout>
+    <>
       <section className="admin-view-all-properties min-100vh wrapper mt-5">
         <div className="container-fluid">
           <div className="row">
@@ -72,7 +71,7 @@ const ViewAllProperties = () => {
           </div>
         </div>
       </section>
-    </Layout>
+    </>
   );
 };
 

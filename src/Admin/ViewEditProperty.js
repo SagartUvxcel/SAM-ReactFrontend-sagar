@@ -1,7 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import Layout from "../components/1.CommonLayout/Layout";
 import propertyData from "./data.json";
 
 const ViewEditProperty = () => {
@@ -53,7 +52,7 @@ const ViewEditProperty = () => {
   });
 
   return (
-    <Layout>
+    <>
       <section className="mt-5 admin-edit-property wrapper min-100vh">
         <div className="container-fluid">
           <h2 className="text-center mb-4">View & Edit</h2>
@@ -192,7 +191,7 @@ const ViewEditProperty = () => {
           </div>
         </div>
       </section>
-    </Layout>
+    </>
   );
 };
 
