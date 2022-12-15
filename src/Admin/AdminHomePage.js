@@ -6,7 +6,7 @@ const AdminHomePage = () => {
     <div className="container-fluid">
       <div className="row vh-100">
         <AdminSideBar />
-        <div className="col-xl-10 col-lg-8">
+        <div className="col-xl-10 col-md-9">
           <div className="mt-5 wrapper">
             <div className="container">
               <h1 className="text-center py-5">
