@@ -28,8 +28,7 @@ function Home() {
   // Object destructuring.
   const { states, assetCategory, cities, localities, banks } = searchFields;
 
-  // It will fetch all states, banks, assets from api and will map those values to respective select fields.
-  const getSearchDetails = async () => {
+  const setHeaderAndUrl = () => {
     const statusOfLogin = localStorage.getItem("isLoggedIn");
     const loginToken = localStorage.getItem("logintoken");
     let headers =
@@ -37,6 +36,12 @@ function Home() {
         ? { "Content-Type": "Application/json" }
         : { Authorization: loginToken };
     let url = `/sam/v1/property${statusOfLogin !== "true" ? "" : `/auth`}`;
+    return [headers, url];
+  };
+
+  // It will fetch all states, banks, assets from api and will map those values to respective select fields.
+  const getSearchDetails = async () => {
+    const [headers, url] = setHeaderAndUrl();
     let apis = {
       stateAPI: `${url}/by-state`,
       bankAPI: `${url}/by-bank`,
@@ -62,13 +67,7 @@ function Home() {
 
   // This function will run on change of input fields.
   const onFieldsChange = async (e) => {
-    const statusOfLogin = localStorage.getItem("isLoggedIn");
-    const loginToken = localStorage.getItem("logintoken");
-    let headers =
-      statusOfLogin !== "true"
-        ? { "Content-Type": "Application/json" }
-        : { Authorization: loginToken };
-    let url = `/sam/v1/property${statusOfLogin !== "true" ? "" : `/auth`}`;
+    const [headers, url] = setHeaderAndUrl();
     let apis = {
       cityAPI: `${url}/by-city`,
       addressAPI: `${url}/by-address`,
@@ -150,17 +149,11 @@ function Home() {
   // This will run after Search button click.
   const getPropertyData = async (e) => {
     e.preventDefault();
-    const statusOfLogin = localStorage.getItem("isLoggedIn");
-    const loginToken = localStorage.getItem("logintoken");
-    let headers =
-      statusOfLogin !== "true"
-        ? { "Content-Type": "Application/json" }
-        : { Authorization: loginToken };
-    let url = `/sam/v1/property${statusOfLogin !== "true" ? "" : `/auth`}`;
+    const [headers, url] = setHeaderAndUrl();
+    console.log(headers, url);
     let apis = {
       searchAPI: `${url}/count-category`,
     };
-    console.log(url, headers, apis);
     // Post data and get Searched result from response.
     await axios
       .post(apis.searchAPI, dataToPost, { headers: headers })
