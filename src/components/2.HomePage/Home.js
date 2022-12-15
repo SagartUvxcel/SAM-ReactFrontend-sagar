@@ -30,14 +30,36 @@ function Home() {
 
   // It will fetch all states, banks, assets from api and will map those values to respective select fields.
   const getSearchDetails = async () => {
+    const statusOfLogin = localStorage.getItem("isLoggedIn");
+    const loginToken = localStorage.getItem("logintoken");
+    let headers = { Authorization: loginToken };
+    let apis = {
+      stateAPI: `/sam/v1/property/auth/by-state`,
+      bankAPI: `/sam/v1/property/auth/by-bank`,
+      categoryAPI: `/sam/v1/property/auth/by-category`,
+    };
+    if (statusOfLogin !== "true") {
+      headers = { "Content-Type": "Application/json" };
+      apis = {
+        stateAPI: `/sam/v1/property/by-state`,
+        bankAPI: `/sam/v1/property/by-bank`,
+        categoryAPI: `/sam/v1/property/by-category`,
+      };
+    }
+
+    console.log(headers, apis);
     // Get all states from api.
-    const allStates = await axios.get(`/sam/v1/property/by-state`);
+    const allStates = await axios.get(apis.stateAPI, {
+      headers: headers,
+    });
 
     // Get all banks from api.
-    const allBanks = await axios.get(`/sam/v1/property/by-bank`);
+    const allBanks = await axios.get(apis.bankAPI, { headers: headers });
 
     // Get all asset Categories from api.
-    const assetCategories = await axios.get(`/sam/v1/property/by-category`);
+    const assetCategories = await axios.get(apis.categoryAPI, {
+      headers: headers,
+    });
 
     // store states, banks and asset categories into searchFields useState.
     setSearchFields({
@@ -50,6 +72,20 @@ function Home() {
 
   // This function will run on change of input fields.
   const onFieldsChange = async (e) => {
+    const statusOfLogin = localStorage.getItem("isLoggedIn");
+    const loginToken = localStorage.getItem("logintoken");
+    let headers = { Authorization: loginToken };
+    let apis = {
+      cityAPI: `/sam/v1/property/auth/by-city`,
+      addressAPI: `/sam/v1/property/auth/by-address`,
+    };
+    if (statusOfLogin !== "true") {
+      headers = { "Content-Type": "Application/json" };
+      apis = {
+        cityAPI: `/sam/v1/property/by-city`,
+        addressAPI: `/sam/v1/property/by-address`,
+      };
+    }
     const { name, value } = e.target;
     const fiveSectionCol = document.querySelectorAll(".five-section-col");
     // If input is state then post selected state id to api for getting cities based on selected state.
@@ -60,9 +96,13 @@ function Home() {
       } else {
         delete dataToPost.state_id;
       }
-      const cityByState = await axios.post(`/sam/v1/property/by-city`, {
-        state_id: parseInt(value),
-      });
+      const cityByState = await axios.post(
+        apis.cityAPI,
+        {
+          state_id: parseInt(value),
+        },
+        { headers: headers }
+      );
       // Store cities data into searchField useState.
       setSearchFields({ ...searchFields, cities: cityByState.data });
       // Unhide city select box when we select state.
@@ -80,9 +120,13 @@ function Home() {
         delete dataToPost.city_id;
       }
       // If input is cities then post selected city id to api for getting locality info. based on selected city.
-      const localityByCity = await axios.post(`/sam/v1/property/by-address`, {
-        city_id: parseInt(value),
-      });
+      const localityByCity = await axios.post(
+        apis.addressAPI,
+        {
+          city_id: parseInt(value),
+        },
+        { headers: headers }
+      );
       // Store locality data into searchField useState.
       setSearchFields({ ...searchFields, localities: localityByCity.data });
       // Unhide select box when we select city.
@@ -119,9 +163,21 @@ function Home() {
   // This will run after Search button click.
   const getPropertyData = async (e) => {
     e.preventDefault();
+    const statusOfLogin = localStorage.getItem("isLoggedIn");
+    const loginToken = localStorage.getItem("logintoken");
+    let headers = { Authorization: loginToken };
+    let apis = {
+      searchAPI: `/sam/v1/property/auth/count-category`,
+    };
+    if (statusOfLogin !== "true") {
+      headers = { "Content-Type": "Application/json" };
+      apis = {
+        searchAPI: `/sam/v1/property/count-category`,
+      };
+    }
     // Post data and get Searched result from response.
     await axios
-      .post(`/sam/v1/property/count-category`, dataToPost)
+      .post(apis.searchAPI, dataToPost, { headers: headers })
       .then((res) => {
         // Store Searched results into propertyData useState.
         localStorage.setItem("propertyDataFromLocal", JSON.stringify(res.data));

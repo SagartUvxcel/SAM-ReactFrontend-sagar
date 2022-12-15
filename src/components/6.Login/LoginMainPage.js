@@ -68,7 +68,8 @@ const LoginMainPage = () => {
         JSON.stringify({ username: email, password: password })
       )
       .then((res) => {
-        const { email, token } = res.data;
+        console.log(res.data);
+        const { email, token } = res.data.token;
         if (email !== "" && token !== "") {
           setLoaderDetails({
             ...loaderDetails,
@@ -78,6 +79,7 @@ const LoginMainPage = () => {
           });
           localStorage.setItem("isLoggedIn", true);
           localStorage.setItem("user", email);
+          localStorage.setItem("logintoken", token);
           setTimeout(() => {
             setLoaderDetails({
               ...loaderDetails,
@@ -178,7 +180,9 @@ const LoginMainPage = () => {
                 </div>
                 <hr />
                 <div className="text-center my-3">
-                  <button className={`btn btn-primary ${loginBtnClassName} w-100`}>
+                  <button
+                    className={`btn btn-primary ${loginBtnClassName} w-100`}
+                  >
                     <span
                       className={`${
                         loading ? "" : "d-none"
