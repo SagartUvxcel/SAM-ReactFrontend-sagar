@@ -28,6 +28,7 @@ function Home() {
   // Object destructuring.
   const { states, assetCategory, cities, localities, banks } = searchFields;
 
+  // Function will check if user is loggedIn or not & based on the login status it will set headers and url.
   const setHeaderAndUrl = () => {
     const statusOfLogin = localStorage.getItem("isLoggedIn");
     const loginToken = localStorage.getItem("logintoken");
