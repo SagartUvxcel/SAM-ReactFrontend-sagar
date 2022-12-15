@@ -32,31 +32,20 @@ function Home() {
   const getSearchDetails = async () => {
     const statusOfLogin = localStorage.getItem("isLoggedIn");
     const loginToken = localStorage.getItem("logintoken");
-    let headers = { Authorization: loginToken };
+    let headers =
+      statusOfLogin !== "true"
+        ? { "Content-Type": "Application/json" }
+        : { Authorization: loginToken };
     let url = `/sam/v1/property${statusOfLogin !== "true" ? "" : `/auth`}`;
     let apis = {
       stateAPI: `${url}/by-state`,
       bankAPI: `${url}/by-bank`,
       categoryAPI: `${url}/by-category`,
     };
-    // if (statusOfLogin !== "true") {
-    //   headers = { "Content-Type": "Application/json" };
-    //   apis = {
-    //     stateAPI: `/sam/v1/property/by-state`,
-    //     bankAPI: `/sam/v1/property/by-bank`,
-    //     categoryAPI: `/sam/v1/property/by-category`,
-    //   };
-    // }
-
-    console.log(url, headers, apis);
     // Get all states from api.
-    const allStates = await axios.get(apis.stateAPI, {
-      headers: headers,
-    });
-
+    const allStates = await axios.get(apis.stateAPI, { headers: headers });
     // Get all banks from api.
     const allBanks = await axios.get(apis.bankAPI, { headers: headers });
-
     // Get all asset Categories from api.
     const assetCategories = await axios.get(apis.categoryAPI, {
       headers: headers,
@@ -75,18 +64,16 @@ function Home() {
   const onFieldsChange = async (e) => {
     const statusOfLogin = localStorage.getItem("isLoggedIn");
     const loginToken = localStorage.getItem("logintoken");
-    let headers = { Authorization: loginToken };
+    let headers =
+      statusOfLogin !== "true"
+        ? { "Content-Type": "Application/json" }
+        : { Authorization: loginToken };
+    let url = `/sam/v1/property${statusOfLogin !== "true" ? "" : `/auth`}`;
     let apis = {
-      cityAPI: `/sam/v1/property/auth/by-city`,
-      addressAPI: `/sam/v1/property/auth/by-address`,
+      cityAPI: `${url}/by-city`,
+      addressAPI: `${url}/by-address`,
     };
-    if (statusOfLogin !== "true") {
-      headers = { "Content-Type": "Application/json" };
-      apis = {
-        cityAPI: `/sam/v1/property/by-city`,
-        addressAPI: `/sam/v1/property/by-address`,
-      };
-    }
+    console.log(url, headers, apis);
     const { name, value } = e.target;
     const fiveSectionCol = document.querySelectorAll(".five-section-col");
     // If input is state then post selected state id to api for getting cities based on selected state.
