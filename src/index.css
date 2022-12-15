@@ -139,7 +139,8 @@ input[type="number"] {
 }
 
 /* Navbar */
-.navbar {
+.navbar,
+.admin-sidebar {
   background: var(--navbar-bg);
   transition: 0.3s ease-in-out;
 }
@@ -153,8 +154,13 @@ input[type="number"] {
   transition: 0.3s ease-in-out;
 }
 
-.navbar-nav .nav-link.active {
+.nav-link.active,
+.nav-link:hover {
   color: orange !important;
+}
+
+.admin-sidebar .nav-link {
+  color: white;
 }
 
 .navbar .navbar-toggler {
