@@ -1,4 +1,5 @@
 import React from "react";
+import { NavLink } from "react-router-dom";
 import Layout from "../components/1.CommonLayout/Layout";
 import propertyData from "./data.json";
 
@@ -49,9 +50,12 @@ const ViewAllProperties = () => {
                           </span>
                           <br />
                           <div className="mt-3">
-                            <button className="btn btn-outline-primary">
+                            <NavLink
+                              to={`/admin/edit-property/${property.id}`}
+                              className="btn btn-outline-primary"
+                            >
                               Edit
-                            </button>
+                            </NavLink>
                           </div>
                         </div>
                       </div>
