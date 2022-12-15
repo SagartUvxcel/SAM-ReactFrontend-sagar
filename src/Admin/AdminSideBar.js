@@ -23,6 +23,11 @@ const AdminSideBar = () => {
                 All Properties
               </NavLink>
             </li>
+            <li className="nav-item">
+              <span className="nav-link">
+                <i className="bi bi-box-arrow-right text-dark mx-2"></i>Logout
+              </span>
+            </li>
           </ul>
           <hr></hr>
         </div>
