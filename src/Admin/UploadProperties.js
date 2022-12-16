@@ -3,8 +3,12 @@ import AdminSideBar from "./AdminSideBar";
 import Papa from "papaparse";
 
 const UploadProperties = () => {
-  const [data, setData] = useState([]);
-  const [tableHeadings, setTableHeadings] = useState([]);
+  const [allUseStates, setAllUseStates] = useState({
+    data: [],
+    tableHeadings: [],
+  });
+
+  const { data, tableHeadings } = allUseStates;
 
   const fileUpload = (e) => {
     if (e.target.files.length) {
@@ -18,8 +22,11 @@ const UploadProperties = () => {
       reader.onload = async ({ target }) => {
         const csv = Papa.parse(target.result, { header: true });
         const parsedData = csv.data;
-        setTableHeadings(Object.keys(parsedData[0]));
-        setData(parsedData);
+        setAllUseStates({
+          ...allUseStates,
+          tableHeadings: Object.keys(parsedData[0]),
+          data: parsedData,
+        });
       };
       reader.readAsText(inputFile);
     }
