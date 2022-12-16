@@ -25,6 +25,7 @@ const UploadProperties = () => {
       reader.onload = async ({ target }) => {
         const csv = Papa.parse(target.result, { header: true });
         const parsedData = csv.data;
+        console.log(parsedData);
         setAllUseStates({
           ...allUseStates,
           tableHeadings: Object.keys(parsedData[0]),
@@ -62,7 +63,7 @@ const UploadProperties = () => {
                     </small>
                     <br />
                     <img
-                      src="/csv_img.png"
+                      src="/sample-img.png"
                       className="img-fluid border mt-2"
                       alt="hint-img"
                     />
