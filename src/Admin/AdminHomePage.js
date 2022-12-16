@@ -27,7 +27,10 @@ const AdminHomePage = () => {
                 </NavLink>
               </div>
               <div className="col-xl-3">
-                <div className="card py-3 admin-top-cards">
+                <NavLink
+                  to="/admin/users"
+                  className="card py-3 admin-top-cards"
+                >
                   <span className="me-5">
                     <i className="bi bi-person-fill text-primary fs-1 white-on-hover"></i>
                   </span>
@@ -37,7 +40,7 @@ const AdminHomePage = () => {
                       Users
                     </h5>
                   </div>
-                </div>
+                </NavLink>
               </div>
               <div className="col-xl-3">
                 <div className="card py-3  admin-top-cards">

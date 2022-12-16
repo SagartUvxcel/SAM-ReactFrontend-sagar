@@ -49,9 +49,12 @@ const AdminSideBar = () => {
               </NavLink>
             </li>
             <li className="nav-item">
-              <span className="nav-link">
-                <i className="bi bi-person-fill text-dark mx-2"></i>Users
-              </span>
+              <NavLink to="/admin/users" className="nav-link">
+                <span className="mx-2">
+                  <i className="bi bi-person-fill text-dark"></i>
+                </span>
+                Users
+              </NavLink>
             </li>
             <hr />
             <li className="nav-item">

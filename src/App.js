@@ -20,6 +20,7 @@ import AdminHomePage from "./Admin/AdminHomePage";
 import ViewAllProperties from "./Admin/ViewAllProperties";
 import ViewEditProperty from "./Admin/ViewEditProperty";
 import UploadProperties from "./Admin/UploadProperties";
+import ManageUsers from "./Admin/ManageUsers";
 
 function App() {
   return (
@@ -100,6 +101,7 @@ function App() {
             path="/admin/upload-properties"
             element={<UploadProperties />}
           />
+          <Route path="/admin/users" element={<ManageUsers />} />
           <Route path="*" element={<PageNotFound />} />
         </Routes>
       </ScrollToTop>
