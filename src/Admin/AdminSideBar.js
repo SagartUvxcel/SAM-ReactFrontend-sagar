@@ -53,8 +53,16 @@ const AdminSideBar = () => {
                 <i className="bi bi-person-fill text-dark mx-2"></i>Users
               </span>
             </li>
+            <hr />
+            <li className="nav-item">
+              <NavLink className="nav-link" to="/admin/upload-properties">
+                <span className="mx-2">
+                  <i className="bi bi-upload text-dark"></i>
+                </span>
+                Upload Properties
+              </NavLink>
+            </li>
           </ul>
-          <hr></hr>
         </div>
       </div>
     </div>

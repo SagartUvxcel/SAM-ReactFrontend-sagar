@@ -19,6 +19,7 @@ import PageNotFound from "./components/PageNotFound";
 import AdminHomePage from "./Admin/AdminHomePage";
 import ViewAllProperties from "./Admin/ViewAllProperties";
 import ViewEditProperty from "./Admin/ViewEditProperty";
+import UploadProperties from "./Admin/UploadProperties";
 
 function App() {
   return (
@@ -94,6 +95,10 @@ function App() {
           <Route
             path="/admin/edit-property/:id"
             element={<ViewEditProperty />}
+          />
+          <Route
+            path="/admin/upload-properties"
+            element={<UploadProperties />}
           />
           <Route path="*" element={<PageNotFound />} />
         </Routes>
