@@ -57,17 +57,20 @@ const AdminHomePage = () => {
               </div>
 
               <div className="col-xl-3">
-                <div className="card py-3  admin-top-cards">
+                <NavLink
+                  to="/admin/users"
+                  className="card py-3 admin-top-cards"
+                >
                   <span className="me-5">
-                    <i className="bi bi-buildings-fill text-white fs-1 blue-on-hover"></i>
+                    <i className="bi bi-person-fill text-white fs-1 blue-on-hover"></i>
                   </span>
                   <div>
-                    <span className="admin-dashboard-count">180</span>
+                    <span className="admin-dashboard-count">110</span>
                     <h5 className="text-white text-end blue-on-hover fw-bold">
-                      Properties
+                      Users
                     </h5>
                   </div>
-                </div>
+                </NavLink>
               </div>
             </div>
           </div>
