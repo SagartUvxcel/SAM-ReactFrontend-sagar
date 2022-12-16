@@ -13,7 +13,7 @@ const AdminHomePage = () => {
               <div className="col-xl-3">
                 <NavLink
                   to="/admin/view-properties"
-                  className="card py-3  admin-top-cards"
+                  className="card py-3 admin-top-cards"
                 >
                   <span className="me-5">
                     <i className="bi bi-buildings-fill text-primary fs-1 white-on-hover"></i>

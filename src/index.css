@@ -180,7 +180,7 @@ input[type="number"] {
   color: white;
   font-size: 1.1rem;
   font-weight: 500;
-  transition: color 0.3s ease-in-out;
+  transition: 0.3s ease-in-out;
 }
 
 /* Home */
@@ -660,9 +660,11 @@ input[type="number"] {
   justify-content: center;
   align-items: center;
   text-decoration: none;
+  transition: 0.3s ease-in-out;
 }
 
 .admin-top-cards:hover {
+  transition: 0.3s ease-in-out;
   background: var(--bg-gradient-blue);
 }
 
