@@ -640,7 +640,7 @@ input[type="number"] {
 }
 
 .csv-data-table {
-  height: 600px;
+  height: 400px;
   overflow-y: scroll;
 }
 

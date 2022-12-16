@@ -73,6 +73,10 @@ const UploadProperties = () => {
                     </tbody>
                   </table>
                 </div>
+                <div className="text-end mt-3">
+                  <button className="btn btn-success me-2">Save</button>
+                  <button className="btn btn-secondary">Cancel</button>
+                </div>
               </div>
             </div>
           </div>
