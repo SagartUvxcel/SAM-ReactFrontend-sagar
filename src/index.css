@@ -661,15 +661,17 @@ input[type="number"] {
   align-items: center;
   text-decoration: none;
   transition: 0.3s ease-in-out;
+  background: var(--bg-gradient-blue);
 }
 
 .admin-top-cards:hover {
   transition: 0.3s ease-in-out;
-  background: var(--bg-gradient-blue);
+  background: white;
+  border-color: blue;
 }
 
-.admin-top-cards:hover .white-on-hover {
-  color: white !important;
+.admin-top-cards:hover .blue-on-hover {
+  color: blue !important;
 }
 
 /* Media Queries */

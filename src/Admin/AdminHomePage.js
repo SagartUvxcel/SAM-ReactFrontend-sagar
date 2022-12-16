@@ -16,11 +16,11 @@ const AdminHomePage = () => {
                   className="card py-3 admin-top-cards"
                 >
                   <span className="me-5">
-                    <i className="bi bi-buildings-fill text-primary fs-1 white-on-hover"></i>
+                    <i className="bi bi-buildings-fill text-white fs-1 blue-on-hover"></i>
                   </span>
                   <div>
                     <span className="admin-dashboard-count">180</span>
-                    <h5 className="text-primary text-end white-on-hover">
+                    <h5 className="text-white text-end blue-on-hover">
                       Properties
                     </h5>
                   </div>
@@ -32,24 +32,22 @@ const AdminHomePage = () => {
                   className="card py-3 admin-top-cards"
                 >
                   <span className="me-5">
-                    <i className="bi bi-person-fill text-primary fs-1 white-on-hover"></i>
+                    <i className="bi bi-person-fill text-white fs-1 blue-on-hover"></i>
                   </span>
                   <div>
                     <span className="admin-dashboard-count">110</span>
-                    <h5 className="text-primary text-end white-on-hover">
-                      Users
-                    </h5>
+                    <h5 className="text-white text-end blue-on-hover">Users</h5>
                   </div>
                 </NavLink>
               </div>
               <div className="col-xl-3">
                 <div className="card py-3  admin-top-cards">
                   <span className="me-5">
-                    <i className="bi bi-buildings-fill text-primary fs-1 white-on-hover"></i>
+                    <i className="bi bi-buildings-fill text-white fs-1 blue-on-hover"></i>
                   </span>
                   <div>
                     <span className="admin-dashboard-count">180</span>
-                    <h5 className="text-primary text-end white-on-hover">
+                    <h5 className="text-white text-end blue-on-hover">
                       Properties
                     </h5>
                   </div>
@@ -59,11 +57,11 @@ const AdminHomePage = () => {
               <div className="col-xl-3">
                 <div className="card py-3  admin-top-cards">
                   <span className="me-5">
-                    <i className="bi bi-buildings-fill text-primary fs-1 white-on-hover"></i>
+                    <i className="bi bi-buildings-fill text-white fs-1 blue-on-hover"></i>
                   </span>
                   <div>
                     <span className="admin-dashboard-count">180</span>
-                    <h5 className="text-primary text-end white-on-hover">
+                    <h5 className="text-white text-end blue-on-hover">
                       Properties
                     </h5>
                   </div>
