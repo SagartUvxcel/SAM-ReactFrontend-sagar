@@ -1,31 +1,43 @@
 import React from "react";
-import { Link, NavLink } from "react-router-dom";
+import { useEffect } from "react";
+import { NavLink } from "react-router-dom";
 
 const AdminSideBar = () => {
+  useEffect(() => {
+    if (window.location.pathname !== "/admin") {
+      document.querySelector(".admin-home-link").classList.remove("active");
+    }
+  });
+
   return (
     <div className="col-xl-2 col-md-3 admin-sidebar">
       <div className="py-3">
-        <Link
-          to="/admin/home"
-          className="offcanvas-header text-decoration-none text-white"
-        >
+        <span className="offcanvas-header text-white">
           <h4 className="offcanvas-title" id="offcanvasExampleLabel">
             Admin Panel
           </h4>
-        </Link>
+        </span>
         <div className="offcanvas-body mt-5">
           <ul className="navbar-nav">
+            <li className="nav-item">
+              <NavLink className="nav-link admin-home-link" to="/admin">
+                <span className="mx-2">
+                  <i className="bi bi-house-fill text-dark"></i>
+                </span>
+                Home
+              </NavLink>
+            </li>
             <li className="nav-item">
               <NavLink className="nav-link" to="/admin/view-properties">
                 <span className="mx-2">
                   <i className="bi bi-buildings-fill text-dark"></i>
                 </span>
-                All Properties
+                Properties
               </NavLink>
             </li>
             <li className="nav-item">
               <span className="nav-link">
-                <i className="bi bi-box-arrow-right text-dark mx-2"></i>Logout
+                <i className="bi bi-person-fill text-dark mx-2"></i>Users
               </span>
             </li>
           </ul>

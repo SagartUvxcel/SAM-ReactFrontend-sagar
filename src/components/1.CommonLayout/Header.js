@@ -58,9 +58,6 @@ function Header() {
               </li>
               <li className="nav-item ps-lg-2">
                 <Link
-                  onClick={() => {
-                    localStorage.clear();
-                  }}
                   style={{ cursor: "pointer" }}
                   className="nav-link"
                   to="about"
@@ -100,6 +97,11 @@ function Header() {
                     <span className="nav-link">
                       Welcome, {localStorage.getItem("user")}
                     </span>
+                  </li>
+                  <li className="nav-item ps-lg-2">
+                    <NavLink to="/admin" className="nav-link">
+                      Administration
+                    </NavLink>
                   </li>
                   <li className="nav-item ps-lg-2">
                     <span

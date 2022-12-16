@@ -19,7 +19,6 @@ import PageNotFound from "./components/PageNotFound";
 import AdminHomePage from "./Admin/AdminHomePage";
 import ViewAllProperties from "./Admin/ViewAllProperties";
 import ViewEditProperty from "./Admin/ViewEditProperty";
-import AdminLogin from "./Admin/AdminLogin";
 
 function App() {
   return (
@@ -28,7 +27,6 @@ function App() {
       <ScrollToTop>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/search" element={<Home />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/property" element={<ViewPropertyDetails />} />
           <Route
@@ -88,8 +86,7 @@ function App() {
             }
           />
           {/* Admin */}
-          <Route path="/admin/*" element={<AdminLogin />} />
-          <Route path="/admin/home" element={<AdminHomePage />} />
+          <Route path="/admin" element={<AdminHomePage />} />
           <Route
             path="/admin/view-properties"
             element={<ViewAllProperties />}
