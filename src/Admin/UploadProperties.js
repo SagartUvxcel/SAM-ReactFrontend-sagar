@@ -5,6 +5,8 @@ import Papa from "papaparse";
 const UploadProperties = () => {
   const [file, setFile] = useState("");
   const [data, setData] = useState([]);
+  const [tableHeadings, setTableHeadings] = useState([]);
+
   const fileUpload = (e) => {
     if (e.target.files.length) {
       const inputFile = e.target.files[0];
@@ -22,7 +24,7 @@ const UploadProperties = () => {
     reader.onload = async ({ target }) => {
       const csv = Papa.parse(target.result, { header: true });
       const parsedData = csv.data;
-      console.log(parsedData);
+      setTableHeadings(Object.keys(parsedData[0]));
       setData(parsedData);
     };
     reader.readAsText(file);
@@ -46,6 +48,30 @@ const UploadProperties = () => {
                     id="formFile"
                   />
                   <button onClick={parseFileData}>See</button>
+                </div>
+              </div>
+              <div className="col-xl-12 my-5">
+                <div className="csv-data-table">
+                  <table className="table table-striped table-bordered table-dark">
+                    <thead>
+                      <tr>
+                        {tableHeadings.map((heading, Index) => {
+                          return <th key={Index}>{heading}</th>;
+                        })}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {data.map((i, Index) => {
+                        return (
+                          <tr key={Index}>
+                            {tableHeadings.map((heading, Index) => {
+                              return <td key={Index}>{i[heading]}</td>;
+                            })}
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>

@@ -639,6 +639,11 @@ input[type="number"] {
   top: 10px;
 }
 
+.csv-data-table {
+  height: 600px;
+  overflow-y: scroll;
+}
+
 /* Media Queries */
 
 @media (min-width: 768px) {
@@ -742,6 +747,12 @@ input[type="number"] {
 @media (min-width: 1300px) {
   .page-not-found-wrapper {
     padding: 200px 0 0 0;
+  }
+}
+
+@media screen and (max-width: 1280px) {
+  .csv-data-table {
+    overflow: scroll !important;
   }
 }
 
