@@ -55,6 +55,18 @@ const UploadProperties = () => {
                     type="file"
                     id="formFile"
                   />
+
+                  <div className="mt-2">
+                    <small className="text-muted">
+                      Refer to the csv file example below.
+                    </small>
+                    <br />
+                    <img
+                      src="/csv_img.png"
+                      className="img-fluid border mt-2"
+                      alt="hint-img"
+                    />
+                  </div>
                 </div>
               </div>
               <div className={`col-xl-12 my-5 ${tableDisplayClass}`}>
