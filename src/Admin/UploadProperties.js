@@ -44,7 +44,7 @@ const UploadProperties = () => {
         <div className="col-xl-10 col-md-9 wrapper">
           <div className="container-fluid">
             <div className="row justify-content-center">
-              <div className="col-xl-6 shadow p-xl-4">
+              <div className="col-xl-7 col-md-8 shadow p-md-4 mb-5">
                 <div className="">
                   {/* <label for="formFile" className="form-label h3 mb-3">
                     Upload File
@@ -70,7 +70,7 @@ const UploadProperties = () => {
                   </div>
                 </div>
               </div>
-              <div className={`col-xl-12 my-5 ${tableDisplayClass}`}>
+              <div className={`col-xl-12 mb-5 ${tableDisplayClass}`}>
                 <div className="csv-data-table">
                   <table className="table table-striped table-bordered table-dark">
                     <thead>
