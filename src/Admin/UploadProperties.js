@@ -6,9 +6,10 @@ const UploadProperties = () => {
   const [allUseStates, setAllUseStates] = useState({
     data: [],
     tableHeadings: [],
+    tableDisplayClass: "d-none",
   });
 
-  const { data, tableHeadings } = allUseStates;
+  const { data, tableHeadings, tableDisplayClass } = allUseStates;
 
   const fileUpload = (e) => {
     if (e.target.files.length) {
@@ -26,6 +27,7 @@ const UploadProperties = () => {
           ...allUseStates,
           tableHeadings: Object.keys(parsedData[0]),
           data: parsedData,
+          tableDisplayClass: "",
         });
       };
       reader.readAsText(inputFile);
@@ -52,7 +54,7 @@ const UploadProperties = () => {
                   />
                 </div>
               </div>
-              <div className="col-xl-12 my-5">
+              <div className={`col-xl-12 my-5 ${tableDisplayClass}`}>
                 <div className="csv-data-table">
                   <table className="table table-striped table-bordered table-dark">
                     <thead>
@@ -77,7 +79,17 @@ const UploadProperties = () => {
                 </div>
                 <div className="text-end mt-3">
                   <button className="btn btn-success me-2">Save</button>
-                  <button className="btn btn-secondary">Cancel</button>
+                  <button
+                    onClick={() => {
+                      setAllUseStates({
+                        ...allUseStates,
+                        tableDisplayClass: "d-none",
+                      });
+                    }}
+                    className="btn btn-secondary"
+                  >
+                    Cancel
+                  </button>
                 </div>
               </div>
             </div>
