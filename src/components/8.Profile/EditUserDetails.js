@@ -50,15 +50,6 @@ const EditUserDetails = () => {
 
   const cancelEditing = () => {
     window.location.reload();
-    // setAllStates({
-    //   ...allStates,
-    //   isReadOnly: true,
-    //   isDisabled: false,
-    //   editClassName: "editable-values",
-    //   cancelUpdateBtnClassName: "d-none",
-    //   defaultStateClassName: "",
-    //   selectStateClassName: "d-none",
-    // });
   };
 
   const updateDetails = (e) => {
@@ -90,96 +81,43 @@ const EditUserDetails = () => {
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
                         <label htmlFor="firstName">First Name</label>
-                        <input
-                          name="first_name"
-                          type="text"
-                          className={`form-control ${editClassName}`}
-                          id="firstName"
-                          defaultValue={firstName}
-                          readOnly={isReadOnly}
-                        />
+                        <p>{firstName}</p>
                       </div>
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
                         <label htmlFor="middleName">Middle Name</label>
-                        <input
-                          name="middle_name"
-                          type="text"
-                          className={`form-control ${editClassName}`}
-                          id="middleName"
-                          defaultValue={middleName}
-                          readOnly={isReadOnly}
-                        />
+                        <p>{middleName}</p>
                       </div>
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
                         <label htmlFor="lastName">Last Name</label>
-                        <input
-                          name="last_name"
-                          type="text"
-                          className={`form-control ${editClassName}`}
-                          id="lastName"
-                          defaultValue={lastName}
-                          readOnly={isReadOnly}
-                        />
+                        <p>{lastName}</p>
                       </div>
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
                         <label htmlFor="eMail">Email</label>
-                        <input
-                          name="email"
-                          type="email"
-                          className={`form-control ${editClassName}`}
-                          id="eMail"
-                          defaultValue={email}
-                          disabled={isDisabled}
-                          readOnly
-                        />
+                        <p>{email}</p>
                       </div>
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
                         <label htmlFor="phone">Phone</label>
-                        <input
-                          name="mobile_number"
-                          type="number"
-                          className={`form-control ${editClassName}`}
-                          id="phone"
-                          defaultValue={phone}
-                          disabled={isDisabled}
-                          readOnly
-                        />
+                        <p>{phone}</p>
                       </div>
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
                         <label htmlFor="pan">PAN Number</label>
-                        <input
-                          type="text"
-                          name="pan_number"
-                          className={`form-control ${editClassName}`}
-                          id="pan"
-                          defaultValue={pan}
-                          disabled={isDisabled}
-                          readOnly
-                        />
+                        <p>{pan}</p>
                       </div>
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
                         <label htmlFor="aadhaar">Aadhaar Number</label>
-                        <input
-                          name="aadhar_number"
-                          type="number"
-                          className={`form-control ${editClassName}`}
-                          id="aadhaar"
-                          defaultValue={aadhaar}
-                          disabled={isDisabled}
-                          readOnly
-                        />
+                        <p>{aadhaar}</p>
                       </div>
                     </div>
                   </div>
