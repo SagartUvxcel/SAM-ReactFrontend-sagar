@@ -36,7 +36,7 @@ const EditUserDetails = () => {
     zip,
   } = userDetails;
 
-  const [allStates, setAllStates] = useState({
+  const [allUseStates, setAllUseStates] = useState({
     isReadOnly: true,
     isDisabled: false,
     editClassName: "editable-values",
@@ -52,11 +52,11 @@ const EditUserDetails = () => {
     cancelUpdateBtnClassName,
     defaultStateClassName,
     selectStateClassName,
-  } = allStates;
+  } = allUseStates;
 
   const editDetails = () => {
-    setAllStates({
-      ...allStates,
+    setAllUseStates({
+      ...allUseStates,
       isReadOnly: false,
       isDisabled: true,
       editClassName: "",
@@ -67,6 +67,15 @@ const EditUserDetails = () => {
   };
 
   const cancelEditing = () => {
+    setAllUseStates({
+      ...allUseStates,
+      isReadOnly: true,
+      isDisabled: false,
+      editClassName: "editable-values",
+      cancelUpdateBtnClassName: "d-none",
+      defaultStateClassName: "",
+      selectStateClassName: "d-none",
+    });
     let samp = document.querySelectorAll("input");
     for (let i of samp) {
       document.getElementById(i.name).value = userDetails[i.name];
