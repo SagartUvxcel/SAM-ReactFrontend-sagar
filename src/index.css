@@ -18,6 +18,11 @@ code {
     rgba(2, 48, 251) 0%,
     rgb(0, 191, 255) 100%
   );
+  --bg-gradient-orange: linear-gradient(
+    0deg,
+    rgb(251, 97, 2) 0%,
+    rgb(255, 174, 0) 100%
+  );
   --navbar-bg: linear-gradient(0deg, rgb(2, 77, 251) 0%, rgb(0, 157, 255) 100%);
 }
 
@@ -647,6 +652,10 @@ input[type="number"] {
 .admin-dashboard-count {
   font-size: 3.8rem;
   font-weight: bold;
+  color: white;
+}
+
+.admin-top-cards:hover .admin-dashboard-count {
   color: orange;
 }
 
@@ -661,17 +670,18 @@ input[type="number"] {
   align-items: center;
   text-decoration: none;
   transition: 0.3s ease-in-out;
-  background: var(--bg-gradient-blue);
+  background: var(--bg-gradient-orange);
 }
 
 .admin-top-cards:hover {
   transition: 0.3s ease-in-out;
   background: white;
-  border-color: blue;
+  border-color: orange;
+  transform: scale(1.08);
 }
 
 .admin-top-cards:hover .blue-on-hover {
-  color: blue !important;
+  color: rgba(0, 0, 255, 0.75) !important;
 }
 
 /* Media Queries */

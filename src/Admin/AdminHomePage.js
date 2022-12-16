@@ -20,7 +20,7 @@ const AdminHomePage = () => {
                   </span>
                   <div>
                     <span className="admin-dashboard-count">180</span>
-                    <h5 className="text-white text-end blue-on-hover">
+                    <h5 className="text-white text-end blue-on-hover fw-bold">
                       Properties
                     </h5>
                   </div>
@@ -36,7 +36,9 @@ const AdminHomePage = () => {
                   </span>
                   <div>
                     <span className="admin-dashboard-count">110</span>
-                    <h5 className="text-white text-end blue-on-hover">Users</h5>
+                    <h5 className="text-white text-end blue-on-hover fw-bold">
+                      Users
+                    </h5>
                   </div>
                 </NavLink>
               </div>
@@ -47,7 +49,7 @@ const AdminHomePage = () => {
                   </span>
                   <div>
                     <span className="admin-dashboard-count">180</span>
-                    <h5 className="text-white text-end blue-on-hover">
+                    <h5 className="text-white text-end blue-on-hover fw-bold">
                       Properties
                     </h5>
                   </div>
@@ -61,7 +63,7 @@ const AdminHomePage = () => {
                   </span>
                   <div>
                     <span className="admin-dashboard-count">180</span>
-                    <h5 className="text-white text-end blue-on-hover">
+                    <h5 className="text-white text-end blue-on-hover fw-bold">
                       Properties
                     </h5>
                   </div>
