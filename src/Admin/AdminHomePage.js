@@ -1,4 +1,5 @@
 import React from "react";
+import { NavLink } from "react-router-dom";
 import AdminSideBar from "./AdminSideBar";
 
 const AdminHomePage = () => {
@@ -10,47 +11,58 @@ const AdminHomePage = () => {
           <div className="container-fluid wrapper admin-home-wrapper">
             <div className="row">
               <div className="col-xl-3">
-                <div className="card justify-content-center d-flex flex-row align-items-center py-3">
+                <NavLink
+                  to="/admin/view-properties"
+                  className="card py-3  admin-top-cards"
+                >
                   <span className="me-5">
-                    <i className="bi bi-buildings-fill text-primary fs-1"></i>
+                    <i className="bi bi-buildings-fill text-primary fs-1 white-on-hover"></i>
                   </span>
                   <div>
                     <span className="admin-dashboard-count">180</span>
-                    <h5 className="text-primary text-end">Properties</h5>
+                    <h5 className="text-primary text-end white-on-hover">
+                      Properties
+                    </h5>
                   </div>
-                </div>
+                </NavLink>
               </div>
               <div className="col-xl-3">
-                <div className="card justify-content-center d-flex flex-row align-items-center py-3">
+                <div className="card py-3 admin-top-cards">
                   <span className="me-5">
-                    <i className="bi bi-person-fill text-primary fs-1"></i>
+                    <i className="bi bi-person-fill text-primary fs-1 white-on-hover"></i>
                   </span>
                   <div>
                     <span className="admin-dashboard-count">110</span>
-                    <h5 className="text-primary text-end">Users</h5>
+                    <h5 className="text-primary text-end white-on-hover">
+                      Users
+                    </h5>
                   </div>
                 </div>
               </div>
               <div className="col-xl-3">
-                <div className="card justify-content-center d-flex flex-row align-items-center py-3">
+                <div className="card py-3  admin-top-cards">
                   <span className="me-5">
-                    <i className="bi bi-buildings-fill text-primary fs-1"></i>
+                    <i className="bi bi-buildings-fill text-primary fs-1 white-on-hover"></i>
                   </span>
                   <div>
                     <span className="admin-dashboard-count">180</span>
-                    <h5 className="text-primary text-end">Properties</h5>
+                    <h5 className="text-primary text-end white-on-hover">
+                      Properties
+                    </h5>
                   </div>
                 </div>
               </div>
 
               <div className="col-xl-3">
-                <div className="card justify-content-center d-flex flex-row align-items-center py-3">
+                <div className="card py-3  admin-top-cards">
                   <span className="me-5">
-                    <i className="bi bi-buildings-fill text-primary fs-1"></i>
+                    <i className="bi bi-buildings-fill text-primary fs-1 white-on-hover"></i>
                   </span>
                   <div>
                     <span className="admin-dashboard-count">180</span>
-                    <h5 className="text-primary text-end">Properties</h5>
+                    <h5 className="text-primary text-end white-on-hover">
+                      Properties
+                    </h5>
                   </div>
                 </div>
               </div>

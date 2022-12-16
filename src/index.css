@@ -654,6 +654,22 @@ input[type="number"] {
   font-size: 4.5rem !important;
 }
 
+.admin-top-cards {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+}
+
+.admin-top-cards:hover {
+  background: var(--bg-gradient-blue);
+}
+
+.admin-top-cards:hover .white-on-hover {
+  color: white !important;
+}
+
 /* Media Queries */
 
 @media (min-width: 768px) {
