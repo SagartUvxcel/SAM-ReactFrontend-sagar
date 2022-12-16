@@ -3,7 +3,6 @@ import AdminSideBar from "./AdminSideBar";
 import Papa from "papaparse";
 
 const UploadProperties = () => {
-  const [file, setFile] = useState("");
   const [data, setData] = useState([]);
   const [tableHeadings, setTableHeadings] = useState([]);
 
@@ -15,20 +14,17 @@ const UploadProperties = () => {
       //   setError("Please input a csv file");
       //   return;
       // }
-      setFile(inputFile);
+      const reader = new FileReader();
+      reader.onload = async ({ target }) => {
+        const csv = Papa.parse(target.result, { header: true });
+        const parsedData = csv.data;
+        setTableHeadings(Object.keys(parsedData[0]));
+        setData(parsedData);
+      };
+      reader.readAsText(inputFile);
     }
   };
 
-  const parseFileData = () => {
-    const reader = new FileReader();
-    reader.onload = async ({ target }) => {
-      const csv = Papa.parse(target.result, { header: true });
-      const parsedData = csv.data;
-      setTableHeadings(Object.keys(parsedData[0]));
-      setData(parsedData);
-    };
-    reader.readAsText(file);
-  };
   return (
     <div className="container-fluid">
       <div className="row vh-100">
@@ -47,7 +43,6 @@ const UploadProperties = () => {
                     type="file"
                     id="formFile"
                   />
-                  <button onClick={parseFileData}>See</button>
                 </div>
               </div>
               <div className="col-xl-12 my-5">
