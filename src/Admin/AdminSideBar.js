@@ -17,14 +17,27 @@ const AdminSideBar = () => {
             Admin Panel
           </h4>
         </span>
-        <div className="offcanvas-body mt-5">
+
+        <div className="offcanvas-body mt-4">
           <ul className="navbar-nav">
+            <li className="nav-item">
+              <NavLink
+                className="text-white nav-link text-decoration-none"
+                to="/"
+              >
+                <span className="mx-2">
+                  <i className="bi bi-arrow-bar-left text-dark"></i>
+                </span>
+                Sam Tool
+              </NavLink>
+            </li>
+            <hr />
             <li className="nav-item">
               <NavLink className="nav-link admin-home-link" to="/admin">
                 <span className="mx-2">
                   <i className="bi bi-house-fill text-dark"></i>
                 </span>
-                Home
+                Dashboard
               </NavLink>
             </li>
             <li className="nav-item">
