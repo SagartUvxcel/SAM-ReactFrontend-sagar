@@ -16,11 +16,10 @@ const AdminHomePage = () => {
                   </span>
                   <div>
                     <span className="admin-dashboard-count">180</span>
-                    <h5 className="text-primary">Properties</h5>
+                    <h5 className="text-primary text-end">Properties</h5>
                   </div>
                 </div>
               </div>
-
               <div className="col-xl-3">
                 <div className="card justify-content-center d-flex flex-row align-items-center py-3">
                   <span className="me-5">
@@ -28,7 +27,18 @@ const AdminHomePage = () => {
                   </span>
                   <div>
                     <span className="admin-dashboard-count">110</span>
-                    <h5 className="text-primary">Users</h5>
+                    <h5 className="text-primary text-end">Users</h5>
+                  </div>
+                </div>
+              </div>
+              <div className="col-xl-3">
+                <div className="card justify-content-center d-flex flex-row align-items-center py-3">
+                  <span className="me-5">
+                    <i className="bi bi-buildings-fill text-primary fs-1"></i>
+                  </span>
+                  <div>
+                    <span className="admin-dashboard-count">180</span>
+                    <h5 className="text-primary text-end">Properties</h5>
                   </div>
                 </div>
               </div>
@@ -40,19 +50,7 @@ const AdminHomePage = () => {
                   </span>
                   <div>
                     <span className="admin-dashboard-count">180</span>
-                    <h5 className="text-primary">Properties</h5>
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-xl-3">
-                <div className="card justify-content-center d-flex flex-row align-items-center py-3">
-                  <span className="me-5">
-                    <i className="bi bi-buildings-fill text-primary fs-1"></i>
-                  </span>
-                  <div>
-                    <span className="admin-dashboard-count">180</span>
-                    <h5 className="text-primary">Properties</h5>
+                    <h5 className="text-primary text-end">Properties</h5>
                   </div>
                 </div>
               </div>
