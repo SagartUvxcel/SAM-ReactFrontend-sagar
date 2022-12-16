@@ -90,7 +90,7 @@ const LoginMainPage = () => {
             toast.success("Logged in Successfully !");
           }, 1000);
           setTimeout(() => {
-            goTo("/profile/edit-individual");
+            goTo("/profile/edit-details");
           }, 2500);
         } else {
           setAlertDetails({
