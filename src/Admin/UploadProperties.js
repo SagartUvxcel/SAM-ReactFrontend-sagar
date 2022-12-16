@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import AdminSideBar from "./AdminSideBar";
 import Papa from "papaparse";
+import { useRef } from "react";
 
 const UploadProperties = () => {
   const [allUseStates, setAllUseStates] = useState({
@@ -9,6 +10,7 @@ const UploadProperties = () => {
     tableDisplayClass: "d-none",
   });
 
+  const fileRef = useRef();
   const { data, tableHeadings, tableDisplayClass } = allUseStates;
 
   const fileUpload = (e) => {
@@ -47,6 +49,7 @@ const UploadProperties = () => {
                     Upload File
                   </label> */}
                   <input
+                    ref={fileRef}
                     onChange={fileUpload}
                     className="form-control"
                     type="file"
@@ -80,11 +83,12 @@ const UploadProperties = () => {
                 <div className="text-end mt-3">
                   <button className="btn btn-success me-2">Save</button>
                   <button
-                    onClick={() => {
+                    onClick={(e) => {
                       setAllUseStates({
                         ...allUseStates,
                         tableDisplayClass: "d-none",
                       });
+                      fileRef.current.value = "";
                     }}
                     className="btn btn-secondary"
                   >
