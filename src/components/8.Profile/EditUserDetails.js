@@ -4,19 +4,37 @@ import { toast } from "react-toastify";
 import Layout from "../1.CommonLayout/Layout";
 
 const EditUserDetails = () => {
-  const firstName = "Arvind";
-  const middleName = "Rahul";
-  const lastName = "Sawant";
-  const email = "arvinds@uvxcel.com";
-  const phone = "9897868789";
-  const pan = "DCOUU5465C";
-  const aadhaar = "898767567564";
-  const street = "Katraj Kondhawa Road, Katraj";
-  const city = "Pune";
-  const state = "Maharashtra";
-  const zip = "411015";
+  const [userDetails, setUserDetails] = useState({
+    firstName: "Arvind",
+    middleName: "Rahul",
+    lastName: "Sawant",
+    email: "arvinds@uvxcel.com",
+    phone: "9897868789",
+    pan: "DCOUU5465C",
+    aadhaar: "898767567564",
+    address: "545, WXYZ Apartments",
+    locality: "Kondhawa Road, Katraj",
+    city: "Pune",
+    state: "Maharashtra",
+    zip: "411015",
+  });
 
   const goTo = useNavigate();
+
+  const {
+    firstName,
+    middleName,
+    lastName,
+    email,
+    phone,
+    pan,
+    aadhaar,
+    address,
+    locality,
+    city,
+    state,
+    zip,
+  } = userDetails;
 
   const [allStates, setAllStates] = useState({
     isReadOnly: true,
@@ -49,7 +67,10 @@ const EditUserDetails = () => {
   };
 
   const cancelEditing = () => {
-    window.location.reload();
+    let samp = document.querySelectorAll("input");
+    for (let i of samp) {
+      document.getElementById(i.name).value = userDetails[i.name];
+    }
   };
 
   const updateDetails = (e) => {
@@ -127,47 +148,43 @@ const EditUserDetails = () => {
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
-                        <label htmlFor="Street">Street/Locality</label>
+                        <label htmlFor="address">Block / House No.</label>
                         <input
                           name="address"
                           type="text"
                           className={`form-control ${editClassName}`}
-                          id="Street"
-                          defaultValue={street}
+                          id="address"
+                          defaultValue={address}
                           readOnly={isReadOnly}
                         />
                       </div>
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
-                        <label htmlFor="ciTy">City</label>
+                        <label htmlFor="locality">Block / House No.</label>
                         <input
-                          name="city"
+                          name="locality"
                           type="text"
                           className={`form-control ${editClassName}`}
-                          id="ciTy"
-                          defaultValue={city}
+                          id="locality"
+                          defaultValue={locality}
                           readOnly={isReadOnly}
                         />
                       </div>
                     </div>
+
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div
                         className={`form-group mb-3 ${defaultStateClassName}`}
                       >
-                        <label htmlFor="sTate1">State</label>
-                        <input
-                          className={`form-control ${editClassName}`}
-                          id="sTate1"
-                          defaultValue={state}
-                          readOnly
-                        />
+                        <label>State</label>
+                        <p>{state}</p>
                       </div>
                       <div
                         className={`form-group mb-3 ${selectStateClassName}`}
                       >
-                        <label htmlFor="sTate">State</label>
-                        <select name="state" id="sTate" className="form-select">
+                        <label htmlFor="state">State</label>
+                        <select name="state" id="state" className="form-select">
                           <option defaultValue={state}>{state}</option>
                           <option value="Goa">Goa</option>
                           <option value="Punjab">Punjab</option>
@@ -178,13 +195,26 @@ const EditUserDetails = () => {
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
-                        <label htmlFor="zIp">Zip Code</label>
+                        <label htmlFor="zip">Zip Code</label>
                         <input
                           name="zip"
                           type="number"
                           className={`form-control ${editClassName}`}
-                          id="zIp"
+                          id="zip"
                           defaultValue={zip}
+                          readOnly={isReadOnly}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-xl-4 col-lg-4 col-md-6  col-12">
+                      <div className="form-group mb-3">
+                        <label htmlFor="city">City</label>
+                        <input
+                          name="city"
+                          type="text"
+                          className={`form-control ${editClassName}`}
+                          id="city"
+                          defaultValue={city}
                           readOnly={isReadOnly}
                         />
                       </div>
