@@ -144,8 +144,7 @@ input[type="number"] {
 }
 
 /* Navbar */
-.navbar,
-.admin-sidebar {
+.navbar {
   background: var(--navbar-bg);
   transition: 0.3s ease-in-out;
 }
@@ -162,10 +161,6 @@ input[type="number"] {
 .nav-link.active,
 .nav-link:hover {
   color: orange !important;
-}
-
-.admin-sidebar .nav-link {
-  color: white;
 }
 
 .navbar .navbar-toggler {
@@ -637,6 +632,15 @@ input[type="number"] {
 }
 
 /* Admin */
+
+.admin-sidebar .nav-link {
+  color: white;
+}
+
+.admin-sidebar {
+  background: #333649;
+  transition: 0.3s ease-in-out;
+}
 
 /* Edit Property */
 .admin-property-edit-icon {
