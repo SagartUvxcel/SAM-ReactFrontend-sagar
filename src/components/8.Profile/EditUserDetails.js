@@ -41,7 +41,7 @@ const EditUserDetails = () => {
     isDisabled: false,
     editClassName: "editable-values",
     cancelUpdateBtnClassName: "d-none",
-    defaultStateClassName: "",
+    lableVisibility: "",
     selectStateClassName: "d-none",
   });
 
@@ -50,7 +50,7 @@ const EditUserDetails = () => {
     isDisabled,
     editClassName,
     cancelUpdateBtnClassName,
-    defaultStateClassName,
+    lableVisibility,
     selectStateClassName,
   } = allUseStates;
 
@@ -61,7 +61,7 @@ const EditUserDetails = () => {
       isDisabled: true,
       editClassName: "",
       cancelUpdateBtnClassName: "",
-      defaultStateClassName: "d-none",
+      lableVisibility: "d-none",
       selectStateClassName: "",
     });
   };
@@ -73,7 +73,7 @@ const EditUserDetails = () => {
       isDisabled: false,
       editClassName: "editable-values",
       cancelUpdateBtnClassName: "d-none",
-      defaultStateClassName: "",
+      lableVisibility: "",
       selectStateClassName: "d-none",
     });
     let samp = document.querySelectorAll("input");
@@ -183,9 +183,7 @@ const EditUserDetails = () => {
                     </div>
 
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
-                      <div
-                        className={`form-group mb-3 ${defaultStateClassName}`}
-                      >
+                      <div className={`form-group mb-3 ${lableVisibility}`}>
                         <label>State</label>
                         <p>{state}</p>
                       </div>
@@ -202,6 +200,13 @@ const EditUserDetails = () => {
                         </select>
                       </div>
                     </div>
+
+                    <div className="col-xl-4 col-lg-4 col-md-6  col-12">
+                      <div className="form-group mb-3">
+                        <label>City</label>
+                        <p className={`${lableVisibility}`}>{city}</p>
+                      </div>
+                    </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
                         <label htmlFor="zip">Zip Code</label>
@@ -211,19 +216,6 @@ const EditUserDetails = () => {
                           className={`form-control ${editClassName}`}
                           id="zip"
                           defaultValue={zip}
-                          readOnly={isReadOnly}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-xl-4 col-lg-4 col-md-6  col-12">
-                      <div className="form-group mb-3">
-                        <label htmlFor="city">City</label>
-                        <input
-                          name="city"
-                          type="text"
-                          className={`form-control ${editClassName}`}
-                          id="city"
-                          defaultValue={city}
                           readOnly={isReadOnly}
                         />
                       </div>
