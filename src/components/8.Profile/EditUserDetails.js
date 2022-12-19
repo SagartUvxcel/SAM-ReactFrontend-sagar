@@ -45,6 +45,7 @@ const EditUserDetails = () => {
     lableVisibility: "",
     selectStateClassName: "d-none",
     statesFromApi: [],
+    state_id: "",
   });
 
   const {
@@ -54,6 +55,7 @@ const EditUserDetails = () => {
     lableVisibility,
     selectStateClassName,
     statesFromApi,
+    state_id,
   } = allUseStates;
 
   const setHeaderAndUrl = () => {
@@ -70,6 +72,26 @@ const EditUserDetails = () => {
       headers: headers,
     });
     setAllUseStates({ ...allUseStates, statesFromApi: allStates.data });
+  };
+
+  const onInputChange = async (e) => {
+    const { name, value } = e.target;
+    const [headers, url] = setHeaderAndUrl();
+    // If input is state then post selected state id to api for getting cities based on selected state.
+    if (name === "state") {
+      // Store state id ( if available ) into  useState.
+      if (value) {
+        setAllUseStates({ ...allUseStates, state_id: parseInt(value) });
+      } else {
+        delete allUseStates.state_id;
+      }
+      const cityByState = await axios.post(
+        `${url}/by-city`,
+        { state_id: parseInt(value) },
+        { headers: headers }
+      );
+      console.log(cityByState.data);
+    }
   };
 
   const editDetails = () => {
@@ -213,17 +235,18 @@ const EditUserDetails = () => {
                           name="state"
                           id="state"
                           className={`form-select ${selectStateClassName}`}
+                          onChange={onInputChange}
                         >
                           {statesFromApi
                             ? statesFromApi.map((i, Index) => {
-                                let selectedState = document.getElementById(
-                                  i.state_name
-                                );
-                                if (selectedState) {
-                                  if (i.state_name === state) {
-                                    selectedState.selected = true;
-                                  }
-                                }
+                                // let selectedState = document.getElementById(
+                                //   i.state_name
+                                // );
+                                // if (selectedState) {
+                                //   if (i.state_name === state) {
+                                //     selectedState.selected = true;
+                                //   }
+                                // }
                                 return (
                                   <option
                                     id={i.state_name}
