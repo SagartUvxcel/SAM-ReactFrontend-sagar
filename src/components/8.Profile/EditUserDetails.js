@@ -206,15 +206,18 @@ const EditUserDetails = () => {
                     </div>
 
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
-                      <div className={`form-group mb-3 ${lableVisibility}`}>
+                      {/* <div className={`form-group mb-3 ${lableVisibility}`}>
                         <label>State</label>
                         <p>{state}</p>
-                      </div>
-                      <div
-                        className={`form-group mb-3 ${selectStateClassName}`}
-                      >
+                      </div> */}
+                      <div className="form-group mb-3">
                         <label htmlFor="state">State</label>
-                        <select name="state" id="state" className="form-select">
+                        <p className={`${lableVisibility}`}>{state}</p>
+                        <select
+                          name="state"
+                          id="state"
+                          className={`form-select ${selectStateClassName}`}
+                        >
                           {statesFromApi
                             ? statesFromApi.map((i, Index) => {
                                 let selectedState = document.getElementById(
