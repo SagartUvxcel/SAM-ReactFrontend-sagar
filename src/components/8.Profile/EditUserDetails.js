@@ -46,7 +46,6 @@ const EditUserDetails = () => {
     selectStateClassName: "d-none",
     statesFromApi: [],
     citiesFromApi: [],
-    state_id: "",
     cityVisiblity: "d-none",
   });
 
@@ -57,7 +56,6 @@ const EditUserDetails = () => {
     lableVisibility,
     selectStateClassName,
     statesFromApi,
-    state_id,
     citiesFromApi,
     cityVisiblity,
   } = allUseStates;
@@ -84,22 +82,16 @@ const EditUserDetails = () => {
     // If input is state then post selected state id to api for getting cities based on selected state.
     if (name === "state") {
       // Store state id ( if available ) into  useState.
-      if (value) {
-        setAllUseStates({
-          ...allUseStates,
-          state_id: parseInt(value),
-          cityVisiblity: "",
-        });
-      } else {
-        // setAllUseStates({ ...allUseStates, cityVisiblity: "d-none" });
-        delete allUseStates.state_id;
-      }
       const cityByState = await axios.post(
         `${url}/by-city`,
         { state_id: parseInt(value) },
         { headers: headers }
       );
-      setAllUseStates({ ...allUseStates, citiesFromApi: cityByState.data });
+      setAllUseStates({
+        ...allUseStates,
+        citiesFromApi: cityByState.data,
+        cityVisiblity: "",
+      });
     }
   };
 
