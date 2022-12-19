@@ -1,11 +1,11 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Layout from "../1.CommonLayout/Layout";
 
 const EditUserDetails = () => {
-  const [userDetails, setUserDetails] = useState({
+  const userDetails = {
     firstName: "Arvind",
     middleName: "Rahul",
     lastName: "Sawant",
@@ -18,7 +18,7 @@ const EditUserDetails = () => {
     city: "Pune",
     state: "Maharashtra",
     zip: "411015",
-  });
+  };
 
   const goTo = useNavigate();
 
@@ -44,15 +44,16 @@ const EditUserDetails = () => {
     cancelUpdateBtnClassName: "d-none",
     lableVisibility: "",
     selectStateClassName: "d-none",
+    statesFromApi: [],
   });
 
   const {
     isReadOnly,
-    isDisabled,
     editClassName,
     cancelUpdateBtnClassName,
     lableVisibility,
     selectStateClassName,
+    statesFromApi,
   } = allUseStates;
 
   const setHeaderAndUrl = () => {
@@ -62,12 +63,13 @@ const EditUserDetails = () => {
     return [headers, url];
   };
 
-  const getSearchDetails = async () => {
+  const getStatesFromApi = async () => {
     const [headers, url] = setHeaderAndUrl();
     // Get all states from api.
     const allStates = await axios.get(`${url}/by-state`, {
       headers: headers,
     });
+    setAllUseStates({ ...allUseStates, statesFromApi: allStates.data });
   };
 
   const editDetails = () => {
@@ -105,6 +107,11 @@ const EditUserDetails = () => {
       goTo("/profile");
     }, 3000);
   };
+
+  useEffect(() => {
+    getStatesFromApi();
+    // eslint-disable-next-line
+  }, []);
 
   return (
     <Layout>
@@ -208,11 +215,15 @@ const EditUserDetails = () => {
                       >
                         <label htmlFor="state">State</label>
                         <select name="state" id="state" className="form-select">
-                          <option defaultValue={state}>{state}</option>
-                          <option value="Goa">Goa</option>
-                          <option value="Punjab">Punjab</option>
-                          <option value="Karnataka">Karnataka</option>
-                          <option value="Gujrat">Gujrat</option>
+                          {statesFromApi
+                            ? statesFromApi.map((state, Index) => {
+                                return (
+                                  <option key={Index} value={state.state_id}>
+                                    {state.state_name}
+                                  </option>
+                                );
+                              })
+                            : ""}
                         </select>
                       </div>
                     </div>
