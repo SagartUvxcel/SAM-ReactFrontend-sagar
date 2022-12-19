@@ -45,6 +45,7 @@ const EditUserDetails = () => {
     lableVisibility: "",
     selectStateClassName: "d-none",
     statesFromApi: [],
+    citiesFromApi: [],
     state_id: "",
   });
 
@@ -56,6 +57,7 @@ const EditUserDetails = () => {
     selectStateClassName,
     statesFromApi,
     state_id,
+    citiesFromApi,
   } = allUseStates;
 
   const setHeaderAndUrl = () => {
@@ -90,7 +92,7 @@ const EditUserDetails = () => {
         { state_id: parseInt(value) },
         { headers: headers }
       );
-      console.log(cityByState.data);
+      setAllUseStates({ ...allUseStates, citiesFromApi: cityByState.data });
     }
   };
 
@@ -262,7 +264,7 @@ const EditUserDetails = () => {
                       </div>
                     </div>
 
-                    {/* <div className="col-xl-4 col-lg-4 col-md-6  col-12">
+                    <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
                         <label htmlFor="city">City</label>
                         <p className={`${lableVisibility}`}>{city}</p>
@@ -294,7 +296,7 @@ const EditUserDetails = () => {
                             : ""}
                         </select>
                       </div>
-                    </div> */}
+                    </div>
 
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
