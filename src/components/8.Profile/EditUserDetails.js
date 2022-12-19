@@ -39,7 +39,6 @@ const EditUserDetails = () => {
 
   const [allUseStates, setAllUseStates] = useState({
     isReadOnly: true,
-    isDisabled: false,
     editClassName: "editable-values",
     cancelUpdateBtnClassName: "d-none",
     lableVisibility: "",
@@ -81,7 +80,6 @@ const EditUserDetails = () => {
     const [headers, url] = setHeaderAndUrl();
     // If input is state then post selected state id to api for getting cities based on selected state.
     if (name === "state") {
-      // Store state id ( if available ) into  useState.
       const cityByState = await axios.post(
         `${url}/by-city`,
         { state_id: parseInt(value) },
@@ -99,7 +97,6 @@ const EditUserDetails = () => {
     setAllUseStates({
       ...allUseStates,
       isReadOnly: false,
-      isDisabled: true,
       editClassName: "",
       cancelUpdateBtnClassName: "",
       lableVisibility: "d-none",
@@ -111,12 +108,13 @@ const EditUserDetails = () => {
     setAllUseStates({
       ...allUseStates,
       isReadOnly: true,
-      isDisabled: false,
       editClassName: "editable-values",
       cancelUpdateBtnClassName: "d-none",
       lableVisibility: "",
       selectStateClassName: "d-none",
+      cityVisiblity: "d-none",
     });
+
     let samp = document.querySelectorAll("input");
     for (let i of samp) {
       document.getElementById(i.name).value = userDetails[i.name];
@@ -240,14 +238,6 @@ const EditUserDetails = () => {
                         >
                           {statesFromApi
                             ? statesFromApi.map((i, Index) => {
-                                // let selectedState = document.getElementById(
-                                //   i.state_name
-                                // );
-                                // if (selectedState) {
-                                //   if (i.state_name === state) {
-                                //     selectedState.selected = true;
-                                //   }
-                                // }
                                 return (
                                   <option
                                     id={i.state_name}
@@ -281,14 +271,6 @@ const EditUserDetails = () => {
                         >
                           {citiesFromApi
                             ? citiesFromApi.map((i, Index) => {
-                                let selectedCity = document.getElementById(
-                                  i.city_name
-                                );
-                                if (selectedCity) {
-                                  if (i.city_name === city) {
-                                    selectedCity.selected = true;
-                                  }
-                                }
                                 return (
                                   <option
                                     id={i.city_name}
