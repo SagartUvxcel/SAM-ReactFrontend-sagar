@@ -47,6 +47,7 @@ const EditUserDetails = () => {
     statesFromApi: [],
     citiesFromApi: [],
     state_id: "",
+    cityVisiblity: "d-none",
   });
 
   const {
@@ -58,6 +59,7 @@ const EditUserDetails = () => {
     statesFromApi,
     state_id,
     citiesFromApi,
+    cityVisiblity,
   } = allUseStates;
 
   const setHeaderAndUrl = () => {
@@ -83,8 +85,13 @@ const EditUserDetails = () => {
     if (name === "state") {
       // Store state id ( if available ) into  useState.
       if (value) {
-        setAllUseStates({ ...allUseStates, state_id: parseInt(value) });
+        setAllUseStates({
+          ...allUseStates,
+          state_id: parseInt(value),
+          cityVisiblity: "",
+        });
       } else {
+        // setAllUseStates({ ...allUseStates, cityVisiblity: "d-none" });
         delete allUseStates.state_id;
       }
       const cityByState = await axios.post(
@@ -264,14 +271,21 @@ const EditUserDetails = () => {
                       </div>
                     </div>
 
-                    <div className="col-xl-4 col-lg-4 col-md-6  col-12">
+                    <div className="col-xl-4 col-lg-4 col-md-6 col-12">
                       <div className="form-group mb-3">
-                        <label htmlFor="city">City</label>
-                        <p className={`${lableVisibility}`}>{city}</p>
+                        <div className={`${lableVisibility}`}>
+                          <label>City</label>
+                          <p>{city}</p>
+                        </div>
+
+                        <label htmlFor="city" className={`${cityVisiblity}`}>
+                          City
+                        </label>
+
                         <select
                           name="city"
                           id="city"
-                          className={`form-select ${selectStateClassName}`}
+                          className={`form-select ${cityVisiblity}`}
                         >
                           {citiesFromApi
                             ? citiesFromApi.map((i, Index) => {
