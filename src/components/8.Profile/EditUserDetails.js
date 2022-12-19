@@ -206,10 +206,6 @@ const EditUserDetails = () => {
                     </div>
 
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
-                      {/* <div className={`form-group mb-3 ${lableVisibility}`}>
-                        <label>State</label>
-                        <p>{state}</p>
-                      </div> */}
                       <div className="form-group mb-3">
                         <label htmlFor="state">State</label>
                         <p className={`${lableVisibility}`}>{state}</p>
@@ -243,12 +239,40 @@ const EditUserDetails = () => {
                       </div>
                     </div>
 
-                    <div className="col-xl-4 col-lg-4 col-md-6  col-12">
+                    {/* <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
-                        <label>City</label>
+                        <label htmlFor="city">City</label>
                         <p className={`${lableVisibility}`}>{city}</p>
+                        <select
+                          name="city"
+                          id="city"
+                          className={`form-select ${selectStateClassName}`}
+                        >
+                          {citiesFromApi
+                            ? citiesFromApi.map((i, Index) => {
+                                let selectedCity = document.getElementById(
+                                  i.city_name
+                                );
+                                if (selectedCity) {
+                                  if (i.city_name === city) {
+                                    selectedCity.selected = true;
+                                  }
+                                }
+                                return (
+                                  <option
+                                    id={i.city_name}
+                                    key={Index}
+                                    value={i.city_id}
+                                  >
+                                    {i.city_name}
+                                  </option>
+                                );
+                              })
+                            : ""}
+                        </select>
                       </div>
-                    </div>
+                    </div> */}
+
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
                         <label htmlFor="zip">Zip Code</label>
