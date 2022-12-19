@@ -216,10 +216,22 @@ const EditUserDetails = () => {
                         <label htmlFor="state">State</label>
                         <select name="state" id="state" className="form-select">
                           {statesFromApi
-                            ? statesFromApi.map((state, Index) => {
+                            ? statesFromApi.map((i, Index) => {
+                                let selectedState = document.getElementById(
+                                  i.state_name
+                                );
+                                if (selectedState) {
+                                  if (i.state_name === state) {
+                                    selectedState.selected = true;
+                                  }
+                                }
                                 return (
-                                  <option key={Index} value={state.state_id}>
-                                    {state.state_name}
+                                  <option
+                                    id={i.state_name}
+                                    key={Index}
+                                    value={i.state_id}
+                                  >
+                                    {i.state_name}
                                   </option>
                                 );
                               })
