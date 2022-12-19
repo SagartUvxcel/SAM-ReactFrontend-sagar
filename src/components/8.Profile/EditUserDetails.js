@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -53,6 +54,21 @@ const EditUserDetails = () => {
     lableVisibility,
     selectStateClassName,
   } = allUseStates;
+
+  const setHeaderAndUrl = () => {
+    const loginToken = localStorage.getItem("logintoken");
+    let headers = { Authorization: loginToken };
+    let url = `/sam/v1/property/auth`;
+    return [headers, url];
+  };
+
+  const getSearchDetails = async () => {
+    const [headers, url] = setHeaderAndUrl();
+    // Get all states from api.
+    const allStates = await axios.get(`${url}/by-state`, {
+      headers: headers,
+    });
+  };
 
   const editDetails = () => {
     setAllUseStates({
