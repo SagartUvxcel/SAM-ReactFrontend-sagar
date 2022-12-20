@@ -17,6 +17,7 @@ const EditUserDetails = () => {
     locality: "Kondhawa Road, Katraj",
     city: "Pune",
     state: "Maharashtra",
+    state_id: 1,
     zip: "411015",
   };
 
@@ -60,7 +61,7 @@ const EditUserDetails = () => {
     citiesFromApi: [],
     cityVisiblity: "d-none",
     cityIsDisabled: true,
-    state_id: "",
+    state_id: defaultValues.state_id,
   });
 
   const [validation, setValidation] = useState({
@@ -169,7 +170,7 @@ const EditUserDetails = () => {
       selectStateClassName: "d-none",
       cityVisiblity: "d-none",
       cityIsDisabled: true,
-      state_id: "",
+      state_id: defaultValues.state_id,
     });
 
     setValidation({
@@ -185,6 +186,9 @@ const EditUserDetails = () => {
 
   const updateDetails = (e) => {
     e.preventDefault();
+    if (zipCodeValidationColor) {
+      console.log(zipCodeValidationColor);
+    }
     // toast.success("Details Updated Successfully");
     // setTimeout(() => {
     //   goTo("/profile");
@@ -287,6 +291,7 @@ const EditUserDetails = () => {
                           id="address"
                           defaultValue={address}
                           readOnly={isReadOnly}
+                          required
                         />
                       </div>
                     </div>
@@ -302,6 +307,7 @@ const EditUserDetails = () => {
                           id="locality"
                           defaultValue={locality}
                           readOnly={isReadOnly}
+                          required
                         />
                       </div>
                     </div>
@@ -317,6 +323,7 @@ const EditUserDetails = () => {
                           id="state"
                           className={`form-select ${selectStateClassName}`}
                           onChange={onInputChange}
+                          required
                         >
                           {statesFromApi
                             ? statesFromApi.map((i, Index) => {
@@ -346,6 +353,7 @@ const EditUserDetails = () => {
                           id="city"
                           className={`form-select  ${cityVisiblity}`}
                           disabled={cityIsDisabled}
+                          required
                         >
                           {citiesFromApi
                             ? citiesFromApi.map((i, Index) => {
@@ -377,11 +385,12 @@ const EditUserDetails = () => {
                           id="zip"
                           defaultValue={zip}
                           readOnly={isReadOnly}
+                          required
                         />
                         <span
                           className={`pe-1 ${
                             zipCodeValidationMessage ? "" : "d-none"
-                          } text-${zipCodeValidationColor}`}
+                          } text-danger`}
                         >
                           {zipCodeValidationMessage}
                         </span>
