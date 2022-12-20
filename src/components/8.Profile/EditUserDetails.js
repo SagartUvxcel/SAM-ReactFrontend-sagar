@@ -46,7 +46,6 @@ const EditUserDetails = () => {
     statesFromApi: [],
     citiesFromApi: [],
     cityVisiblity: "d-none",
-    cityIsDisabled: true,
     state_id: defaultValues.state_id,
   });
 
@@ -65,7 +64,7 @@ const EditUserDetails = () => {
     statesFromApi,
     citiesFromApi,
     cityVisiblity,
-    cityIsDisabled,
+
     state_id,
   } = allUseStates;
 
@@ -101,13 +100,23 @@ const EditUserDetails = () => {
       });
   };
 
-  const getStatesFromApi = async () => {
+  const getStatesAndCityFromApi = async () => {
     const [headers, url] = setHeaderAndUrl();
     // Get all states from api.
     const allStates = await axios.get(`${url}/by-state`, {
       headers: headers,
     });
-    setAllUseStates({ ...allUseStates, statesFromApi: allStates.data });
+    const cityByState = await axios.post(
+      `${url}/by-city`,
+      { state_id: defaultValues.state_id },
+      { headers: headers }
+    );
+
+    setAllUseStates({
+      ...allUseStates,
+      statesFromApi: allStates.data,
+      citiesFromApi: cityByState.data,
+    });
   };
 
   const onInputChange = async (e) => {
@@ -123,7 +132,7 @@ const EditUserDetails = () => {
       setAllUseStates({
         ...allUseStates,
         citiesFromApi: cityByState.data,
-        cityIsDisabled: false,
+
         state_id: parseInt(value),
       });
       zipValidationByState(zip, parseInt(value), customer_reg_url);
@@ -161,6 +170,10 @@ const EditUserDetails = () => {
       selectStateClassName: "",
       cityVisiblity: "",
     });
+    let defaultState = document.getElementById(
+      `state-name-${defaultValues.state_id}`
+    );
+    defaultState.selected = true;
   };
 
   const cancelEditing = () => {
@@ -172,7 +185,7 @@ const EditUserDetails = () => {
       lableVisibility: "",
       selectStateClassName: "d-none",
       cityVisiblity: "d-none",
-      cityIsDisabled: true,
+
       state_id: defaultValues.state_id,
     });
 
@@ -207,7 +220,7 @@ const EditUserDetails = () => {
               lableVisibility: "",
               selectStateClassName: "d-none",
               cityVisiblity: "d-none",
-              cityIsDisabled: true,
+
               state_id: defaultValues.state_id,
             });
             // setTimeout(() => {
@@ -223,7 +236,7 @@ const EditUserDetails = () => {
   };
 
   useEffect(() => {
-    getStatesFromApi();
+    getStatesAndCityFromApi();
     // eslint-disable-next-line
   }, []);
 
@@ -382,7 +395,6 @@ const EditUserDetails = () => {
                           name="city"
                           id="city"
                           className={`form-select  ${cityVisiblity}`}
-                          disabled={cityIsDisabled}
                           required
                         >
                           {citiesFromApi
