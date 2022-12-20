@@ -127,7 +127,6 @@ const EditUserDetails = () => {
     const [headers, url] = setHeaderAndUrl();
     // If input is state then post selected state id to api for getting cities based on selected state.
     if (name === "state") {
-      console.log(zip);
       const cityByState = await axios.post(
         `${url}/by-city`,
         { state_id: parseInt(value) },
@@ -142,16 +141,6 @@ const EditUserDetails = () => {
       zipValidationByState(zip, parseInt(value));
     } else if (name === "zip") {
       setUserDetails({ ...userDetails, zip: value });
-      setValidation({
-        zipCodeValidationColor: "",
-        zipCodeValidationMessage: "",
-      });
-    }
-  };
-
-  const onInputBlur = (e) => {
-    const { name, value } = e.target;
-    if (name === "zip") {
       if (state_id !== "" && value !== "") {
         zipValidationByState(value, parseInt(state_id));
       }
@@ -180,6 +169,7 @@ const EditUserDetails = () => {
       selectStateClassName: "d-none",
       cityVisiblity: "d-none",
       cityIsDisabled: true,
+      state_id: "",
     });
 
     setValidation({
