@@ -120,6 +120,7 @@ const EditUserDetails = () => {
         { state_id: parseInt(value) },
         { headers: headers }
       );
+      console.log(cityByState.data);
       setAllUseStates({
         ...allUseStates,
         citiesFromApi: cityByState.data,
@@ -127,12 +128,27 @@ const EditUserDetails = () => {
         state_id: parseInt(value),
       });
       zipValidationByState(zip, parseInt(value), customer_reg_url);
-      setUserDetails({ ...userDetails, city: cityByState.data[0].city_name });
+      let stateName = "";
+      let getStateName = document.getElementById(`state-name-${value}`);
+      if (getStateName) {
+        stateName = getStateName.innerText;
+      }
+      setUserDetails({
+        ...userDetails,
+        city: cityByState.data[0].city_name,
+        state: stateName,
+      });
     } else if (name === "zip") {
       setUserDetails({ ...userDetails, zip: parseInt(value) });
       if (state_id !== "" && value !== "") {
         zipValidationByState(value, parseInt(state_id), customer_reg_url);
       }
+    } else if (name === "address") {
+      setUserDetails({ ...userDetails, [name]: value });
+    } else if (name === "city") {
+      setUserDetails({ ...userDetails, [name]: value });
+    } else if (name === "locality") {
+      setUserDetails({ ...userDetails, [name]: value });
     }
   };
 
@@ -175,6 +191,7 @@ const EditUserDetails = () => {
   const updateDetails = async (e) => {
     e.preventDefault();
     const [headers, url, customer_reg_url] = setHeaderAndUrl();
+    console.log(userDetails);
     if (!zipCodeValidationColor) {
       await axios
         .post(`${customer_reg_url}/auth/edit-details`, userDetails, {
@@ -183,6 +200,17 @@ const EditUserDetails = () => {
         .then((res) => {
           if (res.data.status === 0) {
             toast.success("Details Updated Successfully");
+            setAllUseStates({
+              ...allUseStates,
+              isReadOnly: true,
+              editClassName: "editable-values",
+              cancelUpdateBtnClassName: "d-none",
+              lableVisibility: "",
+              selectStateClassName: "d-none",
+              cityVisiblity: "d-none",
+              cityIsDisabled: true,
+              state_id: defaultValues.state_id,
+            });
             // setTimeout(() => {
             //   goTo("/profile");
             // }, 3000);
@@ -285,6 +313,7 @@ const EditUserDetails = () => {
                           Block / House No.
                         </label>
                         <input
+                          onChange={onInputChange}
                           name="address"
                           type="text"
                           className={`form-control ${editClassName}`}
@@ -301,6 +330,7 @@ const EditUserDetails = () => {
                           Locality
                         </label>
                         <input
+                          onChange={onInputChange}
                           name="locality"
                           type="text"
                           className={`form-control ${editClassName}`}
@@ -329,7 +359,7 @@ const EditUserDetails = () => {
                             ? statesFromApi.map((i, Index) => {
                                 return (
                                   <option
-                                    id={i.state_name}
+                                    id={`state-name-${i.state_id}`}
                                     key={Index}
                                     value={i.state_id}
                                   >
@@ -349,6 +379,7 @@ const EditUserDetails = () => {
                         </label>
                         <p className={`${lableVisibility}`}>{city}</p>
                         <select
+                          onChange={onInputChange}
                           name="city"
                           id="city"
                           className={`form-select  ${cityVisiblity}`}
