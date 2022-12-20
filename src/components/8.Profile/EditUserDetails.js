@@ -5,6 +5,21 @@ import { toast } from "react-toastify";
 import Layout from "../1.CommonLayout/Layout";
 
 const EditUserDetails = () => {
+  const defaultValues = {
+    firstName: "Arvind",
+    middleName: "Rahul",
+    lastName: "Sawant",
+    email: "arvinds@uvxcel.com",
+    phone: "9897868789",
+    pan: "DCOUU5465C",
+    aadhaar: "898767567564",
+    address: "545, WXYZ Apartments",
+    locality: "Kondhawa Road, Katraj",
+    city: "Pune",
+    state: "Maharashtra",
+    zip: "411015",
+  };
+
   const [userDetails, setUserDetails] = useState({
     firstName: "Arvind",
     middleName: "Rahul",
@@ -167,9 +182,14 @@ const EditUserDetails = () => {
       cityIsDisabled: true,
     });
 
+    setValidation({
+      zipCodeValidationColor: "",
+      zipCodeValidationMessage: "",
+    });
+
     let samp = document.querySelectorAll("input");
     for (let i of samp) {
-      document.getElementById(i.name).value = userDetails[i.name];
+      document.getElementById(i.name).value = defaultValues[i.name];
     }
   };
 
