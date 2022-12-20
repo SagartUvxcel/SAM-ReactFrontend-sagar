@@ -46,6 +46,7 @@ const EditUserDetails = () => {
     statesFromApi: [],
     citiesFromApi: [],
     cityVisiblity: "d-none",
+    cityIsDisabled: true,
   });
 
   const {
@@ -57,6 +58,7 @@ const EditUserDetails = () => {
     statesFromApi,
     citiesFromApi,
     cityVisiblity,
+    cityIsDisabled,
   } = allUseStates;
 
   const setHeaderAndUrl = () => {
@@ -88,7 +90,7 @@ const EditUserDetails = () => {
       setAllUseStates({
         ...allUseStates,
         citiesFromApi: cityByState.data,
-        cityVisiblity: "",
+        cityIsDisabled: false,
       });
     }
   };
@@ -101,6 +103,7 @@ const EditUserDetails = () => {
       cancelUpdateBtnClassName: "",
       lableVisibility: "d-none",
       selectStateClassName: "",
+      cityVisiblity: "",
     });
   };
 
@@ -113,6 +116,7 @@ const EditUserDetails = () => {
       lableVisibility: "",
       selectStateClassName: "d-none",
       cityVisiblity: "d-none",
+      cityIsDisabled: true,
     });
 
     let samp = document.querySelectorAll("input");
@@ -246,7 +250,7 @@ const EditUserDetails = () => {
 
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
-                        <label htmlFor="state" className="form-lable">
+                        <label htmlFor="state" className="form-label">
                           State
                         </label>
                         <p className={`${lableVisibility}`}>{state}</p>
@@ -277,7 +281,7 @@ const EditUserDetails = () => {
                       className={`col-xl-4 col-lg-4 col-md-6 col-12 ${lableVisibility}`}
                     >
                       <div className="form-group mb-3">
-                        <label>City</label>
+                        <label className="form-label">City</label>
                         <p>{city}</p>
                       </div>
                     </div>
@@ -290,7 +294,7 @@ const EditUserDetails = () => {
                           City
                         </label>
 
-                        <select name="city" id="city" className="form-select">
+                        <select name="city" id="city" className="form-select" disabled={cityIsDisabled}>
                           {citiesFromApi
                             ? citiesFromApi.map((i, Index) => {
                                 return (
@@ -308,7 +312,7 @@ const EditUserDetails = () => {
                       </div>
                     </div>
 
-                    <div className="col-xl-4 col-lg-4 col-md-6  col-12">
+                    <div className="col-xl-4 col-lg-4 col-md-6 col-12">
                       <div className="form-group mb-3">
                         <label htmlFor="zip" className="form-label">
                           Zip Code
