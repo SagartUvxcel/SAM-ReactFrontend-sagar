@@ -18,24 +18,9 @@ const EditUserDetails = () => {
     city: "Pune",
     state: "Maharashtra",
     state_id: 1,
-    zip: "411015",
+    zip: 411015,
   };
 
-  const [userDetails, setUserDetails] = useState({
-    firstName: "Arvind",
-    middleName: "Rahul",
-    lastName: "Sawant",
-    email: "arvinds@uvxcel.com",
-    phone: "9897868789",
-    pan: "DCOUU5465C",
-    aadhaar: "898767567564",
-    address: "545, WXYZ Apartments",
-    locality: "Kondhawa Road, Katraj",
-    city: "Pune",
-    state: "Maharashtra",
-    zip: "411015",
-  });
-  const goTo = useNavigate();
   const {
     firstName,
     middleName,
@@ -49,7 +34,18 @@ const EditUserDetails = () => {
     city,
     state,
     zip,
-  } = userDetails;
+  } = defaultValues;
+
+  const [userDetails, setUserDetails] = useState({
+    address: address,
+    locality: locality,
+    city: city,
+    state: state,
+    zip: zip,
+    email: localStorage.getItem("user"),
+  });
+
+  const goTo = useNavigate();
 
   const [allUseStates, setAllUseStates] = useState({
     isReadOnly: true,
@@ -94,7 +90,7 @@ const EditUserDetails = () => {
   const zipValidationByState = async (zipValue, stateId) => {
     await axios
       .post(`/sam/v1/customer-registration/zipcode-validation`, {
-        zipcode: zipValue,
+        zipcode: zipValue.toString(),
         state_id: stateId,
       })
       .then((res) => {
@@ -139,7 +135,7 @@ const EditUserDetails = () => {
         cityIsDisabled: false,
         state_id: parseInt(value),
       });
-      zipValidationByState(zip, parseInt(value));
+      zipValidationByState(userDetails.zip, parseInt(value));
     } else if (name === "zip") {
       setUserDetails({ ...userDetails, zip: value });
       if (state_id !== "" && value !== "") {
