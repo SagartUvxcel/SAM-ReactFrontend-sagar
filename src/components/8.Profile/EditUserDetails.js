@@ -15,7 +15,7 @@ const EditUserDetails = () => {
     aadhaar: "898767567564",
     address: "545, WXYZ Apartments",
     locality: "Kondhawa Road, Katraj",
-    city: "Pune",
+    city: "Nashik",
     state: "Maharashtra",
     state_id: 1,
     zip: 411015,
@@ -161,6 +161,7 @@ const EditUserDetails = () => {
   };
 
   const editDetails = () => {
+    console.log(citiesFromApi);
     setAllUseStates({
       ...allUseStates,
       isReadOnly: false,
@@ -170,10 +171,19 @@ const EditUserDetails = () => {
       selectStateClassName: "",
       cityVisiblity: "",
     });
-    let defaultState = document.getElementById(
-      `state-name-${defaultValues.state_id}`
-    );
-    defaultState.selected = true;
+    statesFromApi.forEach((state) => {
+      if (state.state_name === defaultValues.state) {
+        document.getElementById(
+          `state-name-${defaultValues.state_id}`
+        ).selected = true;
+      }
+    });
+    citiesFromApi.forEach((city) => {
+      if (city.city_name === defaultValues.city) {
+        console.log(city.city_name);
+        document.getElementById(`${city.city_name}`).selected = true;
+      }
+    });
   };
 
   const cancelEditing = () => {
