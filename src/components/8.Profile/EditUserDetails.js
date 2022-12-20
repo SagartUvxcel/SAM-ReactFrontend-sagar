@@ -277,24 +277,18 @@ const EditUserDetails = () => {
                       </div>
                     </div>
 
-                    <div
-                      className={`col-xl-4 col-lg-4 col-md-6 col-12 ${lableVisibility}`}
-                    >
-                      <div className="form-group mb-3">
-                        <label className="form-label">City</label>
-                        <p>{city}</p>
-                      </div>
-                    </div>
-
-                    <div
-                      className={`col-xl-4 col-lg-4 col-md-6 col-12 ${cityVisiblity}`}
-                    >
+                    <div className="col-xl-4 col-lg-4 col-md-6 col-12">
                       <div className="form-group mb-3">
                         <label htmlFor="city" className="form-label">
                           City
                         </label>
-
-                        <select name="city" id="city" className="form-select" disabled={cityIsDisabled}>
+                        <p className={`${lableVisibility}`}>{city}</p>
+                        <select
+                          name="city"
+                          id="city"
+                          className={`form-select  ${cityVisiblity}`}
+                          disabled={cityIsDisabled}
+                        >
                           {citiesFromApi
                             ? citiesFromApi.map((i, Index) => {
                                 return (
