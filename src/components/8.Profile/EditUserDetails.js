@@ -154,43 +154,57 @@ const EditUserDetails = () => {
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
-                        <label htmlFor="firstName">First Name</label>
+                        <label htmlFor="firstName" className="form-lable">
+                          First Name
+                        </label>
                         <p>{firstName}</p>
                       </div>
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
-                        <label htmlFor="middleName">Middle Name</label>
+                        <label htmlFor="middleName" className="form-lable">
+                          Middle Name
+                        </label>
                         <p>{middleName}</p>
                       </div>
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
-                        <label htmlFor="lastName">Last Name</label>
+                        <label htmlFor="lastName" className="form-lable">
+                          Last Name
+                        </label>
                         <p>{lastName}</p>
                       </div>
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
-                        <label htmlFor="eMail">Email</label>
+                        <label htmlFor="eMail" className="form-lable">
+                          Email
+                        </label>
                         <p>{email}</p>
                       </div>
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
-                        <label htmlFor="phone">Phone</label>
+                        <label htmlFor="phone" className="form-lable">
+                          Phone
+                        </label>
                         <p>{phone}</p>
                       </div>
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
-                        <label htmlFor="pan">PAN Number</label>
+                        <label htmlFor="pan" className="form-lable">
+                          PAN Number
+                        </label>
                         <p>{pan}</p>
                       </div>
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
-                        <label htmlFor="aadhaar">Aadhaar Number</label>
+                        <label htmlFor="aadhaar" className="form-lable">
+                          Aadhaar Number
+                        </label>
                         <p>{aadhaar}</p>
                       </div>
                     </div>
@@ -201,7 +215,9 @@ const EditUserDetails = () => {
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
-                        <label htmlFor="address">Block / House No.</label>
+                        <label htmlFor="address" className="form-lable">
+                          Block / House No.
+                        </label>
                         <input
                           name="address"
                           type="text"
@@ -214,7 +230,9 @@ const EditUserDetails = () => {
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
-                        <label htmlFor="locality">Block / House No.</label>
+                        <label htmlFor="locality" className="form-lable">
+                          Block / House No.
+                        </label>
                         <input
                           name="locality"
                           type="text"
@@ -228,7 +246,9 @@ const EditUserDetails = () => {
 
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
-                        <label htmlFor="state">State</label>
+                        <label htmlFor="state" className="form-lable">
+                          State
+                        </label>
                         <p className={`${lableVisibility}`}>{state}</p>
                         <select
                           name="state"
@@ -253,22 +273,24 @@ const EditUserDetails = () => {
                       </div>
                     </div>
 
-                    <div className="col-xl-4 col-lg-4 col-md-6 col-12">
+                    <div
+                      className={`col-xl-4 col-lg-4 col-md-6 col-12 ${lableVisibility}`}
+                    >
                       <div className="form-group mb-3">
-                        <div className={`${lableVisibility}`}>
-                          <label>City</label>
-                          <p>{city}</p>
-                        </div>
+                        <label>City</label>
+                        <p>{city}</p>
+                      </div>
+                    </div>
 
-                        <label htmlFor="city" className={`${cityVisiblity}`}>
+                    <div
+                      className={`col-xl-4 col-lg-4 col-md-6 col-12 ${cityVisiblity}`}
+                    >
+                      <div className="form-group mb-3">
+                        <label htmlFor="city" className="form-label">
                           City
                         </label>
 
-                        <select
-                          name="city"
-                          id="city"
-                          className={`form-select ${cityVisiblity}`}
-                        >
+                        <select name="city" id="city" className="form-select">
                           {citiesFromApi
                             ? citiesFromApi.map((i, Index) => {
                                 return (
@@ -288,7 +310,9 @@ const EditUserDetails = () => {
 
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
-                        <label htmlFor="zip">Zip Code</label>
+                        <label htmlFor="zip" className="form-label">
+                          Zip Code
+                        </label>
                         <input
                           name="zip"
                           type="number"
