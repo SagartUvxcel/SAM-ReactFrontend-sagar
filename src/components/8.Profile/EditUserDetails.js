@@ -79,7 +79,6 @@ const EditUserDetails = () => {
 
   // Function to validate zipCodes.
   const zipValidationByState = async (zipValue, stateId, customerUrl) => {
-    console.log(customerUrl);
     await axios
       .post(`${customerUrl}/zipcode-validation`, {
         zipcode: zipValue.toString(),
@@ -176,17 +175,24 @@ const EditUserDetails = () => {
   const updateDetails = async (e) => {
     e.preventDefault();
     const [headers, url, customer_reg_url] = setHeaderAndUrl();
-    await axios
-      .post(`${customer_reg_url}/auth/edit-details`, userDetails, {
-        headers: headers,
-      })
-      .then((res) => {
-        console.log(res.data.status);
-      });
-    // toast.success("Details Updated Successfully");
-    // setTimeout(() => {
-    //   goTo("/profile");
-    // }, 3000);
+    if (!zipCodeValidationColor) {
+      await axios
+        .post(`${customer_reg_url}/auth/edit-details`, userDetails, {
+          headers: headers,
+        })
+        .then((res) => {
+          if (res.data.status === 0) {
+            toast.success("Details Updated Successfully");
+            // setTimeout(() => {
+            //   goTo("/profile");
+            // }, 3000);
+          } else {
+            toast.error("Some Error Occured");
+          }
+        });
+    } else {
+      toast.error("Invalid Form");
+    }
   };
 
   useEffect(() => {
