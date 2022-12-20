@@ -15,10 +15,10 @@ const EditUserDetails = () => {
     aadhaar: "898767567564",
     address: "545, WXYZ Apartments",
     locality: "Kondhawa Road, Katraj",
-    city: "Nashik",
-    state: "Maharashtra",
-    state_id: 1,
-    zip: 411015,
+    city: "Ponda",
+    state: "Goa",
+    state_id: 2,
+    zip: 403001,
   };
 
   const { firstName, middleName, lastName, phone, pan, aadhaar } =
@@ -132,9 +132,9 @@ const EditUserDetails = () => {
       setAllUseStates({
         ...allUseStates,
         citiesFromApi: cityByState.data,
-
         state_id: parseInt(value),
       });
+
       zipValidationByState(zip, parseInt(value), customer_reg_url);
       let stateName = "";
       let getStateName = document.getElementById(`state-name-${value}`);
@@ -146,6 +146,7 @@ const EditUserDetails = () => {
         city: cityByState.data[0].city_name,
         state: stateName,
       });
+      document.getElementById("city").firstChild.selected = true;
     } else if (name === "zip") {
       setUserDetails({ ...userDetails, zip: parseInt(value) });
       if (state_id !== "" && value !== "") {
@@ -161,7 +162,6 @@ const EditUserDetails = () => {
   };
 
   const editDetails = () => {
-    console.log(citiesFromApi);
     setAllUseStates({
       ...allUseStates,
       isReadOnly: false,
@@ -180,7 +180,6 @@ const EditUserDetails = () => {
     });
     citiesFromApi.forEach((city) => {
       if (city.city_name === defaultValues.city) {
-        console.log(city.city_name);
         document.getElementById(`${city.city_name}`).selected = true;
       }
     });
@@ -195,7 +194,6 @@ const EditUserDetails = () => {
       lableVisibility: "",
       selectStateClassName: "d-none",
       cityVisiblity: "d-none",
-
       state_id: defaultValues.state_id,
     });
 
