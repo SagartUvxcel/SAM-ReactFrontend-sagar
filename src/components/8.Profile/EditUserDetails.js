@@ -21,29 +21,19 @@ const EditUserDetails = () => {
     zip: 411015,
   };
 
-  const {
-    firstName,
-    middleName,
-    lastName,
-    email,
-    phone,
-    pan,
-    aadhaar,
-    address,
-    locality,
-    city,
-    state,
-    zip,
-  } = defaultValues;
+  const { firstName, middleName, lastName, phone, pan, aadhaar } =
+    defaultValues;
 
   const [userDetails, setUserDetails] = useState({
-    address: address,
-    locality: locality,
-    city: city,
-    state: state,
-    zip: zip,
+    address: defaultValues.address,
+    locality: defaultValues.locality,
+    city: defaultValues.city,
+    state: defaultValues.state,
+    zip: defaultValues.zip,
     email: localStorage.getItem("user"),
   });
+
+  const { address, locality, city, state, zip, email } = userDetails;
 
   const goTo = useNavigate();
 
@@ -135,7 +125,8 @@ const EditUserDetails = () => {
         cityIsDisabled: false,
         state_id: parseInt(value),
       });
-      zipValidationByState(userDetails.zip, parseInt(value));
+      zipValidationByState(zip, parseInt(value));
+      setUserDetails({ ...userDetails, city: cityByState.data[0].city_name });
     } else if (name === "zip") {
       setUserDetails({ ...userDetails, zip: value });
       if (state_id !== "" && value !== "") {
