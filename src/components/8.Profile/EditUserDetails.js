@@ -158,7 +158,7 @@ const EditUserDetails = () => {
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
-                        <label htmlFor="firstName" className="form-lable">
+                        <label htmlFor="firstName" className="form-label">
                           First Name
                         </label>
                         <p>{firstName}</p>
@@ -166,7 +166,7 @@ const EditUserDetails = () => {
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
-                        <label htmlFor="middleName" className="form-lable">
+                        <label htmlFor="middleName" className="form-label">
                           Middle Name
                         </label>
                         <p>{middleName}</p>
@@ -174,7 +174,7 @@ const EditUserDetails = () => {
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
-                        <label htmlFor="lastName" className="form-lable">
+                        <label htmlFor="lastName" className="form-label">
                           Last Name
                         </label>
                         <p>{lastName}</p>
@@ -182,7 +182,7 @@ const EditUserDetails = () => {
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
-                        <label htmlFor="eMail" className="form-lable">
+                        <label htmlFor="eMail" className="form-label">
                           Email
                         </label>
                         <p>{email}</p>
@@ -190,7 +190,7 @@ const EditUserDetails = () => {
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
-                        <label htmlFor="phone" className="form-lable">
+                        <label htmlFor="phone" className="form-label">
                           Phone
                         </label>
                         <p>{phone}</p>
@@ -198,7 +198,7 @@ const EditUserDetails = () => {
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
-                        <label htmlFor="pan" className="form-lable">
+                        <label htmlFor="pan" className="form-label">
                           PAN Number
                         </label>
                         <p>{pan}</p>
@@ -206,7 +206,7 @@ const EditUserDetails = () => {
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
-                        <label htmlFor="aadhaar" className="form-lable">
+                        <label htmlFor="aadhaar" className="form-label">
                           Aadhaar Number
                         </label>
                         <p>{aadhaar}</p>
@@ -219,7 +219,7 @@ const EditUserDetails = () => {
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
-                        <label htmlFor="address" className="form-lable">
+                        <label htmlFor="address" className="form-label">
                           Block / House No.
                         </label>
                         <input
@@ -234,8 +234,8 @@ const EditUserDetails = () => {
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
-                        <label htmlFor="locality" className="form-lable">
-                          Block / House No.
+                        <label htmlFor="locality" className="form-label">
+                          Locality
                         </label>
                         <input
                           name="locality"
