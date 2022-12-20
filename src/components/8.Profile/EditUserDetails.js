@@ -182,9 +182,7 @@ const EditUserDetails = () => {
 
   const updateDetails = (e) => {
     e.preventDefault();
-    if (zipCodeValidationColor) {
-      console.log(zipCodeValidationColor);
-    }
+    console.log(userDetails);
     // toast.success("Details Updated Successfully");
     // setTimeout(() => {
     //   goTo("/profile");
