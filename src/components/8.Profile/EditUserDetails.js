@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import Layout from "../1.CommonLayout/Layout";
 
 const EditUserDetails = () => {
-  const userDetails = {
+  const [userDetails, setUserDetails] = useState({
     firstName: "Arvind",
     middleName: "Rahul",
     lastName: "Sawant",
@@ -18,10 +18,8 @@ const EditUserDetails = () => {
     city: "Pune",
     state: "Maharashtra",
     zip: "411015",
-  };
-
+  });
   const goTo = useNavigate();
-
   const {
     firstName,
     middleName,
@@ -47,8 +45,15 @@ const EditUserDetails = () => {
     citiesFromApi: [],
     cityVisiblity: "d-none",
     cityIsDisabled: true,
+    state_id: "",
   });
 
+  const [validation, setValidation] = useState({
+    zipCodeValidationColor: "",
+    zipCodeValidationMessage: "",
+  });
+
+  const { zipCodeValidationColor, zipCodeValidationMessage } = validation;
   const {
     isReadOnly,
     editClassName,
@@ -59,6 +64,7 @@ const EditUserDetails = () => {
     citiesFromApi,
     cityVisiblity,
     cityIsDisabled,
+    state_id,
   } = allUseStates;
 
   const setHeaderAndUrl = () => {
@@ -66,6 +72,30 @@ const EditUserDetails = () => {
     let headers = { Authorization: loginToken };
     let url = `/sam/v1/property/auth`;
     return [headers, url];
+  };
+
+  // Function to validate zipCodes.
+  const zipValidationByState = async (zipValue, stateId) => {
+    await axios
+      .post(`/sam/v1/customer-registration/zipcode-validation`, {
+        zipcode: zipValue,
+        state_id: stateId,
+      })
+      .then((res) => {
+        if (res.data.status === 0) {
+          setValidation({
+            ...validation,
+            zipCodeValidationMessage: "Invalid ZipCode.",
+            zipCodeValidationColor: "danger",
+          });
+        } else {
+          setValidation({
+            ...validation,
+            zipCodeValidationMessage: "",
+            zipCodeValidationColor: "",
+          });
+        }
+      });
   };
 
   const getStatesFromApi = async () => {
@@ -82,6 +112,7 @@ const EditUserDetails = () => {
     const [headers, url] = setHeaderAndUrl();
     // If input is state then post selected state id to api for getting cities based on selected state.
     if (name === "state") {
+      console.log(zip);
       const cityByState = await axios.post(
         `${url}/by-city`,
         { state_id: parseInt(value) },
@@ -91,7 +122,24 @@ const EditUserDetails = () => {
         ...allUseStates,
         citiesFromApi: cityByState.data,
         cityIsDisabled: false,
+        state_id: parseInt(value),
       });
+      zipValidationByState(zip, parseInt(value));
+    } else if (name === "zip") {
+      setUserDetails({ ...userDetails, zip: value });
+      setValidation({
+        zipCodeValidationColor: "",
+        zipCodeValidationMessage: "",
+      });
+    }
+  };
+
+  const onInputBlur = (e) => {
+    const { name, value } = e.target;
+    if (name === "zip") {
+      if (state_id !== "" && value !== "") {
+        zipValidationByState(value, parseInt(state_id));
+      }
     }
   };
 
@@ -127,10 +175,10 @@ const EditUserDetails = () => {
 
   const updateDetails = (e) => {
     e.preventDefault();
-    toast.success("Details Updated Successfully");
-    setTimeout(() => {
-      goTo("/profile");
-    }, 3000);
+    // toast.success("Details Updated Successfully");
+    // setTimeout(() => {
+    //   goTo("/profile");
+    // }, 3000);
   };
 
   useEffect(() => {
@@ -312,13 +360,22 @@ const EditUserDetails = () => {
                           Zip Code
                         </label>
                         <input
+                          onChange={onInputChange}
+                          onBlur={onInputBlur}
                           name="zip"
                           type="number"
-                          className={`form-control ${editClassName}`}
+                          className={`form-control ${editClassName} border-${zipCodeValidationColor}`}
                           id="zip"
                           defaultValue={zip}
                           readOnly={isReadOnly}
                         />
+                        <span
+                          className={`pe-1 ${
+                            zipCodeValidationMessage ? "" : "d-none"
+                          } text-${zipCodeValidationColor}`}
+                        >
+                          {zipCodeValidationMessage}
+                        </span>
                       </div>
                     </div>
                   </div>
