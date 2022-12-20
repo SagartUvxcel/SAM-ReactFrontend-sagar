@@ -173,9 +173,16 @@ const EditUserDetails = () => {
     }
   };
 
-  const updateDetails = (e) => {
+  const updateDetails = async (e) => {
     e.preventDefault();
-    console.log(userDetails);
+    const [headers, url, customer_reg_url] = setHeaderAndUrl();
+    await axios
+      .post(`${customer_reg_url}/auth/edit-details`, userDetails, {
+        headers: headers,
+      })
+      .then((res) => {
+        console.log(res.data.status);
+      });
     // toast.success("Details Updated Successfully");
     // setTimeout(() => {
     //   goTo("/profile");
