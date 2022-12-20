@@ -73,13 +73,15 @@ const EditUserDetails = () => {
     const loginToken = localStorage.getItem("logintoken");
     let headers = { Authorization: loginToken };
     let url = `/sam/v1/property/auth`;
-    return [headers, url];
+    let customer_reg_url = `/sam/v1/customer-registration`;
+    return [headers, url, customer_reg_url];
   };
 
   // Function to validate zipCodes.
-  const zipValidationByState = async (zipValue, stateId) => {
+  const zipValidationByState = async (zipValue, stateId, customerUrl) => {
+    console.log(customerUrl);
     await axios
-      .post(`/sam/v1/customer-registration/zipcode-validation`, {
+      .post(`${customerUrl}/zipcode-validation`, {
         zipcode: zipValue.toString(),
         state_id: stateId,
       })
@@ -111,7 +113,7 @@ const EditUserDetails = () => {
 
   const onInputChange = async (e) => {
     const { name, value } = e.target;
-    const [headers, url] = setHeaderAndUrl();
+    const [headers, url, customer_reg_url] = setHeaderAndUrl();
     // If input is state then post selected state id to api for getting cities based on selected state.
     if (name === "state") {
       const cityByState = await axios.post(
@@ -125,12 +127,12 @@ const EditUserDetails = () => {
         cityIsDisabled: false,
         state_id: parseInt(value),
       });
-      zipValidationByState(zip, parseInt(value));
+      zipValidationByState(zip, parseInt(value), customer_reg_url);
       setUserDetails({ ...userDetails, city: cityByState.data[0].city_name });
     } else if (name === "zip") {
-      setUserDetails({ ...userDetails, zip: value });
+      setUserDetails({ ...userDetails, zip: parseInt(value) });
       if (state_id !== "" && value !== "") {
-        zipValidationByState(value, parseInt(state_id));
+        zipValidationByState(value, parseInt(state_id), customer_reg_url);
       }
     }
   };
