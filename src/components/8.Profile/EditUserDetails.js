@@ -120,7 +120,6 @@ const EditUserDetails = () => {
         { state_id: parseInt(value) },
         { headers: headers }
       );
-      console.log(cityByState.data);
       setAllUseStates({
         ...allUseStates,
         citiesFromApi: cityByState.data,
@@ -392,7 +391,7 @@ const EditUserDetails = () => {
                                   <option
                                     id={i.city_name}
                                     key={Index}
-                                    value={i.city_id}
+                                    value={i.city_name}
                                   >
                                     {i.city_name}
                                   </option>
