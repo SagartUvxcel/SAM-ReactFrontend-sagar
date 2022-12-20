@@ -371,7 +371,6 @@ const EditUserDetails = () => {
                         </label>
                         <input
                           onChange={onInputChange}
-                          onBlur={onInputBlur}
                           name="zip"
                           type="number"
                           className={`form-control ${editClassName} border-${zipCodeValidationColor}`}
