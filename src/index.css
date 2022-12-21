@@ -637,6 +637,11 @@ input[type="number"] {
   color: white;
 }
 
+.scrollable-right-div {
+  max-height: 100vh;
+  overflow-y: scroll;
+}
+
 .admin-sidebar {
   background: #333649;
   transition: 0.3s ease-in-out;

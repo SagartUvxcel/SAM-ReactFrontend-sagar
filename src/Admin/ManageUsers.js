@@ -9,7 +9,7 @@ const ManageUsers = () => {
       <div className="container-fluid admin-users-wrapper section-padding">
         <div className="row min-100vh">
           <AdminSideBar />
-          <div className="col-xl-10 col-md-9 wrapper">
+          <div className="col-xl-10 col-md-9 scrollable-right-div wrapper">
             <h1 className="text-center">Users</h1>
             <div className="table-wrapper">
               <table className="table table-bordered table-dark table-striped text-center">

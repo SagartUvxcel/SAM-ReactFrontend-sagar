@@ -10,7 +10,7 @@ const ViewAllProperties = () => {
       <div className="container-fluid section-padding">
         <div className="row min-100vh">
           <AdminSideBar />
-          <div className="col-xl-10 col-md-9">
+          <div className="col-xl-10 col-md-9 scrollable-right-div">
             <section className="admin-view-all-properties wrapper">
               <h1 className="text-center mb-4 text-primary fw-bold">
                 Properties

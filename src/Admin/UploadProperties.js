@@ -43,7 +43,7 @@ const UploadProperties = () => {
       <div className="container-fluid section-padding">
         <div className="row min-100vh">
           <AdminSideBar />
-          <div className="col-xl-10 col-md-9 wrapper">
+          <div className="col-xl-10 col-md-9 scrollable-right-div wrapper">
             <div className="container-fluid">
               <div className="row justify-content-center">
                 <div className="col-xl-7 col-md-8 shadow p-md-4 mb-5">
