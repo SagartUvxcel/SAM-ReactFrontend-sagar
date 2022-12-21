@@ -5,22 +5,6 @@ import { toast } from "react-toastify";
 import Layout from "../1.CommonLayout/Layout";
 
 const EditUserDetails = () => {
-  const defaultValues = {
-    firstName: "Arvind",
-    middleName: "Rahul",
-    lastName: "Sawant",
-    email: "arvinds@uvxcel.com",
-    phone: "9897868789",
-    pan: "DCOUU5465C",
-    aadhaar: "898767567564",
-    address: "545, WXYZ Apartments",
-    locality: "Kondhawa Road, Katraj",
-    city: "Ponda",
-    state: "Goa",
-    state_id: 2,
-    zip: 403001,
-  };
-
   const [defaultUser, setDefaultUser] = useState([]);
 
   const {
@@ -36,6 +20,15 @@ const EditUserDetails = () => {
     city: defaultCity,
     locality: defaultLocality,
   } = defaultUser;
+
+  const defaultValues = {
+    address: "Not Available",
+    locality: defaultLocality,
+    city: defaultCity,
+    state: defaultState,
+    state_id: 1,
+    zip: defaultZip,
+  };
 
   const [userDetails, setUserDetails] = useState({
     address: "Not Available",
@@ -77,7 +70,6 @@ const EditUserDetails = () => {
     statesFromApi,
     citiesFromApi,
     cityVisiblity,
-
     state_id,
   } = allUseStates;
 
