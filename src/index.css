@@ -688,6 +688,20 @@ input[type="number"] {
   color: orange !important;
 }
 
+.admin-users-wrapper .dropdown-item {
+  cursor: pointer !important;
+  color: white;
+}
+
+.admin-users-wrapper .dropdown-item:hover {
+  color: white;
+  background-color: #212529;
+}
+
+.admin-users-wrapper .dropdown-menu.show {
+  background: #2c3034;
+  border-color: white;
+}
 /* Media Queries */
 
 @media (min-width: 768px) {
@@ -828,6 +842,10 @@ input[type="number"] {
   }
   .contact-wrapper {
     min-height: 88vh;
+  }
+
+  .admin-users-wrapper .table-wrapper {
+    overflow-x: scroll;
   }
 }
 
