@@ -222,7 +222,9 @@ const EditUserDetails = () => {
 
     let samp = document.querySelectorAll("input");
     for (let i of samp) {
-      document.getElementById(i.name).value = defaultValues[i.name];
+      document.getElementById(i.name).value = defaultValues[i.name]
+        ? defaultValues[i.name]
+        : "Not Available";
     }
   };
 
