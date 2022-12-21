@@ -21,6 +21,8 @@ const EditUserDetails = () => {
     zip: 403001,
   };
 
+  const [defaultUser, setDefaultUser] = useState([]);
+
   const { firstName, middleName, lastName, phone, pan, aadhaar } =
     defaultValues;
 
@@ -74,6 +76,15 @@ const EditUserDetails = () => {
     let url = `/sam/v1/property/auth`;
     let customer_reg_url = `/sam/v1/customer-registration`;
     return [headers, url, customer_reg_url];
+  };
+
+  const getUserToEdit = async () => {
+    const [headers] = setHeaderAndUrl();
+    const userId = localStorage.getItem("userId");
+    const user = await axios.get(`/sam/v1/user-registration/auth/${userId}`, {
+      headers: headers,
+    });
+    setDefaultUser(user.data);
   };
 
   // Function to validate zipCodes.
@@ -162,6 +173,7 @@ const EditUserDetails = () => {
   };
 
   const editDetails = () => {
+    console.log(defaultUser);
     setAllUseStates({
       ...allUseStates,
       isReadOnly: false,
@@ -245,6 +257,7 @@ const EditUserDetails = () => {
 
   useEffect(() => {
     getStatesAndCityFromApi();
+    getUserToEdit();
     // eslint-disable-next-line
   }, []);
 

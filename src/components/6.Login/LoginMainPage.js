@@ -69,7 +69,7 @@ const LoginMainPage = () => {
       )
       .then((res) => {
         console.log(res.data);
-        const { email, token } = res.data.token;
+        const { email, token, user_id } = res.data.token;
         if (email !== "" && token !== "") {
           setLoaderDetails({
             ...loaderDetails,
@@ -80,6 +80,7 @@ const LoginMainPage = () => {
           localStorage.setItem("isLoggedIn", true);
           localStorage.setItem("user", email);
           localStorage.setItem("logintoken", token);
+          localStorage.setItem("userId", user_id);
           setTimeout(() => {
             setLoaderDetails({
               ...loaderDetails,
