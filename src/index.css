@@ -674,12 +674,12 @@ input[type="number"] {
   align-items: center;
   text-decoration: none;
   transition: 0.3s ease-in-out;
-  background: var(--bg-gradient-orange);
+  background-color: orange !important;
 }
 
 .admin-top-cards:hover {
   transition: 0.3s ease-in-out;
-  background: white;
+  background-color: white !important;
   border-color: orange;
   transform: scale(1.06);
 }
