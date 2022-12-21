@@ -702,6 +702,15 @@ input[type="number"] {
   background: #2c3034;
   border-color: white;
 }
+.bi-sign-intersection-side-fill::before {
+  font-size: 2rem;
+  color: #333649;
+  position: fixed;
+  left: 1px;
+  top: 4rem;
+  z-index: 1;
+}
+
 /* Media Queries */
 
 @media (min-width: 768px) {
