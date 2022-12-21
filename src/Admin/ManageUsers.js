@@ -32,16 +32,15 @@ const ManageUsers = () => {
                       <td>{user.company.name}</td>
                       <td>
                         <li className="nav-item dropdown list-unstyled">
-                          <a
+                          <span
                             className="nav-link dropdown-toggle"
-                            href="#"
                             id="navbarDropdown"
                             role="button"
                             data-bs-toggle="dropdown"
                             aria-expanded="false"
                           >
                             Select
-                          </a>
+                          </span>
                           <ul
                             className="dropdown-menu"
                             aria-labelledby="navbarDropdown"
