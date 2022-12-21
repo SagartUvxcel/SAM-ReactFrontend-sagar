@@ -40,7 +40,7 @@ const ManageUsers = () => {
                             data-bs-toggle="dropdown"
                             aria-expanded="false"
                           >
-                            Actions
+                            Select
                           </a>
                           <ul
                             className="dropdown-menu"
