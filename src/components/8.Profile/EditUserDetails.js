@@ -5,9 +5,12 @@ import { toast } from "react-toastify";
 import Layout from "../1.CommonLayout/Layout";
 
 const EditUserDetails = () => {
-  const [defaultUser, setDefaultUser] = useState([]);
+  const [defaultUser, setDefaultUser] = useState({
+    defaultAddress: "Not Availabe",
+  });
 
   const {
+    defaultAddress,
     first_name,
     middle_name,
     last_name,
@@ -22,7 +25,7 @@ const EditUserDetails = () => {
   } = defaultUser;
 
   const defaultValues = {
-    address: "Not Available",
+    address: defaultAddress,
     locality: defaultLocality,
     city: defaultCity,
     state: defaultState,
@@ -31,12 +34,12 @@ const EditUserDetails = () => {
   };
 
   const [userDetails, setUserDetails] = useState({
-    address: "Not Available",
-    locality: defaultLocality,
-    city: defaultCity,
-    state: defaultState,
-    zip: defaultZip,
-    email: localStorage.getItem("user") || email_address,
+    address: "",
+    locality: "",
+    city: "",
+    state: "",
+    zip: "",
+    email: "",
   });
 
   const { address, locality, city, state, zip, email } = userDetails;
@@ -354,7 +357,7 @@ const EditUserDetails = () => {
                           type="text"
                           className={`form-control ${editClassName}`}
                           id="address"
-                          defaultValue={address}
+                          defaultValue={defaultAddress}
                           readOnly={isReadOnly}
                           required
                         />
