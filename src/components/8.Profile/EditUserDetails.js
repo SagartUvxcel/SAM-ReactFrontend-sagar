@@ -42,7 +42,7 @@ const EditUserDetails = () => {
     email: "",
   });
 
-  const { address, locality, city, state, zip, email } = userDetails;
+  const { zip } = userDetails;
 
   const goTo = useNavigate();
 
