@@ -23,16 +23,27 @@ const EditUserDetails = () => {
 
   const [defaultUser, setDefaultUser] = useState([]);
 
-  const { firstName, middleName, lastName, phone, pan, aadhaar } =
-    defaultValues;
+  const {
+    first_name,
+    middle_name,
+    last_name,
+    mobile_number,
+    pan_number,
+    aadhar_number,
+    email_address,
+    zip: defaultZip,
+    state: defaultState,
+    city: defaultCity,
+    locality: defaultLocality,
+  } = defaultUser;
 
   const [userDetails, setUserDetails] = useState({
-    address: defaultValues.address,
-    locality: defaultValues.locality,
-    city: defaultValues.city,
-    state: defaultValues.state,
-    zip: defaultValues.zip,
-    email: localStorage.getItem("user"),
+    address: "Not Available",
+    locality: defaultLocality,
+    city: defaultCity,
+    state: defaultState,
+    zip: defaultZip,
+    email: localStorage.getItem("user") || email_address,
   });
 
   const { address, locality, city, state, zip, email } = userDetails;
@@ -284,7 +295,7 @@ const EditUserDetails = () => {
                         <label htmlFor="firstName" className="form-label">
                           First Name
                         </label>
-                        <p>{firstName}</p>
+                        <p>{first_name}</p>
                       </div>
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
@@ -292,7 +303,7 @@ const EditUserDetails = () => {
                         <label htmlFor="middleName" className="form-label">
                           Middle Name
                         </label>
-                        <p>{middleName}</p>
+                        <p>{middle_name}</p>
                       </div>
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
@@ -300,7 +311,7 @@ const EditUserDetails = () => {
                         <label htmlFor="lastName" className="form-label">
                           Last Name
                         </label>
-                        <p>{lastName}</p>
+                        <p>{last_name}</p>
                       </div>
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
@@ -308,7 +319,7 @@ const EditUserDetails = () => {
                         <label htmlFor="eMail" className="form-label">
                           Email
                         </label>
-                        <p>{email}</p>
+                        <p>{email_address}</p>
                       </div>
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
@@ -316,7 +327,7 @@ const EditUserDetails = () => {
                         <label htmlFor="phone" className="form-label">
                           Phone
                         </label>
-                        <p>{phone}</p>
+                        <p>{mobile_number}</p>
                       </div>
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
@@ -324,7 +335,7 @@ const EditUserDetails = () => {
                         <label htmlFor="pan" className="form-label">
                           PAN Number
                         </label>
-                        <p>{pan}</p>
+                        <p>{pan_number}</p>
                       </div>
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
@@ -332,7 +343,7 @@ const EditUserDetails = () => {
                         <label htmlFor="aadhaar" className="form-label">
                           Aadhaar Number
                         </label>
-                        <p>{aadhaar}</p>
+                        <p>{aadhar_number}</p>
                       </div>
                     </div>
                   </div>
@@ -368,7 +379,7 @@ const EditUserDetails = () => {
                           type="text"
                           className={`form-control ${editClassName}`}
                           id="locality"
-                          defaultValue={locality}
+                          defaultValue={defaultLocality}
                           readOnly={isReadOnly}
                           required
                         />
@@ -380,7 +391,7 @@ const EditUserDetails = () => {
                         <label htmlFor="state" className="form-label">
                           State
                         </label>
-                        <p className={`${lableVisibility}`}>{state}</p>
+                        <p className={`${lableVisibility}`}>{defaultState}</p>
                         <select
                           name="state"
                           id="state"
@@ -410,7 +421,7 @@ const EditUserDetails = () => {
                         <label htmlFor="city" className="form-label">
                           City
                         </label>
-                        <p className={`${lableVisibility}`}>{city}</p>
+                        <p className={`${lableVisibility}`}>{defaultCity}</p>
                         <select
                           onChange={onInputChange}
                           name="city"
@@ -446,7 +457,7 @@ const EditUserDetails = () => {
                           type="number"
                           className={`form-control ${editClassName} border-${zipCodeValidationColor}`}
                           id="zip"
-                          defaultValue={zip}
+                          defaultValue={defaultZip}
                           readOnly={isReadOnly}
                           required
                         />
