@@ -17,7 +17,7 @@ const AdminHomePage = () => {
                     to="/admin/view-properties"
                     className="card py-3 admin-top-cards"
                   >
-                    <span className="me-xl-5 me-md-4">
+                    <span className="me-xl-5 me-4">
                       <i className="bi bi-buildings-fill text-white fs-1 blue-on-hover"></i>
                     </span>
                     <div>
@@ -33,7 +33,7 @@ const AdminHomePage = () => {
                     to="/admin/users"
                     className="card py-3 admin-top-cards"
                   >
-                    <span className="me-xl-5 me-md-4">
+                    <span className="me-xl-5 me-4">
                       <i className="bi bi-person-fill text-white fs-1 blue-on-hover"></i>
                     </span>
                     <div>
@@ -46,7 +46,7 @@ const AdminHomePage = () => {
                 </div>
                 <div className="col-xl-3 col-lg-4 col-md-6 mt-4 mt-lg-0">
                   <div className="card py-3  admin-top-cards">
-                    <span className="me-xl-5 me-md-4">
+                    <span className="me-xl-5 me-4">
                       <i className="bi bi-buildings-fill text-white fs-1 blue-on-hover"></i>
                     </span>
                     <div>
@@ -63,7 +63,7 @@ const AdminHomePage = () => {
                     to="/admin/users"
                     className="card py-3 admin-top-cards"
                   >
-                    <span className="me-xl-5 me-md-4">
+                    <span className="me-xl-5 me-4">
                       <i className="bi bi-person-fill text-white fs-1 blue-on-hover"></i>
                     </span>
                     <div>
