@@ -7,7 +7,6 @@ import propertyData from "./data.json";
 const ViewAllProperties = () => {
   return (
     <Layout>
-      {" "}
       <div className="container-fluid section-padding">
         <div className="row min-100vh">
           <AdminSideBar />
