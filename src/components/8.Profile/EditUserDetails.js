@@ -34,12 +34,12 @@ const EditUserDetails = () => {
   };
 
   const [userDetails, setUserDetails] = useState({
-    address: "",
-    locality: "",
-    city: "",
-    state: "",
-    zip: "",
-    email: "",
+    address: defaultAddress,
+    locality: defaultLocality,
+    city: defaultCity,
+    state: defaultState,
+    zip: defaultZip,
+    email: email_address,
   });
 
   const { zip } = userDetails;
@@ -172,6 +172,7 @@ const EditUserDetails = () => {
     } else if (name === "address") {
       setUserDetails({ ...userDetails, [name]: value });
     } else if (name === "city") {
+      console.log(value);
       setUserDetails({ ...userDetails, [name]: value });
     } else if (name === "locality") {
       setUserDetails({ ...userDetails, [name]: value });
