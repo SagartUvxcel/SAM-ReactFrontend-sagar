@@ -7,6 +7,7 @@ import Layout from "../1.CommonLayout/Layout";
 const EditUserDetails = () => {
   // To store original details of user. It is required when user click on cancel button of edit form.
   const [originalValuesToShow, SetOriginalValuesToShow] = useState({});
+  const [idOfState, setIdOfState] = useState(0);
 
   const [userType, setUserType] = useState("");
   // To store updated user details.
@@ -55,6 +56,7 @@ const EditUserDetails = () => {
     pan_number,
     aadhar_number,
     mobile_number,
+    state_id,
     locality,
     address,
     city,
@@ -197,6 +199,7 @@ const EditUserDetails = () => {
         citiesFromApi: cityByState.data,
       });
 
+      setIdOfState(parseInt(value));
       zipValidationByState(zip, parseInt(value), customer_reg_url);
       let stateName = "";
       let getStateName = document.getElementById(`state-name-${value}`);
@@ -206,17 +209,13 @@ const EditUserDetails = () => {
       setUserDetails({
         ...userDetails,
         city: cityByState.data[0].city_name,
-        state: stateName,
+        state_name: stateName,
       });
       document.getElementById("city").firstChild.selected = true;
     } else if (name === "zip") {
       setUserDetails({ ...userDetails, zip: parseInt(value) });
-      if (userDetails.state_id !== "" && value !== "") {
-        zipValidationByState(
-          value,
-          parseInt(userDetails.state_id),
-          customer_reg_url
-        );
+      if (idOfState !== "" && value !== "") {
+        zipValidationByState(value, idOfState, customer_reg_url);
       }
     } else if (name === "address") {
       setUserDetails({ ...userDetails, [name]: value });
