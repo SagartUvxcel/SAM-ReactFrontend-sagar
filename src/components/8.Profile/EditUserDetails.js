@@ -11,7 +11,7 @@ const EditUserDetails = () => {
   const [userType, setUserType] = useState("");
   // To store updated user details.
   const [userDetails, setUserDetails] = useState({
-    state_id: 1,
+    state_id: "",
     first_name: "",
     middle_name: "",
     last_name: "",
@@ -19,7 +19,7 @@ const EditUserDetails = () => {
     aadhar_number: "",
     mobile_number: "",
     // Main data to post ( Editable fields )
-    address: "Not Availabel",
+    address: "",
     locality: "",
     city: "",
     state: "",
@@ -37,7 +37,7 @@ const EditUserDetails = () => {
     statesFromApi: [],
     citiesFromApi: [],
     cityVisiblity: "d-none",
-    state_id: userDetails.state_id,
+    // state_id: userDetails.state_id,
   });
 
   // useState for validation.
@@ -57,7 +57,7 @@ const EditUserDetails = () => {
     locality,
     address,
     city,
-    state,
+    state_name,
     zip,
     email,
   } = userDetails;
@@ -71,7 +71,7 @@ const EditUserDetails = () => {
     statesFromApi,
     citiesFromApi,
     cityVisiblity,
-    state_id,
+    // state_id,
   } = allUseStates;
 
   const { zipCodeValidationColor, zipCodeValidationMessage } = validation;
@@ -100,7 +100,8 @@ const EditUserDetails = () => {
           headers: headers,
         }
       )
-      .then((res) => {
+      .then(async (res) => {
+        const [headers, url] = setHeaderAndUrl();
         setUserType(Object.keys(res.data)[1]);
         const { individual_user, org_user, user_details } = res.data;
         const {
@@ -121,7 +122,7 @@ const EditUserDetails = () => {
           address,
         } = user_details;
         setUserDetails({
-          state_id: state_id,
+          state_id: parseInt(state_id),
           first_name: first_name,
           last_name: last_name,
           middle_name: middle_name,
@@ -131,9 +132,24 @@ const EditUserDetails = () => {
           mobile_number: mobile_number,
           locality: locality,
           city: city,
-          state: state_name,
+          state_name: state_name,
           zip: zip,
           email: email_address,
+        });
+        // Get Cities using state_id from api.
+        const cityByState = await axios.post(
+          `${url}/by-city`,
+          { state_id: state_id },
+          { headers: headers }
+        );
+        // Get States from api.
+        const allStates = await axios.get(`${url}/by-state`, {
+          headers: headers,
+        });
+        setAllUseStates({
+          ...allUseStates,
+          citiesFromApi: cityByState.data,
+          statesFromApi: allStates.data,
         });
         SetOriginalValuesToShow(res.data);
       });
@@ -161,26 +177,6 @@ const EditUserDetails = () => {
           });
         }
       });
-  };
-
-  const getStatesAndCityFromApi = async () => {
-    const [headers, url] = setHeaderAndUrl();
-    // Get all states from api.
-    const allStates = await axios.get(`${url}/by-state`, {
-      headers: headers,
-    });
-    // Get Cities using state_id from api.
-    const cityByState = await axios.post(
-      `${url}/by-city`,
-      { state_id: userDetails.state_id },
-      { headers: headers }
-    );
-
-    setAllUseStates({
-      ...allUseStates,
-      statesFromApi: allStates.data,
-      citiesFromApi: cityByState.data,
-    });
   };
 
   const onInputChange = async (e) => {
@@ -213,8 +209,12 @@ const EditUserDetails = () => {
       document.getElementById("city").firstChild.selected = true;
     } else if (name === "zip") {
       setUserDetails({ ...userDetails, zip: parseInt(value) });
-      if (state_id !== "" && value !== "") {
-        zipValidationByState(value, parseInt(state_id), customer_reg_url);
+      if (userDetails.state_id !== "" && value !== "") {
+        zipValidationByState(
+          value,
+          parseInt(userDetails.state_id),
+          customer_reg_url
+        );
       }
     } else if (name === "address") {
       console.log(name, value);
@@ -240,7 +240,7 @@ const EditUserDetails = () => {
 
     // User's original state will be selected on state select input.
     statesFromApi.forEach((i) => {
-      if (i.state_name === state) {
+      if (i.state_name === state_name) {
         document.getElementById(`state-name-${i.state_id}`).selected = true;
       }
     });
@@ -263,7 +263,7 @@ const EditUserDetails = () => {
       lableVisibility: "",
       selectStateClassName: "d-none",
       cityVisiblity: "d-none",
-      state_id: userDetails.state_id,
+      // state_id: userDetails.state_id,
     });
 
     setValidation({
@@ -289,7 +289,7 @@ const EditUserDetails = () => {
       locality: locality,
       city: city,
       zip: zip,
-      state: state,
+      state: state_name,
       email: email,
     };
     console.log(dataToPost);
@@ -309,8 +309,6 @@ const EditUserDetails = () => {
               lableVisibility: "",
               selectStateClassName: "d-none",
               cityVisiblity: "d-none",
-
-              state_id: userDetails.state_id,
             });
             // setTimeout(() => {
             //   goTo("/profile");
@@ -325,7 +323,6 @@ const EditUserDetails = () => {
   };
 
   useEffect(() => {
-    getStatesAndCityFromApi();
     getUserToEdit();
     // eslint-disable-next-line
   }, []);
@@ -446,13 +443,13 @@ const EditUserDetails = () => {
 
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
-                        <label htmlFor="state" className="form-label">
+                        <label htmlFor="state_name" className="form-label">
                           State
                         </label>
-                        <p className={`${lableVisibility}`}>{state}</p>
+                        <p className={`${lableVisibility}`}>{state_name}</p>
                         <select
-                          name="state"
-                          id="state"
+                          name="state_name"
+                          id="state_name"
                           className={`form-select ${selectStateClassName}`}
                           onChange={onInputChange}
                           required
