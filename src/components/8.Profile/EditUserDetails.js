@@ -7,6 +7,8 @@ import Layout from "../1.CommonLayout/Layout";
 const EditUserDetails = () => {
   // To store original details of user. It is required when user click on cancel button of edit form.
   const [originalValuesToShow, SetOriginalValuesToShow] = useState({});
+
+  const [userType, setUserType] = useState("");
   // To store updated user details.
   const [userDetails, setUserDetails] = useState({
     state_id: 1,
@@ -89,39 +91,52 @@ const EditUserDetails = () => {
   // Function will get the data of user whose details are to be edited.
   const getUserToEdit = async () => {
     const [headers] = setHeaderAndUrl();
-    const userId = localStorage.getItem("userId");
-    const user = await axios.get(`/sam/v1/user-registration/auth/${userId}`, {
-      headers: headers,
-    });
-    const {
-      first_name,
-      middle_name,
-      last_name,
-      pan_number,
-      aadhar_number,
-      mobile_number,
-      locality,
-      city,
-      state,
-      zip,
-      email_address,
-    } = user.data;
-    SetOriginalValuesToShow(user.data);
-    setUserDetails({
-      ...userDetails,
-      first_name: first_name,
-      last_name: last_name,
-      middle_name: middle_name,
-      address: address,
-      pan_number: pan_number,
-      aadhar_number: aadhar_number,
-      mobile_number: mobile_number,
-      locality: locality,
-      city: city,
-      state: state,
-      zip: zip,
-      email: email_address,
-    });
+    const userEmail = localStorage.getItem("user");
+    await axios
+      .post(
+        `/sam/v1/user-registration/auth/getuser`,
+        JSON.stringify({ email: userEmail }),
+        {
+          headers: headers,
+        }
+      )
+      .then((res) => {
+        setUserType(Object.keys(res.data)[1]);
+        const { individual_user, org_user, user_details } = res.data;
+        const {
+          first_name,
+          middle_name,
+          last_name,
+          pan_number,
+          aadhar_number,
+        } = individual_user;
+        const {
+          mobile_number,
+          locality,
+          city,
+          state_name,
+          state_id,
+          zip,
+          email_address,
+          address,
+        } = user_details;
+        setUserDetails({
+          state_id: state_id,
+          first_name: first_name,
+          last_name: last_name,
+          middle_name: middle_name,
+          address: address,
+          pan_number: pan_number,
+          aadhar_number: aadhar_number,
+          mobile_number: mobile_number,
+          locality: locality,
+          city: city,
+          state: state_name,
+          zip: zip,
+          email: email_address,
+        });
+        SetOriginalValuesToShow(res.data);
+      });
   };
 
   // Function to validate zipCodes.
