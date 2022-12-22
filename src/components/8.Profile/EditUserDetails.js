@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import Layout from "../1.CommonLayout/Layout";
 
 const EditUserDetails = () => {
+  const [originalValuesToShow, SetOriginalValuesToShow] = useState({});
   const [userDetails, setUserDetails] = useState({
     defaultAddress: "Not Availabe",
     state_id: 1,
@@ -14,7 +15,6 @@ const EditUserDetails = () => {
     pan_number: "",
     aadhar_number: "",
     mobile_number: "",
-
     //Main to post
     address: "",
     locality: "",
@@ -32,7 +32,6 @@ const EditUserDetails = () => {
     pan_number,
     aadhar_number,
     mobile_number,
-    address,
     locality,
     city,
     state,
@@ -99,6 +98,7 @@ const EditUserDetails = () => {
       zip,
       email_address,
     } = user.data;
+    SetOriginalValuesToShow(user.data);
     setUserDetails({
       ...userDetails,
       first_name: first_name,
@@ -242,8 +242,8 @@ const EditUserDetails = () => {
 
     let samp = document.querySelectorAll("input");
     for (let i of samp) {
-      document.getElementById(i.name).value = userDetails[i.name]
-        ? userDetails[i.name]
+      document.getElementById(i.name).value = originalValuesToShow[i.name]
+        ? originalValuesToShow[i.name]
         : "Not Available";
     }
   };
