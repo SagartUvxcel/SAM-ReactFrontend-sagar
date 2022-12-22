@@ -5,7 +5,9 @@ import { toast } from "react-toastify";
 import Layout from "../1.CommonLayout/Layout";
 
 const EditUserDetails = () => {
+  // To store original details of user. It is required when user click on cancel button of edit form.
   const [originalValuesToShow, SetOriginalValuesToShow] = useState({});
+  // To store updated user details.
   const [userDetails, setUserDetails] = useState({
     state_id: 1,
     first_name: "",
@@ -14,7 +16,7 @@ const EditUserDetails = () => {
     pan_number: "",
     aadhar_number: "",
     mobile_number: "",
-    //Main to post
+    // Main data to post ( Editable fields )
     address: "Not Availabel",
     locality: "",
     city: "",
@@ -23,6 +25,26 @@ const EditUserDetails = () => {
     email: "",
   });
 
+  // useStates to enable or disable editing and hide or unhide required fields.
+  const [allUseStates, setAllUseStates] = useState({
+    isReadOnly: true,
+    editClassName: "editable-values",
+    cancelUpdateBtnClassName: "d-none",
+    lableVisibility: "",
+    selectStateClassName: "d-none",
+    statesFromApi: [],
+    citiesFromApi: [],
+    cityVisiblity: "d-none",
+    state_id: userDetails.state_id,
+  });
+
+  // useState for validation.
+  const [validation, setValidation] = useState({
+    zipCodeValidationColor: "",
+    zipCodeValidationMessage: "",
+  });
+
+  // Object destructuring.
   const {
     first_name,
     middle_name,
@@ -38,26 +60,6 @@ const EditUserDetails = () => {
     email,
   } = userDetails;
 
-  const goTo = useNavigate();
-
-  const [allUseStates, setAllUseStates] = useState({
-    isReadOnly: true,
-    editClassName: "editable-values",
-    cancelUpdateBtnClassName: "d-none",
-    lableVisibility: "",
-    selectStateClassName: "d-none",
-    statesFromApi: [],
-    citiesFromApi: [],
-    cityVisiblity: "d-none",
-    state_id: userDetails.state_id,
-  });
-
-  const [validation, setValidation] = useState({
-    zipCodeValidationColor: "",
-    zipCodeValidationMessage: "",
-  });
-
-  const { zipCodeValidationColor, zipCodeValidationMessage } = validation;
   const {
     isReadOnly,
     editClassName,
@@ -70,6 +72,12 @@ const EditUserDetails = () => {
     state_id,
   } = allUseStates;
 
+  const { zipCodeValidationColor, zipCodeValidationMessage } = validation;
+
+  // To navigate to particular route.
+  const goTo = useNavigate();
+
+  // Function will provide login token of user from localStorage and also some urls are stored in this function.
   const setHeaderAndUrl = () => {
     const loginToken = localStorage.getItem("logintoken");
     let headers = { Authorization: loginToken };
@@ -78,6 +86,7 @@ const EditUserDetails = () => {
     return [headers, url, customer_reg_url];
   };
 
+  // Function will get the data of user whose details are to be edited.
   const getUserToEdit = async () => {
     const [headers] = setHeaderAndUrl();
     const userId = localStorage.getItem("userId");
@@ -145,6 +154,7 @@ const EditUserDetails = () => {
     const allStates = await axios.get(`${url}/by-state`, {
       headers: headers,
     });
+    // Get Cities using state_id from api.
     const cityByState = await axios.post(
       `${url}/by-city`,
       { state_id: userDetails.state_id },
@@ -201,6 +211,7 @@ const EditUserDetails = () => {
     }
   };
 
+  // Function will run when user click on edit icon / button.
   const editDetails = () => {
     setAllUseStates({
       ...allUseStates,
@@ -211,11 +222,15 @@ const EditUserDetails = () => {
       selectStateClassName: "",
       cityVisiblity: "",
     });
+
+    // User's original state will be selected on state select input.
     statesFromApi.forEach((i) => {
       if (i.state_name === state) {
         document.getElementById(`state-name-${i.state_id}`).selected = true;
       }
     });
+
+    // User's original city will be selected on city select input.
     citiesFromApi.forEach((i) => {
       if (i.city_name === city) {
         document.getElementById(`${i.city_name}`).selected = true;
@@ -223,6 +238,7 @@ const EditUserDetails = () => {
     });
   };
 
+  // Function will run when user click on cancel button.
   const cancelEditing = () => {
     setAllUseStates({
       ...allUseStates,
@@ -240,6 +256,7 @@ const EditUserDetails = () => {
       zipCodeValidationMessage: "",
     });
 
+    // Show original values of user.
     let samp = document.querySelectorAll("input");
     for (let i of samp) {
       document.getElementById(i.name).value = originalValuesToShow[i.name]
@@ -248,6 +265,7 @@ const EditUserDetails = () => {
     }
   };
 
+  // Function will run on update button click.
   const updateDetails = async (e) => {
     e.preventDefault();
     const [headers, , customer_reg_url] = setHeaderAndUrl();
