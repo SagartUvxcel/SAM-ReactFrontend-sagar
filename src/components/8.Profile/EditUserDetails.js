@@ -181,7 +181,6 @@ const EditUserDetails = () => {
     } else if (name === "address") {
       setUserDetails({ ...userDetails, [name]: value });
     } else if (name === "city") {
-      console.log(value);
       setUserDetails({ ...userDetails, [name]: value });
     } else if (name === "locality") {
       setUserDetails({ ...userDetails, [name]: value });
@@ -189,7 +188,7 @@ const EditUserDetails = () => {
   };
 
   const editDetails = () => {
-    console.log(defaultUser);
+    // console.log(defaultUser);
     setAllUseStates({
       ...allUseStates,
       isReadOnly: false,
@@ -201,13 +200,12 @@ const EditUserDetails = () => {
     });
     statesFromApi.forEach((i) => {
       if (i.state_name === state) {
-        console.log("Yes this is the state of User");
         document.getElementById(`state-name-${i.state_id}`).selected = true;
       }
     });
-    citiesFromApi.forEach((city) => {
-      if (city.city_name === defaultValues.city) {
-        document.getElementById(`${city.city_name}`).selected = true;
+    citiesFromApi.forEach((i) => {
+      if (i.city_name === city) {
+        document.getElementById(`${i.city_name}`).selected = true;
       }
     });
   };
