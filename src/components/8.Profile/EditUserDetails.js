@@ -33,6 +33,7 @@ const EditUserDetails = () => {
     aadhar_number,
     mobile_number,
     locality,
+    address,
     city,
     state,
     zip,
@@ -251,10 +252,18 @@ const EditUserDetails = () => {
   const updateDetails = async (e) => {
     e.preventDefault();
     const [headers, url, customer_reg_url] = setHeaderAndUrl();
-    console.log(userDetails);
+    const dataToPost = {
+      address: address,
+      locality: locality,
+      city: city,
+      zip: zip,
+      state: state,
+      email: email,
+    };
+    console.log(dataToPost);
     if (!zipCodeValidationColor) {
       await axios
-        .post(`${customer_reg_url}/auth/edit-details`, userDetails, {
+        .post(`${customer_reg_url}/auth/edit-details`, dataToPost, {
           headers: headers,
         })
         .then((res) => {
