@@ -7,7 +7,6 @@ import Layout from "../1.CommonLayout/Layout";
 const EditUserDetails = () => {
   const [originalValuesToShow, SetOriginalValuesToShow] = useState({});
   const [userDetails, setUserDetails] = useState({
-    defaultAddress: "Not Availabe",
     state_id: 1,
     first_name: "",
     middle_name: "",
@@ -16,7 +15,7 @@ const EditUserDetails = () => {
     aadhar_number: "",
     mobile_number: "",
     //Main to post
-    address: "",
+    address: "Not Availabel",
     locality: "",
     city: "",
     state: "",
@@ -28,7 +27,6 @@ const EditUserDetails = () => {
     first_name,
     middle_name,
     last_name,
-    defaultAddress,
     pan_number,
     aadhar_number,
     mobile_number,
@@ -105,7 +103,7 @@ const EditUserDetails = () => {
       first_name: first_name,
       last_name: last_name,
       middle_name: middle_name,
-      address: defaultAddress,
+      address: address,
       pan_number: pan_number,
       aadhar_number: aadhar_number,
       mobile_number: mobile_number,
@@ -194,6 +192,7 @@ const EditUserDetails = () => {
         zipValidationByState(value, parseInt(state_id), customer_reg_url);
       }
     } else if (name === "address") {
+      console.log(name, value);
       setUserDetails({ ...userDetails, [name]: value });
     } else if (name === "city") {
       setUserDetails({ ...userDetails, [name]: value });
@@ -251,7 +250,7 @@ const EditUserDetails = () => {
 
   const updateDetails = async (e) => {
     e.preventDefault();
-    const [headers, url, customer_reg_url] = setHeaderAndUrl();
+    const [headers, , customer_reg_url] = setHeaderAndUrl();
     const dataToPost = {
       address: address,
       locality: locality,
@@ -388,7 +387,7 @@ const EditUserDetails = () => {
                           type="text"
                           className={`form-control ${editClassName}`}
                           id="address"
-                          defaultValue={defaultAddress}
+                          defaultValue={address}
                           readOnly={isReadOnly}
                           required
                         />
