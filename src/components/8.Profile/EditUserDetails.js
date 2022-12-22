@@ -5,35 +5,17 @@ import { toast } from "react-toastify";
 import Layout from "../1.CommonLayout/Layout";
 
 const EditUserDetails = () => {
-  const [defaultUser, setDefaultUser] = useState({
-    defaultAddress: "Not Availabe",
-  });
-
-  const {
-    defaultAddress,
-    first_name,
-    middle_name,
-    last_name,
-    mobile_number,
-    pan_number,
-    aadhar_number,
-    email_address,
-    zip: defaultZip,
-    state: defaultState,
-    city: defaultCity,
-    locality: defaultLocality,
-  } = defaultUser;
-
-  const defaultValues = {
-    address: defaultAddress,
-    locality: defaultLocality,
-    city: defaultCity,
-    state: defaultState,
-    state_id: 1,
-    zip: defaultZip,
-  };
-
   const [userDetails, setUserDetails] = useState({
+    defaultAddress: "Not Availabe",
+    state_id: 1,
+    first_name: "",
+    middle_name: "",
+    last_name: "",
+    pan_number: "",
+    aadhar_number: "",
+    mobile_number: "",
+
+    //Main to post
     address: "",
     locality: "",
     city: "",
@@ -42,7 +24,21 @@ const EditUserDetails = () => {
     email: "",
   });
 
-  const { address, locality, city, state, zip, email } = userDetails;
+  const {
+    first_name,
+    middle_name,
+    last_name,
+    defaultAddress,
+    pan_number,
+    aadhar_number,
+    mobile_number,
+    address,
+    locality,
+    city,
+    state,
+    zip,
+    email,
+  } = userDetails;
 
   const goTo = useNavigate();
 
@@ -55,7 +51,7 @@ const EditUserDetails = () => {
     statesFromApi: [],
     citiesFromApi: [],
     cityVisiblity: "d-none",
-    state_id: defaultValues.state_id,
+    state_id: userDetails.state_id,
   });
 
   const [validation, setValidation] = useState({
@@ -90,10 +86,28 @@ const EditUserDetails = () => {
     const user = await axios.get(`/sam/v1/user-registration/auth/${userId}`, {
       headers: headers,
     });
-    setDefaultUser(user.data);
-    const { locality, city, state, zip, email_address } = user.data;
+    const {
+      first_name,
+      middle_name,
+      last_name,
+      pan_number,
+      aadhar_number,
+      mobile_number,
+      locality,
+      city,
+      state,
+      zip,
+      email_address,
+    } = user.data;
     setUserDetails({
+      ...userDetails,
+      first_name: first_name,
+      last_name: last_name,
+      middle_name: middle_name,
       address: defaultAddress,
+      pan_number: pan_number,
+      aadhar_number: aadhar_number,
+      mobile_number: mobile_number,
       locality: locality,
       city: city,
       state: state,
@@ -134,7 +148,7 @@ const EditUserDetails = () => {
     });
     const cityByState = await axios.post(
       `${url}/by-city`,
-      { state_id: defaultValues.state_id },
+      { state_id: userDetails.state_id },
       { headers: headers }
     );
 
@@ -188,7 +202,6 @@ const EditUserDetails = () => {
   };
 
   const editDetails = () => {
-    // console.log(defaultUser);
     setAllUseStates({
       ...allUseStates,
       isReadOnly: false,
@@ -219,7 +232,7 @@ const EditUserDetails = () => {
       lableVisibility: "",
       selectStateClassName: "d-none",
       cityVisiblity: "d-none",
-      state_id: defaultValues.state_id,
+      state_id: userDetails.state_id,
     });
 
     setValidation({
@@ -229,8 +242,8 @@ const EditUserDetails = () => {
 
     let samp = document.querySelectorAll("input");
     for (let i of samp) {
-      document.getElementById(i.name).value = defaultValues[i.name]
-        ? defaultValues[i.name]
+      document.getElementById(i.name).value = userDetails[i.name]
+        ? userDetails[i.name]
         : "Not Available";
     }
   };
@@ -256,7 +269,7 @@ const EditUserDetails = () => {
               selectStateClassName: "d-none",
               cityVisiblity: "d-none",
 
-              state_id: defaultValues.state_id,
+              state_id: userDetails.state_id,
             });
             // setTimeout(() => {
             //   goTo("/profile");
@@ -323,7 +336,7 @@ const EditUserDetails = () => {
                         <label htmlFor="eMail" className="form-label">
                           Email
                         </label>
-                        <p>{email_address}</p>
+                        <p>{email}</p>
                       </div>
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
@@ -383,7 +396,7 @@ const EditUserDetails = () => {
                           type="text"
                           className={`form-control ${editClassName}`}
                           id="locality"
-                          defaultValue={defaultLocality}
+                          defaultValue={locality}
                           readOnly={isReadOnly}
                           required
                         />
@@ -395,7 +408,7 @@ const EditUserDetails = () => {
                         <label htmlFor="state" className="form-label">
                           State
                         </label>
-                        <p className={`${lableVisibility}`}>{defaultState}</p>
+                        <p className={`${lableVisibility}`}>{state}</p>
                         <select
                           name="state"
                           id="state"
@@ -425,7 +438,7 @@ const EditUserDetails = () => {
                         <label htmlFor="city" className="form-label">
                           City
                         </label>
-                        <p className={`${lableVisibility}`}>{defaultCity}</p>
+                        <p className={`${lableVisibility}`}>{city}</p>
                         <select
                           onChange={onInputChange}
                           name="city"
@@ -461,7 +474,7 @@ const EditUserDetails = () => {
                           type="number"
                           className={`form-control ${editClassName} border-${zipCodeValidationColor}`}
                           id="zip"
-                          defaultValue={defaultZip}
+                          defaultValue={zip}
                           readOnly={isReadOnly}
                           required
                         />
