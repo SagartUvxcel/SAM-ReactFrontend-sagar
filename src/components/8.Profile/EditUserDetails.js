@@ -34,15 +34,15 @@ const EditUserDetails = () => {
   };
 
   const [userDetails, setUserDetails] = useState({
-    address: defaultAddress,
-    locality: defaultLocality,
-    city: defaultCity,
-    state: defaultState,
-    zip: defaultZip,
-    email: email_address,
+    address: "",
+    locality: "",
+    city: "",
+    state: "",
+    zip: "",
+    email: "",
   });
 
-  const { zip } = userDetails;
+  const { address, locality, city, state, zip, email } = userDetails;
 
   const goTo = useNavigate();
 
@@ -91,6 +91,15 @@ const EditUserDetails = () => {
       headers: headers,
     });
     setDefaultUser(user.data);
+    const { locality, city, state, zip, email_address } = user.data;
+    setUserDetails({
+      address: defaultAddress,
+      locality: locality,
+      city: city,
+      state: state,
+      zip: zip,
+      email: email_address,
+    });
   };
 
   // Function to validate zipCodes.
