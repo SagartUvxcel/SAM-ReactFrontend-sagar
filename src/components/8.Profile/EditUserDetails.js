@@ -37,7 +37,6 @@ const EditUserDetails = () => {
     statesFromApi: [],
     citiesFromApi: [],
     cityVisiblity: "d-none",
-    // state_id: userDetails.state_id,
   });
 
   // useState for validation.
@@ -183,7 +182,7 @@ const EditUserDetails = () => {
     const { name, value } = e.target;
     const [headers, url, customer_reg_url] = setHeaderAndUrl();
     // If input is state then post selected state id to api for getting cities based on selected state.
-    if (name === "state") {
+    if (name === "state_name") {
       const cityByState = await axios.post(
         `${url}/by-city`,
         { state_id: parseInt(value) },
@@ -192,7 +191,6 @@ const EditUserDetails = () => {
       setAllUseStates({
         ...allUseStates,
         citiesFromApi: cityByState.data,
-        state_id: parseInt(value),
       });
 
       zipValidationByState(zip, parseInt(value), customer_reg_url);
@@ -217,7 +215,6 @@ const EditUserDetails = () => {
         );
       }
     } else if (name === "address") {
-      console.log(name, value);
       setUserDetails({ ...userDetails, [name]: value });
     } else if (name === "city") {
       setUserDetails({ ...userDetails, [name]: value });
@@ -263,7 +260,6 @@ const EditUserDetails = () => {
       lableVisibility: "",
       selectStateClassName: "d-none",
       cityVisiblity: "d-none",
-      // state_id: userDetails.state_id,
     });
 
     setValidation({
