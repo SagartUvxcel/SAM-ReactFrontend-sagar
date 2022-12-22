@@ -11,6 +11,7 @@ const EditUserDetails = () => {
   const [userType, setUserType] = useState("");
   // To store updated user details.
   const [userDetails, setUserDetails] = useState({
+    user_type: "",
     state_id: "",
     first_name: "",
     middle_name: "",
@@ -47,6 +48,7 @@ const EditUserDetails = () => {
 
   // Object destructuring.
   const {
+    user_type,
     first_name,
     middle_name,
     last_name,
@@ -111,6 +113,7 @@ const EditUserDetails = () => {
           aadhar_number,
         } = individual_user;
         const {
+          user_type,
           mobile_number,
           locality,
           city,
@@ -134,6 +137,7 @@ const EditUserDetails = () => {
           state_name: state_name,
           zip: zip,
           email: email_address,
+          user_type: user_type,
         });
         // Get Cities using state_id from api.
         const cityByState = await axios.post(
@@ -335,11 +339,20 @@ const EditUserDetails = () => {
                     <div className="col-8">
                       <h6 className="mb-2 text-primary">Personal Details</h6>
                     </div>
+
                     <div className="col-4 text-end">
                       <i
                         onClick={editDetails}
                         className="bi bi-pencil-square"
                       ></i>
+                    </div>
+                    <div className="col-xl-4 col-lg-4 col-md-6  col-12">
+                      <div className="form-group mb-3">
+                        <label htmlFor="userType" className="form-label">
+                          User Type:
+                        </label>
+                        <p>{user_type ? user_type : "NA"}</p>
+                      </div>
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
@@ -349,6 +362,7 @@ const EditUserDetails = () => {
                         <p>{first_name}</p>
                       </div>
                     </div>
+
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
                         <label htmlFor="middleName" className="form-label">
