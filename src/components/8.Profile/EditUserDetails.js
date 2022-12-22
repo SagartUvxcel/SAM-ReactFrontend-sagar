@@ -199,11 +199,10 @@ const EditUserDetails = () => {
       selectStateClassName: "",
       cityVisiblity: "",
     });
-    statesFromApi.forEach((state) => {
-      if (state.state_name === defaultValues.state) {
-        document.getElementById(
-          `state-name-${defaultValues.state_id}`
-        ).selected = true;
+    statesFromApi.forEach((i) => {
+      if (i.state_name === state) {
+        console.log("Yes this is the state of User");
+        document.getElementById(`state-name-${i.state_id}`).selected = true;
       }
     });
     citiesFromApi.forEach((city) => {
