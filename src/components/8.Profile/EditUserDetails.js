@@ -422,7 +422,54 @@ const EditUserDetails = () => {
                         </div>
                       </>
                     ) : (
-                      <></>
+                      <>
+                        <div className="col-xl-4 col-lg-4 col-md-6  col-12">
+                          <div className="form-group mb-3">
+                            <label
+                              htmlFor="organization_type"
+                              className="form-label"
+                            >
+                              Organization Type
+                            </label>
+                            <p>LLP</p>
+                          </div>
+                        </div>
+                        <div className="col-xl-4 col-lg-4 col-md-6  col-12">
+                          <div className="form-group mb-3">
+                            <label
+                              htmlFor="company_name"
+                              className="form-label"
+                            >
+                              Company Name
+                            </label>
+                            <p>UVXCEL IT SOLUTIONS PVT. LTD</p>
+                          </div>
+                        </div>
+                        <div className="col-xl-4 col-lg-4 col-md-6  col-12">
+                          <div className="form-group mb-3">
+                            <label htmlFor="gst_number" className="form-label">
+                              GST Number
+                            </label>
+                            <p>06BZASM6385P6Z2</p>
+                          </div>
+                        </div>
+                        <div className="col-xl-4 col-lg-4 col-md-6  col-12">
+                          <div className="form-group mb-3">
+                            <label htmlFor="tan_number" className="form-label">
+                              TAN Number
+                            </label>
+                            <p>TYAH76547C</p>
+                          </div>
+                        </div>
+                        <div className="col-xl-4 col-lg-4 col-md-6  col-12">
+                          <div className="form-group mb-3">
+                            <label htmlFor="cin_number" className="form-label">
+                              CIN Number
+                            </label>
+                            <p>U12345DL2020PLC067876</p>
+                          </div>
+                        </div>
+                      </>
                     )}
                   </div>
                   <div className="row">
