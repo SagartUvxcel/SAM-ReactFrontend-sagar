@@ -117,17 +117,13 @@ const ResetPassword = () => {
         passwordType2: "text",
       });
     } else {
-      await axios
-        .post(
-          `/sam/v1/customer-registration/reset-password`,
-          JSON.stringify({
-            password: newPassword,
-            token: localStorage.getItem("token"),
-          })
-        )
-        .then((res) => {
-          console.log(res.data.status);
-        });
+      await axios.post(
+        `/sam/v1/customer-registration/reset-password`,
+        JSON.stringify({
+          password: newPassword,
+          token: localStorage.getItem("token"),
+        })
+      );
       setResetBtnClassName("disabled");
       toast.success("Password Changed Successfully !");
       setTimeout(() => {
