@@ -11,8 +11,10 @@ const EditUserDetails = () => {
   const stateLable = useRef();
   const cityLable = useRef();
   const [userType, setUserType] = useState("");
+
   // To store updated user details.
   const [commonUserDetails, setCommonUserDetails] = useState({});
+
   // Object destructuring.
   const {
     user_type,
@@ -24,7 +26,9 @@ const EditUserDetails = () => {
     zip,
     email,
   } = commonUserDetails;
+
   const [orgUserDetails, setOrgUserDetails] = useState({});
+
   // Object destructuring.
   const {
     cin_number,
@@ -35,6 +39,7 @@ const EditUserDetails = () => {
   } = orgUserDetails;
 
   const [individualUserDetails, setIndividualUserDetails] = useState({});
+
   // Object destructuring.
   const { first_name, middle_name, last_name, pan_number, aadhar_number } =
     individualUserDetails;
@@ -68,6 +73,7 @@ const EditUserDetails = () => {
     zipCodeValidationColor: "",
     zipCodeValidationMessage: "",
   });
+  
   // Object destructuring.
   const { zipCodeValidationColor, zipCodeValidationMessage } = validation;
 
