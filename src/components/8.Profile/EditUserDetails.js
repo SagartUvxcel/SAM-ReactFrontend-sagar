@@ -57,7 +57,6 @@ const EditUserDetails = () => {
     pan_number,
     aadhar_number,
     mobile_number,
-    state_id,
     locality,
     address,
     city,
@@ -75,7 +74,6 @@ const EditUserDetails = () => {
     statesFromApi,
     citiesFromApi,
     cityVisiblity,
-    // state_id,
   } = allUseStates;
 
   const { zipCodeValidationColor, zipCodeValidationMessage } = validation;
@@ -106,7 +104,6 @@ const EditUserDetails = () => {
       )
       .then(async (res) => {
         const [headers, url] = setHeaderAndUrl();
-        setUserType(Object.keys(res.data)[1]);
         const { individual_user, org_user, user_details } = res.data;
         const {
           first_name,
@@ -126,6 +123,7 @@ const EditUserDetails = () => {
           email_address,
           address,
         } = user_details;
+        setUserType(user_type);
         setIdOfState(parseInt(state_id));
         setUserDetails({
           state_id: parseInt(state_id),
@@ -378,7 +376,7 @@ const EditUserDetails = () => {
                       </div>
                     </div>
 
-                    {userType === "individual_user" ? (
+                    {userType === "Individual User" ? (
                       <>
                         <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                           <div className="form-group mb-3">
