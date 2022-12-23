@@ -125,6 +125,7 @@ const EditUserDetails = () => {
           email_address,
           address,
         } = user_details;
+        setIdOfState(parseInt(state_id));
         setUserDetails({
           state_id: parseInt(state_id),
           first_name: first_name,
@@ -214,7 +215,7 @@ const EditUserDetails = () => {
       document.getElementById("city").firstChild.selected = true;
     } else if (name === "zip") {
       setUserDetails({ ...userDetails, zip: parseInt(value) });
-      if (idOfState !== "" && value !== "") {
+      if (idOfState !== 0 && value !== "") {
         zipValidationByState(value, idOfState, customer_reg_url);
       }
     } else if (name === "address") {
