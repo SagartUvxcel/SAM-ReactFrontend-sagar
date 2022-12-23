@@ -12,23 +12,32 @@ const EditUserDetails = () => {
   const cityLable = useRef();
   const [userType, setUserType] = useState("");
   // To store updated user details.
-  const [userDetails, setUserDetails] = useState({
-    user_type: "",
-    state_id: "",
-    first_name: "",
-    middle_name: "",
-    last_name: "",
-    pan_number: "",
-    aadhar_number: "",
-    mobile_number: "",
-    // Main data to post ( Editable fields )
-    address: "",
-    locality: "",
-    city: "",
-    state: "",
-    zip: "",
-    email: "",
-  });
+  const [userDetails, setUserDetails] = useState({});
+  // Object destructuring.
+  const {
+    user_type,
+    mobile_number,
+    locality,
+    address,
+    city,
+    state_name,
+    zip,
+    email,
+  } = userDetails;
+  const [orgUserDetails, setOrgUserDetails] = useState({});
+  // Object destructuring.
+  const {
+    cin_number,
+    company_name,
+    gst_number,
+    organization_type,
+    tan_number,
+  } = orgUserDetails;
+
+  const [individualUserDetails, setIndividualUserDetails] = useState({});
+  // Object destructuring.
+  const { first_name, middle_name, last_name, pan_number, aadhar_number } =
+    individualUserDetails;
 
   // useStates to enable or disable editing and hide or unhide required fields.
   const [allUseStates, setAllUseStates] = useState({
@@ -42,29 +51,7 @@ const EditUserDetails = () => {
     cityVisiblity: "d-none",
   });
 
-  // useState for validation.
-  const [validation, setValidation] = useState({
-    zipCodeValidationColor: "",
-    zipCodeValidationMessage: "",
-  });
-
   // Object destructuring.
-  const {
-    user_type,
-    first_name,
-    middle_name,
-    last_name,
-    pan_number,
-    aadhar_number,
-    mobile_number,
-    locality,
-    address,
-    city,
-    state_name,
-    zip,
-    email,
-  } = userDetails;
-
   const {
     isReadOnly,
     editClassName,
@@ -76,6 +63,12 @@ const EditUserDetails = () => {
     cityVisiblity,
   } = allUseStates;
 
+  // useState for validation.
+  const [validation, setValidation] = useState({
+    zipCodeValidationColor: "",
+    zipCodeValidationMessage: "",
+  });
+  // Object destructuring.
   const { zipCodeValidationColor, zipCodeValidationMessage } = validation;
 
   // To navigate to particular route.
@@ -105,13 +98,37 @@ const EditUserDetails = () => {
       .then(async (res) => {
         const [headers, url] = setHeaderAndUrl();
         const { individual_user, org_user, user_details } = res.data;
-        const {
-          first_name,
-          middle_name,
-          last_name,
-          pan_number,
-          aadhar_number,
-        } = individual_user;
+        if (individual_user) {
+          const {
+            first_name,
+            middle_name,
+            last_name,
+            pan_number,
+            aadhar_number,
+          } = individual_user;
+          setIndividualUserDetails({
+            first_name: first_name,
+            middle_name: middle_name,
+            last_name: last_name,
+            pan_number: pan_number,
+            aadhar_number: aadhar_number,
+          });
+        } else if (org_user) {
+          const {
+            cin_number,
+            company_name,
+            gst_number,
+            organization_type,
+            tan_number,
+          } = org_user;
+          setOrgUserDetails({
+            cin_number: cin_number,
+            company_name: company_name,
+            gst_number: gst_number,
+            organization_type: organization_type,
+            tan_number: tan_number,
+          });
+        }
         const {
           user_type,
           mobile_number,
@@ -127,12 +144,7 @@ const EditUserDetails = () => {
         setIdOfState(parseInt(state_id));
         setUserDetails({
           state_id: parseInt(state_id),
-          first_name: first_name,
-          last_name: last_name,
-          middle_name: middle_name,
           address: address,
-          pan_number: pan_number,
-          aadhar_number: aadhar_number,
           mobile_number: mobile_number,
           locality: locality,
           city: city,
@@ -429,7 +441,7 @@ const EditUserDetails = () => {
                             >
                               Organization Type
                             </label>
-                            <p>LLP</p>
+                            <p>{organization_type}</p>
                           </div>
                         </div>
                         <div className="col-xl-4 col-lg-4 col-md-6  col-12">
@@ -440,7 +452,7 @@ const EditUserDetails = () => {
                             >
                               Company Name
                             </label>
-                            <p>UVXCEL IT SOLUTIONS PVT. LTD</p>
+                            <p>{company_name}</p>
                           </div>
                         </div>
                         <div className="col-xl-4 col-lg-4 col-md-6  col-12">
@@ -448,7 +460,7 @@ const EditUserDetails = () => {
                             <label htmlFor="gst_number" className="form-label">
                               GST Number
                             </label>
-                            <p>06BZASM6385P6Z2</p>
+                            <p>{gst_number}</p>
                           </div>
                         </div>
                         <div className="col-xl-4 col-lg-4 col-md-6  col-12">
@@ -456,7 +468,7 @@ const EditUserDetails = () => {
                             <label htmlFor="tan_number" className="form-label">
                               TAN Number
                             </label>
-                            <p>TYAH76547C</p>
+                            <p>{tan_number}</p>
                           </div>
                         </div>
                         <div className="col-xl-4 col-lg-4 col-md-6  col-12">
@@ -464,7 +476,7 @@ const EditUserDetails = () => {
                             <label htmlFor="cin_number" className="form-label">
                               CIN Number
                             </label>
-                            <p>U12345DL2020PLC067876</p>
+                            <p>{cin_number}</p>
                           </div>
                         </div>
                       </>
