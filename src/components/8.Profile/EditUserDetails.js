@@ -342,7 +342,7 @@ const EditUserDetails = () => {
             <div className="col-xl-10 col-lg-10 col-md-12 col-sm-12 col-12">
               <form onSubmit={updateDetails} className="card h-100">
                 <div className="card-body">
-                  <div className="row gutters">
+                  <div className="row">
                     <div className="col-8">
                       <h6 className="mb-2 text-primary">Personal Details</h6>
                     </div>
@@ -363,31 +363,6 @@ const EditUserDetails = () => {
                     </div>
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
-                        <label htmlFor="firstName" className="form-label">
-                          First Name
-                        </label>
-                        <p>{first_name}</p>
-                      </div>
-                    </div>
-
-                    <div className="col-xl-4 col-lg-4 col-md-6  col-12">
-                      <div className="form-group mb-3">
-                        <label htmlFor="middleName" className="form-label">
-                          Middle Name
-                        </label>
-                        <p>{middle_name}</p>
-                      </div>
-                    </div>
-                    <div className="col-xl-4 col-lg-4 col-md-6  col-12">
-                      <div className="form-group mb-3">
-                        <label htmlFor="lastName" className="form-label">
-                          Last Name
-                        </label>
-                        <p>{last_name}</p>
-                      </div>
-                    </div>
-                    <div className="col-xl-4 col-lg-4 col-md-6  col-12">
-                      <div className="form-group mb-3">
                         <label htmlFor="eMail" className="form-label">
                           Email
                         </label>
@@ -402,22 +377,49 @@ const EditUserDetails = () => {
                         <p>{mobile_number}</p>
                       </div>
                     </div>
-                    <div className="col-xl-4 col-lg-4 col-md-6  col-12">
-                      <div className="form-group mb-3">
-                        <label htmlFor="pan" className="form-label">
-                          PAN Number
-                        </label>
-                        <p>{pan_number}</p>
+
+                    <>
+                      <div className="col-xl-4 col-lg-4 col-md-6  col-12">
+                        <div className="form-group mb-3">
+                          <label htmlFor="firstName" className="form-label">
+                            First Name
+                          </label>
+                          <p>{first_name}</p>
+                        </div>
                       </div>
-                    </div>
-                    <div className="col-xl-4 col-lg-4 col-md-6  col-12">
-                      <div className="form-group mb-3">
-                        <label htmlFor="aadhaar" className="form-label">
-                          Aadhaar Number
-                        </label>
-                        <p>{aadhar_number}</p>
+                      <div className="col-xl-4 col-lg-4 col-md-6  col-12">
+                        <div className="form-group mb-3">
+                          <label htmlFor="middleName" className="form-label">
+                            Middle Name
+                          </label>
+                          <p>{middle_name}</p>
+                        </div>
                       </div>
-                    </div>
+                      <div className="col-xl-4 col-lg-4 col-md-6  col-12">
+                        <div className="form-group mb-3">
+                          <label htmlFor="lastName" className="form-label">
+                            Last Name
+                          </label>
+                          <p>{last_name}</p>
+                        </div>
+                      </div>
+                      <div className="col-xl-4 col-lg-4 col-md-6  col-12">
+                        <div className="form-group mb-3">
+                          <label htmlFor="pan" className="form-label">
+                            PAN Number
+                          </label>
+                          <p>{pan_number}</p>
+                        </div>
+                      </div>
+                      <div className="col-xl-4 col-lg-4 col-md-6  col-12">
+                        <div className="form-group mb-3">
+                          <label htmlFor="aadhaar" className="form-label">
+                            Aadhaar Number
+                          </label>
+                          <p>{aadhar_number}</p>
+                        </div>
+                      </div>
+                    </>
                   </div>
                   <div className="row">
                     <div className="col-12">
