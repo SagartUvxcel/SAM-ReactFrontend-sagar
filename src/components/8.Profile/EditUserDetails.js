@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Layout from "../1.CommonLayout/Layout";
@@ -8,7 +8,8 @@ const EditUserDetails = () => {
   // To store original details of user. It is required when user click on cancel button of edit form.
   const [originalValuesToShow, SetOriginalValuesToShow] = useState({});
   const [idOfState, setIdOfState] = useState(0);
-
+  const stateLable = useRef();
+  const cityLable = useRef();
   const [userType, setUserType] = useState("");
   // To store updated user details.
   const [userDetails, setUserDetails] = useState({
@@ -271,11 +272,17 @@ const EditUserDetails = () => {
       zipCodeValidationMessage: "",
     });
 
+    const originalData = originalValuesToShow.user_details;
+
+    stateLable.current.innerText = originalData.state_name;
+    cityLable.current.innerText = originalData.city;
+
     // Show original values of user.
     let samp = document.querySelectorAll("input");
     for (let i of samp) {
-      document.getElementById(i.name).value = originalValuesToShow[i.name]
-        ? originalValuesToShow[i.name]
+      const target = document.getElementById(i.name);
+      target.value = originalData[i.name]
+        ? originalData[i.name]
         : "Not Available";
     }
   };
@@ -453,10 +460,13 @@ const EditUserDetails = () => {
 
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
-                        <label htmlFor="state_name" className="form-label">
-                          State
-                        </label>
-                        <p className={`${lableVisibility}`}>{state_name}</p>
+                        <label className="form-label">State</label>
+                        <p
+                          ref={stateLable}
+                          className={`${lableVisibility} testing`}
+                        >
+                          {state_name}
+                        </p>
                         <select
                           name="state_name"
                           id="state_name"
@@ -486,7 +496,9 @@ const EditUserDetails = () => {
                         <label htmlFor="city" className="form-label">
                           City
                         </label>
-                        <p className={`${lableVisibility}`}>{city}</p>
+                        <p ref={cityLable} className={`${lableVisibility}`}>
+                          {city}
+                        </p>
                         <select
                           onChange={onInputChange}
                           name="city"
