@@ -378,48 +378,52 @@ const EditUserDetails = () => {
                       </div>
                     </div>
 
-                    <>
-                      <div className="col-xl-4 col-lg-4 col-md-6  col-12">
-                        <div className="form-group mb-3">
-                          <label htmlFor="firstName" className="form-label">
-                            First Name
-                          </label>
-                          <p>{first_name}</p>
+                    {userType === "individual_user" ? (
+                      <>
+                        <div className="col-xl-4 col-lg-4 col-md-6  col-12">
+                          <div className="form-group mb-3">
+                            <label htmlFor="firstName" className="form-label">
+                              First Name
+                            </label>
+                            <p>{first_name}</p>
+                          </div>
                         </div>
-                      </div>
-                      <div className="col-xl-4 col-lg-4 col-md-6  col-12">
-                        <div className="form-group mb-3">
-                          <label htmlFor="middleName" className="form-label">
-                            Middle Name
-                          </label>
-                          <p>{middle_name}</p>
+                        <div className="col-xl-4 col-lg-4 col-md-6  col-12">
+                          <div className="form-group mb-3">
+                            <label htmlFor="middleName" className="form-label">
+                              Middle Name
+                            </label>
+                            <p>{middle_name}</p>
+                          </div>
                         </div>
-                      </div>
-                      <div className="col-xl-4 col-lg-4 col-md-6  col-12">
-                        <div className="form-group mb-3">
-                          <label htmlFor="lastName" className="form-label">
-                            Last Name
-                          </label>
-                          <p>{last_name}</p>
+                        <div className="col-xl-4 col-lg-4 col-md-6  col-12">
+                          <div className="form-group mb-3">
+                            <label htmlFor="lastName" className="form-label">
+                              Last Name
+                            </label>
+                            <p>{last_name}</p>
+                          </div>
                         </div>
-                      </div>
-                      <div className="col-xl-4 col-lg-4 col-md-6  col-12">
-                        <div className="form-group mb-3">
-                          <label htmlFor="pan" className="form-label">
-                            PAN Number
-                          </label>
-                          <p>{pan_number}</p>
+                        <div className="col-xl-4 col-lg-4 col-md-6  col-12">
+                          <div className="form-group mb-3">
+                            <label htmlFor="pan" className="form-label">
+                              PAN Number
+                            </label>
+                            <p>{pan_number}</p>
+                          </div>
                         </div>
-                      </div>
-                      <div className="col-xl-4 col-lg-4 col-md-6  col-12">
-                        <div className="form-group mb-3">
-                          <label htmlFor="aadhaar" className="form-label">
-                            Aadhaar Number
-                          </label>
-                          <p>{aadhar_number}</p>
+                        <div className="col-xl-4 col-lg-4 col-md-6  col-12">
+                          <div className="form-group mb-3">
+                            <label htmlFor="aadhaar" className="form-label">
+                              Aadhaar Number
+                            </label>
+                            <p>{aadhar_number}</p>
+                          </div>
                         </div>
-                      </div>
-                    </>
+                      </>
+                    ) : (
+                      <></>
+                    )}
                   </div>
                   <div className="row">
                     <div className="col-12">
