@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Layout from "../1.CommonLayout/Layout";
 
@@ -12,7 +12,7 @@ const EditUserDetails = () => {
   const cityLable = useRef();
   const [userType, setUserType] = useState("");
   // To store updated user details.
-  const [userDetails, setUserDetails] = useState({});
+  const [commonUserDetails, setCommonUserDetails] = useState({});
   // Object destructuring.
   const {
     user_type,
@@ -23,7 +23,7 @@ const EditUserDetails = () => {
     state_name,
     zip,
     email,
-  } = userDetails;
+  } = commonUserDetails;
   const [orgUserDetails, setOrgUserDetails] = useState({});
   // Object destructuring.
   const {
@@ -72,7 +72,7 @@ const EditUserDetails = () => {
   const { zipCodeValidationColor, zipCodeValidationMessage } = validation;
 
   // To navigate to particular route.
-  const goTo = useNavigate();
+  // const goTo = useNavigate();
 
   // Function will provide login token of user from localStorage and also some urls are stored in this function.
   const setHeaderAndUrl = () => {
@@ -142,7 +142,7 @@ const EditUserDetails = () => {
         } = user_details;
         setUserType(user_type);
         setIdOfState(parseInt(state_id));
-        setUserDetails({
+        setCommonUserDetails({
           state_id: parseInt(state_id),
           address: address,
           mobile_number: mobile_number,
@@ -218,23 +218,23 @@ const EditUserDetails = () => {
       if (getStateName) {
         stateName = getStateName.innerText;
       }
-      setUserDetails({
-        ...userDetails,
+      setCommonUserDetails({
+        ...commonUserDetails,
         city: cityByState.data[0].city_name,
         state_name: stateName,
       });
       document.getElementById("city").firstChild.selected = true;
     } else if (name === "zip") {
-      setUserDetails({ ...userDetails, zip: parseInt(value) });
+      setCommonUserDetails({ ...commonUserDetails, zip: parseInt(value) });
       if (idOfState !== 0 && value !== "") {
         zipValidationByState(value, idOfState, customer_reg_url);
       }
     } else if (name === "address") {
-      setUserDetails({ ...userDetails, [name]: value });
+      setCommonUserDetails({ ...commonUserDetails, [name]: value });
     } else if (name === "city") {
-      setUserDetails({ ...userDetails, [name]: value });
+      setCommonUserDetails({ ...commonUserDetails, [name]: value });
     } else if (name === "locality") {
-      setUserDetails({ ...userDetails, [name]: value });
+      setCommonUserDetails({ ...commonUserDetails, [name]: value });
     }
   };
 
