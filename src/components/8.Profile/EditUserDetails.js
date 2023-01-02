@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 // import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Layout from "../1.CommonLayout/Layout";
@@ -8,8 +8,6 @@ const EditUserDetails = () => {
   // To store original details of user. It is required when user click on cancel button of edit form.
   const [originalValuesToShow, SetOriginalValuesToShow] = useState({});
   const [idOfState, setIdOfState] = useState(0);
-  const stateLable = useRef();
-  const cityLable = useRef();
   const [userType, setUserType] = useState("");
 
   // To store updated user details.
@@ -73,7 +71,7 @@ const EditUserDetails = () => {
     zipCodeValidationColor: "",
     zipCodeValidationMessage: "",
   });
-  
+
   // Object destructuring.
   const { zipCodeValidationColor, zipCodeValidationMessage } = validation;
 
@@ -174,7 +172,7 @@ const EditUserDetails = () => {
           citiesFromApi: cityByState.data,
           statesFromApi: allStates.data,
         });
-        SetOriginalValuesToShow(res.data);
+        SetOriginalValuesToShow(user_details);
       });
   };
 
@@ -272,9 +270,32 @@ const EditUserDetails = () => {
   };
 
   // Function will run when user click on cancel button.
-  const cancelEditing = () => {
+  const cancelEditing = async () => {
+    const [headers, url] = setHeaderAndUrl();
+    setValidation({
+      zipCodeValidationColor: "",
+      zipCodeValidationMessage: "",
+    });
+
+    const { city, state_id, state_name } = originalValuesToShow;
+
+    // Get Cities using state_id from api.
+    const cityByState = await axios.post(
+      `${url}/by-city`,
+      { state_id: state_id },
+      { headers: headers }
+    );
+
+    setCommonUserDetails({
+      ...commonUserDetails,
+      city: city,
+      state_id: state_id,
+      state_name: state_name,
+    });
+
     setAllUseStates({
       ...allUseStates,
+      citiesFromApi: cityByState.data,
       isReadOnly: true,
       editClassName: "editable-values",
       cancelUpdateBtnClassName: "d-none",
@@ -283,22 +304,12 @@ const EditUserDetails = () => {
       cityVisiblity: "d-none",
     });
 
-    setValidation({
-      zipCodeValidationColor: "",
-      zipCodeValidationMessage: "",
-    });
-
-    const originalData = originalValuesToShow.user_details;
-
-    stateLable.current.innerText = originalData.state_name;
-    cityLable.current.innerText = originalData.city;
-
     // Show original values of user.
     let samp = document.querySelectorAll("input");
     for (let i of samp) {
       const target = document.getElementById(i.name);
-      target.value = originalData[i.name]
-        ? originalData[i.name]
+      target.value = originalValuesToShow[i.name]
+        ? originalValuesToShow[i.name]
         : "Not Available";
     }
   };
@@ -530,10 +541,7 @@ const EditUserDetails = () => {
                     <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                       <div className="form-group mb-3">
                         <label className="form-label">State</label>
-                        <p
-                          ref={stateLable}
-                          className={`${lableVisibility} testing`}
-                        >
+                        <p className={`${lableVisibility} testing`}>
                           {state_name}
                         </p>
                         <select
@@ -565,9 +573,7 @@ const EditUserDetails = () => {
                         <label htmlFor="city" className="form-label">
                           City
                         </label>
-                        <p ref={cityLable} className={`${lableVisibility}`}>
-                          {city}
-                        </p>
+                        <p className={`${lableVisibility}`}>{city}</p>
                         <select
                           onChange={onInputChange}
                           name="city"
