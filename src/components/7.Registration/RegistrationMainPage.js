@@ -31,17 +31,7 @@ const Registration = () => {
   });
 
   // Store validation message and validation color based on input field.
-  const [validationDetails, setValidationDetails] = useState({
-    aadhaarValidationMessage: "",
-    panValidationMessage: "",
-    gstValidationMessage: "",
-    cinValidationMessage: "",
-    tanValidationMessage: "",
-    zipCodeValidationMessage: "",
-    emailValidationMessage: "",
-    mobileValidationMessage: "",
-    zipCodeValidationColor: "",
-  });
+  const [validationDetails, setValidationDetails] = useState({});
 
   // Things to be changed when we change form i.e. either individual or organization.
   const [toggleForms, setToggleForms] = useState({
