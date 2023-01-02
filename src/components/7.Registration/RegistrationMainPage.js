@@ -257,15 +257,6 @@ const Registration = () => {
         },
       });
     } else if (name === "state") {
-      let stateName = "";
-      let getStateName = document.getElementById(`state-name-${value}`);
-      if (getStateName) {
-        stateName = getStateName.innerText;
-      }
-      setFormData({
-        ...formData,
-        contact_details: { ...formData.contact_details, [name]: stateName },
-      });
       SetIdOfState(value);
     } else if (name === "email") {
       setFormData({
@@ -401,10 +392,19 @@ const Registration = () => {
       style.borderColor = "";
     } else if (name === "state") {
       if (value) {
+        document.getElementById("selectedCity").selected = true;
+        let stateName = "";
+        let getStateName = document.getElementById(`state-name-${value}`);
+        if (getStateName) {
+          stateName = getStateName.innerText;
+        }
+        setFormData({
+          ...formData,
+          contact_details: { ...formData.contact_details, [name]: stateName },
+        });
         const allCities = await axios.post(`/sam/v1/property/by-city`, {
           state_id: parseInt(value),
         });
-        console.log(allCities.data);
         setCityUseState({
           citiesByState: allCities.data,
           cityVisibilityClass: "",

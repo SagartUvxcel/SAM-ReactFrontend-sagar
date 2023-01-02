@@ -108,7 +108,7 @@ const CommonFormFields = ({
             placeholder="city"
             required
           >
-            <option value="" style={{ color: "gray" }}>
+            <option id="selectedCity" value="" style={{ color: "gray" }}>
               City
             </option>
             {citiesByState
