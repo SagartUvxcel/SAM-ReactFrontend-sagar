@@ -8,16 +8,17 @@ const CommonFormFields = ({
   onInputChange,
   onInputBlur,
   resetValues,
+  cityUseState,
 }) => {
   // Getting only required validation details from RegisterMainPage.
   const {
     emailValidationMessage,
     mobileValidationMessage,
     zipCodeValidationMessage,
-    emailValidationColor,
-    mobileValidationColor,
     zipCodeValidationColor,
   } = validationDetails;
+
+  const { citiesByState, cityVisibilityClass } = cityUseState;
 
   // useState to store all states coming from api.
   const [states, setStates] = useState([]);
@@ -59,7 +60,7 @@ const CommonFormFields = ({
       </div>
       {/* Address Row 2 */}
       <div className="row addressRow2 mt-lg-3 mt-md-0">
-        <div className="offset-lg-2 col-lg-2 mb-lg-0 mb-2">
+        {/* <div className="offset-lg-2 col-lg-2 mb-lg-0 mb-2">
           <input
             onBlur={onInputBlur}
             name="city"
@@ -68,8 +69,8 @@ const CommonFormFields = ({
             placeholder="City"
             required
           />
-        </div>
-        <div className="col-lg-2 mb-lg-0 mb-2">
+        </div> */}
+        <div className="offset-lg-2 col-lg-2 mb-lg-0 mb-2">
           <select
             onChange={onInputChange}
             onBlur={onInputBlur}
@@ -97,6 +98,31 @@ const CommonFormFields = ({
               : ""}
           </select>
         </div>
+        <div className={`col-lg-2 mb-lg-0 mb-2 ${cityVisibilityClass}`}>
+          <select
+            onChange={onInputChange}
+            onBlur={onInputBlur}
+            name="city"
+            type="text"
+            className="form-select"
+            placeholder="city"
+            required
+          >
+            <option value="" style={{ color: "gray" }}>
+              City
+            </option>
+            {citiesByState
+              ? citiesByState.map((city, Index) => {
+                  return (
+                    <option key={Index} value={city.city_name}>
+                      {city.city_name}
+                    </option>
+                  );
+                })
+              : ""}
+          </select>
+        </div>
+
         <div className="col-lg-2">
           <input
             type="text"
@@ -109,8 +135,8 @@ const CommonFormFields = ({
           ></input>
           <span
             className={`pe-1 ${
-              zipCodeValidationMessage ? "" : "d-none"
-            } text-${zipCodeValidationColor}`}
+              zipCodeValidationMessage ? "text-danger" : "d-none"
+            }`}
           >
             {zipCodeValidationMessage}
           </span>
@@ -127,14 +153,14 @@ const CommonFormFields = ({
             onBlur={onInputBlur}
             name="email"
             type="email"
-            className={`form-control border-${emailValidationColor}`}
+            className="form-control"
             placeholder="XXX@YYY.com"
             required
           />
           <span
             className={`pe-1 ${
-              emailValidationMessage ? "" : "d-none"
-            } text-${emailValidationColor}`}
+              emailValidationMessage ? "text-danger" : "d-none"
+            }`}
           >
             {emailValidationMessage}
           </span>
@@ -163,12 +189,12 @@ const CommonFormFields = ({
             type="Number"
             placeholder="Mobile Number"
             required
-            className={`form-control border-${mobileValidationColor}`}
+            className="form-control"
           />
           <span
             className={`pe-1 ${
-              mobileValidationMessage ? "" : "d-none"
-            } text-${mobileValidationColor}`}
+              mobileValidationMessage ? "text-danger" : "d-none"
+            }`}
           >
             {mobileValidationMessage}
           </span>

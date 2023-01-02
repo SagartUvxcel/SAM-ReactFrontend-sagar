@@ -8,6 +8,10 @@ import { toast } from "react-toastify";
 const Registration = () => {
   // useState to store ID of state so that we can validate zipCodes for each state.
   const [IdOfState, SetIdOfState] = useState("");
+  const [cityUseState, setCityUseState] = useState({
+    citiesByState: [],
+    cityVisibilityClass: "d-none",
+  });
 
   const goTo = useNavigate();
 
@@ -36,15 +40,7 @@ const Registration = () => {
     zipCodeValidationMessage: "",
     emailValidationMessage: "",
     mobileValidationMessage: "",
-
-    aadhaarValidationColor: "",
-    panValidationColor: "",
-    gstValidationColor: "",
-    cinValidationColor: "",
-    tanValidationColor: "",
     zipCodeValidationColor: "",
-    emailValidationColor: "",
-    mobileValidationColor: "",
   });
 
   // Things to be changed when we change form i.e. either individual or organization.
@@ -62,11 +58,6 @@ const Registration = () => {
     gstValidationMessage,
     tanValidationMessage,
     cinValidationMessage,
-    aadhaarValidationColor,
-    panValidationColor,
-    gstValidationColor,
-    tanValidationColor,
-    cinValidationColor,
   } = validationDetails;
 
   const {
@@ -79,6 +70,7 @@ const Registration = () => {
   const resetValues = () => {
     setValidationDetails({});
     SetIdOfState("");
+    setCityUseState({ citiesByState: [], cityVisibilityClass: "d-none" });
   };
 
   const showOrganizationForm = () => {
@@ -156,7 +148,7 @@ const Registration = () => {
 
   // Function to show backend validation on outside click of input filed.
   const onInputBlur = async (e) => {
-    const { name, value } = e.target;
+    const { name, value, style } = e.target;
     if (name === "first_name") {
       setFormData({ ...formData, [name]: value });
     } else if (name === "middle_name") {
@@ -171,14 +163,14 @@ const Registration = () => {
         setValidationDetails({
           ...validationDetails,
           aadhaarValidationMessage: "",
-          aadhaarValidationColor: "",
         });
+        style.borderColor = "";
       } else {
         setValidationDetails({
           ...validationDetails,
           aadhaarValidationMessage: "Invalid Aadhaar Number.",
-          aadhaarValidationColor: "danger",
         });
+        style.borderColor = "red";
       }
     } else if (name === "pan_number") {
       setFormData({ ...formData, [name]: value.toUpperCase() });
@@ -188,14 +180,14 @@ const Registration = () => {
         setValidationDetails({
           ...validationDetails,
           panValidationMessage: "",
-          panValidationColor: "",
         });
+        style.borderColor = "";
       } else {
         setValidationDetails({
           ...validationDetails,
           panValidationMessage: "Invalid Pan Number.",
-          panValidationColor: "danger",
         });
+        style.borderColor = "red";
       }
     } else if (name === "organization_type") {
       setFormData({ ...formData, [name]: value });
@@ -209,14 +201,14 @@ const Registration = () => {
         setValidationDetails({
           ...validationDetails,
           gstValidationMessage: "",
-          gstValidationColor: "",
         });
+        style.borderColor = "";
       } else {
         setValidationDetails({
           ...validationDetails,
           gstValidationMessage: "Invalid GST Number Entered",
-          gstValidationColor: "danger",
         });
+        style.borderColor = "red";
       }
     } else if (name === "tan_number") {
       setFormData({ ...formData, [name]: value.toUpperCase() });
@@ -225,14 +217,14 @@ const Registration = () => {
         setValidationDetails({
           ...validationDetails,
           tanValidationMessage: "",
-          tanValidationColor: "",
         });
+        style.borderColor = "";
       } else {
         setValidationDetails({
           ...validationDetails,
           tanValidationMessage: "Invalid TAN Number Entered",
-          tanValidationColor: "danger",
         });
+        style.borderColor = "red";
       }
     } else if (name === "cin_number") {
       setFormData({ ...formData, [name]: value.toUpperCase() });
@@ -242,14 +234,14 @@ const Registration = () => {
         setValidationDetails({
           ...validationDetails,
           cinValidationMessage: "",
-          cinValidationColor: "",
         });
+        style.borderColor = "";
       } else {
         setValidationDetails({
           ...validationDetails,
           cinValidationMessage: "Invalid CIN Number Entered",
-          cinValidationColor: "danger",
         });
+        style.borderColor = "red";
       }
     } else if (name === "address") {
       setFormData({
@@ -315,20 +307,20 @@ const Registration = () => {
             setValidationDetails({
               ...validationDetails,
               emailValidationMessage: "Email id already exists.",
-              emailValidationColor: "danger",
             });
+            style.borderColor = "red";
           } else if (!emailFormat.test(value)) {
             setValidationDetails({
               ...validationDetails,
-              emailValidationColor: "danger",
               emailValidationMessage: "Invalid email Id.",
             });
+            style.borderColor = "red";
           } else {
             setValidationDetails({
               ...validationDetails,
-              emailValidationColor: "",
               emailValidationMessage: "",
             });
+            style.borderColor = "";
           }
         });
     } else if (name === "landline_number") {
@@ -360,22 +352,22 @@ const Registration = () => {
             setValidationDetails({
               ...validationDetails,
               mobileValidationMessage: "Mobile number already exists.",
-              mobileValidationColor: "danger",
             });
+            style.borderColor = "red";
           } else if (res.data.status === 2) {
             // Store validation message and validation color.
             setValidationDetails({
               ...validationDetails,
               mobileValidationMessage: "Invalid Mobile Number Entered.",
-              mobileValidationColor: "danger",
             });
+            style.borderColor = "red";
           } else {
             // Store validation message and validation color.
             setValidationDetails({
               ...validationDetails,
               mobileValidationMessage: "",
-              mobileValidationColor: "",
             });
+            style.borderColor = "";
           }
         });
     }
@@ -383,55 +375,66 @@ const Registration = () => {
 
   // This will run onchange of input field.
   const onInputChange = async (e) => {
-    const { name } = e.target;
+    const { name, value, style } = e.target;
     if (name === "aadhar_number") {
       setValidationDetails({
         ...validationDetails,
-        aadhaarValidationColor: "",
         aadhaarValidationMessage: "",
       });
+      style.borderColor = "";
     } else if (name === "pan_number") {
       setValidationDetails({
         ...validationDetails,
-        panValidationColor: "",
         panValidationMessage: "",
       });
+      style.borderColor = "";
     } else if (name === "gst_number") {
       setValidationDetails({
         ...validationDetails,
-        gstValidationColor: "",
         gstValidationMessage: "",
       });
+      style.borderColor = "";
     } else if (name === "tan_number") {
       setValidationDetails({
         ...validationDetails,
-        tanValidationColor: "",
         tanValidationMessage: "",
       });
+      style.borderColor = "";
     } else if (name === "cin_number") {
       setValidationDetails({
         ...validationDetails,
-        cinValidationColor: "",
         cinValidationMessage: "",
       });
+      style.borderColor = "";
     } else if (name === "zip") {
       setValidationDetails({
         ...validationDetails,
-        zipCodeValidationColor: "",
         zipCodeValidationMessage: "",
       });
+      style.borderColor = "";
     } else if (name === "email") {
       setValidationDetails({
         ...validationDetails,
-        emailValidationColor: "",
         emailValidationMessage: "",
       });
+      style.borderColor = "";
     } else if (name === "mobile_number") {
       setValidationDetails({
         ...validationDetails,
-        mobileValidationColor: "",
         mobileValidationMessage: "",
       });
+      style.borderColor = "";
+    } else if (name === "state") {
+      if (value) {
+        const allCities = await axios.post(`/sam/v1/property/by-city`, {
+          state_id: parseInt(value),
+        });
+        console.log(allCities.data);
+        setCityUseState({
+          citiesByState: allCities.data,
+          cityVisibilityClass: "",
+        });
+      }
     }
   };
 
@@ -611,12 +614,14 @@ const Registration = () => {
                               type="Number"
                               placeholder="•••• •••• •••• ••••"
                               required
-                              className={`form-control border-${aadhaarValidationColor}`}
+                              className="form-control"
                             />
                             <span
                               className={`pe-1 ${
-                                aadhaarValidationMessage ? "" : "d-none"
-                              } text-${aadhaarValidationColor}`}
+                                aadhaarValidationMessage
+                                  ? "text-danger"
+                                  : "d-none"
+                              } `}
                             >
                               {aadhaarValidationMessage}
                             </span>
@@ -637,12 +642,12 @@ const Registration = () => {
                               type="text"
                               placeholder="PAN Number"
                               required
-                              className={`form-control text-uppercase border-${panValidationColor}`}
+                              className="form-control text-uppercase"
                             />
                             <span
                               className={`pe-1 ${
-                                panValidationMessage ? "" : "d-none"
-                              } text-${panValidationColor}`}
+                                panValidationMessage ? "text-danger" : "d-none"
+                              }`}
                             >
                               {panValidationMessage}
                             </span>
@@ -659,6 +664,7 @@ const Registration = () => {
                           onInputChange={onInputChange}
                           onInputBlur={onInputBlur}
                           resetValues={resetValues}
+                          cityUseState={cityUseState}
                         />
                       </div>
                     </form>
@@ -723,13 +729,13 @@ const Registration = () => {
                               name="gst_number"
                               type="text"
                               placeholder="GST Number"
-                              className={`form-control text-uppercase border-${gstValidationColor}`}
+                              className="form-control text-uppercase"
                               required
                             />
                             <span
                               className={`pe-1 ${
-                                gstValidationMessage ? "" : "d-none"
-                              } text-${gstValidationColor}`}
+                                gstValidationMessage ? "text-danger" : "d-none"
+                              }`}
                             >
                               {gstValidationMessage}
                             </span>
@@ -748,13 +754,13 @@ const Registration = () => {
                               name="tan_number"
                               type="text"
                               placeholder="TAN Number"
-                              className={`form-control text-uppercase border-${tanValidationColor}`}
+                              className="form-control text-uppercase"
                               required
                             />
                             <span
                               className={`pe-1 ${
-                                tanValidationMessage ? "" : "d-none"
-                              } text-${tanValidationColor}`}
+                                tanValidationMessage ? "text-danger" : "d-none"
+                              }`}
                             >
                               {tanValidationMessage}
                             </span>
@@ -769,13 +775,13 @@ const Registration = () => {
                               name="cin_number"
                               type="text"
                               placeholder="CIN Number"
-                              className={`form-control text-uppercase border-${cinValidationColor}`}
+                              className="form-control text-uppercase"
                               required
                             />
                             <span
                               className={`pe-1 ${
-                                cinValidationMessage ? "" : "d-none"
-                              } text-${cinValidationColor}`}
+                                cinValidationMessage ? "text-danger" : "d-none"
+                              }`}
                             >
                               {cinValidationMessage}
                             </span>
@@ -786,6 +792,7 @@ const Registration = () => {
                           onInputChange={onInputChange}
                           onInputBlur={onInputBlur}
                           resetValues={resetValues}
+                          cityUseState={cityUseState}
                         />
                       </div>
                     </form>
