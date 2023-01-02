@@ -424,6 +424,12 @@ const Registration = () => {
           citiesByState: allCities.data,
           cityVisibilityClass: "",
         });
+        if (String(formData.contact_details.zip) !== "") {
+          zipValidationByState(
+            String(formData.contact_details.zip),
+            parseInt(value)
+          );
+        }
       }
     }
   };
