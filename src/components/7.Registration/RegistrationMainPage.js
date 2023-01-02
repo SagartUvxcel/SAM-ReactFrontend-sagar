@@ -256,9 +256,7 @@ const Registration = () => {
           [name]: parseInt(value),
         },
       });
-      if (IdOfState === "" && value !== "") {
-        toast.error("Please select State");
-      } else if (IdOfState !== "" && value !== "") {
+      if (IdOfState !== "" && value !== "") {
         zipValidationByState(value, parseInt(IdOfState));
       }
     } else if (name === "state") {
@@ -397,11 +395,14 @@ const Registration = () => {
       });
       style.borderColor = "";
     } else if (name === "zip") {
-      setValidationDetails({
-        ...validationDetails,
-        zipCodeValidationMessage: "",
-      });
-      style.borderColor = "";
+      // setValidationDetails({
+      //   ...validationDetails,
+      //   zipCodeValidationMessage: "",
+      // });
+      // style.borderColor = "";
+      if (IdOfState !== "" && value !== "") {
+        zipValidationByState(value, parseInt(IdOfState));
+      }
     } else if (name === "email") {
       setValidationDetails({
         ...validationDetails,
