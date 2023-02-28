@@ -1,22 +1,16 @@
 import axios from "axios";
-import React from "react";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Layout from "../1.CommonLayout/Layout";
 import verifyTokenImg from "../../images/verifytoken.svg";
+import { rootTitle } from "../../CommonFunctions";
 
 const VerifyToken = () => {
   // useState to save token entered by user.
   const [enteredToken, setEnteredToken] = useState("");
 
-  const [loaderDetails, setLoaderDetails] = useState({
-    loading: false,
-    verifyBtnText: "Verify Token",
-    verifyButtonClass: "",
-  });
-
-  const { loading, verifyBtnText, verifyButtonClass } = loaderDetails;
+  const [loading, setLoading] = useState(false);
 
   // To navigate to particular route.
   const goTo = useNavigate();
@@ -29,6 +23,7 @@ const VerifyToken = () => {
 
   // Function to compare and verify user entered token with original token.
   const verifyUserToken = async (e) => {
+    setLoading(true);
     e.preventDefault();
     await axios
       .post(
@@ -37,33 +32,22 @@ const VerifyToken = () => {
       )
       .then((res) => {
         if (res.data.status === 0) {
+          setLoading(false);
           e.target.reset();
-          setLoaderDetails({
-            ...loaderDetails,
-            loading: true,
-            verifyBtnText: "Verifying...",
-            verifyButtonClass: "disabled",
-          });
+          toast.success("Verification Successful !");
+          localStorage.setItem("token", enteredToken);
           setTimeout(() => {
-            setLoaderDetails({
-              ...loaderDetails,
-              loading: false,
-              verifyBtnText: "Verify Token",
-              verifyButtonClass: "disabled",
-            });
-            toast.success("Verification Successful !");
-            localStorage.setItem("token", enteredToken);
-          }, 1000);
-          setTimeout(() => {
-            goTo("/register/reset-password");
-          }, 3000);
+            goTo("/register/set-password");
+          }, 2000);
         } else if (res.data.status === 1) {
+          setLoading(false);
           setAlertDetails({
             alertVisible: true,
             alertMsg: "Token is Expired.",
             alertClr: "danger",
           });
         } else if (res.data.status === 2) {
+          setLoading(false);
           setAlertDetails({
             alertVisible: true,
             alertMsg: "Token is Invalid.",
@@ -72,6 +56,10 @@ const VerifyToken = () => {
         }
       });
   };
+
+  useEffect(() => {
+    rootTitle.textContent = "SAM TOOL - VERIFY TOKEN";
+  }, []);
 
   return (
     <Layout>
@@ -97,7 +85,7 @@ const VerifyToken = () => {
                     ></i>
                   </div>
                 ) : (
-                  <div className="d-none"></div>
+                  <></>
                 )}
                 <div className="row mt-3">
                   <div className="col-12">
@@ -114,17 +102,38 @@ const VerifyToken = () => {
                   <div className="col-12">
                     <div className="form-group">
                       <button
-                        className={`btn common-btn w-100 ${verifyButtonClass}`}
+                        className={`btn btn-primary common-btn-font w-100 ${
+                          loading ? "disabled" : ""
+                        }`}
                       >
-                        <span
-                          className={`${
-                            loading ? "" : "d-none"
-                          } spinner-grow spinner-grow-sm me-2`}
-                          role="status"
-                          aria-hidden="true"
-                        ></span>
-                        {verifyBtnText}
+                        {loading ? (
+                          <>
+                            <span
+                              className="spinner-grow spinner-grow-sm me-2"
+                              role="status"
+                              aria-hidden="true"
+                            ></span>
+                            Verifying...
+                          </>
+                        ) : (
+                          "Verify token"
+                        )}
                       </button>
+                    </div>
+                  </div>
+                  <div className="col-12 mt-3">
+                    <div className="position-relative form-group">
+                      <div
+                        className="position-absolute"
+                        style={{ top: "0", right: "0" }}
+                      >
+                        <small className="fw-bold">
+                          Not registered?
+                          <NavLink to="/register" className="ps-1">
+                            Click here
+                          </NavLink>
+                        </small>
+                      </div>
                     </div>
                   </div>
                 </div>

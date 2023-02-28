@@ -2,12 +2,12 @@ version: "3.8"
 
 services:
   app:
-    container_name: reactjs-frontend
-    image: reatcjs-dev
+    container_name: sam-frontend
+    image: sam-dev-img
     build:
       context: .
       target: development
     volumes:
-      - ./src:/sam-tool-react/src
+      - ./src:/sam-frontend/src
     ports:
-      - 5000:3000
+      - 5003:3000

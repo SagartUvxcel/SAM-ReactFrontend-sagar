@@ -4,9 +4,10 @@ import Layout from "../1.CommonLayout/Layout";
 
 const ViewPropertyDetails = () => {
   const goTo = useNavigate();
+  // If user is not logged in and tries to view property details then user will redirect to the login page
   const checkStatusOfLogin = () => {
-    const statusOfLogin = localStorage.getItem("isLoggedIn");
-    if (statusOfLogin !== "true") {
+    const data = JSON.parse(localStorage.getItem("data"));
+    if (!data) {
       goTo("/login");
     }
   };
@@ -95,7 +96,7 @@ const ViewPropertyDetails = () => {
                 </div>
 
                 <div className="col-12">
-                  <button className="btn common-btn mt-2">Contact</button>
+                  <button className="btn btn-primary common-btn-font mt-2">Contact</button>
                 </div>
               </div>
             </div>

@@ -1,10 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import HomeAboutUs from "./HomeAboutUs";
 import Layout from "../1.CommonLayout/Layout";
 import Properties from "./Properties";
 import axios from "axios";
 import { useState } from "react";
-import { Link } from "react-scroll";
+import { rootTitle } from "../../CommonFunctions";
+import Pagination from "../Pagination";
 
 function Home() {
   // useState to store data of each field e.g all states, all banks etc.
@@ -18,9 +19,12 @@ function Home() {
 
   // useState to store values of each select box for search functionality.
   const [dataToPost, setDataToPost] = useState({
-    batch_size: 10,
+    batch_size: 4,
     batch_number: 1,
   });
+
+  const { batch_size } = dataToPost;
+  const [loading, setLoading] = useState(false);
 
   // After we click on search button It will store data/response from api into this useState.
   const [propertyData, setPropertyData] = useState([]);
@@ -28,34 +32,21 @@ function Home() {
   // Object destructuring.
   const { states, assetCategory, cities, localities, banks } = searchFields;
 
-  // Function will check if user is loggedIn or not & based on the login status it will set headers and url.
-  const setHeaderAndUrl = () => {
-    const statusOfLogin = localStorage.getItem("isLoggedIn");
-    const loginToken = localStorage.getItem("logintoken");
-    let headers =
-      statusOfLogin !== "true"
-        ? { "Content-Type": "Application/json" }
-        : { Authorization: loginToken };
-    let url = `/sam/v1/property${statusOfLogin !== "true" ? "" : `/auth`}`;
-    return [headers, url];
-  };
+  const url = `/sam/v1/property`;
 
   // It will fetch all states, banks, assets from api and will map those values to respective select fields.
   const getSearchDetails = async () => {
-    const [headers, url] = setHeaderAndUrl();
     let apis = {
       stateAPI: `${url}/by-state`,
       bankAPI: `${url}/by-bank`,
       categoryAPI: `${url}/by-category`,
     };
     // Get all states from api.
-    const allStates = await axios.get(apis.stateAPI, { headers: headers });
+    const allStates = await axios.get(apis.stateAPI);
     // Get all banks from api.
-    const allBanks = await axios.get(apis.bankAPI, { headers: headers });
+    const allBanks = await axios.get(apis.bankAPI);
     // Get all asset Categories from api.
-    const assetCategories = await axios.get(apis.categoryAPI, {
-      headers: headers,
-    });
+    const assetCategories = await axios.get(apis.categoryAPI);
 
     // store states, banks and asset categories into searchFields useState.
     setSearchFields({
@@ -68,14 +59,13 @@ function Home() {
 
   // This function will run on change of input fields.
   const onFieldsChange = async (e) => {
-    const [headers, url] = setHeaderAndUrl();
     let apis = {
       cityAPI: `${url}/by-city`,
       addressAPI: `${url}/by-address`,
     };
     const { name, value } = e.target;
     const fiveSectionCol = document.querySelectorAll(".five-section-col");
-    // If input is state then post selected state id to api for getting cities based on selected state.
+
     if (name === "states") {
       // Store state id ( if available ) into dataToPost useState (It is required for search functionality).
       if (value) {
@@ -83,13 +73,10 @@ function Home() {
       } else {
         delete dataToPost.state_id;
       }
-      const cityByState = await axios.post(
-        apis.cityAPI,
-        {
-          state_id: parseInt(value),
-        },
-        { headers: headers }
-      );
+      // If input is state then post selected state id to api for getting cities based on selected state.
+      const cityByState = await axios.post(apis.cityAPI, {
+        state_id: parseInt(value),
+      });
       // Store cities data into searchField useState.
       setSearchFields({ ...searchFields, cities: cityByState.data });
       // Unhide city select box when we select state.
@@ -107,13 +94,9 @@ function Home() {
         delete dataToPost.city_id;
       }
       // If input is cities then post selected city id to api for getting locality info. based on selected city.
-      const localityByCity = await axios.post(
-        apis.addressAPI,
-        {
-          city_id: parseInt(value),
-        },
-        { headers: headers }
-      );
+      const localityByCity = await axios.post(apis.addressAPI, {
+        city_id: parseInt(value),
+      });
       // Store locality data into searchField useState.
       setSearchFields({ ...searchFields, localities: localityByCity.data });
       // Unhide select box when we select city.
@@ -147,40 +130,69 @@ function Home() {
     }
   };
 
+  const [pageCount, setPageCount] = useState(0);
+  const paginationRef = useRef();
   // This will run after Search button click.
   const getPropertyData = async (e) => {
     e.preventDefault();
-    const [headers, url] = setHeaderAndUrl();
-    console.log(headers, url);
-    let apis = {
-      searchAPI: `${url}/count-category`,
-    };
-    // Post data and get Searched result from response.
-    await axios
-      .post(apis.searchAPI, dataToPost, { headers: headers })
-      .then((res) => {
-        // Store Searched results into propertyData useState.
-        // localStorage.setItem("propertyDataFromLocal", JSON.stringify(res.data));
-        setPropertyData(res.data);
-      });
+    setLoading(true);
+    paginationRef.current.classList.add("d-none");
+    document.getElementById("properties").scrollIntoView(true);
     // Unhide div and display search results in card format.
     document.querySelectorAll(".display-on-search").forEach((item) => {
       item.classList.remove("d-none");
     });
+    let apis = {
+      searchAPI: `${url}/count-category`,
+    };
+    let dataForTotalCount = {
+      ...dataToPost,
+      batch_size: 1000,
+      batch_number: 1,
+    };
+    // This api is only for getting all the records and count length of array of properties so that we can decide page numbers for pagination.
+    await axios.post(apis.searchAPI, dataForTotalCount).then((res) => {
+      if (res.data) {
+        setPageCount(Math.ceil(res.data.length / batch_size));
+      }
+    });
+
+    // Post data and get Searched result from response.
+    await axios.post(apis.searchAPI, dataToPost).then((res) => {
+      // Store Searched results into propertyData useState.
+      setPropertyData(res.data);
+      setTimeout(() => {
+        setLoading(false);
+        if (res.data) {
+          paginationRef.current.classList.remove("d-none");
+        } else {
+          paginationRef.current.classList.add("d-none");
+        }
+      }, 1500);
+    });
   };
 
-  // Get saved properties data from local storage.
-  // const getDataFromLocal = () => {
-  //   let localData = JSON.parse(localStorage.getItem("propertyDataFromLocal"));
-  //   if (localData !== null) {
-  //     setPropertyData(localData);
-  //     if (localData.length > 0) {
-  //       document.querySelectorAll(".display-on-search").forEach((item) => {
-  //         item.classList.remove("d-none");
-  //       });
-  //     }
-  //   }
-  // };
+  // This will run when we click any page link in pagination. e.g. prev, 1, 2, 3, 4, next.
+  const handlePageClick = async (pageNumber) => {
+    document.getElementById("properties").scrollIntoView(true);
+    let currentPage = pageNumber.selected + 1;
+    const nextOrPrevPagePropertyData = await fetchMoreProperties(currentPage);
+    setPropertyData(nextOrPrevPagePropertyData);
+  };
+
+  // Fetch more jobs on page click.
+  const fetchMoreProperties = async (currentPage) => {
+    let dataOfNextOrPrevPage = {
+      ...dataToPost,
+      batch_size: batch_size,
+      batch_number: currentPage,
+    };
+    let apis = {
+      searchAPI: `${url}/count-category`,
+    };
+    const res = await axios.post(apis.searchAPI, dataOfNextOrPrevPage);
+    return res.data;
+  };
 
   // Change navbar color on scroll on HomePage only.
   const changeNavBarColor = () => {
@@ -197,8 +209,8 @@ function Home() {
 
   // This will run every time we refresh page or if some state change occurs.
   useEffect(() => {
+    rootTitle.textContent = "SAM TOOL - HOME";
     getSearchDetails();
-    // getDataFromLocal();
     changeNavBarColor();
     // eslint-disable-next-line
   }, []);
@@ -351,15 +363,14 @@ function Home() {
             {/* Search button*/}
             <div className="row justify-content-center py-4">
               <div className="text-center">
-                <Link
-                  to="properties"
-                  className={`btn btn-lg common-btn ${
+                <button
+                  className={`btn btn-lg btn-primary common-btn-font ${
                     Object.keys(dataToPost).length > 2 ? "" : "disabled"
                   }`}
                   onClick={getPropertyData}
                 >
                   Search
-                </Link>
+                </button>
               </div>
             </div>
           </div>
@@ -369,7 +380,20 @@ function Home() {
         </section>
         {/* Properties component to show property details (In card format) on click of search button */}
         {/* We are sending propertyData array (which contains our search results) as a prop */}
-        <Properties propertyData={propertyData} />
+        <section className="property-wrapper" id="properties">
+          <Properties propertyData={propertyData} loading={loading} />
+          <div className="container d-none" ref={paginationRef}>
+            <div className="row">
+              <div className="col-12 mb-3">
+                <Pagination
+                  handlePageClick={handlePageClick}
+                  pageCount={pageCount}
+                  // handlePageClick={handlePageClick}
+                />
+              </div>
+            </div>
+          </div>
+        </section>
         {/* About us section component */}
         <HomeAboutUs />
       </section>

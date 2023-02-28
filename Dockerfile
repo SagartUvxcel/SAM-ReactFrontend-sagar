@@ -1,7 +1,7 @@
-FROM node:14-alpine AS development
+FROM node:18 AS development
 ENV NODE_ENV development
 # Add a work directory
-WORKDIR /sam-tool-react
+WORKDIR /sam-frontend
 # Cache and Install dependencies
 COPY package.json .
 RUN npm install

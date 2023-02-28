@@ -1,7 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { NavLink } from "react-router-dom";
+import { rootTitle } from "../CommonFunctions";
 
 const PageNotFound = () => {
+  useEffect(() => {
+    rootTitle.textContent = "PAGE NOT FOUND";
+  }, []);
+
   return (
     <section className="page-not-found-wrapper">
       <div className="container-fluid">

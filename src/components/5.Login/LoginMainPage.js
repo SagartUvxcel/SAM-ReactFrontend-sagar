@@ -1,20 +1,23 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Layout from "../1.CommonLayout/Layout";
 import login from "../../images/loginsvg.svg";
+import { rootTitle } from "../../CommonFunctions";
 
 const LoginMainPage = () => {
   // It is used to navigate to particular route.
   const goTo = useNavigate();
 
+  // It is used to store spinner and login-button details.
   const [loaderDetails, setLoaderDetails] = useState({
     loading: false,
     loginBtnTxt: "Login",
     loginBtnClassName: "",
   });
 
+  // Password type and eye icon details.
   const [loginDetails, setLoginDetails] = useState({
     email: "",
     password: "",
@@ -22,6 +25,7 @@ const LoginMainPage = () => {
     passwordType: "password",
   });
 
+  // Bootstrap alert details.
   const [alertDetails, setAlertDetails] = useState({
     alertVisible: false,
     alertMsg: "",
@@ -61,57 +65,65 @@ const LoginMainPage = () => {
   // Login Function.
   const onLogin = async (e) => {
     e.preventDefault();
-
+    setLoaderDetails({
+      ...loaderDetails,
+      loading: true,
+      loginBtnTxt: "Loading...",
+      loginBtnClassName: "disabled",
+    });
     await axios
       .post(
         `/sam/v1/customer-registration/login`,
         JSON.stringify({ username: email, password: password })
       )
       .then((res) => {
-        console.log(res.data);
-        const { email, token, user_id } = res.data.token;
+        const { email, token, role_id, user_id } = res.data.token;
         if (email !== "" && token !== "") {
-          setLoaderDetails({
-            ...loaderDetails,
-            loading: true,
-            loginBtnTxt: "Loading...",
-            loginBtnClassName: "disabled",
-          });
-          localStorage.setItem("isLoggedIn", true);
-          localStorage.setItem("user", email);
-          localStorage.setItem("logintoken", token);
-          localStorage.setItem("userId", user_id);
+          localStorage.setItem(
+            "data",
+            JSON.stringify({
+              isLoggedIn: true,
+              user: email,
+              logintoken: token,
+              userId: user_id,
+              roleId: role_id[0].role_id,
+            })
+          );
           setTimeout(() => {
-            setLoaderDetails({
-              ...loaderDetails,
-              loading: false,
-              loginBtnTxt: "Login",
-              loginBtnClassName: "disabled",
-            });
             toast.success("Logged in Successfully !");
           }, 1000);
           setTimeout(() => {
-            goTo("/profile/edit-details");
+            goTo("/edit-details");
           }, 2500);
         } else {
+          setLoaderDetails({
+            ...loaderDetails,
+            loading: false,
+            loginBtnTxt: "Login",
+            loginBtnClassName: "",
+          });
           setAlertDetails({
             alertVisible: true,
-            alertMsg: "Invalid Username or Password Entered.",
+            alertMsg: "Invalid Credentials.",
             alertClr: "danger",
           });
         }
       });
   };
 
+  useEffect(() => {
+    rootTitle.textContent = "SAM TOOL - LOGIN";
+  }, []);
+
   return (
     <Layout>
       <section className="login-wrapper min-100vh section-padding">
         <div className="container-fluid mt-5">
           <div className="row justify-content-evenly">
-            <div className="col-lg-5 col-xl-5 mb-5">
+            <div className="col-lg-5 col-xl-5 order-lg-1 order-2 mt-lg-0 mt-5 mb-5">
               <img src={login} alt="" className="login-img" />
             </div>
-            <div className="col-lg-5 col-xl-4 col-md-7">
+            <div className="col-lg-5 col-xl-4 col-md-7 order-lg-2 order-1">
               <form
                 onSubmit={onLogin}
                 action=""
@@ -137,36 +149,47 @@ const LoginMainPage = () => {
                 <h6 className="fw-bold">Login with Email</h6>
                 <div className="row">
                   <div className="col-lg-12 mb-3">
-                    <input
-                      onChange={onUserNameAndPasswordChange}
-                      type="email"
-                      name="email"
-                      className="form-control"
-                      id="exampleInputEmail1"
-                      placeholder="Email"
-                      required
-                    />
+                    <div className="input-group">
+                      <span className="input-group-text" id="basic-addon1">
+                        <i className="bi bi-envelope-at-fill"></i>
+                      </span>
+                      <input
+                        onChange={onUserNameAndPasswordChange}
+                        type="email"
+                        name="email"
+                        className="form-control"
+                        id="exampleInputEmail1"
+                        placeholder="Email"
+                        required
+                      />
+                    </div>
                   </div>
-                  <div className="col-lg-12 mb-3 position-relative">
-                    <input
-                      onChange={onUserNameAndPasswordChange}
-                      name="password"
-                      type={passwordType}
-                      className="form-control"
-                      id="exampleInputPassword1"
-                      placeholder="Password"
-                      required
-                    />
-                    <i
-                      placeholder={eyeIcon}
-                      onClick={changeEyeIcon1}
-                      className={`icon-eye-login bi bi-${eyeIcon}`}
-                    ></i>
+                  <div className="col-lg-12 mb-3">
+                    <div className="input-group position-relative">
+                      <span className="input-group-text" id="basic-addon1">
+                        <i className="bi bi-lock-fill"></i>
+                      </span>
+                      <input
+                        onChange={onUserNameAndPasswordChange}
+                        name="password"
+                        type={passwordType}
+                        className="form-control"
+                        id="exampleInputPassword1"
+                        placeholder="Password"
+                        required
+                      />
+                      <i
+                        placeholder={eyeIcon}
+                        onClick={changeEyeIcon1}
+                        className={`icon-eye-login bi bi-${eyeIcon}`}
+                      ></i>
+                    </div>
                   </div>
-                  <h6 className="text-center fw-bold">OR</h6>
                 </div>
-                <h6 className="fw-bold mt-3 mt-md-0">Login with OTP</h6>
-                <div className="row">
+                {/* Login with OTP section */}
+                {/* <div className="row">
+                  <h6 className="text-center fw-bold">OR</h6>
+                  <h6 className="fw-bold mt-3 mt-md-0">Login with OTP</h6>
                   <div className="col-md-7 col-xl-8 mb-3">
                     <input
                       type="Number"
@@ -176,13 +199,15 @@ const LoginMainPage = () => {
                     />
                   </div>
                   <div className="col-md-5 col-xl-4 text-md-end text-center">
-                    <button className="btn btn-primary">Send OTP</button>
+                    <button type="button" className="btn btn-primary">
+                      Send OTP
+                    </button>
                   </div>
-                </div>
+                </div> */}
                 <hr />
                 <div className="text-center my-3">
                   <button
-                    className={`btn btn-primary ${loginBtnClassName} w-100`}
+                    className={`btn btn-primary ${loginBtnClassName} w-100 common-btn-font`}
                   >
                     <span
                       className={`${
@@ -194,12 +219,27 @@ const LoginMainPage = () => {
                     {loginBtnTxt}
                   </button>
                 </div>
-                <small className="register-link position-absolute fixed-bottom text-end px-3 py-2 fw-bold">
-                  Not Registered ?
-                  <NavLink className="ps-1" to="/register">
-                    Click here.
-                  </NavLink>
-                </small>
+
+                <div className="d-flex justify-content-between">
+                  <div className="">
+                    <small className="fw-bold">
+                      <NavLink
+                        className="ps-1 text-decoration-none"
+                        to="/forgot-password"
+                      >
+                        Forgot password?
+                      </NavLink>
+                    </small>
+                  </div>
+                  <div className="">
+                    <small className="register-link text-end fw-bold">
+                      Not Registered ?
+                      <NavLink className="ps-1" to="/register">
+                        Click here.
+                      </NavLink>
+                    </small>
+                  </div>
+                </div>
               </form>
             </div>
           </div>

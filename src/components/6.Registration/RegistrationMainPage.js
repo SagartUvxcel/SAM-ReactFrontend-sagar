@@ -4,34 +4,77 @@ import CommonFormFields from "./CommonFormFields";
 import axios from "axios";
 import { NavLink, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useRef } from "react";
+import { rootTitle } from "../../CommonFunctions";
 
 const Registration = () => {
+  const goTo = useNavigate();
+  const deselectStateInput = useRef();
+
   // useState to store ID of state so that we can validate zipCodes for each state.
   const [IdOfState, SetIdOfState] = useState("");
+
+  // useState to store all states coming from api.
+  const [states, setStates] = useState([]);
+  // Function to get all states from api so that we can map states in select state field.
+  const getAllSates = async () => {
+    const allStates = await axios.get(`/sam/v1/property/by-state`);
+    setStates(allStates.data);
+  };
+
+  // useState to store address Details.
+  const [addressDetails, setAddressDetails] = useState({ zip: "" });
+
+  // useState to store/remove and hide/show cities data.
   const [cityUseState, setCityUseState] = useState({
     citiesByState: [],
     cityVisibilityClass: "d-none",
   });
 
-  const goTo = useNavigate();
+  // useState to store/remove and hide/show address details.
+  const [addressValues, setAddressValues] = useState({
+    addressValue: "",
+    labelValue: "Add Details",
+    textAreaVisibility: "d-none",
+  });
+
+  // Object destructuring.
+  const {
+    flat_number,
+    building_name,
+    society_name,
+    plot_number,
+    locality,
+    landmark,
+    village,
+    state,
+    city,
+    zip,
+  } = addressDetails;
 
   // useState to store each field's data from form.
   const [formData, setFormData] = useState({
     contact_details: {
       user_type: "Individual User",
-      address: "",
-      locality: "",
-      city: "",
-      zip: "",
-      state: "",
-      email: "",
-      mobile_number: "",
-      landline_number: "",
+      role_id: 2,
     },
   });
 
   // Store validation message and validation color based on input field.
   const [validationDetails, setValidationDetails] = useState({});
+
+  const { citiesByState, cityVisibilityClass } = cityUseState;
+
+  // Object destructuring.
+  const {
+    aadhaarValidationMessage,
+    panValidationMessage,
+    gstValidationMessage,
+    tanValidationMessage,
+    cinValidationMessage,
+    zipCodeValidationColor,
+    zipCodeValidationMessage,
+  } = validationDetails;
 
   // Things to be changed when we change form i.e. either individual or organization.
   const [toggleForms, setToggleForms] = useState({
@@ -43,24 +86,93 @@ const Registration = () => {
 
   // Object destructuring.
   const {
-    aadhaarValidationMessage,
-    panValidationMessage,
-    gstValidationMessage,
-    tanValidationMessage,
-    cinValidationMessage,
-  } = validationDetails;
-
-  const {
     individualSelected,
     organizationSelected,
     individualDisplay,
     organizationDisplay,
   } = toggleForms;
 
+  // Function to reset values.
   const resetValues = () => {
+    let allInputs = document.querySelectorAll(".form-control");
+    allInputs.forEach((i) => {
+      i.style.borderColor = "";
+      i.value = "";
+    });
+    setAddressDetails({
+      flat_number: "",
+      building_name: "",
+      society_name: "",
+      plot_number: "",
+      locality: "",
+      village: "",
+      landmark: "",
+      state: "",
+      city: "",
+      zip: "",
+    });
+    deselectStateInput.current.selected = true;
+    setAddressValues({
+      addressValue: "",
+      labelValue: "Add Details",
+      textAreaVisibility: "d-none",
+    });
     setValidationDetails({});
     SetIdOfState("");
     setCityUseState({ citiesByState: [], cityVisibilityClass: "d-none" });
+  };
+
+  // Function will run on click of save button of address
+  const onAddressFormSubmit = (e) => {
+    e.preventDefault();
+    let valuesArray = [
+      flat_number ? `Flat No: ${flat_number}` : "",
+      building_name ? `Building Name: ${building_name}` : "",
+      society_name ? `Society Name: ${society_name}` : "",
+      plot_number ? `Plot No: ${plot_number}` : "",
+      `Locality: ${locality}`,
+      `Landmark: ${landmark}`,
+      `Village: ${village}`,
+      `State: ${state}`,
+      `City: ${city}`,
+      `Zip Code: ${zip}`,
+    ];
+
+    let mainArray = [];
+    for (let i of valuesArray) {
+      if (i !== "") {
+        mainArray.push(i);
+      }
+    }
+    setAddressValues({
+      addressValue: mainArray.join(", "),
+      labelValue: "Edit Details",
+      textAreaVisibility: "",
+    });
+  };
+
+  // Function to validate zipCodes.
+  const zipValidationByState = async (zipValue, stateId) => {
+    await axios
+      .post(`/sam/v1/customer-registration/zipcode-validation`, {
+        zipcode: zipValue,
+        state_id: stateId,
+      })
+      .then((res) => {
+        if (res.data.status === 0) {
+          setValidationDetails({
+            ...validationDetails,
+            zipCodeValidationMessage: "Invalid ZipCode.",
+            zipCodeValidationColor: "danger",
+          });
+        } else {
+          setValidationDetails({
+            ...validationDetails,
+            zipCodeValidationMessage: "",
+            zipCodeValidationColor: "",
+          });
+        }
+      });
   };
 
   const showOrganizationForm = () => {
@@ -110,30 +222,6 @@ const Registration = () => {
     } else if (attrOfForm === "individual") {
       showIndividualForm();
     }
-  };
-
-  // Function to validate zipCodes.
-  const zipValidationByState = async (zipValue, stateId) => {
-    await axios
-      .post(`/sam/v1/customer-registration/zipcode-validation`, {
-        zipcode: zipValue,
-        state_id: stateId,
-      })
-      .then((res) => {
-        if (res.data.status === 0) {
-          setValidationDetails({
-            ...validationDetails,
-            zipCodeValidationMessage: "Invalid ZipCode.",
-            zipCodeValidationColor: "danger",
-          });
-        } else {
-          setValidationDetails({
-            ...validationDetails,
-            zipCodeValidationMessage: "",
-            zipCodeValidationColor: "",
-          });
-        }
-      });
   };
 
   // Function to show backend validation on outside click of input filed.
@@ -243,19 +331,6 @@ const Registration = () => {
         ...formData,
         contact_details: { ...formData.contact_details, [name]: value },
       });
-    } else if (name === "city") {
-      setFormData({
-        ...formData,
-        contact_details: { ...formData.contact_details, [name]: value },
-      });
-    } else if (name === "zip") {
-      setFormData({
-        ...formData,
-        contact_details: {
-          ...formData.contact_details,
-          [name]: parseInt(value),
-        },
-      });
     } else if (name === "state") {
       SetIdOfState(value);
     } else if (name === "email") {
@@ -292,7 +367,7 @@ const Registration = () => {
           }
         });
     } else if (name === "landline_number") {
-      if (value !== "") {
+      if (value) {
         setFormData({
           ...formData,
           contact_details: {
@@ -300,8 +375,6 @@ const Registration = () => {
             [name]: parseInt(value),
           },
         });
-      } else {
-        delete formData.contact_details.landline_number;
       }
     } else if (name === "mobile_number") {
       setFormData({
@@ -341,6 +414,11 @@ const Registration = () => {
     }
   };
 
+  // Function to store address Details in a useState => addressDetails
+  const setValues = (name, value) => {
+    setAddressDetails({ ...addressDetails, [name]: value });
+  };
+
   // This will run onchange of input field.
   const onInputChange = async (e) => {
     const { name, value, style } = e.target;
@@ -374,7 +452,31 @@ const Registration = () => {
         cinValidationMessage: "",
       });
       style.borderColor = "";
+    } else if (name === "flat_number") {
+      setValues(name, value);
+    } else if (name === "building_name") {
+      setValues(name, value);
+    } else if (name === "society_name") {
+      setValues(name, value);
+    } else if (name === "plot_number") {
+      setValues(name, value);
+    } else if (name === "locality") {
+      setValues(name, value);
+    } else if (name === "landmark") {
+      setValues(name, value);
+    } else if (name === "village") {
+      setValues(name, value);
     } else if (name === "zip") {
+      if (zipCodeValidationColor !== "danger") {
+        setFormData({
+          ...formData,
+          contact_details: {
+            ...formData.contact_details,
+            [name]: parseInt(value),
+          },
+        });
+        setValues(name, value);
+      }
       if (IdOfState !== "" && value !== "") {
         zipValidationByState(value, parseInt(IdOfState));
       }
@@ -391,12 +493,14 @@ const Registration = () => {
       });
       style.borderColor = "";
     } else if (name === "state") {
+      addressDetails.city = "";
       if (value) {
         document.getElementById("selectedCity").selected = true;
         let stateName = "";
         let getStateName = document.getElementById(`state-name-${value}`);
         if (getStateName) {
           stateName = getStateName.innerText;
+          setValues(name, stateName);
         }
         setFormData({
           ...formData,
@@ -409,13 +513,60 @@ const Registration = () => {
           citiesByState: allCities.data,
           cityVisibilityClass: "",
         });
-        if (String(formData.contact_details.zip) !== "") {
-          zipValidationByState(
-            String(formData.contact_details.zip),
-            parseInt(value)
-          );
+        if (String(zip) !== "") {
+          zipValidationByState(String(zip), parseInt(value));
         }
       }
+    } else if (name === "city") {
+      setValues(name, value);
+      setFormData({
+        ...formData,
+        contact_details: {
+          ...formData.contact_details,
+          [name]: value,
+          address: value,
+        },
+      });
+    } else if (name === "flat_number") {
+      setFormData({
+        ...formData,
+        contact_details: {
+          ...formData.contact_details,
+          [name]: parseInt(value),
+        },
+      });
+    } else if (name === "building_name") {
+      setFormData({
+        ...formData,
+        contact_details: {
+          ...formData.contact_details,
+          [name]: value,
+        },
+      });
+    } else if (name === "society_name") {
+      setFormData({
+        ...formData,
+        contact_details: {
+          ...formData.contact_details,
+          [name]: value,
+        },
+      });
+    } else if (name === "landmark") {
+      setFormData({
+        ...formData,
+        contact_details: {
+          ...formData.contact_details,
+          [name]: value,
+        },
+      });
+    } else if (name === "plot_number") {
+      setFormData({
+        ...formData,
+        contact_details: {
+          ...formData.contact_details,
+          [name]: parseInt(value),
+        },
+      });
     }
   };
 
@@ -434,20 +585,24 @@ const Registration = () => {
     });
     console.log(formData);
 
-    await axios
-      .post(`/sam/v1/customer-registration/individual-customer`, formData)
-      .then(async (res) => {
-        if (res.data.status === 0) {
-          toast.success(`Success: Please check your email for verification.`);
-          e.target.reset();
-          resetValues();
-          setTimeout(() => {
-            goTo("/register/verify");
-          }, 3000);
-        } else {
-          toast.error("Form is Invalid");
-        }
-      });
+    if (addressValues.labelValue === "Add Details") {
+      toast.error("Please Fill Address Details");
+    } else {
+      await axios
+        .post(`/sam/v1/customer-registration/individual-customer`, formData)
+        .then(async (res) => {
+          if (res.data.status === 0) {
+            toast.success(`Success: Please check your email for verification.`);
+            e.target.reset();
+            resetValues();
+            setTimeout(() => {
+              goTo("/register/verify");
+            }, 3000);
+          } else {
+            toast.error("Form is Invalid");
+          }
+        });
+    }
   };
 
   // Function will run after Organization Form submit button is clicked.
@@ -464,24 +619,31 @@ const Registration = () => {
       delete formData[field];
     });
     console.log(formData);
-    await axios
-      .post(`/sam/v1/customer-registration/org-customer`, formData)
-      .then(async (res) => {
-        if (res.data.status === 0) {
-          toast.success(`Success: Please check your email for verification.`);
-          e.target.reset();
-          resetValues();
-          setTimeout(() => {
-            goTo("/register/verify");
-          }, 3000);
-        } else {
-          toast.error("Form is Invalid");
-        }
-      });
+
+    if (addressValues.labelValue === "Add Details") {
+      toast.error("Please Fill Address Details");
+    } else {
+      await axios
+        .post(`/sam/v1/customer-registration/org-customer`, formData)
+        .then(async (res) => {
+          if (res.data.status === 0) {
+            toast.success(`Success: Please check your email for verification.`);
+            e.target.reset();
+            resetValues();
+            setTimeout(() => {
+              goTo("/register/verify");
+            }, 3000);
+          } else {
+            toast.error("Form is Invalid");
+          }
+        });
+    }
   };
 
   useEffect(() => {
+    rootTitle.textContent = "SAM TOOL - REGISTER";
     resetValues();
+    getAllSates();
   }, []);
 
   return (
@@ -642,10 +804,10 @@ const Registration = () => {
                         </div>
                         <CommonFormFields
                           validationDetails={validationDetails}
+                          resetValues={resetValues}
+                          addressValues={addressValues}
                           onInputChange={onInputChange}
                           onInputBlur={onInputBlur}
-                          resetValues={resetValues}
-                          cityUseState={cityUseState}
                         />
                       </div>
                     </form>
@@ -770,21 +932,241 @@ const Registration = () => {
                         </div>
                         <CommonFormFields
                           validationDetails={validationDetails}
+                          resetValues={resetValues}
+                          addressValues={addressValues}
                           onInputChange={onInputChange}
                           onInputBlur={onInputBlur}
-                          resetValues={resetValues}
-                          cityUseState={cityUseState}
                         />
                       </div>
                     </form>
                   </div>
                 </div>
                 <small className="token-verify-link">
-                  Already have Token?
+                  Already registered?
                   <NavLink to="/register/verify" className="fw-bold ps-1">
                     click here to verify
                   </NavLink>
                 </small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Modal */}
+        <div
+          className="modal fade registration-address-modal"
+          id="exampleModal"
+          tabIndex="-1"
+          aria-labelledby="exampleModalLabel"
+          aria-hidden="true"
+        >
+          <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title" id="exampleModalLabel">
+                  Address
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div className="modal-body">
+                <div className="row">
+                  <div className="col-md-4">
+                    <div className="form-group mb-3">
+                      <input
+                        id="flat_number"
+                        name="flat_number"
+                        type="number"
+                        className="form-control "
+                        onChange={onInputChange}
+                        placeholder="Flat Number"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-4">
+                    <div className="form-group mb-3">
+                      <input
+                        id="building_name"
+                        name="building_name"
+                        type="text"
+                        className="form-control "
+                        onChange={onInputChange}
+                        placeholder="Building Name"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-4">
+                    <div className="form-group mb-3">
+                      <input
+                        id="society_name"
+                        name="society_name"
+                        type="text"
+                        className="form-control "
+                        onChange={onInputChange}
+                        placeholder="Society Name"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="col-md-4">
+                    <div className="form-group mb-3">
+                      <input
+                        id="plot_number"
+                        name="plot_number"
+                        type="number"
+                        className="form-control "
+                        onChange={onInputChange}
+                        placeholder="Plot Number"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="col-md-4">
+                    <input
+                      onBlur={onInputBlur}
+                      id="locality"
+                      name="locality"
+                      type="text"
+                      className="form-control "
+                      onChange={onInputChange}
+                      placeholder="Locality, Area"
+                    />
+                  </div>
+
+                  <div className="col-md-4">
+                    <div className="form-group mb-3">
+                      <input
+                        id="landmark"
+                        name="landmark"
+                        type="text"
+                        className="form-control "
+                        onChange={onInputChange}
+                        placeholder="Landmark"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="col-md-4">
+                    <div className="form-group mb-3">
+                      <input
+                        id="village"
+                        name="village"
+                        type="text"
+                        className="form-control "
+                        onChange={onInputChange}
+                        placeholder="Village"
+                      />
+                    </div>
+                  </div>
+                  <hr />
+                  <div className="col-md-4">
+                    <div className="form-group mb-3">
+                      <select
+                        onChange={onInputChange}
+                        onBlur={onInputBlur}
+                        id="state"
+                        name="state"
+                        type="text"
+                        className="form-select"
+                        placeholder="State"
+                      >
+                        <option
+                          ref={deselectStateInput}
+                          value=""
+                          style={{ color: "gray" }}
+                        >
+                          State
+                        </option>
+                        {states
+                          ? states.map((state, Index) => {
+                              return (
+                                <option
+                                  id={`state-name-${state.state_id}`}
+                                  key={Index}
+                                  value={state.state_id}
+                                >
+                                  {state.state_name}
+                                </option>
+                              );
+                            })
+                          : ""}
+                      </select>
+                    </div>
+                  </div>
+                  <div className={`col-md-4 ${cityVisibilityClass}`}>
+                    <div className="form-group mb-3">
+                      <select
+                        onChange={onInputChange}
+                        onBlur={onInputBlur}
+                        id="city"
+                        name="city"
+                        type="text"
+                        className="form-select"
+                        placeholder="city"
+                      >
+                        <option
+                          id="selectedCity"
+                          value=""
+                          style={{ color: "gray" }}
+                        >
+                          City
+                        </option>
+                        {citiesByState
+                          ? citiesByState.map((city, Index) => {
+                              return (
+                                <option key={Index} value={city.city_name}>
+                                  {city.city_name}
+                                </option>
+                              );
+                            })
+                          : ""}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="col-md-4">
+                    <div className="form-group mb-3">
+                      <input
+                        type="text"
+                        onChange={onInputChange}
+                        id="zip"
+                        onBlur={onInputBlur}
+                        placeholder="Zipcode"
+                        name="zip"
+                        className={`form-control border-${zipCodeValidationColor}`}
+                      ></input>
+                      <span
+                        className={`pe-1 ${
+                          zipCodeValidationMessage ? "text-danger" : "d-none"
+                        }`}
+                      >
+                        {zipCodeValidationMessage}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="modal-footer">
+                    <button
+                      onClick={onAddressFormSubmit}
+                      className={`btn btn-primary ${
+                        locality &&
+                        village &&
+                        landmark &&
+                        state &&
+                        city &&
+                        zip &&
+                        zipCodeValidationColor !== "danger"
+                          ? ""
+                          : "disabled"
+                      }`}
+                      data-bs-dismiss="modal"
+                    >
+                      Save
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 
+// Scroll to top button on each page.
 const ScrollButton = () => {
   const [visible, setVisible] = useState(false);
 

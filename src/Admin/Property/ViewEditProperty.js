@@ -1,8 +1,8 @@
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import Layout from "../components/1.CommonLayout/Layout";
-import AdminSideBar from "./AdminSideBar";
+import Layout from "../../components/1.CommonLayout/Layout";
+import AdminSideBar from "../AdminSideBar";
+import BreadCrumb from "../BreadCrumb";
 import propertyData from "./data.json";
 
 const ViewEditProperty = () => {
@@ -56,9 +56,10 @@ const ViewEditProperty = () => {
   return (
     <Layout>
       <div className="container-fluid section-padding">
-        <div className="row min-100vh">
+        <div className="row min-100vh position-relative">
           <AdminSideBar />
-          <div className="col-xl-10 col-md-9 scrollable-right-div">
+          <div className="col-xl-10 col-md-8 mt-4 mt-md-0">
+            <BreadCrumb />
             <section className="admin-edit-property wrapper">
               <div className="container-fluid">
                 <h2 className="text-center mb-4">View & Edit</h2>
@@ -74,7 +75,7 @@ const ViewEditProperty = () => {
                           className="bi bi-pencil-square"
                         ></i>
                       </div>
-                      <div className="row">
+                      <div className="row mt-4 mt-md-0">
                         <div className="col-6">
                           <div className="form-group mb-3">
                             <label className="form-label fw-bold" htmlFor="_id">

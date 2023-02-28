@@ -1,7 +1,8 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-// import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { rootTitle } from "../../CommonFunctions";
 import Layout from "../1.CommonLayout/Layout";
 
 const EditUserDetails = () => {
@@ -46,6 +47,7 @@ const EditUserDetails = () => {
   const [allUseStates, setAllUseStates] = useState({
     isReadOnly: true,
     editClassName: "editable-values",
+    editBtnClassName: "",
     cancelUpdateBtnClassName: "d-none",
     lableVisibility: "",
     selectStateClassName: "d-none",
@@ -58,6 +60,7 @@ const EditUserDetails = () => {
   const {
     isReadOnly,
     editClassName,
+    editBtnClassName,
     cancelUpdateBtnClassName,
     lableVisibility,
     selectStateClassName,
@@ -76,13 +79,15 @@ const EditUserDetails = () => {
   const { zipCodeValidationColor, zipCodeValidationMessage } = validation;
 
   // To navigate to particular route.
-  // const goTo = useNavigate();
-
+  const goTo = useNavigate();
+  const data = JSON.parse(localStorage.getItem("data"));
   // Function will provide login token of user from localStorage and also some urls are stored in this function.
   const setHeaderAndUrl = () => {
-    const loginToken = localStorage.getItem("logintoken");
-    let headers = { Authorization: loginToken };
-    let url = `/sam/v1/property/auth`;
+    let headers = "";
+    if (data) {
+      headers = { Authorization: data.logintoken };
+    }
+    let url = `/sam/v1/property`;
     let customer_reg_url = `/sam/v1/customer-registration`;
     return [headers, url, customer_reg_url];
   };
@@ -90,90 +95,82 @@ const EditUserDetails = () => {
   // Function will get the data of user whose details are to be edited.
   const getUserToEdit = async () => {
     const [headers] = setHeaderAndUrl();
-    const userEmail = localStorage.getItem("user");
-    await axios
-      .post(
-        `/sam/v1/user-registration/auth/getuser`,
-        JSON.stringify({ email: userEmail }),
-        {
-          headers: headers,
-        }
-      )
-      .then(async (res) => {
-        const [headers, url] = setHeaderAndUrl();
-        const { individual_user, org_user, user_details } = res.data;
-        if (individual_user) {
+    if (data) {
+      const userId = data.userId;
+      await axios
+        .get(`/sam/v1/user-registration/auth/${userId}`, { headers: headers })
+        .then(async (res) => {
+          const [, url] = setHeaderAndUrl();
+          const { individual_user, org_user, user_details } = res.data;
+          if (individual_user) {
+            const {
+              first_name,
+              middle_name,
+              last_name,
+              pan_number,
+              aadhar_number,
+            } = individual_user;
+            setIndividualUserDetails({
+              first_name: first_name,
+              middle_name: middle_name,
+              last_name: last_name,
+              pan_number: pan_number,
+              aadhar_number: aadhar_number,
+            });
+          } else if (org_user) {
+            const {
+              cin_number,
+              company_name,
+              gst_number,
+              organization_type,
+              tan_number,
+            } = org_user;
+            setOrgUserDetails({
+              cin_number: cin_number,
+              company_name: company_name,
+              gst_number: gst_number,
+              organization_type: organization_type,
+              tan_number: tan_number,
+            });
+          }
           const {
-            first_name,
-            middle_name,
-            last_name,
-            pan_number,
-            aadhar_number,
-          } = individual_user;
-          setIndividualUserDetails({
-            first_name: first_name,
-            middle_name: middle_name,
-            last_name: last_name,
-            pan_number: pan_number,
-            aadhar_number: aadhar_number,
+            user_type,
+            mobile_number,
+            locality,
+            city,
+            state_name,
+            state_id,
+            zip,
+            email_address,
+            address,
+          } = user_details;
+          setUserType(user_type);
+          setIdOfState(parseInt(state_id));
+          setCommonUserDetails({
+            state_id: parseInt(state_id),
+            address: address,
+            mobile_number: mobile_number,
+            locality: locality,
+            city: city,
+            state_name: state_name,
+            zip: zip,
+            email: email_address,
+            user_type: user_type,
           });
-        } else if (org_user) {
-          const {
-            cin_number,
-            company_name,
-            gst_number,
-            organization_type,
-            tan_number,
-          } = org_user;
-          setOrgUserDetails({
-            cin_number: cin_number,
-            company_name: company_name,
-            gst_number: gst_number,
-            organization_type: organization_type,
-            tan_number: tan_number,
+          // Get Cities using state_id from api.
+          const cityByState = await axios.post(`${url}/by-city`, {
+            state_id: state_id,
           });
-        }
-        const {
-          user_type,
-          mobile_number,
-          locality,
-          city,
-          state_name,
-          state_id,
-          zip,
-          email_address,
-          address,
-        } = user_details;
-        setUserType(user_type);
-        setIdOfState(parseInt(state_id));
-        setCommonUserDetails({
-          state_id: parseInt(state_id),
-          address: address,
-          mobile_number: mobile_number,
-          locality: locality,
-          city: city,
-          state_name: state_name,
-          zip: zip,
-          email: email_address,
-          user_type: user_type,
+          // Get States from api.
+          const allStates = await axios.get(`${url}/by-state`);
+          setAllUseStates({
+            ...allUseStates,
+            citiesFromApi: cityByState.data,
+            statesFromApi: allStates.data,
+          });
+          SetOriginalValuesToShow(user_details);
         });
-        // Get Cities using state_id from api.
-        const cityByState = await axios.post(
-          `${url}/by-city`,
-          { state_id: state_id },
-          { headers: headers }
-        );
-        // Get States from api.
-        const allStates = await axios.get(`${url}/by-state`, {
-          headers: headers,
-        });
-        setAllUseStates({
-          ...allUseStates,
-          citiesFromApi: cityByState.data,
-          statesFromApi: allStates.data,
-        });
-        SetOriginalValuesToShow(user_details);
-      });
+    }
   };
 
   // Function to validate zipCodes.
@@ -202,14 +199,12 @@ const EditUserDetails = () => {
 
   const onInputChange = async (e) => {
     const { name, value } = e.target;
-    const [headers, url, customer_reg_url] = setHeaderAndUrl();
+    const [, url, customer_reg_url] = setHeaderAndUrl();
     // If input is state then post selected state id to api for getting cities based on selected state.
     if (name === "state_name") {
-      const cityByState = await axios.post(
-        `${url}/by-city`,
-        { state_id: parseInt(value) },
-        { headers: headers }
-      );
+      const cityByState = await axios.post(`${url}/by-city`, {
+        state_id: parseInt(value),
+      });
       setAllUseStates({
         ...allUseStates,
         citiesFromApi: cityByState.data,
@@ -248,6 +243,7 @@ const EditUserDetails = () => {
       ...allUseStates,
       isReadOnly: false,
       editClassName: "",
+      editBtnClassName: "d-none",
       cancelUpdateBtnClassName: "",
       lableVisibility: "d-none",
       selectStateClassName: "",
@@ -271,7 +267,7 @@ const EditUserDetails = () => {
 
   // Function will run when user click on cancel button.
   const cancelEditing = async () => {
-    const [headers, url] = setHeaderAndUrl();
+    const [, url] = setHeaderAndUrl();
     setValidation({
       zipCodeValidationColor: "",
       zipCodeValidationMessage: "",
@@ -280,11 +276,9 @@ const EditUserDetails = () => {
     const { city, state_id, state_name } = originalValuesToShow;
 
     // Get Cities using state_id from api.
-    const cityByState = await axios.post(
-      `${url}/by-city`,
-      { state_id: state_id },
-      { headers: headers }
-    );
+    const cityByState = await axios.post(`${url}/by-city`, {
+      state_id: state_id,
+    });
 
     setCommonUserDetails({
       ...commonUserDetails,
@@ -298,6 +292,7 @@ const EditUserDetails = () => {
       citiesFromApi: cityByState.data,
       isReadOnly: true,
       editClassName: "editable-values",
+      editBtnClassName: "",
       cancelUpdateBtnClassName: "d-none",
       lableVisibility: "",
       selectStateClassName: "d-none",
@@ -339,14 +334,15 @@ const EditUserDetails = () => {
               ...allUseStates,
               isReadOnly: true,
               editClassName: "editable-values",
+              editBtnClassName: "",
               cancelUpdateBtnClassName: "d-none",
               lableVisibility: "",
               selectStateClassName: "d-none",
               cityVisiblity: "d-none",
             });
-            // setTimeout(() => {
-            //   goTo("/profile");
-            // }, 3000);
+            setTimeout(() => {
+              goTo("/profile");
+            }, 3000);
           } else {
             toast.error("Some Error Occured");
           }
@@ -357,6 +353,7 @@ const EditUserDetails = () => {
   };
 
   useEffect(() => {
+    rootTitle.textContent = "SAM TOOL - EDIT DETAILS";
     getUserToEdit();
     // eslint-disable-next-line
   }, []);
@@ -370,17 +367,23 @@ const EditUserDetails = () => {
               <form onSubmit={updateDetails} className="card h-100">
                 <div className="card-body">
                   <div className="row">
-                    <div className="col-8">
+                    <div className="col-md-8 col-6">
                       <h6 className="mb-2 text-primary">Personal Details</h6>
                     </div>
 
-                    <div className="col-4 text-end">
+                    <div className="col-md-4 col-6 text-end">
                       <i
                         onClick={editDetails}
-                        className="bi bi-pencil-square"
+                        className={`bi bi-pencil-square ${editBtnClassName}`}
                       ></i>
+                      <NavLink
+                        to="/profile"
+                        className="ms-4 text-decoration-none"
+                      >
+                        View Profile <i className="bi bi-arrow-right"></i>
+                      </NavLink>
                     </div>
-                    <div className="col-xl-4 col-lg-4 col-md-6  col-12">
+                    <div className="col-xl-4 col-lg-4 col-md-6 col-12">
                       <div className="form-group mb-3">
                         <label htmlFor="userType" className="form-label">
                           User Type:

@@ -6,12 +6,12 @@ function Footers() {
       <div className="container-fluid fluid-div">
         <div className="row justify-content-center">
           <div className="col-12 mt-4">
-            <div className="footer-icons-div">
-              <div className="footer-icon">
-                <i className="bi bi-facebook"></i>
+            <div className="footer-icons-wrapper">
+              <div className="footer-icon-div">
+                <i className="bi bi-facebook footer-icon"></i>
               </div>
-              <div className="footer-icon">
-                <i className="bi bi-linkedin"></i>
+              <div className="footer-icon-div">
+                <i className="bi bi-linkedin footer-icon"></i>
               </div>
             </div>
           </div>

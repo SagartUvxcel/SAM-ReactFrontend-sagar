@@ -1,12 +1,12 @@
 import axios from "axios";
-import React from "react";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Layout from "../1.CommonLayout/Layout";
-import resetPassImg from "../../images/resetpass.svg";
+import setPassImg from "../../images/setpass.svg";
+import { rootTitle } from "../../CommonFunctions";
 
-const ResetPassword = () => {
+const ForgotAndResetPassword = () => {
   //  Important variables for storing password data as well as validation data.
   const [details, setDetails] = useState({
     newPassword: "",
@@ -18,7 +18,7 @@ const ResetPassword = () => {
     passwordType2: "password",
   });
 
-  const [resetBtnClassName, setResetBtnClassName] = useState("");
+  const [resetPassBtnClassName, setResetPassBtnClassName] = useState("");
 
   const [alertDetails, setAlertDetails] = useState({
     alertVisible: false,
@@ -42,21 +42,23 @@ const ResetPassword = () => {
   // Function to check if the password satisfies the given password condition.
   const onPasswordsBlur = (e) => {
     const { name, value } = e.target;
-    if (name === "resetPassword") {
+    if (name === "newPassword") {
       const regexForPassword =
         /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/;
-      if (value.match(regexForPassword)) {
-        setDetails({
-          ...details,
-          newPassword: value,
-          invalidMessage1: "",
-        });
-      } else {
-        setDetails({
-          ...details,
-          newPassword: value,
-          invalidMessage1: "Invalid Password",
-        });
+      if (value) {
+        if (value.match(regexForPassword)) {
+          setDetails({
+            ...details,
+            newPassword: value,
+            invalidMessage1: "",
+          });
+        } else {
+          setDetails({
+            ...details,
+            newPassword: value,
+            invalidMessage1: "Invalid Password",
+          });
+        }
       }
     }
   };
@@ -64,7 +66,7 @@ const ResetPassword = () => {
   // Onchange function for both password fields.
   const onPasswordsChange = (e) => {
     const { name, value } = e.target;
-    if (name === "resetPassword") {
+    if (name === "newPassword") {
       setDetails({
         ...details,
         newPassword: value,
@@ -78,7 +80,7 @@ const ResetPassword = () => {
     }
   };
 
-  // On reset Button click this function will run.
+  // On setPassWord Button click this function will run.
   const onResetPasswordFormSubmit = async (e) => {
     e.preventDefault();
     if (
@@ -117,18 +119,20 @@ const ResetPassword = () => {
         passwordType2: "text",
       });
     } else {
+      setResetPassBtnClassName("disabled");
+      e.target.reset();
       await axios.post(
-        `/sam/v1/customer-registration/reset-password`,
+        `/sam/v1/customer-registration/forgot-password`,
         JSON.stringify({
           password: newPassword,
-          token: localStorage.getItem("token"),
+          username: localStorage.getItem("forgotPassUserName"),
         })
       );
-      setResetBtnClassName("disabled");
       toast.success("Password Changed Successfully !");
+      localStorage.removeItem("forgotPassUserName");
       setTimeout(() => {
         goTo("/login");
-      }, 3000);
+      }, 2000);
     }
   };
 
@@ -158,12 +162,19 @@ const ResetPassword = () => {
     }
   };
 
+  useEffect(() => {
+    rootTitle.textContent = "SAM TOOL - RESET PASSWORD";
+    let verifiedUser = localStorage.getItem("forgotPassUserName");
+    if (!verifiedUser) {
+      goTo("/");
+    }
+  });
   return (
     <Layout>
-      <section className="reset-password-wrapper section-padding min-100vh">
+      <section className="set-password-wrapper section-padding min-100vh">
         <div className="container mt-5">
           <div className="row justify-content-lg-between justify-content-center">
-            <div className="col-xl-5 col-lg-6 col-md-8 order-2 order-lg-1 mt-5 mt-lg-0">
+            <div className="col-xl-5 col-lg-6 col-md-8">
               <form onSubmit={onResetPasswordFormSubmit} className="card p-5">
                 <h3 className="text-center fw-bold">Reset Password</h3>
                 <hr />
@@ -185,12 +196,12 @@ const ResetPassword = () => {
                 <div className="row mt-3">
                   <div className="col-lg-12 mb-4">
                     <div className="form-group position-relative">
-                      <label className="text-muted" htmlFor="reset-password">
-                        New Password<span className="text-danger ps-1">*</span>
+                      <label className="text-muted" htmlFor="new-password">
+                        Password<span className="text-danger ps-1">*</span>
                       </label>
                       <input
-                        id="reset-password"
-                        name="resetPassword"
+                        id="new-password"
+                        name="newPassword"
                         type={passwordType1}
                         className="form-control"
                         onBlur={onPasswordsBlur}
@@ -201,7 +212,7 @@ const ResetPassword = () => {
                       <i
                         placeholder={eyeIcon}
                         onClick={changeEyeIcon1}
-                        className={`icon-eye bi bi-${eyeIcon}`}
+                        className={`icon-eye-setpass bi bi-${eyeIcon}`}
                       ></i>
                     </div>
                     {invalidMessage1 ? (
@@ -212,8 +223,9 @@ const ResetPassword = () => {
                       <span className="d-none"></span>
                     )}
                     <span className="text-muted password-condition">
-                      Password should contain at least 1 uppercase, 1 lowercase
-                      letter, 1 number and should be 8-15 characters long.
+                      Password should contain at least 1 uppercase letter, 1
+                      lowercase letter, 1 number, 1 special character and should
+                      be 8-15 characters long.
                     </span>
                   </div>
                   <div className="col-lg-12 mb-4">
@@ -233,13 +245,14 @@ const ResetPassword = () => {
                       <i
                         placeholder={eyeIcon}
                         onClick={changeEyeIcon2}
-                        className={`icon-eye bi bi-${eyeIcon2}`}
+                        className={`icon-eye-setpass bi bi-${eyeIcon2}`}
                       ></i>
                     </div>
                   </div>
                   <div className="col-lg-12">
                     <button
-                      className={`btn common-btn w-100 ${resetBtnClassName}`}
+                      type="submit"
+                      className={`btn btn-primary common-btn-font w-100 ${resetPassBtnClassName}`}
                     >
                       Reset Password
                     </button>
@@ -247,8 +260,8 @@ const ResetPassword = () => {
                 </div>
               </form>
             </div>
-            <div className="col-xl-5 col-lg-6 col-md-8 order-1 order-lg-2 mb-md-5 mb-lg-0">
-              <img src={resetPassImg} alt="" className="reset-pass-img" />
+            <div className="col-xl-5 col-lg-6 col-md-8 my-5 my-lg-0">
+              <img src={setPassImg} alt="" className="set-pass-img" />
             </div>
           </div>
         </div>
@@ -257,4 +270,4 @@ const ResetPassword = () => {
   );
 };
 
-export default ResetPassword;
+export default ForgotAndResetPassword;

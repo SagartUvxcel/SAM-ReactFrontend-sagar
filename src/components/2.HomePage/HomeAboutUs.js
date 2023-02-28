@@ -1,16 +1,22 @@
 import React from "react";
-import WhoWeAre from "../../images/2.png";
-import WhyChooseUs from "../../images/3.png";
+import { NavLink } from "react-router-dom";
+import WhoWeAre from "../../images/meeting.svg";
+import WhyChooseUs from "../../images/business-deal.svg";
 
 const HomeAboutUs = () => {
   return (
     <>
-      <section id="about" className="home-about-wrapper">
+      <section className="home-about-wrapper">
         <div className="container-fluid">
           <div className="row">
             <div className="col-md-6 about-details-col bg-white common-col order-md-1 order-1">
               <div className="px-md-4 px-lg-5 px-2 text-center">
-                <h1 className="text-center">WHO WE ARE</h1>
+                <h1 className="text-center">
+                  WHO WE ARE
+                  <NavLink to="/about" className="ms-4 about-home-link">
+                    <i className="bi bi-arrow-right-circle"></i>
+                  </NavLink>
+                </h1>
                 <p>
                   Finding the right property requires a lot of time and effort.
                   Won`t it be convenient if all the properties that fit your
@@ -20,10 +26,10 @@ const HomeAboutUs = () => {
                 </p>
               </div>
             </div>
-            <div className="col-md-6 common-col order-md-2 order-2">
+            <div className="col-md-6 common-col order-md-2 order-2 py-md-3">
               <img src={WhoWeAre} alt="about-us-img" />
             </div>
-            <div className="col-md-6 common-col order-md-3 order-4">
+            <div className="col-md-6 common-col order-md-3 order-4 py-md-3">
               <img src={WhyChooseUs} alt="why-choose-us" />
             </div>
             <div className="col-md-6 why-choose-us-col bg-white common-col order-md-4 order-3">
