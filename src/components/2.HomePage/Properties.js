@@ -10,7 +10,7 @@ const Properties = ({ propertyData, loading }) => {
   };
 
   return (
-    <div className="container-fluid d-none display-on-search wrapper">
+    <div className="container-fluid d-none display-on-search py-3">
       <div className="row">
         {loading ? (
           <CommonSpinner spinnerColor="primary" spinnerText="Please wait...." />
@@ -26,7 +26,7 @@ const Properties = ({ propertyData, loading }) => {
                 <div className="property-card-wrapper">
                   <div className="card mb-4">
                     <div className="top-line"></div>
-                    <img className="card-img-top" src="images1.jpg" alt="" />
+                    <img className="card-img-top" src="images2.jpg" alt="" />
                     <div className="card-body">
                       <h3 className="card-title text-uppercase">
                         {property.title}

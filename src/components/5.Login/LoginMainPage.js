@@ -78,7 +78,19 @@ const LoginMainPage = () => {
       )
       .then((res) => {
         const { email, token, role_id, user_id } = res.data.token;
+        let admin = null;
+        let editor = null;
+        let viewer = null;
         if (email !== "" && token !== "") {
+          role_id.forEach((role) => {
+            if (role.role_id === 3) {
+              viewer = 3;
+            } else if (role.role_id === 2) {
+              editor = 2;
+            } else if (role.role_id === 1) {
+              admin = 1;
+            }
+          });
           localStorage.setItem(
             "data",
             JSON.stringify({
@@ -86,7 +98,13 @@ const LoginMainPage = () => {
               user: email,
               logintoken: token,
               userId: user_id,
-              roleId: role_id[0].role_id,
+              roleId: admin
+                ? admin
+                : editor
+                ? editor
+                : viewer
+                ? viewer
+                : viewer,
             })
           );
           setTimeout(() => {

@@ -121,81 +121,175 @@ const Profile = () => {
     <Layout>
       <section className="profile-wrapper section-padding min-100vh">
         <div className="container-fluid wrapper">
-          <div className="row justify-content-center">
-            <div className="col-12 px-4">
-              <div className="row border px-4 py-5 shadow">
-                {/* Profile image */}
-                <div className="col-md-2 text-center text-md-start">
+          <div className="row">
+            <div className="col-xl-3">
+              <div className="card">
+                <div className="text-center">
                   <img
                     src="profile.png"
                     alt="Profile Pic"
                     className="img-fluid"
                   />
                 </div>
-                <div className="col-md-10">
-                  {/* Name & designation */}
-                  <div className="row">
-                    <div className="col-xl-12 text-center text-md-start">
-                      <span className="fw-bold fs-3 text-primary">
-                        {user_type === "Individual User"
-                          ? `${first_name} ${last_name}`
-                          : `${company_name} - (${organization_type})`}
-                      </span>
-                      <br />
-                      <span className="text-muted">{`${user_type} ( ${
-                        userRole === 1
-                          ? "Admin"
-                          : userRole === 2
-                          ? "Editor"
-                          : "Viewer"
-                      } )`}</span>
+                <div className="card-body text-center">
+                  <h3 className="card-title">
+                    {user_type === "Individual User"
+                      ? `${first_name} ${last_name}`
+                      : `${company_name} - (${organization_type})`}
+                  </h3>
+                  <span className="text-muted">{`${user_type} ( ${
+                    userRole === 1
+                      ? "Admin"
+                      : userRole === 2
+                      ? "Editor"
+                      : "Viewer"
+                  } )`}</span>
+                </div>
+              </div>
+            </div>
+            <div className="col-xl-9">
+              <div className="card p-3" style={{ minHeight: "100%" }}>
+                <h2>Important Highlights / Details</h2>
+              </div>
+            </div>
+          </div>
+          <div className="row mt-5">
+            <div className="col-xl-4">
+              <div className="card p-3 profile-top-cards bg-primary">
+                <div className="profile-icon-wrapper text-center">
+                  <i className="bi bi-geo-alt-fill fs-1 text-white"></i>
+                </div>
+                <h3 className="text-center text-white">Address Details</h3>
+                <div className="card-body text-center">
+                  <div className="row justify-content-center">
+                    <div className="col-6">
+                      <div className="card py-2 profile-inner-card">
+                        <h6>LOCALITY</h6>
+                        <small>{locality}</small>
+                      </div>
+                    </div>
+                    <div className="col-6">
+                      <div className="card py-2 profile-inner-card">
+                        <h6>STATE</h6>
+                        <small>{state_name}</small>
+                      </div>
+                    </div>
+                    <div className="col-6 mt-4">
+                      <div className="card py-2 profile-inner-card">
+                        <h6>CITY</h6>
+                        <small>{city}</small>
+                      </div>
+                    </div>
+                    <div className="col-6 mt-4">
+                      <div className="card py-2 profile-inner-card">
+                        <h6>ZIP</h6>
+                        <small>{zip}</small>
+                      </div>
                     </div>
                   </div>
-                  {/* Other details */}
-                  <div className="row mt-4">
-                    <div className="col-md-4">
-                      <p className="text-muted fw-bold">Address</p>
-                      <span className="text-muted">Locality:</span> {locality}
-                      <br />
-                      <span className="text-muted">City:</span> {city}
-                      <br />
-                      <span className="text-muted">State:</span> {state_name}
-                      <br />
-                      <span className="text-muted">Zip:</span> {zip}
+                </div>
+              </div>
+            </div>
+            {user_type === "Individual User" ? (
+              <div className="col-xl-4">
+                <div className="card p-3 profile-top-cards bg-primary">
+                  <div className="profile-icon-wrapper text-center">
+                    <i className="bi bi-person-vcard fs-1 text-white"></i>
+                  </div>
+                  <h3 className="text-center text-white">Personal Details</h3>
+                  <div className="card-body text-center">
+                    <div className="row justify-content-center">
+                      <div className="col-6">
+                        <div className="card py-2 profile-inner-card">
+                          <h6>MOBILE</h6>
+                          <small>{mobile_number}</small>
+                        </div>
+                      </div>
+                      <div className="col-6">
+                        <div className="card py-2 profile-inner-card">
+                          <h6>PAN</h6>
+                          <small>{pan_number}</small>
+                        </div>
+                      </div>
+                      <div className="col-6 mt-4">
+                        <div className="card py-2 profile-inner-card">
+                          <h6>AADHAAR</h6>
+                          <small>{aadhar_number}</small>
+                        </div>
+                      </div>
+                      <div className="col-6 mt-4">
+                        <div className="card py-2 profile-inner-card">
+                          <h6>EMAIL</h6>
+                          <small>{email}</small>
+                        </div>
+                      </div>
                     </div>
-                    {user_type === "Individual User" ? (
-                      <div className="col-md-4 mt-4 mt-md-0">
-                        <p className="text-muted fw-bold">Personal Details</p>
-                        <span className="text-muted">Mobile Number: </span>
-                        {mobile_number} <br />
-                        <span className="text-muted">Pan Number: </span>
-                        {pan_number} <br />
-                        <span className="text-muted">Aadhaar Number: </span>
-                        {aadhar_number} <br />
-                        <span className="text-muted">Email address: </span>
-                        {email} <br />
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="col-xl-4">
+                <div className="card p-3 profile-top-cards bg-primary">
+                  <div className="profile-icon-wrapper text-center">
+                    <i className="bi bi-person-vcard fs-1 text-white"></i>
+                  </div>
+                  <h3 className="text-center text-white">
+                    Organization Details
+                  </h3>
+                  <div className="card-body text-center">
+                    <div className="row justify-content-center">
+                      <div className="col-6">
+                        <div className="card py-2 profile-inner-card">
+                          <h6>CIN</h6>
+                          <small>{cin_number}</small>
+                        </div>
                       </div>
-                    ) : (
-                      <div className="col-md-4 mt-4 mt-md-0">
-                        <p className="text-muted fw-bold">Other Details</p>
-                        <span className="text-muted">Cin Number: </span>
-                        {cin_number} <br />
-                        <span className="text-muted">Tan Number: </span>
-                        {tan_number} <br />
-                        <span className="text-muted">Gst Number: </span>
-                        {gst_number} <br />
-                        <span className="text-muted">Email Address: </span>
-                        {email} <br />
+                      <div className="col-6">
+                        <div className="card py-2 profile-inner-card">
+                          <h6>TAN</h6>
+                          <small>{tan_number}</small>
+                        </div>
                       </div>
-                    )}
-                    <div className="col-md-4 mt-4 mt-md-0">
-                      <p className="text-muted fw-bold">Quick Links</p>
-                      <li>
-                        <NavLink to="/reset-password">Change Password</NavLink>
-                      </li>
-                      <li>
-                        <NavLink to="/edit-details">Edit Details</NavLink>
-                      </li>
+                      <div className="col-6 mt-4">
+                        <div className="card py-2 profile-inner-card">
+                          <h6>GST</h6>
+                          <small>{gst_number}</small>
+                        </div>
+                      </div>
+                      <div className="col-6 mt-4">
+                        <div className="card py-2 profile-inner-card">
+                          <h6>EMAIL</h6>
+                          <small>{email}</small>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            <div className="col-xl-4">
+              <div className="card p-3 profile-top-cards bg-primary">
+                <div className="profile-icon-wrapper text-center">
+                  <i className="bi bi-globe2 fs-1 text-white"></i>
+                </div>
+                <h3 className="text-center text-white">Quick Access</h3>
+                <div className="card-body text-center">
+                  <div className="row justify-content-center">
+                    <div className="col-6">
+                      <NavLink
+                        to="/reset-password"
+                        className="card py-2 profile-inner-card text-decoration-none text-dark"
+                      >
+                        <h6 className="m-0">RESET PASSWORD</h6>
+                      </NavLink>
+                    </div>
+                    <div className="col-6">
+                      <NavLink
+                        to="/edit-details"
+                        className="card py-2 profile-inner-card text-decoration-none text-dark"
+                      >
+                        <h6 className="m-0">EDIT PROFILE</h6>
+                      </NavLink>
                     </div>
                   </div>
                 </div>

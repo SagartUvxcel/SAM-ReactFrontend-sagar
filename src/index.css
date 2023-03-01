@@ -30,11 +30,15 @@ code {
 }
 
 .custom-text-primary {
-  color: var(--primary-color);
+  color: var(--primary-color) !important;
 }
 
 .custom-text-secondary {
-  color: var(--secondary-color);
+  color: var(--secondary-color) !important;
+}
+
+.custom-bg-secondary {
+  background-color: var(--secondary-color) !important;
 }
 
 /* Common css */
@@ -671,6 +675,21 @@ input:-webkit-autofill:active {
   padding-left: 0 !important;
 }
 
+/* Profile */
+
+.profile-inner-card {
+  transition: 0.3s ease-in-out;
+  cursor: pointer;
+}
+
+.profile-inner-card:hover {
+  color: white !important;
+  border-color: white;
+  background-color: var(--primary-color-hover);
+  /* transform: scale(1.06); */
+  transition: 0.3s ease-in-out;
+}
+
 /* Page Not Found */
 
 .page-not-found-wrapper {
@@ -728,6 +747,14 @@ input:-webkit-autofill:active {
 
 .custom-heading-color {
   color: #333649;
+}
+
+/* Admin Home Page */
+.chart-wrapper {
+  height: 380px !important;
+  padding: 20px;
+  justify-content: center;
+  align-items: center;
 }
 
 /* Edit Property */
@@ -960,10 +987,6 @@ input:-webkit-autofill:active {
 }
 
 @media (min-width: 1280px) {
-  .col-xl-4 {
-    width: 32% !important;
-  }
-
   .set-pass-img {
     height: 441px;
   }

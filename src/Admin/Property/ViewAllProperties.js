@@ -55,7 +55,7 @@ const ViewAllProperties = () => {
                               <div className="top-line"></div>
                               <img
                                 className="card-img-top"
-                                src="/images1.jpg"
+                                src="/images2.jpg"
                                 alt=""
                               />
                               <div className="card-body">

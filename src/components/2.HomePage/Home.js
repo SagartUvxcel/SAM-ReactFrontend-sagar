@@ -374,13 +374,14 @@ function Home() {
               </div>
             </div>
           </div>
+          <div id="properties"></div>
           <div className="home-bottom-heading display-on-search d-none">
             <h1 className="text-center text-white">RECENT LISTINGS</h1>
           </div>
         </section>
         {/* Properties component to show property details (In card format) on click of search button */}
         {/* We are sending propertyData array (which contains our search results) as a prop */}
-        <section className="property-wrapper" id="properties">
+        <section className="property-wrapper">
           <Properties propertyData={propertyData} loading={loading} />
           <div className="container d-none" ref={paginationRef}>
             <div className="row">

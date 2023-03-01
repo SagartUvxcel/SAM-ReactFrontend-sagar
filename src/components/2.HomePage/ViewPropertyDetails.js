@@ -22,7 +22,7 @@ const ViewPropertyDetails = () => {
           <h4 className="mt-4 fw-bold">Property Details</h4>
           <div className="row wrapper">
             <div className="col-xl-3 col-lg-4 col-md-5 view-property-main-img-div">
-              <img src="images4.jpg" alt="" className="img-fluid" />
+              <img src="images2.jpg" alt="" className="img-fluid" />
               <div className="property-icons-div">
                 <div className="icons">X</div> <div className="icons">X</div>
                 <div className="icons">X</div> <div className="icons">X</div>
@@ -96,7 +96,9 @@ const ViewPropertyDetails = () => {
                 </div>
 
                 <div className="col-12">
-                  <button className="btn btn-primary common-btn-font mt-2">Contact</button>
+                  <button className="btn btn-primary common-btn-font mt-2">
+                    Contact
+                  </button>
                 </div>
               </div>
             </div>
