@@ -1,54 +1,96 @@
 import React, { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import CommonNavLinks from "./CommonNavLinks";
+import { checkLoginSession } from "../../CommonFunctions";
 
+let isBank = false;
 function Header() {
+  const data = JSON.parse(localStorage.getItem("data"));
+  if (data) {
+    isBank = data.isBank;
+  }
   // This useState will store data from localStorage such as login-status, role and email of user.
   const [allUseStates, setAllUseStates] = useState({
     loginStatus: false,
     roleId: null,
     userEmail: "",
+    userId: null,
   });
 
-  const { loginStatus, roleId, userEmail } = allUseStates;
+  const { loginStatus, userEmail, roleId } = allUseStates;
 
   // To navigate to particular route.
   const goTo = useNavigate();
 
   // Logout function.
   const logOut = () => {
-    // alert("Logged Out Successfully");
-    toast.success("Logged Out Successfully");
     // Clear localStorage.
     localStorage.clear();
     setAllUseStates({ ...allUseStates, loginStatus: false });
-    setTimeout(() => {
-      goTo("/");
-      window.location.reload();
-    }, 2000);
+    goTo("/");
+    window.location.reload();
   };
 
   // Save status of login.
-  const setStatusOfLogin = () => {
-    // data is the loggedIn user's data from localStorage.
-    const data = JSON.parse(localStorage.getItem("data"));
+  const setStatusOfLogin = async () => {
+    if (!window.location.href.includes("/login")) {
+      localStorage.removeItem("userSession");
+    }
+
     if (data) {
-      setAllUseStates({
-        loginStatus: true,
-        roleId: data.roleId,
-        userEmail: data.user,
+      checkLoginSession(data.loginToken).then((res) => {
+        if (res !== "Valid") {
+          setAllUseStates({
+            loginStatus: false,
+            roleId: null,
+            userEmail: "",
+            userId: null,
+            isBank: false,
+          });
+          // goTo("/login");
+        }
       });
     }
   };
 
   useEffect(() => {
+    if (data) {
+      setAllUseStates({
+        loginStatus: true,
+        roleId: data.roleId,
+        userEmail: data.user,
+        userId: data.userId,
+        isBank: data.isBank,
+      });
+    }
     setStatusOfLogin();
+    // eslint-disable-next-line
   }, []);
 
   return (
     <header className="header-wrapper">
       <nav className="navbar navbar-expand-md fixed-top">
         <div className="container-fluid">
+          <button
+            className={`navbar-toggler ${window.location.href.includes(`${isBank ? "/bank" : "/admin"}`)
+              ? ""
+              : "d-none"
+              }`}
+            onClick={() => {
+              let offcanvasBackdrop = document.querySelector(
+                ".offcanvas-backdrop"
+              );
+              if (offcanvasBackdrop) {
+                offcanvasBackdrop.classList.add("d-none");
+              }
+            }}
+            type="button"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#offcanvasExample"
+            aria-controls="offcanvasExample"
+          >
+            <span className="navbar-toggler-icon"></span>
+          </button>
           <span className="navbar-brand px-lg-4">Assets Class</span>
           <button
             className="navbar-toggler"
@@ -61,34 +103,63 @@ function Header() {
           >
             <span className="navbar-toggler-icon"></span>
           </button>
-          <div className="collapse navbar-collapse" id="navbarNav">
+          <div className="collapse navbar-collapse mt-2 mt-md-0" id="navbarNav">
             <ul className="navbar-nav ms-auto">
-              {/* If user is not loggedIn then show these navbar links */}
-              {!loginStatus ? (
-                <>
-                  <li className="nav-item ps-lg-2">
-                    <NavLink to="/login" className="nav-link">
-                      Login
-                    </NavLink>
-                  </li>
-                  <li className="nav-item ps-lg-2">
-                    <NavLink to="/register" className="nav-link">
-                      Register
-                    </NavLink>
-                  </li>
-                </>
+              <li>
+                <NavLink to="/" className="nav-link">
+                  <i className="bi bi-house me-2 text-light"></i>
+                  Home
+                </NavLink>
+              </li>
+
+              <li className={`nav-item ps-md-2 ${loginStatus ? "d-none" : ""}`}>
+                <NavLink to="/login" className="nav-link">
+                  <i className="bi bi-box-arrow-in-right me-2 text-light"></i>
+                  Login
+                </NavLink>
+              </li>
+              <li className={`nav-item ps-md-2 ${loginStatus ? "d-none" : ""}`}>
+                <NavLink to="/register" className="nav-link">
+                  <i className="bi bi-person-vcard me-2 text-light"></i>
+                  Register
+                </NavLink>
+              </li>
+
+              <li className={`nav-item ps-md-2 ${loginStatus ? "" : "d-none"}`}>
+                <NavLink to="/user-enquiries" className="nav-link">
+                  <i className="bi bi-chat-text me-2 text-light"></i>
+                  Enquiries
+                </NavLink>
+              </li>
+              <li className={`nav-item ps-md-2 ${loginStatus ? "" : "d-none"}`}>
+                <span className="nav-link">
+                  <i className="bi bi-person-circle me-2 text-light"></i>
+                  {userEmail}
+                </span>
+              </li>
+              {/* If user is loggedIn then show these navbar links in dropdown */}
+              {roleId === 2 && isBank===false || loginStatus=== false ? (
+                <li>
+                  <NavLink to="/subscription" className="nav-link">
+                    <i className="bi bi-wallet2 me-2 text-light"></i>
+                    Subscribe
+                  </NavLink>
+                </li>
               ) : (
-                /* If user is loggedIn then show these navbar links */
-                <>
-                  <li className="nav-item ps-lg-2">
-                    <span className="nav-link">
-                      <i className="bi bi-person-fill"></i> {userEmail}
-                    </span>
-                  </li>
-                </>
+                ""
               )}
+              {/* <li
+                className={`nav-item subscribe-btn-wrapper ps-md-2 ${loginStatus ? "" : ""
+                  }`}
+              >
+                <NavLink to="/subscription" className="nav-link">
+                  <i className="bi bi-wallet2 me-2 text-light"></i>
+                  Subscribe
+                </NavLink>
+              </li> */}
+
               {/* If user is not loggedIn then show these navbar links in dropdown */}
-              <li className="nav-item dropdown ps-lg-2">
+              <li className="nav-item dropdown ps-md-2 d-md-block d-none">
                 <span
                   className="nav-link"
                   id="navbarDropdown"
@@ -102,58 +173,12 @@ function Header() {
                   className="dropdown-menu main-nav-dropdown-menu bg-primary"
                   data-bs-popper="static"
                 >
-                  <li>
-                    <NavLink to="/" className="nav-link">
-                      <i className="bi bi-search text-white me-1"></i> Search
-                    </NavLink>
-                  </li>
-                  <li>
-                    <NavLink className="nav-link" to="/about">
-                      <i className="bi bi-info-circle text-white me-1"></i>{" "}
-                      About
-                    </NavLink>
-                  </li>
-                  <li>
-                    <NavLink className="nav-link" to="/contact">
-                      <i className="bi bi-telephone text-white me-1"></i>{" "}
-                      Contact
-                    </NavLink>
-                  </li>
-                  {roleId && roleId === 1 ? (
-                    <li>
-                      <NavLink to="/admin" className="nav-link">
-                        <i className="bi bi-person-fill-check text-white me-2"></i>
-                        Administration
-                      </NavLink>
-                    </li>
-                  ) : (
-                    ""
-                  )}
-                  {/* If user is loggedIn then show these navbar links in dropdown */}
-                  {loginStatus ? (
-                    <>
-                      <li>
-                        <NavLink to="/profile" className="nav-link">
-                          <i className="bi bi-person-square text-white me-2"></i>
-                          Profile
-                        </NavLink>
-                      </li>
-                      <li>
-                        <span
-                          style={{ cursor: "pointer" }}
-                          className="nav-link"
-                          onClick={logOut}
-                        >
-                          <i className="bi bi-box-arrow-right text-white me-1"></i>{" "}
-                          Logout
-                        </span>
-                      </li>
-                    </>
-                  ) : (
-                    <></>
-                  )}
+                  <CommonNavLinks allUseStates={allUseStates} logOut={logOut} />
                 </ul>
               </li>
+              <div className="d-md-none">
+                <CommonNavLinks allUseStates={allUseStates} logOut={logOut} />
+              </div>
             </ul>
           </div>
         </div>

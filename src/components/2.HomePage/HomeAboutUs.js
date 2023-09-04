@@ -13,7 +13,7 @@ const HomeAboutUs = () => {
               <div className="px-md-4 px-lg-5 px-2 text-center">
                 <h1 className="text-center">
                   WHO WE ARE
-                  <NavLink to="/about" className="ms-4 about-home-link">
+                  <NavLink to="/about" className="ms-4 about-home-link text-dark">
                     <i className="bi bi-arrow-right-circle"></i>
                   </NavLink>
                 </h1>

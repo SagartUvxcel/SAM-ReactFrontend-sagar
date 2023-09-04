@@ -7,17 +7,27 @@ import { rootTitle } from "../../CommonFunctions";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { v4 as uuid } from "uuid";
+import BreadCrumb from "../BreadCrumb";
 
 const allowedExtensions = ["csv"];
-const chunkSize = 1000 * 1024;
-// const chunkSize = 6000;
+let chunkSize = 0;
+let temp = 0;
+let authHeaders = "";
+
 const UploadProperties = () => {
+  // Bootstrap alert details.
+  const [errorModalDetails, setErrorModalDetails] = useState({
+    errorModalOpen: false,
+    errorHeading: "",
+    errorMessage: "",
+  });
+  const { errorModalOpen, errorHeading, errorMessage } = errorModalDetails;
   const [files, setFiles] = useState([]);
   const [saveFile, setSavedFile] = useState([]);
   const [currentFileIndex, setCurrentFileIndex] = useState(null);
   const [lastUploadedFileIndex, setLastUploadedFileIndex] = useState(null);
   const [currentChunkIndex, setCurrentChunkIndex] = useState(null);
-  const uniqueUploadId = uuid();
+  const [uniqueUploadId, setUniqueUploadId] = useState(uuid());
   const [allUseStates, setAllUseStates] = useState({
     data: [],
     tableHeadings: [],
@@ -40,21 +50,16 @@ const UploadProperties = () => {
     window.scrollTo(0, 0);
     setTimeout(() => {
       window.location.reload();
-    }, 2000);
+    }, 400);
   };
 
   const dataFromLocal = JSON.parse(localStorage.getItem("data"));
-  const setHeaderAndUrl = () => {
-    let headers = "";
-    if (dataFromLocal) {
-      headers = {
-        Authorization: dataFromLocal.logintoken,
-        "Content-Type": "application/octet-stream",
-      };
-    }
-    let url = `/sam/v1/property/auth/upload-chunk`;
-    return [headers, url];
-  };
+  if (dataFromLocal) {
+    authHeaders = {
+      Authorization: dataFromLocal.loginToken,
+      "Content-Type": "application/octet-stream",
+    };
+  }
 
   const readFileFunction = (inputFile) => {
     setFileName(inputFile.name);
@@ -112,6 +117,7 @@ const UploadProperties = () => {
     if (!file) {
       return;
     }
+    chunkSize = Math.round((file.size * 39) / 100);
     const from = currentChunkIndex * chunkSize;
     const to = from + chunkSize;
     const blob = file.slice(from, to);
@@ -119,44 +125,67 @@ const UploadProperties = () => {
     reader.readAsDataURL(blob);
   };
 
-  const [progress, setProgress] = useState(0);
-  const [progressModalOpen, setProgressModalOpen] = useState(false);
-
   const uploadChunk = async (readerEvent) => {
-    let fileSize = 0;
     const file = files[currentFileIndex];
-    const size = Math.round(file.size / 1024) + 1;
-    fileSize = size >= 1024 ? (size / 1024).toFixed(1) + " MB" : size + " KB";
+    const size = file.size;
+    let tempChunkSize = chunkSize;
+    temp += tempChunkSize;
+    if (temp > size) {
+      tempChunkSize = size - (temp - chunkSize);
+    }
     const data = readerEvent.target.result.split(",")[1];
-    const [headers, url] = setHeaderAndUrl();
-    const dataToPost = {
+
+    const detailsToPost = {
       upload_id: uniqueUploadId,
-      chunk_number: `${currentChunkIndex + 1}`,
-      total_chunks: `${Math.ceil(file.size / chunkSize)}`,
-      total_file_size: fileSize,
+      chunk_number: currentChunkIndex + 1,
+      total_chunks: Math.ceil(size / chunkSize),
+      chunk_size: tempChunkSize,
+      total_file_size: size,
       file_name: file.name,
       data: data,
     };
-    console.log(dataToPost.total_chunks);
     const chunks = Math.ceil(file.size / chunkSize) - 1;
     const isLastChunk = currentChunkIndex === chunks;
-    setProgress(
-      Math.round((dataToPost.chunk_number / dataToPost.total_chunks) * 100)
-    );
-    // setProgressModalOpen(true);
-    await axios.post(url, dataToPost, { headers: headers }).then((res) => {
-      setProgressModalOpen(true);
+    try {
+      await axios
+        .post(`/sam/v1/property/auth/upload-chunk`, detailsToPost, {
+          headers: authHeaders,
+        })
+        .then((res) => {
+          if (isLastChunk) {
+            if (res.data.msg === 0) {
+              toast.success("File uploaded successfully");
+              reloadPage();
+            } else {
+              let arr = [];
+              res.data.forEach((data) => {
+                arr.push(data.property_number);
+              });
+              let duplicateProperties = arr.join(", ");
+              let customErrorMessage = "";
+              if (arr.length > 1) {
+                customErrorMessage = `Failed to upload properties with property numbers ${duplicateProperties}`;
+              } else {
+                customErrorMessage = `Failed to upload property with property number ${duplicateProperties}`;
+              }
+              setErrorModalDetails({
+                errorModalOpen: true,
+                errorHeading: "Duplicate Records Error",
+                errorMessage: customErrorMessage,
+              });
+              window.scrollTo(0, 0);
+            }
+          }
+        });
+    } catch (error) {
       if (isLastChunk) {
-        if (res.data.msg === 0) {
-          // setUniqueUploadId(uuid());
-        } else {
-          setProgressModalOpen(false);
-          toast.error("Duplicate data");
-          onCancelClick();
-        }
+        toast.error("Internal server error");
+        reloadPage();
       }
-    });
+    }
+
     if (isLastChunk) {
+      setUniqueUploadId(uuid());
       setLastUploadedFileIndex(currentFileIndex);
       setCurrentChunkIndex(null);
     } else {
@@ -204,7 +233,14 @@ const UploadProperties = () => {
 
   useEffect(() => {
     rootTitle.textContent = "ADMIN - UPLOAD PROPERTIES";
+    // eslint-disable-next-line
   }, []);
+
+  const reloadPage = () => {
+    setTimeout(() => {
+      window.location.reload();
+    }, 4000);
+  };
 
   return (
     <Layout>
@@ -219,8 +255,9 @@ const UploadProperties = () => {
       >
         <div className="row min-100vh position-relative">
           <AdminSideBar />
-          <div className="col-xl-10 col-md-8 wrapper mt-4 mt-md-0">
-            <div className="container-fluid">
+          <div className="col-xl-10 col-lg-9 col-md-8">
+            <BreadCrumb />
+            <div className="container-fluid mt-4">
               <div className="row justify-content-center">
                 <div className="col-xl-7 col-md-11 shadow p-md-4 p-3 mb-5 upload-file-main-wrapper">
                   <div className="">
@@ -274,7 +311,7 @@ const UploadProperties = () => {
 
                 <div
                   id="showCsvDataInTable"
-                  className="col-xl-12 position-relative mb-5"
+                  className="col-xl-12 position-relative mb-5 vh-100"
                 >
                   <div
                     className={`${tableDisplayClass} csv-data-table-wrapper`}
@@ -299,65 +336,53 @@ const UploadProperties = () => {
                         })}
                       </tbody>
                     </table>
-                    <div className="text-end mt-3 bg-primary position-absolute save-cancel-btn-div">
-                      <button
-                        className="btn btn-success me-2"
-                        onClick={postChunksToDataBase}
-                      >
-                        Save
-                      </button>
-                      <button
-                        onClick={onCancelClick}
-                        className="btn btn-secondary"
-                      >
-                        Cancel
-                      </button>
-                    </div>
+                  </div>
+                  <div
+                    className={`text-end mt-3 bg-light  save-cancel-btn-div ${tableDisplayClass}`}
+                  >
+                    <button
+                      className="btn btn-success me-2"
+                      onClick={postChunksToDataBase}
+                    >
+                      Save
+                    </button>
+                    <button
+                      onClick={onCancelClick}
+                      className="btn btn-secondary"
+                    >
+                      Cancel
+                    </button>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <div
-        className={`modal fade ${progressModalOpen ? "show" : ""}`}
-        id="exampleModal"
-        tabIndex="-1"
-        aria-labelledby="exampleModalLabel"
-        aria-modal="true"
-        style={{ display: `${progressModalOpen ? "block" : "none"}` }}
-      >
-        <div className="modal-dialog modal-dialog-centered">
-          <div className="modal-content bg-dark">
-            <div className="modal-header">
-              <h5 className="modal-title text-white" id="exampleModalLabel">
-                {progress === 100
-                  ? "Data uploaded successfully"
-                  : "Uploading...."}
-              </h5>
-              <button
-                type="button"
-                className="btn-close bg-white"
-                onClick={() => {
-                  setProgressModalOpen(false);
-                  onCancelClick();
-                }}
-              ></button>
-            </div>
-            <div className="modal-body">
-              <div className="progress my-2">
-                <div
-                  className="progress-bar progress-bar-animated progress-bar-striped bg-info"
-                  role="progressbar"
-                  style={{ width: `${progress}%` }}
-                  aria-valuenow="100"
-                  aria-valuemin="0"
-                  aria-valuemax="100"
-                >
-                  {progress}%
-                </div>
+        {/* Modal */}
+        <div
+          className={`modal fade ${errorModalOpen ? "show d-block" : "d-none"}`}
+          id="duplicatePropertyErrorModal"
+          tabIndex="-1"
+          aria-hidden="true"
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
+        >
+          <div className="modal-dialog modal-dialog-centered modal-sm duplicate-property-error-modal">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title" id="exampleModalLabel">
+                  <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                  {errorHeading} !
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => {
+                    setErrorModalDetails({ errorModalOpen: false });
+                    window.location.reload();
+                  }}
+                ></button>
               </div>
+              <div className="modal-body common-btn-font">{errorMessage}</div>
             </div>
           </div>
         </div>

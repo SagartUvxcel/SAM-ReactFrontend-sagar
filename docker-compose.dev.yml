@@ -10,4 +10,4 @@ services:
     volumes:
       - ./src:/sam-frontend/src
     ports:
-      - 5003:3000
+      - 5000:3000
