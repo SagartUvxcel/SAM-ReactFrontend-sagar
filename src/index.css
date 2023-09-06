@@ -361,7 +361,7 @@ input:-webkit-autofill:active {
 
 .property-sort-box {
   width: fit-content !important;
-  position: fixed;
+  /* position: fixed; */
   top: 4.5rem;
   right: 0;
   z-index: 1;

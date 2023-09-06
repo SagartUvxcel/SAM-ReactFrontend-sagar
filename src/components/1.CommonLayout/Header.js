@@ -138,7 +138,7 @@ function Header() {
                 </span>
               </li>
               {/* If user is loggedIn then show these navbar links in dropdown */}
-              {roleId === 2 && isBank===false || loginStatus=== false ? (
+              {roleId === 3 && isBank===false || loginStatus=== false ? (
                 <li>
                   <NavLink to="/subscription" className="nav-link">
                     <i className="bi bi-wallet2 me-2 text-light"></i>

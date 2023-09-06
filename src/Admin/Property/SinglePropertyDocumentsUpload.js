@@ -74,6 +74,7 @@ const SinglePropertyDocumentsUpload = () => {
     documentsInfo;
   let otherCategoryId = null;
   const getCategoriesFromDB = async () => {
+    setCategoriesLoading(true);
     console.log("function started");
     try {
       await axios
@@ -343,37 +344,30 @@ const SinglePropertyDocumentsUpload = () => {
   };
 
   const checkCanUploadNewDocument = async (id) => {
-    try {
-      let res = await axios.get(`/sam/v1/property/auth/document-size/${id}`, {
-        headers: authHeader,
-      });
-      if (res.data) {
-        let sizeInBytes = res.data.total_size;
-        let sizeInMegaBytes = parseFloat(
-          (sizeInBytes / 1024 / 1024).toFixed(2)
-        );
-        console.log("Size in Database: ", sizeInMegaBytes, " MB");
-        setTotalSizeOfDocuments(sizeInMegaBytes);
-      }
-    } catch (error) { }
+    if (id) {
+      try {
+        let res = await axios.get(`/sam/v1/property/auth/document-size/${id}`, {
+          headers: authHeader,
+        });
+        if (res.data) {
+          let sizeInBytes = res.data.total_size;
+          let sizeInMegaBytes = parseFloat(
+            (sizeInBytes / 1024 / 1024).toFixed(2)
+          );
+          console.log("Size in Database: ", sizeInMegaBytes, " MB");
+          setTotalSizeOfDocuments(sizeInMegaBytes);
+        }
+      } catch (error) { }
+    }
   };
 
   useEffect(() => {
-    setCategoriesLoading(true);
     let propertyData = JSON.parse(localStorage.getItem("upload-doc"));
     if (propertyData) {
       setCurrentPropertyNumber(propertyData.number);
       checkCanUploadNewDocument(propertyData.id);
       if (data) {
-        checkLoginSession(data.loginToken).then((res) => {
-          if (res === "Valid") {
-            getCategoriesFromDB();
-          } else {
-            setCategoriesLoading(false);
-          }
-        });
-      } else {
-        setCategoriesLoading(false);
+        getCategoriesFromDB();
       }
     }
     // eslint-disable-next-line

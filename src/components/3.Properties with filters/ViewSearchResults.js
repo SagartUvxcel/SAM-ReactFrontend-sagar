@@ -28,6 +28,7 @@ const ViewSearchResults = () => {
   const { states, assetCategory, cities, banks } = searchFields;
   const moreFiltersForm = useRef();
 
+  console.log(dataToPost);
   // It will fetch all states, banks, assets from api and will map those values to respective select fields.
   const getSearchDetails = async () => {
     let apis = {
@@ -57,7 +58,7 @@ const ViewSearchResults = () => {
         banks: allBanks.data,
         assetCategory: assetCategories.data,
       });
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const showUpdatedMinMaxPriceRage = () => {
@@ -107,7 +108,6 @@ const ViewSearchResults = () => {
       // Post data and get Searched result from response.
       await axios.post(apis.searchAPI, dataToPost).then((res) => {
         // Store Searched results into propertyData useState.
-        console.log(res.data);
         if (res.data !== null) {
           setPropertyData(res.data);
           setLoading(false);
@@ -467,6 +467,11 @@ const ViewSearchResults = () => {
     );
   };
 
+  const navigateToListOfProperty = () => {
+    const sensitiveData = dataToPost;
+    goTo("/list-of-properties", { state: { sensitiveData } });
+  };
+
   useEffect(() => {
     if (dataToPost) {
       getSearchDetails();
@@ -479,9 +484,10 @@ const ViewSearchResults = () => {
     <Layout>
       <section className="section-padding searched-results-wrapper">
         <div className="container-fluid min-200vh">
+          {/* search bar */}
           <div
             className="row extra-filters-row justify-content-center align-items-center py-3"
-            // style={{ height: "80px" }}
+          // style={{ height: "80px" }}
           >
             <div className="col-md-2 col-12 mt-3 mt-md-0">
               <select
@@ -528,24 +534,24 @@ const ViewSearchResults = () => {
                 <option value="">City</option>
                 {cities
                   ? cities.map((city, Index) => {
-                      let optionToSelectByDefault = document.getElementById(
-                        `cityFilter-${city.city_id}`
-                      );
-                      if (dataToPost.city_id && optionToSelectByDefault) {
-                        if (dataToPost.city_id === city.city_id) {
-                          optionToSelectByDefault.selected = true;
-                        }
+                    let optionToSelectByDefault = document.getElementById(
+                      `cityFilter-${city.city_id}`
+                    );
+                    if (dataToPost.city_id && optionToSelectByDefault) {
+                      if (dataToPost.city_id === city.city_id) {
+                        optionToSelectByDefault.selected = true;
                       }
-                      return (
-                        <option
-                          id={`cityFilter-${city.city_id}`}
-                          key={Index}
-                          value={city.city_id}
-                        >
-                          {city.city_name}
-                        </option>
-                      );
-                    })
+                    }
+                    return (
+                      <option
+                        id={`cityFilter-${city.city_id}`}
+                        key={Index}
+                        value={city.city_id}
+                      >
+                        {city.city_name}
+                      </option>
+                    );
+                  })
                   : ""}
               </select>
             </div>
@@ -560,24 +566,24 @@ const ViewSearchResults = () => {
                 <option value="">Category</option>
                 {assetCategory
                   ? assetCategory.map((category, Index) => {
-                      let optionToSelectByDefault = document.getElementById(
-                        `categoryFilter-${category.type_id}`
-                      );
-                      if (dataToPost.type_id && optionToSelectByDefault) {
-                        if (dataToPost.type_id === category.type_id) {
-                          optionToSelectByDefault.selected = true;
-                        }
+                    let optionToSelectByDefault = document.getElementById(
+                      `categoryFilter-${category.type_id}`
+                    );
+                    if (dataToPost.type_id && optionToSelectByDefault) {
+                      if (dataToPost.type_id === category.type_id) {
+                        optionToSelectByDefault.selected = true;
                       }
-                      return (
-                        <option
-                          id={`categoryFilter-${category.type_id}`}
-                          key={Index}
-                          value={category.type_id}
-                        >
-                          {category.type_name}
-                        </option>
-                      );
-                    })
+                    }
+                    return (
+                      <option
+                        id={`categoryFilter-${category.type_id}`}
+                        key={Index}
+                        value={category.type_id}
+                      >
+                        {category.type_name}
+                      </option>
+                    );
+                  })
                   : ""}
               </select>
             </div>
@@ -592,12 +598,12 @@ const ViewSearchResults = () => {
                 <option value="">Bank</option>
                 {banks
                   ? banks.map((bank, Index) => {
-                      return (
-                        <option key={Index} value={bank.bank_id}>
-                          {bank.bank_name}
-                        </option>
-                      );
-                    })
+                    return (
+                      <option key={Index} value={bank.bank_id}>
+                        {bank.bank_name}
+                      </option>
+                    );
+                  })
                   : ""}
               </select>
             </div>
@@ -835,9 +841,8 @@ const ViewSearchResults = () => {
               </button>
             </div>
             <div
-              className={`col-12 text-center mt-md-3 ${
-                filtersCount > 0 ? "" : "d-none"
-              }`}
+              className={`col-12 text-center mt-md-3 ${filtersCount > 0 ? "" : "d-none"
+                }`}
             >
               <button
                 onClick={resetFilters}
@@ -847,6 +852,7 @@ const ViewSearchResults = () => {
               </button>
             </div>
           </div>
+          {/* list Wrapper */}
           <div className="property-wrapper">
             <div className="container-fluid display-on-search py-3">
               <div className="row">
@@ -883,11 +889,10 @@ const ViewSearchResults = () => {
                             <div className="card-body">
                               {count ? (
                                 <div className="text-capitalize text-primary fw-bold">
-                                  {`${
-                                    count > 1
+                                  {`${count > 1
                                       ? count + " Properties"
                                       : count + " Property"
-                                  }`}
+                                    }`}
                                 </div>
                               ) : (
                                 <></>
@@ -939,6 +944,7 @@ const ViewSearchResults = () => {
                                 {localData ? (
                                   <button
                                     onClick={() => {
+
                                       navigateToReceiver({
                                         ...dataToPost,
                                         city_id: dataToPost.city_id
@@ -954,6 +960,7 @@ const ViewSearchResults = () => {
                                           ? dataToPost.max_price
                                           : range.split("-")[1],
                                       });
+
                                     }}
                                     className="btn btn-primary common-btn-font me-2"
                                     style={{ width: "30%" }}

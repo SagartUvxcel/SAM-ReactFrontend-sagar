@@ -249,6 +249,10 @@ const AddProperty = () => {
           })
           .then((res) => {
             if (res.data.msg === 0) {
+              localStorage.setItem("upload-doc", JSON.stringify({
+                number: formData.property_number,
+                id: null,
+              }));
               localStorage.setItem("property_number", formData.property_number);
               resetValidationsOnSubmit();
               localStorage.setItem("singlePropertySuccess", true);

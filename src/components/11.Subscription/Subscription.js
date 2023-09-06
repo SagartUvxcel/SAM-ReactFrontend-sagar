@@ -253,7 +253,7 @@ const Subscription = () => {
                               key={Index}
                             >
                               <button
-                                className="w-100 shadow plan-header-wrapper border-0 p-4 position-relative"
+                                className="w-100 shadow plan-header-wrapper border-0 p-4 position-relative mb-4"
                                 onClick={() => {
                                   setSelectedPlanDetails({
                                     selectedPlanId: plans.plan_id,

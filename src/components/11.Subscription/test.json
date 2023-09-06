@@ -1,8 +1,8 @@
 {
-    "id": "tok_1Nl9ceSHRy9SkqBTqbwpnNKM",
+    "id": "tok_1NmuTLSHRy9SkqBT1qbKsQSC",
     "object": "token",
     "card": {
-        "id": "card_1Nl9ceSHRy9SkqBTpqDTUIOl",
+        "id": "card_1NmuTLSHRy9SkqBTGGZv2CNx",
         "object": "card",
         "address_city": null,
         "address_country": null,
@@ -13,20 +13,22 @@
         "address_zip": null,
         "address_zip_check": null,
         "brand": "MasterCard",
-        "country": "IE",
+        "country": null,
         "cvc_check": "unchecked",
         "dynamic_last4": null,
-        "exp_month": 5,
+        "exp_month": 8,
         "exp_year": 2026,
-        "funding": "credit",
-        "last4": "9903",
+        "funding": "unknown",
+        "last4": "1113",
         "name": null,
         "tokenization_method": null,
         "wallet": null
     },
     "client_ip": "202.179.69.2",
-    "created": 1693483516,
+    "created": 1693901935,
     "livemode": false,
     "type": "card",
     "used": false
 }
+
+
