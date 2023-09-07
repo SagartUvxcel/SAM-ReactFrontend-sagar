@@ -25,6 +25,7 @@ export const PaymentInformation = () => {
 
 
 
+  const [cardErrorMsg, setCardErrorMsg] = useState(null);
   const [planDetails, setPlanDetails] = useState({});
   const [subscribeBtnLoading, setSubscribeBtnLoading] = useState(false);
 
@@ -69,8 +70,13 @@ export const PaymentInformation = () => {
     const { token, error } = await stripe.createToken(cardElement);
 
     if (error) {
-      console.error(error);
+      setCardErrorMsg(error.message);
+      console.error(error.message);
+      setSubscribeBtnLoading(false);
+
       return;
+    } else {
+      setCardErrorMsg(null);
     }
 
     let dataToPost = {
@@ -88,6 +94,7 @@ export const PaymentInformation = () => {
           toast.success("Payment Successful.")
           //   console.log("Payment Successful.");
           resetCardFormInputs();
+          setCardErrorMsg(null);
         } else {
           setSubscribeBtnLoading(false);
         }
@@ -144,22 +151,22 @@ export const PaymentInformation = () => {
                     </div>
                     <form onSubmit={handleSubmit} id="paymentForm">
                       <CardElement options={cardElementOptions} />
-
+                      <div className={`text-danger text-start mt-1 ${cardErrorMsg?"": "d-none"}`}>{cardErrorMsg}</div>
                       <div className="text-center">
 
                         <button type="submit" className="btn btn-primary text-capitalize common-btn-font px-4 mt-4 w-50" disabled={subscribeBtnLoading ? true : false
                         }>{subscribeBtnLoading ? (
-                      <>
-                        <span
-                          className="spinner-grow spinner-grow-sm me-2"
-                          role="status"
-                          aria-hidden="true"
-                        ></span>
-                        Subscribing....
-                      </>
-                    ) : (
-                      "Subscribe"
-                    )}</button>
+                          <>
+                            <span
+                              className="spinner-grow spinner-grow-sm me-2"
+                              role="status"
+                              aria-hidden="true"
+                            ></span>
+                            Subscribing....
+                          </>
+                        ) : (
+                          "Subscribe"
+                        )}</button>
                       </div>
                     </form>
                   </div>

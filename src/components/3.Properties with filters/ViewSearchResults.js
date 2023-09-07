@@ -461,16 +461,18 @@ const ViewSearchResults = () => {
       JSON.stringify(data),
       secretKey
     ).toString();
+
     window.open(
       `/list-of-properties?data=${encodeURIComponent(encodedData)}`,
       "_blank"
     );
+
   };
 
-  const navigateToListOfProperty = () => {
-    const sensitiveData = dataToPost;
-    goTo("/list-of-properties", { state: { sensitiveData } });
-  };
+  // const navigateToListOfProperty = () => {
+  //   const sensitiveData = dataToPost;
+  //   goTo("/list-of-properties", { state: { sensitiveData } });
+  // };
 
   useEffect(() => {
     if (dataToPost) {

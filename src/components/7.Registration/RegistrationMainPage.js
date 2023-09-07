@@ -32,7 +32,7 @@ const Registration = () => {
     try {
       const allStates = await axios.get(`/sam/v1/property/by-state`);
       setStates(allStates.data);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   // useState to store address Details.
@@ -758,16 +758,14 @@ const Registration = () => {
                     </div>
                     {/*  Checkboxes - Individual & Organization */}
                     <div className="col-lg-12 d-flex">
-                      <div
-                        className={`individual-label common-btn-font ${individualActiveClass}`}
+                      <div className={`individual-label common-btn-font ${individualActiveClass}`}
                         name="individual"
                         onClick={changeForm}
                       >
                         Individual
                       </div>
                       <div className="mx-2">|</div>
-                      <div
-                        className={`organization-label common-btn-font ${organizationActiveClass}`}
+                      <div className={`organization-label common-btn-font ${organizationActiveClass}`}
                         name="organization"
                         onClick={changeForm}
                       >
@@ -777,21 +775,17 @@ const Registration = () => {
                     <div className="col-12">
                       <hr />
                     </div>
-
                     <div className="col-12" id="registration-alert">
-                      <div
-                        className={`login-alert alert alert-${alertClr} alert-dismissible show d-flex align-items-center ${
-                          alertVisible ? "" : "d-none"
+                      <div className={`login-alert alert alert-${alertClr} alert-dismissible show d-flex align-items-center ${alertVisible ? "" : "d-none"
                         }`}
                         role="alert"
                       >
                         <span>
                           <i
-                            className={`bi bi-exclamation-triangle-fill me-2 ${
-                              alertClr === "danger" || alertClr === "warning"
+                            className={`bi bi-exclamation-triangle-fill me-2 ${alertClr === "danger" || alertClr === "warning"
                                 ? ""
                                 : "d-none"
-                            }`}
+                              }`}
                           ></i>
                         </span>
                         <small className="fw-bold">{alertMsg}</small>
@@ -868,11 +862,10 @@ const Registration = () => {
                               className="form-control"
                             />
                             <span
-                              className={`pe-1 ${
-                                aadhaarValidationMessage
+                              className={`pe-1 ${aadhaarValidationMessage
                                   ? "text-danger"
                                   : "d-none"
-                              } `}
+                                } `}
                             >
                               {aadhaarValidationMessage}
                             </span>
@@ -897,9 +890,8 @@ const Registration = () => {
                               className="form-control text-uppercase"
                             />
                             <span
-                              className={`pe-1 ${
-                                panValidationMessage ? "text-danger" : "d-none"
-                              }`}
+                              className={`pe-1 ${panValidationMessage ? "text-danger" : "d-none"
+                                }`}
                             >
                               {panValidationMessage}
                             </span>
@@ -991,9 +983,8 @@ const Registration = () => {
                               required
                             />
                             <span
-                              className={`pe-1 ${
-                                gstValidationMessage ? "text-danger" : "d-none"
-                              }`}
+                              className={`pe-1 ${gstValidationMessage ? "text-danger" : "d-none"
+                                }`}
                             >
                               {gstValidationMessage}
                             </span>
@@ -1017,9 +1008,8 @@ const Registration = () => {
                               required
                             />
                             <span
-                              className={`pe-1 ${
-                                tanValidationMessage ? "text-danger" : "d-none"
-                              }`}
+                              className={`pe-1 ${tanValidationMessage ? "text-danger" : "d-none"
+                                }`}
                             >
                               {tanValidationMessage}
                             </span>
@@ -1039,9 +1029,8 @@ const Registration = () => {
                               required
                             />
                             <span
-                              className={`pe-1 ${
-                                cinValidationMessage ? "text-danger" : "d-none"
-                              }`}
+                              className={`pe-1 ${cinValidationMessage ? "text-danger" : "d-none"
+                                }`}
                             >
                               {cinValidationMessage}
                             </span>
@@ -1261,16 +1250,16 @@ const Registration = () => {
                         </option>
                         {states
                           ? states.map((state, Index) => {
-                              return (
-                                <option
-                                  id={`state-name-${state.state_id}`}
-                                  key={Index}
-                                  value={state.state_id}
-                                >
-                                  {state.state_name}
-                                </option>
-                              );
-                            })
+                            return (
+                              <option
+                                id={`state-name-${state.state_id}`}
+                                key={Index}
+                                value={state.state_id}
+                              >
+                                {state.state_name}
+                              </option>
+                            );
+                          })
                           : ""}
                       </select>
                     </div>
@@ -1302,16 +1291,16 @@ const Registration = () => {
                         </option>
                         {citiesByState
                           ? citiesByState.map((city, Index) => {
-                              return (
-                                <option
-                                  id={`city-name-${city.city_id}`}
-                                  key={Index}
-                                  value={city.city_id}
-                                >
-                                  {city.city_name}
-                                </option>
-                              );
-                            })
+                            return (
+                              <option
+                                id={`city-name-${city.city_id}`}
+                                key={Index}
+                                value={city.city_id}
+                              >
+                                {city.city_name}
+                              </option>
+                            );
+                          })
                           : ""}
                       </select>
                     </div>
@@ -1335,9 +1324,8 @@ const Registration = () => {
                         className={`form-control border-${zipCodeValidationColor}`}
                       ></input>
                       <span
-                        className={`pe-1 ${
-                          zipCodeValidationMessage ? "text-danger" : "d-none"
-                        }`}
+                        className={`pe-1 ${zipCodeValidationMessage ? "text-danger" : "d-none"
+                          }`}
                       >
                         {zipCodeValidationMessage}
                       </span>
@@ -1346,16 +1334,15 @@ const Registration = () => {
                   <div className="modal-footer">
                     <button
                       onClick={onAddressFormSubmit}
-                      className={`btn btn-primary ${
-                        locality &&
-                        landmark &&
-                        state &&
-                        city &&
-                        zip &&
-                        zipCodeValidationColor !== "danger"
+                      className={`btn btn-primary ${locality &&
+                          landmark &&
+                          state &&
+                          city &&
+                          zip &&
+                          zipCodeValidationColor !== "danger"
                           ? ""
                           : "disabled"
-                      }`}
+                        }`}
                       data-bs-dismiss="modal"
                     >
                       Save

@@ -13,6 +13,11 @@ let authHeaders = "";
 let isLogin = false;
 
 
+const sixMonthPlansDetails = [
+  { "plan_id": 4, "name": "Basic plan", "description": "Basic plan", "price": "1199.00" },
+  { "plan_id": 5, "name": "Advanced plan", "description": "Advanced plan", "price": "2999.00" }
+]
+
 const Subscription = () => {
 
   const navigate = useNavigate();
@@ -24,10 +29,44 @@ const Subscription = () => {
   }
 
   // subscription Plans 
-  const [plans, setPlans] = useState([]);
+  const [plans, setPlans] = useState(sixMonthPlansDetails);
+  const [sixMonthsPlans, setSixMonthsPlans] = useState([]);
+  const [annualPlans, setAnnualPlans] = useState([]);
 
-  const [selectedPlanDetails, setSelectedPlanDetails] = useState({});
+  const [selectedPlanDetails, setSelectedPlanDetails] = useState({
+    billing_cycle: "half yearly"
+  });
+  const [defaultSelectedPlan, setDefaultSelectedPlan] = useState({
+    sixMonths: true,
+    annual: false
+  });
+  const { sixMonths, annual } = defaultSelectedPlan;
 
+  const onSixMonthBtnClick = () => {
+    setPlans(sixMonthPlansDetails);
+    setDefaultSelectedPlan({ sixMonths: true, annual: false });
+    setSelectedPlanDetails({ ...selectedPlanDetails, billing_cycle: "half yearly" });
+  }
+
+  const onAnnualBtnClick = () => {
+    console.log(defaultSelectedPlan);
+    setPlans(annualPlans);
+    setDefaultSelectedPlan({ sixMonths: false, annual: true });
+    setSelectedPlanDetails({ ...selectedPlanDetails, billing_cycle: "annual" });
+
+  }
+
+  const defaultActivePlans = () => {
+    if (plans) {
+      const basicPlanDetails = plans.filter(plan => plan.plan_id === 4)[0];
+
+      setSelectedPlanDetails({
+        selectedPlanId: basicPlanDetails.plan_id,
+        selectedPlanName: basicPlanDetails.name,
+        selectedPlanAmount: basicPlanDetails.price,
+      });
+    }
+  }
 
   // selected subscription table 
   const subscriptionPlansTableRef = useRef(null);
@@ -64,6 +103,11 @@ const Subscription = () => {
     const sensitiveData = selectedPlanDetails;
     navigate("/subscription/payment", { state: { sensitiveData } });
   };
+  const navigateToFreeTrialPaymentPage = () => {
+    const sensitiveData = { ...selectedPlanDetails, selectedPlanAmount: parseFloat(0), billing_cycle: "free trial" };
+    // navigate("/subscription/payment", { state: { sensitiveData } });
+    console.log(sensitiveData);
+  };
 
   // get Subscription Plans Details from database
   const getSubscriptionPlansDetails = async () => {
@@ -73,7 +117,20 @@ const Subscription = () => {
         headers: authHeaders,
       })
         .then(response => {
-          setPlans(response.data);
+          // setPlans(sixMonthPlansDetails);
+
+          const plansRes = response.data;
+          if (plansRes) {
+            setAnnualPlans(response.data);
+            // const basicPlanDetails = plansRes.filter(plan => plan.plan_id === 1)[0];
+            // setSelectedPlanDetails({
+            //   selectedPlanId: basicPlanDetails.plan_id,
+            //   selectedPlanName: basicPlanDetails.name,
+            //   selectedPlanAmount: basicPlanDetails.price,
+            // });
+            // console.log(JSON.stringify(plansRes));
+          }
+
 
         })
 
@@ -83,22 +140,26 @@ const Subscription = () => {
   }
 
   useEffect(() => {
-    if (plans.length > 0) {
-      const basicPlanDetails = plans.filter(plan => plan.plan_id === 1)[0];
-      setSelectedPlanDetails({
-        selectedPlanId: basicPlanDetails.plan_id,
-        selectedPlanName: basicPlanDetails.name,
-        selectedPlanAmount: basicPlanDetails.price,
-      });
-      console.log(plans);
-    }
-  }, [plans]);
+  }, [])
+
+  // useEffect(() => {
+  //   if (plans.length > 0) {
+  //     const basicPlanDetails = plans.filter(plan => plan.plan_id === 1)[0];
+  //     setSelectedPlanDetails({
+  //       selectedPlanId: basicPlanDetails.plan_id,
+  //       selectedPlanName: basicPlanDetails.name,
+  //       selectedPlanAmount: basicPlanDetails.price,
+  //     });
+  //     console.log(plans);
+  //   }
+  // }, [plans]);
 
 
   // useEffect for axios
   useEffect(() => {
 
     handleActiveColumn(1);
+    defaultActivePlans();
     if (isLogin) {
       getSubscriptionPlansDetails()
     }
@@ -124,8 +185,22 @@ const Subscription = () => {
               </span>
             </div>
             <div className="row mt-5 justify-content-center">
-              <div className="annual-btn d-flex justify-content-center align-items-center">
-                Annual
+
+              {/*  Checkboxes - Individual & Organization */}
+              <div className="col-lg-12 d-flex justify-content-center">
+                <div className={`plan-select-btn d-flex justify-content-center align-items-center ${sixMonths ? "active" : ""}`}
+                  name="individual"
+                  onClick={onSixMonthBtnClick}
+                >
+                  6 Month
+                </div>
+                <div className="mx-4 d-flex justify-content-center align-items-center">|</div>
+                <div className={`plan-select-btn d-flex justify-content-center align-items-center ${annual ? "active" : ""}`}
+                  name="organization"
+                  onClick={onAnnualBtnClick}
+                >
+                  Annual
+                </div>
               </div>
             </div>
 
@@ -277,7 +352,7 @@ const Subscription = () => {
                                 <h3 className="fw-bold plan-price">
                                   <sup>&#8377;</sup>
                                   {plans.price}
-                                  <sub className="fs-6 fw-normal">/YEAR</sub>
+                                  {/* <sub className="fs-6 fw-normal">/YEAR</sub> */}
                                 </h3>
                               </button>
                             </div>
@@ -297,8 +372,8 @@ const Subscription = () => {
                     </div>
                     <div className="col-md-6 mt-4 mt-md-0">
                       <button className="w-100 btn btn-outline-primary text-capitalize common-btn-font"
-                      //  onClick={navigateToPaymentPage}
-                       >
+                        onClick={navigateToFreeTrialPaymentPage}
+                      >
                         Free Trial ({selectedPlanDetails.selectedPlanName && selectedPlanDetails.selectedPlanName.toLowerCase().replace(' plan', '')}){" "}
                         <i className="bi bi-chevron-right"></i>
                       </button>
@@ -319,7 +394,7 @@ const Subscription = () => {
             <div className="mt-5 row justify-content-center">
               <NavLink to="/login" className="btn btn-outline-primary col-md-2"> Login </NavLink>
               <div className="col-2 text-center">
-                 <h5>OR</h5>
+                <h5>OR</h5>
               </div>
               <NavLink to="/register" className="btn btn-outline-primary col-md-2"> Register </NavLink>
 

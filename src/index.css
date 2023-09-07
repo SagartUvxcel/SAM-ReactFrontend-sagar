@@ -1069,11 +1069,11 @@ input:-webkit-autofill:active {
 
 /* Subscription */
 
-.subscription-wrapper .annual-btn {
+
+.plan-select-btn {
+  border: 1px solid var(--primary-color)  !important;
+  color: var(--primary-color);
   border-radius: 60px !important;
-  background: var(--bg-gradient-blue);
-  color: white;
-  border-color: white;
   height: fit-content;
   min-width: fit-content;
   min-height: 40px;
@@ -1081,6 +1081,13 @@ input:-webkit-autofill:active {
   text-transform: uppercase;
   font-size: 14px;
   transition: .3s ease-in-out;
+  cursor: pointer;
+}
+
+.plan-select-btn.active{
+  background: var(--bg-gradient-blue);
+  color: white;
+  border-color: white;
 }
 
 .subscription-wrapper .card {
