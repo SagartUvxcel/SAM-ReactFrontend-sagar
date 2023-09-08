@@ -26,8 +26,9 @@ export const PaymentInformation = () => {
 
 
   const [cardErrorMsg, setCardErrorMsg] = useState(null);
-  const [planDetails, setPlanDetails] = useState({});
+  const [planDetails, setPlanDetails] = useState(dataFromSubscriptionPage?dataFromSubscriptionPage:null);
   const [subscribeBtnLoading, setSubscribeBtnLoading] = useState(false);
+  const [perBillingCycleName, setPerBillingCycleName] = useState("");
 
   const cardElementOptions = {
     style: {
@@ -61,7 +62,7 @@ export const PaymentInformation = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setSubscribeBtnLoading(true);
-
+    console.log(planDetails);
     if (!stripe || !elements) {
       return;
     }
@@ -83,11 +84,13 @@ export const PaymentInformation = () => {
       plan_id: planDetails.plan_id,
       payment_token: token.id,
       amount: parseFloat(planDetails.price),
+      billing_cycle: planDetails.billing_cycle,
     }
     console.log(JSON.stringify(token));
+    console.log(dataToPost);
 
     try {
-      const response = await axios.post("/sam/v1/property/auth/subscribe-user", dataToPost, { headers: authHeaders });
+      const response = await axios.post("/sam/v1/customer-registration/auth/subscribe-user", dataToPost, { headers: authHeaders });
       if (response.data) {
         if (response.data.status === 0) {
           setSubscribeBtnLoading(false);
@@ -107,17 +110,23 @@ export const PaymentInformation = () => {
   };
 
 
+  const displayBillingCycleName = () => {
+    if (dataFromSubscriptionPage.billing_cycle === "annual") {
+      setPerBillingCycleName("/ Year");
+    } else if (dataFromSubscriptionPage.billing_cycle === "half yearly") {
+      setPerBillingCycleName("/ 6 Months");
+    } else if (dataFromSubscriptionPage.billing_cycle === "free trial") {
+      setPerBillingCycleName("");
+    }
+  }
+
+
 
   useEffect(() => {
     if (dataFromSubscriptionPage) {
-      setPlanDetails({
-        plan_id: dataFromSubscriptionPage.selectedPlanId,
-        name: dataFromSubscriptionPage.selectedPlanName,
-        price: dataFromSubscriptionPage.selectedPlanAmount,
-      })
+      displayBillingCycleName();
     }
-
-  }, [])
+  }, [dataFromSubscriptionPage])
 
   return (
     <>
@@ -132,12 +141,13 @@ export const PaymentInformation = () => {
                     <div className="StripeElement w-100">
                       <h5 className="text-start">Your Subscription </h5>
                       <div className="subscription-div d-flex justify-content-between border-bottom py-1">
-                        <p className=" text-secondary p-0 mb-0">{planDetails.name}</p>
-                        <p className=" text-secondary p-0 mb-0"><sup className="fs-5 top-0">&#8377;</sup> {planDetails.price} / Year</p>
+                        <p className=" text-secondary p-0 mb-0">{planDetails ? planDetails.name : ""}</p>
+                        <p className=" text-secondary p-0 mb-0"><sup className="fs-5 top-0">&#8377;</sup>
+                          {planDetails ? planDetails.price : ""}{perBillingCycleName}  </p>
                       </div>
                       <div className="subscription-div d-flex justify-content-between py-1">
                         <h6 className=" py-2 mb-0">Total</h6>
-                        <h6 className=" py-2 mb-0"><sup className="fs-5 top-0">&#8377;</sup> {planDetails.price}</h6>
+                        <h6 className=" py-2 mb-0"><sup className="fs-5 top-0">&#8377;</sup> {planDetails ? planDetails.price : ""}{perBillingCycleName}</h6>
                       </div>
                     </div>
                   </div>
@@ -151,7 +161,7 @@ export const PaymentInformation = () => {
                     </div>
                     <form onSubmit={handleSubmit} id="paymentForm">
                       <CardElement options={cardElementOptions} />
-                      <div className={`text-danger text-start mt-1 ${cardErrorMsg?"": "d-none"}`}>{cardErrorMsg}</div>
+                      <div className={`text-danger text-start mt-1 ${cardErrorMsg ? "" : "d-none"}`}>{cardErrorMsg}</div>
                       <div className="text-center">
 
                         <button type="submit" className="btn btn-primary text-capitalize common-btn-font px-4 mt-4 w-50" disabled={subscribeBtnLoading ? true : false
@@ -171,6 +181,9 @@ export const PaymentInformation = () => {
                     </form>
                   </div>
                 </div>
+
+
+
               </div>
 
             </div>

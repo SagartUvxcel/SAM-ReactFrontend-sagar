@@ -1,34 +1,8 @@
-{
-    "id": "tok_1NmuTLSHRy9SkqBT1qbKsQSC",
-    "object": "token",
-    "card": {
-        "id": "card_1NmuTLSHRy9SkqBTGGZv2CNx",
-        "object": "card",
-        "address_city": null,
-        "address_country": null,
-        "address_line1": null,
-        "address_line1_check": null,
-        "address_line2": null,
-        "address_state": null,
-        "address_zip": null,
-        "address_zip_check": null,
-        "brand": "MasterCard",
-        "country": null,
-        "cvc_check": "unchecked",
-        "dynamic_last4": null,
-        "exp_month": 8,
-        "exp_year": 2026,
-        "funding": "unknown",
-        "last4": "1113",
-        "name": null,
-        "tokenization_method": null,
-        "wallet": null
-    },
-    "client_ip": "202.179.69.2",
-    "created": 1693901935,
-    "livemode": false,
-    "type": "card",
-    "used": false
-}
-
-
+[
+    {"plan_id": 1,"name": "Basic plan","description": "Basic plan","price": "0.00","billing_cycle": "free trial"},
+    {"plan_id": 2,"name": "Basic plan","description": "Basic plan","price": "999.00","billing_cycle": "half yearly"},
+    {"plan_id": 3,"name": "Basic plan","description": "Basic plan","price": "1999.00","billing_cycle": "annual"},
+    {"plan_id": 4,"name": "Advanced plan","description": "Advanced plan","price": "0.00","billing_cycle": "free trial"},
+    {"plan_id": 5,"name": "Advanced plan","description": "Advanced plan","price": "2999.00","billing_cycle": "half yearly"},
+    {"plan_id": 6,"name": "Advanced plan","description": "Advanced plan","price": "4999.00","billing_cycle": "annual"}
+]
