@@ -69,7 +69,7 @@ const ViewEditDeleteProperties = () => {
     let arr = propertyCountRes.data;
     let totalCount = 0;
 
-    arr.forEach((type) => {
+   arr && arr.forEach((type) => {
       totalCount += type.count;
     });
 
@@ -91,7 +91,7 @@ const ViewEditDeleteProperties = () => {
 
   const toggleActivePageClass = (activePage) => {
     let arr = document.querySelectorAll(".page-item");
-    arr.forEach((pageItem) => {
+    arr && arr.forEach((pageItem) => {
       if (parseInt(pageItem.textContent) === activePage) {
         pageItem.classList.add("active");
       } else {

@@ -115,7 +115,7 @@ const ManageUsers = ({ userType }) => {
 
   const toggleActivePageClass = (activePage) => {
     let arr = document.querySelectorAll(".page-item");
-    arr.forEach((pageItem) => {
+    arr && arr.forEach((pageItem) => {
       if (parseInt(pageItem.textContent) === activePage) {
         pageItem.classList.add("active");
       } else {

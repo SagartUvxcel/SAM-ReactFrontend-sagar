@@ -35,6 +35,7 @@ import ViewSearchResults from "./components/3.Properties with filters/ViewSearch
 import ListOfProperties from "./components/3.Properties with filters/ListOfProperties";
 import ViewEnquiryLists from "./components/10.User Enquiries/ViewEnquiryLists";
 import Subscription from "./components/11.Subscription/Subscription";
+import UpgradeSubscriptionPage from "./components/11.Subscription/UpgradeSubscriptionPage";
 import PaymentInformation from "./components/11.Subscription/PaymentInformation";
 
 
@@ -250,6 +251,11 @@ function App() {
           <Route path="/subscription/*" element={
             <UserProtected>
               <Subscription />
+            </UserProtected>
+          } />
+          <Route path="/subscription/upgrade-plan" element={
+            <UserProtected>
+              <UpgradeSubscriptionPage />
             </UserProtected>
           } />
           <Route path="/subscription/payment" element={

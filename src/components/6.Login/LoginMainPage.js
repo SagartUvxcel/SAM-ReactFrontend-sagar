@@ -66,12 +66,14 @@ const LoginMainPage = () => {
           JSON.stringify({ username: email, password: password })
         )
         .then((res) => {
-          const { email, token, role_id, user_id, is_bank } = res.data.token;
+          console.log(res);
+          const { email, token, role_id, user_id, is_bank, subscription_end_date, subscription_status } = res.data.token;
+          console.log(res.data.token);
           let admin = null;
           let editor = null;
           let viewer = null;
           if (email !== "" && token !== "") {
-            role_id.forEach((role) => {
+            role_id && role_id.forEach((role) => {
               if (role.role_id === 3) {
                 viewer = 3;
               } else if (role.role_id === 2) {
@@ -90,11 +92,13 @@ const LoginMainPage = () => {
                 roleId: admin
                   ? admin
                   : editor
-                  ? editor
-                  : viewer
-                  ? viewer
-                  : viewer,
+                    ? editor
+                    : viewer
+                      ? viewer
+                      : viewer,
                 isBank: is_bank,
+                subscription_status: subscription_status,
+                subscription_end_date: subscription_end_date,
               })
             );
             setLoading(false);
@@ -109,6 +113,7 @@ const LoginMainPage = () => {
           }
         });
     } catch (error) {
+      console.log(error);
       setAlertDetails({
         alertVisible: true,
         alertMsg: "Internal server error",
@@ -147,18 +152,16 @@ const LoginMainPage = () => {
                 <h3 className="text-center fw-bold">Login</h3>
                 <hr />
                 <div
-                  className={`login-alert alert alert-${alertClr} alert-dismissible show d-flex align-items-center ${
-                    alertVisible ? "" : "d-none"
-                  }`}
+                  className={`login-alert alert alert-${alertClr} alert-dismissible show d-flex align-items-center ${alertVisible ? "" : "d-none"
+                    }`}
                   role="alert"
                 >
                   <span>
                     <i
-                      className={`bi bi-exclamation-triangle-fill me-2 ${
-                        alertClr === "danger" || alertClr === "warning"
-                          ? ""
-                          : "d-none"
-                      }`}
+                      className={`bi bi-exclamation-triangle-fill me-2 ${alertClr === "danger" || alertClr === "warning"
+                        ? ""
+                        : "d-none"
+                        }`}
                     ></i>
                   </span>
                   <small className="fw-bold">{alertMsg}</small>

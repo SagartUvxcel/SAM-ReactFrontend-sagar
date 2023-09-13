@@ -12,18 +12,21 @@ code {
     monospace;
 }
 
-
 * {
   scroll-behavior: smooth !important;
 }
 
 :root {
-  --bg-gradient-blue: linear-gradient(0deg,
-      rgba(2, 48, 251) 0%,
-      rgb(0, 191, 255) 100%);
-  --bg-gradient-orange: linear-gradient(0deg,
-      rgb(251, 97, 2) 0%,
-      rgb(255, 174, 0) 100%);
+  --bg-gradient-blue: linear-gradient(
+    0deg,
+    rgba(2, 48, 251) 0%,
+    rgb(0, 191, 255) 100%
+  );
+  --bg-gradient-orange: linear-gradient(
+    0deg,
+    rgb(251, 97, 2) 0%,
+    rgb(255, 174, 0) 100%
+  );
   --navbar-bg: linear-gradient(0deg, rgb(2, 77, 251) 0%, rgb(0, 157, 255) 100%);
   --primary-color: rgb(13, 110, 253);
   --secondary-color: orange;
@@ -71,7 +74,7 @@ code {
   font-weight: 500 !important;
 }
 
-.active>.page-link:hover {
+.active > .page-link:hover {
   color: white !important;
 }
 
@@ -470,9 +473,11 @@ input:-webkit-autofill:active {
 /* Footer */
 
 .footer-bg {
-  background: linear-gradient(0deg,
-      rgba(2, 48, 251, 0.779) 0%,
-      rgb(0, 157, 255) 100%) !important;
+  background: linear-gradient(
+    0deg,
+    rgba(2, 48, 251, 0.779) 0%,
+    rgb(0, 157, 255) 100%
+  ) !important;
 }
 
 .footer-wrapper {
@@ -614,7 +619,7 @@ input:-webkit-autofill:active {
 
 /* Reset Password */
 
-.input-group>.form-control:focus {
+.input-group > .form-control:focus {
   z-index: 0 !important;
 }
 
@@ -731,7 +736,6 @@ input:-webkit-autofill:active {
 
 /* Enquiry */
 
-
 .chatBox-modal-body {
   display: flex;
   flex-direction: column;
@@ -740,17 +744,17 @@ input:-webkit-autofill:active {
 }
 
 .chatBox-modal-header {
-  background: linear-gradient(0deg,
-      rgba(2, 48, 251) 0%,
-      rgb(0, 191, 255) 100%);
+  background: linear-gradient(0deg, rgba(2, 48, 251) 0%, rgb(0, 191, 255) 100%);
   color: white;
   border-bottom: none !important;
 }
 
 .chatBox-modal-footer {
-  background: linear-gradient(0deg,
-      rgba(2, 48, 251) 0%,
-      rgb(0, 191, 255) 100%) !important;
+  background: linear-gradient(
+    0deg,
+    rgba(2, 48, 251) 0%,
+    rgb(0, 191, 255) 100%
+  ) !important;
   border-top: none !important;
 }
 
@@ -762,9 +766,7 @@ input:-webkit-autofill:active {
 }
 
 .chatBox-sent {
-  background: linear-gradient(0deg,
-      rgb(251, 97, 2) 0%,
-      rgb(255, 174, 0) 100%);
+  background: linear-gradient(0deg, rgb(251, 97, 2) 0%, rgb(255, 174, 0) 100%);
   color: white;
   align-self: flex-end;
 }
@@ -807,13 +809,12 @@ input:-webkit-autofill:active {
   white-space: nowrap;
 }
 
-
 /* Admin  */
 
 /* Breadcrumb */
 
 .breadcrumb-item,
-.breadcrumb-item>*,
+.breadcrumb-item > *,
 .breadcrumb-item.active {
   text-decoration: none;
   color: var(--primary-color-hover) !important;
@@ -907,7 +908,6 @@ input:-webkit-autofill:active {
   background-color: var(--primary-color-hover);
 }
 
-
 /* FileDisplayer.css */
 
 .file-icon {
@@ -918,7 +918,6 @@ input:-webkit-autofill:active {
   margin-bottom: 5px;
 }
 
-
 .zip-document-viewer-row {
   height: 100px !important;
 }
@@ -926,7 +925,6 @@ input:-webkit-autofill:active {
 .zip-document-viewer-row #react-doc-viewer {
   min-height: 100% !important;
 }
-
 
 /* Bulk upload properties*/
 
@@ -1069,9 +1067,8 @@ input:-webkit-autofill:active {
 
 /* Subscription */
 
-
 .plan-select-btn {
-  border: 1px solid var(--primary-color)  !important;
+  border: 1px solid var(--primary-color) !important;
   color: var(--primary-color);
   border-radius: 60px !important;
   height: fit-content;
@@ -1080,11 +1077,11 @@ input:-webkit-autofill:active {
   width: 100px;
   text-transform: uppercase;
   font-size: 14px;
-  transition: .3s ease-in-out;
+  transition: 0.3s ease-in-out;
   cursor: pointer;
 }
 
-.plan-select-btn.active{
+.plan-select-btn.active {
   background: var(--bg-gradient-blue);
   color: white;
   border-color: white;
@@ -1125,24 +1122,19 @@ input:-webkit-autofill:active {
   width: 120px;
 }
 
-
-
-/* .subscription-wrapper .plan-features {
-  max-width: fit-content;
-  text-align: start;
+.subscription-wrapper .active-plans-details-card {
+  max-width: 700px !important;
+  box-shadow: 0 2px 3px rgba(56, 59, 61, 0.05);
+  /* background-color: #d9d4d4; */
+  background-clip: border-box;
+  border: 1px solid #f0f1f2;
+  border-radius: 0.1875rem;
 }
-
-.subscription-wrapper .plan-features li {
-  margin-bottom: 8px;
+.subscription-wrapper .active-plans-details-card  .list-group-item {
+  
+  background-color: transparent !important;
+  
 }
-
-.subscription-wrapper .plan-features .icon-wrapper {
-  padding-right: 11px;
-}
-
-.subscription-wrapper .plan-features {
-  font-size: 14px;
-} */
 
 .subscription-wrapper .subscribe-btn-wrapper .subscribe-btn {
   background: var(--primary-color-hover);
@@ -1152,11 +1144,11 @@ input:-webkit-autofill:active {
   min-width: fit-content;
   width: 180px;
   text-transform: uppercase;
-  transition: .3s ease-in-out;
+  transition: 0.3s ease-in-out;
 }
 
 .subscription-wrapper .subscribe-btn-wrapper .subscribe-btn:hover {
-  transition: .3s ease-in-out;
+  transition: 0.3s ease-in-out;
   background: var(--secondary-color);
 }
 
@@ -1190,7 +1182,6 @@ input:-webkit-autofill:active {
 }
 
 @media screen and (min-width: 820px) {
-
   .page-not-found-wrapper,
   .access-denied-wrapper {
     padding: 435px 0 0 0;
@@ -1255,7 +1246,6 @@ input:-webkit-autofill:active {
 }
 
 @media (min-width: 1300px) {
-
   .page-not-found-wrapper,
   .access-denied-wrapper {
     padding: 200px 0 0 0;
