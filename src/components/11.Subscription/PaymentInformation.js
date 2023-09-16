@@ -10,23 +10,26 @@ import { toast } from "react-toastify";
 
 let authHeaders = "";
 let isLogin = false;
+let planStatus = false;
 
 export const PaymentInformation = () => {
   const stripe = useStripe();
   const elements = useElements();
   const location = useLocation();
+  const navigate = useNavigate();
   const dataFromSubscriptionPage = location.state ? location.state.sensitiveData : null;
 
   const data = JSON.parse(localStorage.getItem("data"));
   if (data) {
     authHeaders = { Authorization: data.loginToken };
     isLogin = data.isLoggedIn;
+    planStatus = data.subscription_status;
   }
 
 
 
   const [cardErrorMsg, setCardErrorMsg] = useState(null);
-  const [planDetails, setPlanDetails] = useState(dataFromSubscriptionPage?dataFromSubscriptionPage:null);
+  const [planDetails, setPlanDetails] = useState(dataFromSubscriptionPage ? dataFromSubscriptionPage : null);
   const [subscribeBtnLoading, setSubscribeBtnLoading] = useState(false);
   const [perBillingCycleName, setPerBillingCycleName] = useState("");
 
@@ -51,18 +54,17 @@ export const PaymentInformation = () => {
   const resetCardFormInputs = () => {
     const cardInputDetails = document.querySelectorAll(".InputElement");
 
-    console.log("reset function");
     if (cardInputDetails) {
       cardInputDetails.forEach((i) => {
         i.value = "";
       })
     }
   }
+
   // pay button function
   const handleSubmit = async (event) => {
     event.preventDefault();
     setSubscribeBtnLoading(true);
-    console.log(planDetails);
     if (!stripe || !elements) {
       return;
     }
@@ -83,21 +85,26 @@ export const PaymentInformation = () => {
     let dataToPost = {
       plan_id: planDetails.plan_id,
       payment_token: token.id,
+      plan_name: planDetails.name,
       amount: parseFloat(planDetails.price),
       billing_cycle: planDetails.billing_cycle,
     }
-    console.log(JSON.stringify(token));
-    console.log(dataToPost);
+
+console.log(JSON.stringify(dataToPost));
+
+    // API url
+    let urlSub = `/sam/v1/customer-registration/auth/${planStatus === true ? "upgrade-subscription" : "subscribe-user"}`;
+    const pageRefreshData=true;
 
     try {
-      const response = await axios.post("/sam/v1/customer-registration/auth/subscribe-user", dataToPost, { headers: authHeaders });
+      const response = await axios.post(urlSub, dataToPost, { headers: authHeaders });
       if (response.data) {
         if (response.data.status === 0) {
           setSubscribeBtnLoading(false);
           toast.success("Payment Successful.")
-          //   console.log("Payment Successful.");
           resetCardFormInputs();
           setCardErrorMsg(null);
+          navigate("/subscription", { state: { pageRefreshData } });
         } else {
           setSubscribeBtnLoading(false);
         }
@@ -109,7 +116,42 @@ export const PaymentInformation = () => {
     }
   };
 
+  // pay button function for free trial
+  const onClickFreeTrialSubscribeSubmitBtn = async (event) => {
+    event.preventDefault();
+    // setSubscribeBtnLoading(true);
 
+    let dataToPost = {
+      plan_id: planDetails.plan_id,
+      payment_token: "",
+      amount: parseFloat(planDetails.price),
+      billing_cycle: planDetails.billing_cycle,
+      plan_name: planDetails.name,
+    }
+    const pageRefreshData=true;
+
+    try {
+      const response = await axios.post("/sam/v1/customer-registration/auth/subscribe-user", dataToPost, { headers: authHeaders });
+      if (response.data) {
+        if (response.data.status === 0) {
+          setSubscribeBtnLoading(false);
+          toast.success("Your Free Trial Started...")
+          resetCardFormInputs();
+          setCardErrorMsg(null);
+          navigate("/subscription" , { state: { pageRefreshData } });
+        } else {
+          setSubscribeBtnLoading(false);
+        }
+      }
+      // Handle success or error response from backend
+    } catch (error) {
+      console.error(error);
+      setSubscribeBtnLoading(false);
+    }
+
+  }
+
+  // display billing cycle name for year or 6 month
   const displayBillingCycleName = () => {
     if (dataFromSubscriptionPage.billing_cycle === "annual") {
       setPerBillingCycleName("/ Year");
@@ -123,6 +165,7 @@ export const PaymentInformation = () => {
 
 
   useEffect(() => {
+    console.log(planDetails);
     if (dataFromSubscriptionPage) {
       displayBillingCycleName();
     }
@@ -151,35 +194,55 @@ export const PaymentInformation = () => {
                       </div>
                     </div>
                   </div>
-                  <div id="card-element">
+                  {planDetails && planDetails.name === "Basic plan" && planDetails.billing_cycle === "free trial" ? <>
+                    <div className="text-center">
 
-                    <div className="StripeElement w-50 mb-4">
-                      <div className="subscription-div d-flex align-items-center flex-wrap">
-                        <i className="fa fa-credit-card"></i>
-                        <h4 className="my-0 ms-3 ">Card</h4>
-                      </div>
+                      <button type="button" onClick={(e) => onClickFreeTrialSubscribeSubmitBtn(e)} className="btn btn-primary text-capitalize common-btn-font px-4 mt-4 " disabled={subscribeBtnLoading ? true : false
+                      }>{subscribeBtnLoading ? (
+                        <>
+                          <span
+                            className="spinner-grow spinner-grow-sm me-2"
+                            role="status"
+                            aria-hidden="true"
+                          ></span>
+                          Subscribing....
+                        </>
+                      ) : (
+                        "Start Your Free Trial"
+                      )}</button>
                     </div>
-                    <form onSubmit={handleSubmit} id="paymentForm">
-                      <CardElement options={cardElementOptions} />
-                      <div className={`text-danger text-start mt-1 ${cardErrorMsg ? "" : "d-none"}`}>{cardErrorMsg}</div>
-                      <div className="text-center">
-
-                        <button type="submit" className="btn btn-primary text-capitalize common-btn-font px-4 mt-4 w-50" disabled={subscribeBtnLoading ? true : false
-                        }>{subscribeBtnLoading ? (
-                          <>
-                            <span
-                              className="spinner-grow spinner-grow-sm me-2"
-                              role="status"
-                              aria-hidden="true"
-                            ></span>
-                            Subscribing....
-                          </>
-                        ) : (
-                          "Subscribe"
-                        )}</button>
+                  </> : <>
+                    <div id="card-element">
+                      <div className="StripeElement w-50 mb-4">
+                        <div className="subscription-div d-flex align-items-center flex-wrap">
+                          <i className="fa fa-credit-card"></i>
+                          <h4 className="my-0 ms-3 ">Card</h4>
+                        </div>
                       </div>
-                    </form>
-                  </div>
+
+                      <form onSubmit={handleSubmit} id="paymentForm">
+                        <CardElement options={cardElementOptions} />
+                        <div className={`text-danger text-start mt-1 ${cardErrorMsg ? "" : "d-none"}`}>{cardErrorMsg}</div>
+                        <div className="text-center">
+
+                          <button type="submit" className="btn btn-primary text-capitalize common-btn-font px-4 mt-4 w-50" disabled={subscribeBtnLoading ? true : false
+                          }>{subscribeBtnLoading ? (
+                            <>
+                              <span
+                                className="spinner-grow spinner-grow-sm me-2"
+                                role="status"
+                                aria-hidden="true"
+                              ></span>
+                              Subscribing....
+                            </>
+                          ) : (
+                            "Subscribe"
+                          )}</button>
+                        </div>
+                      </form>
+                    </div>
+                  </>
+                  }
                 </div>
 
 

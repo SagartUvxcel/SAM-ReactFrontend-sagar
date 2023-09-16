@@ -24,9 +24,16 @@ const UpgradeSubscriptionPage = () => {
 
     // subscription Plans
     const [plans, setPlans] = useState(); //all subriction plans
+    const [planToDisable, setPlanToDisable] = useState(); //all active plans
     const [selectedPlan, setSelectedPlan] = useState(null);
     const [subscriptionPlanStatus, setSubscriptionPlanStatus] = useState(planStatus);
     const [upGradePlanStatus, setUpGradePlanStatus] = useState(true);
+    const [planCardDisable, setPlanCardDisable] = useState({
+        basicCardDisable: false,
+        advancedCardDisable: false,
+    });
+    const { basicCardDisable, advancedCardDisable } = planCardDisable;
+
 
     const [selectedBillingCycle, setSelectedBillingCycle] = useState({
         halfYearlyCycleSelected: true,
@@ -39,6 +46,9 @@ const UpgradeSubscriptionPage = () => {
         advancedPlanOnCard: null,
     });
     const { basicPlanOnCard, advancedPlanOnCard } = plansOnCard;
+
+
+  
 
     // get Subscription Plans Details from database
     const getSubscriptionPlansDetails = async () => {
@@ -53,6 +63,27 @@ const UpgradeSubscriptionPage = () => {
                     const plansRes = response.data;
                     if (plansRes) {
                         setPlans(plansRes);
+                    }
+                });
+        } catch (error) {
+            console.error("Error fetching plans:", error);
+        }
+    };
+
+    // get Subscription Plans Details from database
+    const getActivePlansDetails = async () => {
+        try {
+            // Fetch plans from API URL
+            axios
+                .get("/sam/v1/customer-registration/auth/user_subscribed_plans", {
+                    headers: authHeaders,
+                })
+                .then((response) => {
+                    // console.log(response.data);
+                    const activePlansRes = response.data;
+                    if (activePlansRes) {
+                        console.log(response.data);
+                        setPlanToDisable(activePlansRes);
                     }
                 });
         } catch (error) {
@@ -76,7 +107,6 @@ const UpgradeSubscriptionPage = () => {
         basicFreeTrial: findPlanByNameAndCycle("Basic plan", "free trial"),
         advancedHalfYearly: findPlanByNameAndCycle("Advanced plan", "half yearly"),
         advancedAnnual: findPlanByNameAndCycle("Advanced plan", "annual"),
-        advancedFreeTrial: findPlanByNameAndCycle("Advanced plan", "free trial"),
     };
 
     // destructing
@@ -86,7 +116,6 @@ const UpgradeSubscriptionPage = () => {
         basicFreeTrial,
         advancedHalfYearly,
         advancedAnnual,
-        advancedFreeTrial,
     } = individualPlanDetails;
 
     // on click function 6 month button
@@ -100,6 +129,7 @@ const UpgradeSubscriptionPage = () => {
             annualCycleSelected: false,
         });
         setSelectedPlan(basicHalfYearly);
+        testFunction();
     };
 
     // on click function annual button
@@ -114,6 +144,7 @@ const UpgradeSubscriptionPage = () => {
             annualCycleSelected: true,
         });
         setSelectedPlan(basicAnnual);
+        testFunction();
     };
 
     // on click function basic card
@@ -134,31 +165,13 @@ const UpgradeSubscriptionPage = () => {
         }
     };
 
-    // passing subscription data plans details on payment page with free trial
-    const onFreeTrialClick = () => {
-        let sensitiveData = "";
-
-        if (selectedPlan) {
-            if (selectedPlan.name === "Advanced plan") {
-                sensitiveData = advancedFreeTrial;
-            } else if (selectedPlan.name === "Basic plan") {
-                sensitiveData = basicFreeTrial;
-            }
-            navigate("/subscription/payment", { state: { sensitiveData } });
-        }
-    };
-
     // passing subscription data plans details on payment page
     const onSubscribeClick = () => {
         const sensitiveData = selectedPlan;
         navigate("/subscription/payment", { state: { sensitiveData } });
-        console.log(sensitiveData);
+        // console.log(sensitiveData);
+
     };
-
-
-
-    console.log(subscriptionPlanStatus);
-    // console.log(plans);
 
     // selected subscription table
     const subscriptionPlansTableRef = useRef(null);
@@ -190,8 +203,104 @@ const UpgradeSubscriptionPage = () => {
         }
     };
 
+    const testFunction = () => {
+        let disablePlanBillingCycle;
+        let disablePlanName;
+        if (planToDisable) {
+            disablePlanBillingCycle = planToDisable.billing_cycle;
+            disablePlanName = planToDisable.plan_name;
+        }
+
+        if (plansOnCard) {
+            for (let key in plansOnCard) {
+                if (plansOnCard.hasOwnProperty(key)) {
+                    let plan = plansOnCard[key];
+                    if (plan) {
+                        if (plan.name === disablePlanName && plan.billing_cycle === disablePlanBillingCycle) {
+                            if (halfYearlyCycleSelected && disablePlanBillingCycle === "half yearly") {
+                                if (plan.name === "Advanced plan") {
+                                    setPlanCardDisable({
+                                        basicCardDisable: false,
+                                        advancedCardDisable: true,
+                                    })
+                                } else if (plan.name === "Basic plan") {
+                                    setPlanCardDisable({
+                                        basicCardDisable: true,
+                                        advancedCardDisable: false,
+                                    })
+                                }
+                            } else if (annualCycleSelected && disablePlanBillingCycle === "annual") {
+                                if (plan.name === "Advanced plan") {
+                                    setPlanCardDisable({
+                                        basicCardDisable: false,
+                                        advancedCardDisable: true,
+                                    })
+                                } else if (plan.name === "Basic plan") {
+                                    setPlanCardDisable({
+                                        basicCardDisable: true,
+                                        advancedCardDisable: false,
+                                    })
+                                }
+                            } else {
+                                setPlanCardDisable({
+                                    basicCardDisable: false,
+                                    advancedCardDisable: false,
+                                })
+                            }
+                            console.log("planToDisable", plan);
+
+                        } else {
+                            console.log("NOT planToDisable", plan);
+                            // setPlanCardDisable({
+                            //     basicCardDisable: false,
+                            //     advancedCardDisable: false,
+                            // })
+
+                        }
+                    }
+
+                }
+
+            }
+        }
+
+
+
+        // const logTest = findPlanByNameAndCycle(disablePlanName, disablePlanBillingCycle);
+        // console.log(logTest);
+        // if (disablePlanBillingCycle === "half yearly") {
+        //     if (halfYearlyCycleSelected) {
+        //         if (disablePlanName === "Basic plan") {
+        //             if (basicPlanOnCard) {
+        //                 basicPlanOnCard.disabled = true;
+        //                 console.log(basicPlanOnCard);
+        //             }
+        //         } else {
+        //             console.log(disablePlanName);
+        //         }
+        //     }
+        // } else if (disablePlanBillingCycle === "annual") {
+        //     if (annualCycleSelected) {
+        //         console.log(disablePlanName);
+        //     }
+        // }
+    }
+
+    useEffect(() => {
+        console.log("called");
+        testFunction();
+    }, [halfYearlyCycleSelected, annualCycleSelected, plansOnCard, basicPlanOnCard, advancedPlanOnCard, basicCardDisable, advancedCardDisable]);
+
+
+
+
+
+
+
+
     // default select card 
     useEffect(() => {
+        console.log(planToDisable)
         setSelectedPlan(basicHalfYearly);
 
     }, [basicHalfYearly]);
@@ -208,6 +317,9 @@ const UpgradeSubscriptionPage = () => {
         handleActiveColumn(1);
         if (isLogin) {
             getSubscriptionPlansDetails();
+            if (planStatus) {
+                getActivePlansDetails();
+            }
         }
     }, []);
 
@@ -373,9 +485,10 @@ const UpgradeSubscriptionPage = () => {
                                         <div className="container-fluid mt-5">
                                             <div className="row justify-content-between">
                                                 {/* basic card */}
-                                                <div className={`col-md-6 mb-4 mb-md-0 plan-card-1`}>
+                                                <div className={`col-md-6 mb-4 mb-md-0 plan-card-1 `}>
                                                     <button
-                                                        className="w-100 shadow plan-header-wrapper border-0 p-4 position-relative mb-4"
+                                                        className={`w-100 shadow plan-header-wrapper border-0 p-4 position-relative mb-4 ${basicCardDisable ? "disabled" : ""}`}
+                                                        disabled={basicCardDisable}
                                                         onClick={() => {
                                                             handleActiveColumn(1);
                                                             onBasicCardClick();
@@ -402,7 +515,8 @@ const UpgradeSubscriptionPage = () => {
                                                 {/* advance card  */}
                                                 <div className={`col-md-6 mb-4 mb-md-0 plan-card-2`}>
                                                     <button
-                                                        className="w-100 shadow plan-header-wrapper border-0 p-4 position-relative mb-4"
+                                                        className={`w-100 shadow plan-header-wrapper border-0 p-4 position-relative mb-4 ${advancedCardDisable ? "disabled" : ""}`}
+                                                        disabled={advancedCardDisable}
                                                         onClick={() => {
                                                             handleActiveColumn(2);
                                                             onAdvancedCardClick();

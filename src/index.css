@@ -1101,6 +1101,17 @@ input:-webkit-autofill:active {
   /* border-color: unset !important; */
 }
 
+.subscription-wrapper .plan-card-1 .plan-header-wrapper.disabled {
+background-color: lightgrey !important;
+cursor: not-allowed !important;
+
+}
+
+.subscription-wrapper .plan-card-2 .plan-header-wrapper.disabled {
+background-color: lightgrey !important;
+cursor: not-allowed !important;
+
+}
 .subscription-wrapper .plan-card-1 .plan-header-wrapper {
   background-color: #fef4ee;
 }
