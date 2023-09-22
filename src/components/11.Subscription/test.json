@@ -10,3 +10,5 @@
 
 {plan_id: 4, name: 'Advanced plan', description: 'Advanced plan', price: '2999.00', billing_cycle: 'half yearly'}
 {plan_id: 1, name: 'Basic plan', description: 'Basic plan', price: '0.00', billing_cycle: 'free trial'}
+
+

@@ -37,6 +37,7 @@ import ViewEnquiryLists from "./components/10.User Enquiries/ViewEnquiryLists";
 import Subscription from "./components/11.Subscription/Subscription";
 import UpgradeSubscriptionPage from "./components/11.Subscription/UpgradeSubscriptionPage";
 import PaymentInformation from "./components/11.Subscription/PaymentInformation";
+import TestRouteSubscription from "./components/11.Subscription/SubscriptionTestPage";
 
 
 
@@ -262,6 +263,9 @@ function App() {
             <UserProtected>
               <PaymentInformation />
             </UserProtected>} />
+
+          <Route path="/subscription-plans" element={<TestRouteSubscription />} />
+
 
           <Route path="*" element={<PageNotFound />} />
           <Route path="/access-denied" element={<AccessDeniedPage />} />

@@ -4,6 +4,7 @@ import Layout from "../1.CommonLayout/Layout";
 import { NavLink } from "react-router-dom";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import "./CardElementStyles.css";
 import { transformDateFormat } from "../../CommonFunctions";
 
 // const dataFromBackend = [
@@ -89,10 +90,11 @@ const Subscription = () => {
   const location = useLocation();
 
   const data = JSON.parse(localStorage.getItem("data"));
+  const updatedSubscriptionStatus = localStorage.getItem("updatedSubscriptionStatus");
   if (data) {
     authHeaders = { Authorization: data.loginToken };
     isLogin = data.isLoggedIn;
-    planStatus = data.subscription_status;
+    planStatus = updatedSubscriptionStatus ? updatedSubscriptionStatus : data.subscription_status;
     planEndDate = data.subscription_end_date;
   }
 
@@ -100,9 +102,10 @@ const Subscription = () => {
   const [plans, setPlans] = useState(); //all subriction plans
   const [activePlans, setActivePlans] = useState(); //all subriction plans
   const [selectedPlan, setSelectedPlan] = useState(null);
-  const [subscriptionPlanStatus, setSubscriptionPlanStatus] = useState(planStatus);
-  const [upGradePlanStatus, setUpGradePlanStatus] = useState(true);
-  const pageRefreshDataStatus = location.state ? location.state.pageRefreshData : null;
+  // const [subscriptionPlanStatus, setSubscriptionPlanStatus] = useState(planStatus);
+  // const [upGradePlanStatus, setUpGradePlanStatus] = useState(true);
+  // const dataFromPaymentPage = location.state ? location.state.subscriptionStatus.isActive : data.subscription_status;
+  console.log(plans);
 
   const [selectedBillingCycle, setSelectedBillingCycle] = useState({
     halfYearlyCycleSelected: true,
@@ -120,7 +123,7 @@ const Subscription = () => {
   const getSubscriptionPlansDetails = async () => {
     try {
       // Fetch plans from API URL
-      axios
+      await axios
         .get("/sam/v1/customer-registration/auth/subscription-plans", {
           headers: authHeaders,
         })
@@ -140,7 +143,7 @@ const Subscription = () => {
   const getActivePlansDetails = async () => {
     try {
       // Fetch plans from API URL
-      axios
+      await axios
         .get("/sam/v1/customer-registration/auth/user_subscribed_plans", {
           headers: authHeaders,
         })
@@ -194,6 +197,7 @@ const Subscription = () => {
       annualCycleSelected: false,
     });
     setSelectedPlan(basicHalfYearly);
+    handleActiveColumn(1);
   };
 
   // on click function annual button
@@ -208,6 +212,8 @@ const Subscription = () => {
       annualCycleSelected: true,
     });
     setSelectedPlan(basicAnnual);
+    handleActiveColumn(1);
+
   };
 
   // on click function basic card
@@ -250,8 +256,6 @@ const Subscription = () => {
     navigate("/subscription/upgrade-plan");
   }
 
-  // console.log(upGradePlanStatus);
-  // console.log(subscriptionPlanStatus);
   // console.log(activePlans);
 
   // selected subscription table
@@ -286,10 +290,12 @@ const Subscription = () => {
 
   // default select card 
   useEffect(() => {
-    console.log(activePlans);
-    setSelectedPlan(basicHalfYearly);
+    // console.log(activePlans);
+    if (basicHalfYearly) {
+      setSelectedPlan(basicHalfYearly);
+    }
 
-  }, [basicHalfYearly]);
+  }, [basicHalfYearly, plans]);
 
   useEffect(() => {
     setPlansOnCard({
@@ -318,42 +324,14 @@ const Subscription = () => {
         {/* if user Login */}
         {isLogin ? (
           <>
-            {activePlans ? <>
-              <div className="container-fluid wrapper">
-                <h1 className="text-center">Subscription</h1>
+            <div className="container-fluid wrapper">
+              <h1 className="text-center">Subscription</h1>
+              {activePlans ? <>
 
                 {/* if subscription is active on user account the showing plans  else showing subscription plans for subscribe user  */}
 
 
-                {/* <section >
-                    <div className="container py-5">
-                      <div className="row justify-content-center">
-                        <div className="col-md-8 col-lg-6 col-xl-4">
-                          <div className="card text-black">                           
-                            <div className="card-body">
-                              <div className="text-center">
-                                <h5 className="card-title">Active Plans</h5>
-                              </div>
-                              <div>
-                                <div className="d-flex justify-content-between">
-                                  <span>Plan Name</span><span>Basic plan</span>
-                                </div>
-                                <div className="d-flex justify-content-between">
-                                  <span>Plan Duration	</span><span>6 Month</span>
-                                </div>
-                                <div className="d-flex justify-content-between">
-                                  <span>Last Date</span><span>8 mar 2024</span>
-                                </div>
-                              </div>
-                              <div className="d-flex justify-content-between total font-weight-bold mt-4">
-                                <button className="btn btn-primary text-capitalize common-btn-font">Update Plan</button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </section> */}
+
                 <div className="card active-plans-details-card m-auto mt-5">
                   <div className="list-group list-group-fit  d-flex  justify-content-between">
                     <div className="list-group-item bg-0">
@@ -387,29 +365,29 @@ const Subscription = () => {
                     </div>
                     <div className="list-group-item">
                       <div className="form-group row mb-0">
-                        <label className="col-form-label form-label col-sm-3">Upgrade</label>
+                        {/* <label className="col-form-label form-label col-sm-3">Upgrade</label> */}
                         <div className="col-sm-8">
-                          <button type="button" onClick={(e) => upGradePlansBtn(e)} className="btn btn-primary">Upgrade Plan</button>
+                          <button type="button" onClick={(e) => upGradePlansBtn(e)} className="btn btn-primary">{activePlans.billing_cycle === "free trial" ? "Activate Plan" : "Upgrade Plan"}</button>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </> :
-              <>
-                <div className="text-center text-muted">
-                  <span>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                    Deleniti, nobis.
-                  </span>
-                  <br />
-                  <span>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  </span>
-                </div>
-                <div className="row mt-5 justify-content-center">
+              </> :
+                <>
+                  <div className="text-center text-muted">
+                    <span>
+                      Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                      Deleniti, nobis.
+                    </span>
+                    <br />
+                    <span>
+                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                    </span>
+                  </div>
+
                   {/*  Checkboxes - Individual & Organization */}
+                  {/* <div className="row mt-5 justify-content-center">
                   <div className="col-lg-12 d-flex justify-content-center">
                     <div
                       className={`plan-select-btn d-flex justify-content-center align-items-center ${halfYearlyCycleSelected ? "active" : ""
@@ -431,127 +409,143 @@ const Subscription = () => {
                       Annual
                     </div>
                   </div>
-                </div>
+                </div> */}
 
-                <div className="container mt-5">
-                  <div className="row justify-content-center">
-                    <div className="col-xl-8">
-                      {/* subscription-table */}
-                      <div className="subscription-table-wrapper">
-                        <table
-                          className="table text-center plans-table"
-                          ref={subscriptionPlansTableRef}
-                        >
-                          <thead>
-                            <tr>
-                              <th></th>
-                              <th className="basic">BASIC</th>
-                              <th className="standard">STANDARD</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              <td className="text-start">
-                                Lorem ipsum dolor sit amet consectetur adipisicing
-                                elit.
-                              </td>
-                              <td className="basic">
-                                <i className="bi bi-check-circle-fill text-success"></i>
-                              </td>
-                              <td className="standard">
-                                <i className="bi bi-check-circle-fill text-success"></i>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="text-start">
-                                Lorem ipsum dolor sit amet consectetur
-                                adipisicing.
-                              </td>
-                              <td className="basic">
-                                <i className="bi bi-check-circle-fill text-success"></i>
-                              </td>
-                              <td className="standard">
-                                <i className="bi bi-check-circle-fill text-success"></i>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="text-start">
-                                Lorem ipsum dolor sit.
-                              </td>
-                              <td className="basic">
-                                <i className="bi bi-check-circle-fill text-success"></i>
-                              </td>
-                              <td className="standard">
-                                <i className="bi bi-check-circle-fill text-success"></i>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="text-start">
-                                Lorem ipsum dolor sit amet consectetur adipisicing
-                                elit. Lorem ipsum dolor sit.
-                              </td>
-                              <td className="basic">
-                                <i className="bi bi-check-circle-fill text-success"></i>
-                              </td>
-                              <td className="standard">
-                                <i className="bi bi-check-circle-fill text-success"></i>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="text-start">
-                                Lorem ipsum dolor sit amet consectetur.
-                              </td>
-                              <td className="basic">
-                                <i className="bi bi-x-circle-fill text-danger"></i>
-                              </td>
-                              <td className="standard">
-                                <i className="bi bi-check-circle-fill text-success"></i>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="text-start">
-                                Lorem ipsum dolor sit amet consectetur adipisicing
-                                elit. Lorem, ipsum.
-                              </td>
-                              <td className="basic">
-                                <i className="bi bi-x-circle-fill text-danger"></i>
-                              </td>
-                              <td className="standard">
-                                <i className="bi bi-check-circle-fill text-success"></i>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="text-start">
-                                Lorem ipsum dolor sit amet consectetur adipisicing
-                                elit.
-                              </td>
-                              <td className="basic">
-                                <i className="bi bi-x-circle-fill text-danger"></i>
-                              </td>
-                              <td className="standard">
-                                <i className="bi bi-check-circle-fill text-success"></i>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="text-start">
-                                Lorem ipsum dolor sit elit.
-                              </td>
-                              <td className="basic">
-                                <i className="bi bi-x-circle-fill text-danger"></i>
-                              </td>
-                              <td className="standard">
-                                <i className="bi bi-check-circle-fill text-success"></i>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
+                  <div className="container mt-5">
+                    <div className="row justify-content-center">
+                      <div className="col-xl-8">
+                        {/* subscription-table */}
+                        <div className="subscription-table-wrapper">
+                          <table
+                            className="table text-center plans-table"
+                            ref={subscriptionPlansTableRef}
+                          >
+                            <thead>
+                              <tr>
+                                <th></th>
+                                <th className="basic">BASIC</th>
+                                <th className="standard">ADVANCED</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td className="text-start">
+                                  Lorem ipsum dolor sit amet consectetur adipisicing
+                                  elit.
+                                </td>
+                                <td className="basic">
+                                  <i className="bi bi-check-circle-fill text-success"></i>
+                                </td>
+                                <td className="standard">
+                                  <i className="bi bi-check-circle-fill text-success"></i>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td className="text-start">
+                                  Lorem ipsum dolor sit amet consectetur
+                                  adipisicing.
+                                </td>
+                                <td className="basic">
+                                  <i className="bi bi-check-circle-fill text-success"></i>
+                                </td>
+                                <td className="standard">
+                                  <i className="bi bi-check-circle-fill text-success"></i>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td className="text-start">
+                                  Lorem ipsum dolor sit.
+                                </td>
+                                <td className="basic">
+                                  <i className="bi bi-check-circle-fill text-success"></i>
+                                </td>
+                                <td className="standard">
+                                  <i className="bi bi-check-circle-fill text-success"></i>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td className="text-start">
+                                  Lorem ipsum dolor sit amet consectetur adipisicing
+                                  elit. Lorem ipsum dolor sit.
+                                </td>
+                                <td className="basic">
+                                  <i className="bi bi-check-circle-fill text-success"></i>
+                                </td>
+                                <td className="standard">
+                                  <i className="bi bi-check-circle-fill text-success"></i>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td className="text-start">
+                                  Lorem ipsum dolor sit amet consectetur.
+                                </td>
+                                <td className="basic">
+                                  <i className="bi bi-x-circle-fill text-danger"></i>
+                                </td>
+                                <td className="standard">
+                                  <i className="bi bi-check-circle-fill text-success"></i>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td className="text-start">
+                                  Lorem ipsum dolor sit amet consectetur adipisicing
+                                  elit. Lorem, ipsum.
+                                </td>
+                                <td className="basic">
+                                  <i className="bi bi-x-circle-fill text-danger"></i>
+                                </td>
+                                <td className="standard">
+                                  <i className="bi bi-check-circle-fill text-success"></i>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td className="text-start">
+                                  Lorem ipsum dolor sit amet consectetur adipisicing
+                                  elit.
+                                </td>
+                                <td className="basic">
+                                  <i className="bi bi-x-circle-fill text-danger"></i>
+                                </td>
+                                <td className="standard">
+                                  <i className="bi bi-check-circle-fill text-success"></i>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td className="text-start">
+                                  Lorem ipsum dolor sit elit.
+                                </td>
+                                <td className="basic">
+                                  <i className="bi bi-x-circle-fill text-danger"></i>
+                                </td>
+                                <td className="standard">
+                                  <i className="bi bi-check-circle-fill text-success"></i>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
 
-                      {/* subscription-Plans */}
-                      <div className="container-fluid mt-5">
-                        <div className="row justify-content-between">
-                          {/* basic card */}
-                          <div className={`col-md-6 mb-4 mb-md-0 plan-card-1`}>
+                        {/* subscription-Plans */}
+                        {plans && plans.map((plan) => {
+                          <div className="container-fluid mt-5">
+                            <div className="row justify-content-between">
+                              <div className="package-container">
+                                <div className="packages">
+                                  <h2>{plan.name}</h2>
+                                  <h4 className="text1">RS. 0</h4>
+                                  <a href="#" className="button button1">Start Now</a>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        })}
+
+
+
+                        {/* <div className="container-fluid mt-5">
+                        <div className="row justify-content-between"> */}
+                        {/* basic card */}
+                        {/* <div className={`col-md-6 mb-4 mb-md-0 plan-card-1`}>
                             <button
                               className="w-100 shadow plan-header-wrapper border-0 p-4 position-relative mb-4"
                               onClick={() => {
@@ -576,9 +570,9 @@ const Subscription = () => {
                                 {basicPlanOnCard ? basicPlanOnCard.price : ""}
                               </h3>
                             </button>
-                          </div>
-                          {/* advance card  */}
-                          <div className={`col-md-6 mb-4 mb-md-0 plan-card-2`}>
+                          </div> */}
+                        {/* advance card  */}
+                        {/* <div className={`col-md-6 mb-4 mb-md-0 plan-card-2`}>
                             <button
                               className="w-100 shadow plan-header-wrapper border-0 p-4 position-relative mb-4"
                               onClick={() => {
@@ -607,10 +601,10 @@ const Subscription = () => {
                             </button>
                           </div>
                         </div>
-                      </div>
+                      </div> */}
 
-                      {/* subscription button */}
-                      <div className={`row mt-md-5 mb-5 ${annualCycleSelected || selectedPlan && selectedPlan.name === "Advanced plan" ? "d-flex justify-content-center" : ""}`}>
+                        {/* subscription button */}
+                        {/* <div className={`row mt-md-5 mb-5 ${annualCycleSelected || selectedPlan && selectedPlan.name === "Advanced plan" ? "d-flex justify-content-center" : ""}`}>
                         <div className="col-md-6 ">
                           <button
                             className="w-100 btn btn-primary text-capitalize common-btn-font"
@@ -632,9 +626,6 @@ const Subscription = () => {
                                 onClick={onFreeTrialClick}
                               >
                                 Free Trial -{" "}
-                                {/* {selectedPlan && selectedPlan.name === "Advanced plan"
-                                ? "Advance"
-                                : "Basic"} */}
                                 Basic
                                 <i className="bi bi-chevron-right"></i>
                               </button>
@@ -642,12 +633,14 @@ const Subscription = () => {
                           </>
                         }
 
+                      </div> */}
                       </div>
                     </div>
                   </div>
-                </div>
-              </>
-            }
+                </>
+              }
+            </div>
+
           </>
         ) : (
           <>
@@ -682,6 +675,8 @@ const Subscription = () => {
             </div>
           </>
         )}
+
+
       </section>
     </Layout>
   );

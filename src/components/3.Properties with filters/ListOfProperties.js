@@ -164,7 +164,7 @@ const ListOfProperties = () => {
       <section className="list-of-properties section-padding min-100vh">
         <div className="container-fluid ">
           {/* filter bar */}
-          <div className="row extra-filters-row justify-content-center align-items-center py-3"
+          {/* <div className="row extra-filters-row justify-content-center align-items-center py-3"
           // style={{ height: "80px" }}
           >
             <div className="col-md-2 col-12 mt-3 mt-md-0">
@@ -185,7 +185,7 @@ const ListOfProperties = () => {
             if (dataToPost.state_id === state.state_id) {
               optionToSelectByDefault.selected = true;
             }
-          } */}
+          } 
                     return (
                       <option
                         id={`stateFilter-${state.state_id}`}
@@ -215,11 +215,11 @@ const ListOfProperties = () => {
                     let optionToSelectByDefault = document.getElementById(
                       `cityFilter-${city.city_id}`
                     );
-                    {/* if (dataToPost.city_id && optionToSelectByDefault) {
+                    if (dataToPost.city_id && optionToSelectByDefault) {
               if (dataToPost.city_id === city.city_id) {
                 optionToSelectByDefault.selected = true;
               }
-            } */}
+            } 
                     return (
                       <option
                         id={`cityFilter-${city.city_id}`}
@@ -247,11 +247,11 @@ const ListOfProperties = () => {
                     let optionToSelectByDefault = document.getElementById(
                       `categoryFilter-${category.type_id}`
                     );
-                    {/* if (dataToPost.type_id && optionToSelectByDefault) {
+                    if (dataToPost.type_id && optionToSelectByDefault) {
               if (dataToPost.type_id === category.type_id) {
                 optionToSelectByDefault.selected = true;
               }
-            } */}
+            } 
                     return (
                       <option
                         id={`categoryFilter-${category.type_id}`}
@@ -305,7 +305,7 @@ const ListOfProperties = () => {
                     }}
                   >
                     {/* <span className="me-2 badge bg-dark">{filtersCount}</span> */}
-                    More Filters
+          {/* More Filters
                   </div>
                 </div>
                 <ul
@@ -316,7 +316,7 @@ const ListOfProperties = () => {
                   aria-labelledby="dropdownMenuButton1"
                 >
                   <div className="container-fluid p-3">
-                    {/* <form className="row" ref={moreFiltersForm}>
+                  <form className="row" ref={moreFiltersForm}>
             <div className="col-12">
               <label
                 htmlFor=""
@@ -502,7 +502,7 @@ const ListOfProperties = () => {
                 <option value="10">Less than 10 years</option>
               </select>
             </div>
-          </form> */}
+          </form> 
                   </div>
                 </ul>
               </div>
@@ -518,7 +518,7 @@ const ListOfProperties = () => {
                 <i className="bi bi-search"></i>
               </button>
             </div>
-            {/* <div
+            <div
     className={`col-12 text-center mt-md-3 ${
       filtersCount > 0 ? "" : "d-none"
     }`}
@@ -529,8 +529,8 @@ const ListOfProperties = () => {
     >
       Reset More Filters
     </button>
-  </div> */}
-          </div>
+  </div> 
+          </div> */}
 
           {/*  Sort by */}
           <div className={`row justify-content-end pt-2 ${selectedPropertyResults === null ? "d-none" : ""}`} >

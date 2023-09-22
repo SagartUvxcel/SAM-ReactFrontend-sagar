@@ -1113,7 +1113,7 @@ cursor: not-allowed !important;
 
 }
 .subscription-wrapper .plan-card-1 .plan-header-wrapper {
-  background-color: #fef4ee;
+  background-color: #fef4ee !important;
 }
 
 .subscription-wrapper .plan-card-2 .plan-header-wrapper {

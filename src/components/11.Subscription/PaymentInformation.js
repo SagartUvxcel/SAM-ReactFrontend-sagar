@@ -20,10 +20,12 @@ export const PaymentInformation = () => {
   const dataFromSubscriptionPage = location.state ? location.state.sensitiveData : null;
 
   const data = JSON.parse(localStorage.getItem("data"));
+  const updatedSubscriptionStatus = localStorage.getItem("updatedSubscriptionStatus");
+
   if (data) {
     authHeaders = { Authorization: data.loginToken };
     isLogin = data.isLoggedIn;
-    planStatus = data.subscription_status;
+    planStatus = updatedSubscriptionStatus ? updatedSubscriptionStatus : data.subscription_status;
   }
 
 
@@ -90,11 +92,11 @@ export const PaymentInformation = () => {
       billing_cycle: planDetails.billing_cycle,
     }
 
-console.log(JSON.stringify(dataToPost));
+    console.log(JSON.stringify(dataToPost));
 
     // API url
     let urlSub = `/sam/v1/customer-registration/auth/${planStatus === true ? "upgrade-subscription" : "subscribe-user"}`;
-    const pageRefreshData=true;
+
 
     try {
       const response = await axios.post(urlSub, dataToPost, { headers: authHeaders });
@@ -104,7 +106,12 @@ console.log(JSON.stringify(dataToPost));
           toast.success("Payment Successful.")
           resetCardFormInputs();
           setCardErrorMsg(null);
-          navigate("/subscription", { state: { pageRefreshData } });
+
+          localStorage.setItem("updatedSubscriptionStatus", true);
+
+          setTimeout(() => {
+            navigate("/subscription");
+          }, 500);
         } else {
           setSubscribeBtnLoading(false);
         }
@@ -128,7 +135,7 @@ console.log(JSON.stringify(dataToPost));
       billing_cycle: planDetails.billing_cycle,
       plan_name: planDetails.name,
     }
-    const pageRefreshData=true;
+    const pageRefreshData = true;
 
     try {
       const response = await axios.post("/sam/v1/customer-registration/auth/subscribe-user", dataToPost, { headers: authHeaders });
@@ -138,7 +145,10 @@ console.log(JSON.stringify(dataToPost));
           toast.success("Your Free Trial Started...")
           resetCardFormInputs();
           setCardErrorMsg(null);
-          navigate("/subscription" , { state: { pageRefreshData } });
+          localStorage.setItem("updatedSubscriptionStatus", true);
+          setTimeout(() => {
+            navigate("/subscription");
+          }, 500);
         } else {
           setSubscribeBtnLoading(false);
         }

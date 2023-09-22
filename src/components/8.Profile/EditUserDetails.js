@@ -332,6 +332,7 @@ const EditUserDetails = () => {
       state: state_name,
       email: email,
     };
+    console.log(JSON.stringify(dataToPost));
     setUpdateBtnLoading(true);
     try {
       await axios
@@ -339,6 +340,8 @@ const EditUserDetails = () => {
           headers: authHeaders,
         })
         .then((res) => {
+          console.log(res);
+
           if (res.data.status === 0) {
             setUpdateBtnLoading(false);
             toast.success("Details Updated Successfully");
