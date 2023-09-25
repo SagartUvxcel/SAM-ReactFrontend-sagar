@@ -788,7 +788,7 @@ const ListOfProperties = () => {
                                           }`}
                                       >
                                         <small className="text-muted">
-                                          Expected Price
+                                          Reserved Price
                                         </small>
                                         <div className="common-btn-font">
                                           <i className="bi bi-currency-rupee"></i>

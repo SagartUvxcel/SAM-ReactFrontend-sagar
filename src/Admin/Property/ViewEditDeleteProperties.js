@@ -358,13 +358,14 @@ const ViewEditDeleteProperties = () => {
       // Get details from api.
       const bankRes = await axios.get(`/sam/v1/property/by-bank`);
       setBanks(bankRes.data);
-
+      
       // Get current property values
       const currentPropertyRes = await axios.get(
         `/sam/v1/property/single-property/${propertyId}`,
         { headers: authHeader }
-      );
-      const {
+        );
+        console.log(currentPropertyRes.data);
+        const {
         type_id,
         completion_date,
         purchase_date,
@@ -372,6 +373,8 @@ const ViewEditDeleteProperties = () => {
         market_price,
         ready_reckoner_price,
         expected_price,
+        building_name,
+        landmark,
         flat_no,
         plot_no,
         saleable_area,
@@ -432,10 +435,10 @@ const ViewEditDeleteProperties = () => {
             address: locality,
             locality: locality,
             flat_number: parseInt(flat_no),
-            building_name: "Random name",
+            building_name: building_name,
             society_name: society_name,
             plot_number: parseInt(plot_no),
-            landmark: "Pune landmark",
+            landmark: landmark,
             city: parseInt(city_id),
             zip: parseInt(zip),
             state: parseInt(state_id),
@@ -607,7 +610,7 @@ const ViewEditDeleteProperties = () => {
 
                                   {expected_price ? (
                                     <div className="text-capitalize">
-                                      <span>Expected Price: </span>
+                                      <span>Reserved Price: </span>
                                       <span className="common-btn-font">
                                         <i className="bi bi-currency-rupee"></i>
                                         {`${(
@@ -1117,7 +1120,7 @@ const ViewEditDeleteProperties = () => {
                                   className="form-label common-btn-font"
                                   htmlFor="expected_price"
                                 >
-                                  Expected price (Rs.)
+                                  Reserved Price (Rs.)
                                 </label>
                                 <input
                                   type="number"

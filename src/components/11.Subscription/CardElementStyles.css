@@ -114,22 +114,35 @@ body {
   width: 100%;
 }
 
-.packages {
-  margin: 20px;
-  width: 300px;
+.packagesBox-shadow {
+  box-shadow: 0 11px 15px rgba(30, 35, 33, 1), 0 15px 12px rgba(30, 35, 33, 0.2) !important;
+  
+
+}
+  .packages {
+  /* margin: 20px;
+  width: 300px; */
+  flex-basis: calc(20% - 1rem) ;
   padding-bottom: 1.5em;
   padding-top: 1.5em;
-  height: 100%;
   background-color: grey;
+  /* background: linear-gradient( 0deg, rgb(247 97 5 / 52%) 0%, rgb(255 174 0 / 44%) 100% ); */
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   border-radius: 20px;
-  box-shadow: 0 19px 38px rgba(30, 35, 33, 1), 0 15px 12px rgba(30, 35, 33, 0.2);
   flex-wrap: wrap;
-  color: #f4f4f4;
+  /* color: #f4f4f4; */
+  color: white;
+  /* justify-content: space-around; */
 }
+
+
+.packages .plan-price span{
+  font-size: 14px !important;
+}
+
 
 h1,
 h2 {
@@ -165,18 +178,12 @@ ul {
   align-items: center;
 }
 
-input,
-label {
-  display: inline-block;
-  vertical-align: middle;
-  margin: 10px 0;
-}
 
 .button {
   padding: 10px 30px;
   text-decoration: none;
   font-size: 1em;
-  margin: 15px 15px;
+  /* margin: 15px 15px; */
   border-radius: 50px;
   color: #f4f4f4;
   transition: all 0.3s ease 0s;
@@ -184,6 +191,19 @@ label {
 
 .button:hover {
   transform: scale(1.2);
+}
+
+.card-text-1 {
+  color: #00cc99;
+}
+
+.card-text-2 {
+  color: #ff007c;
+  /* color: #0a58ca; */
+}
+
+.card-text-3 {
+  color: orange;
 }
 
 .button1 {
@@ -268,4 +288,12 @@ input:checked + .slider:before {
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
+}
+
+@media screen and (max-width: 992px) {
+  .packages {
+    /* margin: 20px;
+    width: 300px; */
+    flex-basis: auto;
+  }
 }

@@ -707,7 +707,7 @@ const AddProperty = () => {
                                 className="form-label common-btn-font"
                                 htmlFor="expected_price"
                               >
-                                Expected price (Rs.)
+                                Reserved Price (Rs.)
                                 <span className="fw-bold text-danger">*</span>
                               </label>
                               <input

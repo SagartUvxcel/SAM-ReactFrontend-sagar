@@ -101,11 +101,10 @@ const Subscription = () => {
   // subscription Plans
   const [plans, setPlans] = useState(); //all subriction plans
   const [activePlans, setActivePlans] = useState(); //all subriction plans
-  const [selectedPlan, setSelectedPlan] = useState(null);
+  const [selectedPlan, setSelectedPlan] = useState({plan_id:""});
   // const [subscriptionPlanStatus, setSubscriptionPlanStatus] = useState(planStatus);
   // const [upGradePlanStatus, setUpGradePlanStatus] = useState(true);
   // const dataFromPaymentPage = location.state ? location.state.subscriptionStatus.isActive : data.subscription_status;
-  console.log(plans);
 
   const [selectedBillingCycle, setSelectedBillingCycle] = useState({
     halfYearlyCycleSelected: true,
@@ -243,7 +242,7 @@ const Subscription = () => {
       navigate("/subscription/payment", { state: { sensitiveData } });
     }
   };
-
+  // console.log(selectedPlan);
   // passing subscription data plans details on payment page
   const onSubscribeClick = () => {
     const sensitiveData = selectedPlan;
@@ -251,12 +250,38 @@ const Subscription = () => {
     console.log(sensitiveData);
   };
 
+  // passing subscription data plans details on payment page
+  const onStartNowBtnClick = (e) => {
+    const sensitiveData = e;
+    navigate("/subscription/payment", { state: { sensitiveData } });
+    console.log();
+  };
+
+  // passing subscription data plans details on payment page
+  const onCardBtnClick = (e, i) => {
+    if (e.name === "Basic plan") {
+      handleActiveColumn(1);
+    } else if (e.name === "Advanced plan") {
+      handleActiveColumn(2);
+    } else {
+      console.log(e.name, i);
+    }
+  }
+
+  // default active plans
+  // const defaultActivePlans = () => {
+  //   if (plans) {
+  //     const freeTrial = plans.filter(plan => plan.plan_id === 1)[0];
+  //     setSelectedPlan(freeTrial);
+  //   }
+  // }
+
+
   // upgrade button click function
   const upGradePlansBtn = () => {
     navigate("/subscription/upgrade-plan");
   }
 
-  // console.log(activePlans);
 
   // selected subscription table
   const subscriptionPlansTableRef = useRef(null);
@@ -292,21 +317,29 @@ const Subscription = () => {
   useEffect(() => {
     // console.log(activePlans);
     if (basicHalfYearly) {
-      setSelectedPlan(basicHalfYearly);
+      // setSelectedPlan(basicHalfYearly);
+      // setSelectedPlan();
     }
 
-  }, [basicHalfYearly, plans]);
+  }, [basicHalfYearly]);
 
   useEffect(() => {
+    if (plans) {
+      const basicPlanDetails = plans.filter(plan => plan.plan_id === 1)[0];
+      setSelectedPlan(basicPlanDetails);
+      console.log(plans);
+    }
+
     setPlansOnCard({
       basicPlanOnCard: basicHalfYearly,
       advancedPlanOnCard: advancedHalfYearly,
     });
-  }, [basicHalfYearly, advancedHalfYearly]);
+  }, [basicHalfYearly, advancedHalfYearly, plans]);
 
   // useEffect for axios
   useEffect(() => {
     handleActiveColumn(1);
+    // defaultActivePlans();
     if (isLogin) {
       getSubscriptionPlansDetails();
       if (planStatus) {
@@ -320,7 +353,7 @@ const Subscription = () => {
 
   return (
     <Layout>
-      <section className="subscription-wrapper section-padding min-100vh">
+      <section className="subscription-wrapper section-padding min-100vh mb-5">
         {/* if user Login */}
         {isLogin ? (
           <>
@@ -413,7 +446,7 @@ const Subscription = () => {
 
                   <div className="container mt-5">
                     <div className="row justify-content-center">
-                      <div className="col-xl-8">
+                      <div className="col-xl-10">
                         {/* subscription-table */}
                         <div className="subscription-table-wrapper">
                           <table
@@ -526,19 +559,34 @@ const Subscription = () => {
                         </div>
 
                         {/* subscription-Plans */}
-                        {plans && plans.map((plan) => {
-                          <div className="container-fluid mt-5">
-                            <div className="row justify-content-between">
-                              <div className="package-container">
-                                <div className="packages">
-                                  <h2>{plan.name}</h2>
-                                  <h4 className="text1">RS. 0</h4>
-                                  <a href="#" className="button button1">Start Now</a>
-                                </div>
-                              </div>
-                            </div>
+                        <div className="container-fluid my-5">
+                          <div className="row justify-content-between mt-3">
+                            {plans && plans.map((plan, Index) => {
+                              return (
+                                <button className={`packages  border-0 mb-4 mt-4 mb-md-0 plan-card-${Index + 1} position-relative plan-header-wrapper ${ selectedPlan.plan_id === plan.plan_id ? "packagesBox-shadow " : ""}`} key={Index}
+                                  onClick={() => {
+                                    onCardBtnClick(plan, Index);
+                                    setSelectedPlan(plan);
+                                  }}
+                                >
+
+
+                                  <span
+                                    className={`position-absolute top-0 start-100 translate-middle badge  bg-success ${selectedPlan.plan_id === plan.plan_id ? "" : "d-none"} `}
+                                  >
+                                    <i className="bi bi-check-circle-fill"></i>
+                                  </span>
+                                  <h4 className={`plan-title mb-4 fw-bold text-uppercase ${plan.billing_cycle === "free trial" ? "card-text-1" : ""} ${plan.billing_cycle === "half yearly" ? "card-text-2" : ""} ${plan.billing_cycle === "annual" ? "card-text-3" : ""}`}>{plan.name === "Basic plan" && plan.billing_cycle === "free trial" ? "Free" : plan.name.replace(' plan', '')}</h4>
+                                  <h4 className="fw-bold plan-price">
+                                    <sup>&#8377;</sup>{plan.price.replace('.00', '')}  <span className="fs-5"> / {plan.billing_cycle === "free trial" ? "7 Days" : ""}{plan.billing_cycle === "half yearly" ? "6 Months" : ""}{plan.billing_cycle === "annual" ? "Year" : ""}</span>
+                                  </h4>
+                                  {/* <a href="#" onClick={(e)=>onStartNowBtnClick(plan)} className={`button mt-4  mb-2 ${plan.billing_cycle === "half yearly" ? "button2" : ""} ${plan.billing_cycle === "free trial" ? "button1" : ""} ${plan.billing_cycle === "annual" ? "button3" : ""}`}>Start Now</a> */}
+                                </button>
+
+                              )
+                            })}
                           </div>
-                        })}
+                        </div>
 
 
 
@@ -604,20 +652,18 @@ const Subscription = () => {
                       </div> */}
 
                         {/* subscription button */}
-                        {/* <div className={`row mt-md-5 mb-5 ${annualCycleSelected || selectedPlan && selectedPlan.name === "Advanced plan" ? "d-flex justify-content-center" : ""}`}>
-                        <div className="col-md-6 ">
-                          <button
-                            className="w-100 btn btn-primary text-capitalize common-btn-font"
-                            onClick={onSubscribeClick}
-                          >
-                            Subscribe to{" "}
-                            {selectedPlan && selectedPlan.name === "Advanced plan"
-                              ? "Advance"
-                              : "Basic"}
-                            <i className="bi bi-chevron-right"></i>
-                          </button>
-                        </div>
-                        {selectedPlan && selectedPlan.name === "Advanced plan" || annualCycleSelected
+                        <div className={`row mt-md-5 mb-5  "d-flex justify-content-center`}>
+                          <div className="col-md-8 mt-3">
+                            <button
+                              className="w-100 btn btn-primary text-capitalize fs-5 common-btn-font"
+                              onClick={onSubscribeClick}
+                            >
+                              Continue with{" "}
+                              {selectedPlan && selectedPlan.billing_cycle === "free trial" ? "Free Trial" : selectedPlan && selectedPlan.name}
+                              <i className="bi bi-chevron-right"></i>
+                            </button>
+                          </div>
+                          {/* {selectedPlan && selectedPlan.name === "Advanced plan" || annualCycleSelected
                           ? ""
                           : <>
                             <div className="col-md-6 mt-4 mt-md-0">
@@ -631,9 +677,9 @@ const Subscription = () => {
                               </button>
                             </div>
                           </>
-                        }
+                        } */}
 
-                      </div> */}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -678,7 +724,7 @@ const Subscription = () => {
 
 
       </section>
-    </Layout>
+    </Layout >
   );
 };
 

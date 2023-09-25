@@ -1116,6 +1116,13 @@ cursor: not-allowed !important;
   background-color: #fef4ee !important;
 }
 
+.subscription-wrapper .badge {
+  --bs-badge-font-size: 1em !important;
+}
+.subscription-wrapper .start-100 {
+  left: 98%!important;
+}
+
 .subscription-wrapper .plan-card-2 .plan-header-wrapper {
   background-color: #e9f4fe;
 }
@@ -1146,6 +1153,7 @@ cursor: not-allowed !important;
   background-color: transparent !important;
   
 }
+
 
 .subscription-wrapper .subscribe-btn-wrapper .subscribe-btn {
   background: var(--primary-color-hover);

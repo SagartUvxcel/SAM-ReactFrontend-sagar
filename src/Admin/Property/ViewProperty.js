@@ -29,7 +29,6 @@ const ViewProperty = ({
     setConfirmDeleteDocumentBtnDisabled,
   ] = useState(true);
   const [idsOfDocumentsToDelete, setIdsOfDocumentsToDelete] = useState(null);
-  const [confirmMessageText, setConfirmMessageText] = useState(null);
   const confirmDeleteDocumentInputRef = useRef();
   const [excelData, setExcelData] = useState(null);
   const [selectAll, setSelectAll] = useState(false);
@@ -258,12 +257,7 @@ const ViewProperty = ({
     // Implement your deletion logic here
     const selectedDocs = propertyDocumentsList.filter((doc) => doc.checked);
     let arrOfDocumentsIds = selectedDocs.map((i) => i.document_id);
-    let cnt = selectedDocs.length;
-    console.log(selectedDocs, arrOfDocumentsIds, cnt);
     setIdsOfDocumentsToDelete(arrOfDocumentsIds);
-    setConfirmMessageText(
-      `Delete ${cnt} selected ${cnt === 1 ? "document" : "documents"}`
-    );
     confirmDeleteDocumentInputRef.current.value = "";
     setConfirmDeleteDocumentBtnDisabled(true);
   };
@@ -741,7 +735,7 @@ const ViewProperty = ({
                   )}
                   {expected_price ? (
                     <div className="col-md-4">
-                      <small className="text-muted">Expected Price</small>
+                      <small className="text-muted">Reserved Price</small>
                       <h5 className="mt-1">
                         <i className="bi bi-currency-rupee"></i>
                         {(expected_price / 10000000).toFixed(2)} Cr.
@@ -1038,12 +1032,12 @@ const ViewProperty = ({
                 className="form-label"
               >
                 Type{" "}
-                <span className="fw-bold">{`"${confirmMessageText}"`}</span> to
+                <span className="fw-bold">{`"Delete"`}</span> to
                 confirm.
               </label>
               <input
                 onChange={(e) => {
-                  if (e.target.value === confirmMessageText) {
+                  if (e.target.value === "Delete") {
                     setConfirmDeleteDocumentBtnDisabled(false);
                   } else {
                     setConfirmDeleteDocumentBtnDisabled(true);
