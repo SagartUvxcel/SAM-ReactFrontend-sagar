@@ -399,7 +399,7 @@ const Subscription = () => {
                     <div className="list-group-item">
                       <div className="form-group row mb-0">
                         {/* <label className="col-form-label form-label col-sm-3">Upgrade</label> */}
-                        <div className="col-sm-8">
+                        <div className="col-sm-8 text-center">
                           <button type="button" onClick={(e) => upGradePlansBtn(e)} className="btn btn-primary">{activePlans.billing_cycle === "free trial" ? "Activate Plan" : "Upgrade Plan"}</button>
                         </div>
                       </div>
@@ -580,7 +580,6 @@ const Subscription = () => {
                                   <h4 className="fw-bold plan-price">
                                     <sup>&#8377;</sup>{plan.price.replace('.00', '')}  <span className="fs-5"> / {plan.billing_cycle === "free trial" ? "7 Days" : ""}{plan.billing_cycle === "half yearly" ? "6 Months" : ""}{plan.billing_cycle === "annual" ? "Year" : ""}</span>
                                   </h4>
-                                  {/* <a href="#" onClick={(e)=>onStartNowBtnClick(plan)} className={`button mt-4  mb-2 ${plan.billing_cycle === "half yearly" ? "button2" : ""} ${plan.billing_cycle === "free trial" ? "button1" : ""} ${plan.billing_cycle === "annual" ? "button3" : ""}`}>Start Now</a> */}
                                 </button>
 
                               )

@@ -25,11 +25,15 @@ const UpgradeSubscriptionPage = () => {
   // subscription Plans
   const [plans, setPlans] = useState(); //all subriction plans
   const [planToDisable, setPlanToDisable] = useState(); //all active plans
-  const [selectedPlan, setSelectedPlan] = useState(null);
+  const [selectedPlan, setSelectedPlan] = useState({plan_id:""});
   const [planCardDisable, setPlanCardDisable] = useState({
     basicCardDisable: false,
     advancedCardDisable: false,
   });
+  const [disabledIndex, setDisabledIndex] = useState(-1);
+
+  console.log(plans);
+  console.log(selectedPlan.plan_id);
   const { basicCardDisable, advancedCardDisable } = planCardDisable;
 
   const [selectedBillingCycle, setSelectedBillingCycle] = useState({
@@ -90,10 +94,13 @@ const UpgradeSubscriptionPage = () => {
   };
 
   useEffect(() => {
-    if (planToDisable) {
+    if (planToDisable && plans) {
       handleActiveCurrentPlan("half yearly");
+      let selectedPlansDetails = plans.filter(plan => plan.plan_id !== planToDisable.plan_id)
+      setSelectedPlan(selectedPlansDetails[0]);
+      setDisabledIndex(planToDisable.plan_id)
     }
-  }, [planToDisable]);
+  }, [planToDisable, plans]);
 
   // get Subscription Plans Details from database
   const getSubscriptionPlansDetails = async () => {
@@ -106,7 +113,8 @@ const UpgradeSubscriptionPage = () => {
         .then((response) => {
           const plansRes = response.data;
           if (plansRes) {
-            setPlans(plansRes);
+            const plansValue= plansRes.filter(plan => plan.plan_id !== 1);
+            setPlans(plansValue);
           }
         });
     } catch (error) {
@@ -125,7 +133,7 @@ const UpgradeSubscriptionPage = () => {
         .then((response) => {
           const activePlansRes = response.data;
           if (activePlansRes) {
-            console.log("Active plan:", response.data);
+            // console.log("Active plan:", response.data);
             setPlanToDisable(activePlansRes);
           }
         });
@@ -245,6 +253,16 @@ const UpgradeSubscriptionPage = () => {
     }
   };
 
+  const onCardBtnClick = (e, i) => {
+    if (e.name === "Basic plan") {
+      handleActiveColumn(1);
+    } else if (e.name === "Advanced plan") {
+      handleActiveColumn(2);
+    } else {
+      console.log(e.name, i);
+    }
+  }
+
   // default select card
   // useEffect(() => {
   //   setSelectedPlan(basicHalfYearly);
@@ -255,11 +273,12 @@ const UpgradeSubscriptionPage = () => {
       basicPlanOnCard: basicHalfYearly,
       advancedPlanOnCard: advancedHalfYearly,
     });
-  }, [basicHalfYearly, advancedHalfYearly]);
+  }, [basicHalfYearly, advancedHalfYearly, plans]);
 
   // useEffect for axios
   useEffect(() => {
     // handleActiveColumn(1);
+
     if (isLogin) {
       getSubscriptionPlansDetails();
       if (planStatus) {
@@ -287,13 +306,12 @@ const UpgradeSubscriptionPage = () => {
                   Lorem ipsum dolor sit amet consectetur adipisicing elit.
                 </span>
               </div>
-              <div className="row mt-5 justify-content-center">
+              {/* <div className="row mt-5 justify-content-center"> */}
                 {/*  Checkboxes - Individual & Organization */}
-                <div className="col-lg-12 d-flex justify-content-center">
+                {/* <div className="col-lg-12 d-flex justify-content-center">
                   <div
-                    className={`plan-select-btn d-flex justify-content-center align-items-center ${
-                      halfYearlyCycleSelected ? "active" : ""
-                    }`}
+                    className={`plan-select-btn d-flex justify-content-center align-items-center ${halfYearlyCycleSelected ? "active" : ""
+                      }`}
                     name="individual"
                     onClick={onHalfYearlyBtnClick}
                   >
@@ -303,17 +321,17 @@ const UpgradeSubscriptionPage = () => {
                     |
                   </div>
                   <div
-                    className={`plan-select-btn d-flex justify-content-center align-items-center ${
-                      annualCycleSelected ? "active" : ""
-                    }`}
+                    className={`plan-select-btn d-flex justify-content-center align-items-center ${annualCycleSelected ? "active" : ""
+                      }`}
                     name="organization"
                     onClick={onAnnualBtnClick}
                   >
                     Annual
                   </div>
-                </div>
-              </div>
+                </div> */}
+              {/* </div> */}
 
+              
               <div className="container mt-5">
                 <div className="row justify-content-center">
                   <div className="col-xl-8">
@@ -429,10 +447,10 @@ const UpgradeSubscriptionPage = () => {
                     </div>
 
                     {/* subscription-Plans */}
-                    <div className="container-fluid mt-5">
+                    {/* <div className="container-fluid mt-5">
                       <div className="row justify-content-between">
                         {/* basic card */}
-                        <div className={`col-md-6 mb-4 mb-md-0 plan-card-1 `}>
+                    {/* <div className={`col-md-6 mb-4 mb-md-0 plan-card-1 `}>
                           <button
                             className={`w-100 shadow plan-header-wrapper border-0 p-4 position-relative mb-4 ${
                               basicCardDisable ? "disabled" : ""
@@ -461,9 +479,9 @@ const UpgradeSubscriptionPage = () => {
                               {basicPlanOnCard ? basicPlanOnCard.price : ""}
                             </h3>
                           </button>
-                        </div>
-                        {/* advance card  */}
-                        <div className={`col-md-6 mb-4 mb-md-0 plan-card-2`}>
+                        </div> */}
+                    {/* advance card  */}
+                    {/* <div className={`col-md-6 mb-4 mb-md-0 plan-card-2`}>
                           <button
                             className={`w-100 shadow plan-header-wrapper border-0 p-4 position-relative mb-4 ${
                               advancedCardDisable ? "disabled" : ""
@@ -494,9 +512,44 @@ const UpgradeSubscriptionPage = () => {
                                 : ""}
                             </h3>
                           </button>
-                        </div>
+                        </div> */}
+                    {/* </div>
+                    </div> */}
+
+                    <div className="container-fluid my-5">
+                      <div className="row justify-content-between mt-3">
+                        {plans && plans.map((plan, Index) => {
+                          return (
+                            <>
+                            <button className={`upgradePackages  border-0 mb-4 mt-4 mb-md-0 plan-card-${Index + 1} position-relative plan-header-wrapper 
+                            ${ selectedPlan.plan_id === plan.plan_id ? "packagesBox-shadow " : ""} 
+                            ${ plan.plan_id===disabledIndex ? "disabled" : "" }` } 
+                            key={Index}
+                            disabled= {plan.plan_id===disabledIndex}
+                              onClick={() => {
+                                onCardBtnClick(plan, Index);
+                                setSelectedPlan(plan);
+                              }}
+                            >
+
+
+                              <span
+                                className={`position-absolute top-0 start-100 translate-middle badge  bg-success ${selectedPlan.plan_id === plan.plan_id ? "" : "d-none"} `}
+                              >
+                                <i className="bi bi-check-circle-fill"></i>
+                              </span>
+                              <h4 className={`plan-title mb-4 fw-bold text-uppercase ${plan.billing_cycle === "half yearly" ? "card-text-2" : ""} ${plan.billing_cycle === "annual" ? "card-text-3" : ""}`}>{plan.name.replace(' plan', '')}</h4>
+                              <h5 className="fw-bold plan-price">
+                                <sup>&#8377;</sup>{plan.price.replace('.00', '')}  <span className="fs-5"> / {plan.billing_cycle === "half yearly" ? "6 Months" : ""}{plan.billing_cycle === "annual" ? "Year" : ""}</span>
+                              </h5>
+                            </button>
+                            </>
+
+                          )
+                        })}
                       </div>
                     </div>
+
 
                     {/* subscription button */}
                     <div className="row mt-md-5 justify-content-center">
@@ -527,7 +580,7 @@ const UpgradeSubscriptionPage = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> 
             </div>
           </>
         ) : (

@@ -69,7 +69,7 @@ const ViewEditDeleteProperties = () => {
     let arr = propertyCountRes.data;
     let totalCount = 0;
 
-   arr && arr.forEach((type) => {
+    arr && arr.forEach((type) => {
       totalCount += type.count;
     });
 
@@ -358,14 +358,14 @@ const ViewEditDeleteProperties = () => {
       // Get details from api.
       const bankRes = await axios.get(`/sam/v1/property/by-bank`);
       setBanks(bankRes.data);
-      
+
       // Get current property values
       const currentPropertyRes = await axios.get(
         `/sam/v1/property/single-property/${propertyId}`,
         { headers: authHeader }
-        );
-        console.log(currentPropertyRes.data);
-        const {
+      );
+      console.log(currentPropertyRes.data);
+      const {
         type_id,
         completion_date,
         purchase_date,
@@ -524,6 +524,7 @@ const ViewEditDeleteProperties = () => {
             propertiesLinkDisabled={propertiesLinkDisabled}
             backToAllPropertiesPage={backToAllPropertiesPage}
           />
+          {/* allPropertiesPageRef */}
           <div
             className="col-xl-10 col-lg-9 col-md-8"
             ref={allPropertiesPageRef}
@@ -667,9 +668,8 @@ const ViewEditDeleteProperties = () => {
                                           })
                                         );
                                       }}
-                                      to={`${
-                                        isBank ? "/bank" : "/admin"
-                                      }/property/single-property-documents-upload`}
+                                      to={`${isBank ? "/bank" : "/admin"
+                                        }/property/single-property-documents-upload`}
                                       className="btn btn-sm btn-outline-dark property-button-wrapper ms-2"
                                     >
                                       <i className="bi bi-upload"></i>
@@ -697,6 +697,8 @@ const ViewEditDeleteProperties = () => {
               </div>
             </>
           </div>
+
+          {/* viewCurrentPropertyRef */}
           <div
             className="col-xl-10 col-lg-9 col-md-8 d-none"
             ref={viewCurrentPropertyRef}
@@ -738,6 +740,8 @@ const ViewEditDeleteProperties = () => {
               </div>
             </>
           </div>
+
+          {/* editPropertyRef */}
           <div
             className="col-xl-10 col-lg-9 col-md-8 d-none"
             ref={editPropertyRef}
@@ -752,9 +756,8 @@ const ViewEditDeleteProperties = () => {
                   <div className="row justify-content-center">
                     <div className="col-xl-12">
                       <div
-                        className={`${
-                          mainPageLoading ? "" : "d-none"
-                        } d-flex align-items-center justify-content-center`}
+                        className={`${mainPageLoading ? "" : "d-none"
+                          } d-flex align-items-center justify-content-center`}
                         style={{ minHeight: "75vh" }}
                       >
                         <CommonSpinner
@@ -767,9 +770,8 @@ const ViewEditDeleteProperties = () => {
 
                       <form
                         onSubmit={onFormSubmit}
-                        className={`card p-xl-2 ${
-                          mainPageLoading ? "d-none" : ""
-                        }`}
+                        className={`card p-xl-2 ${mainPageLoading ? "d-none" : ""
+                          }`}
                       >
                         <div className="card-body">
                           <h4 className="fw-bold">Update Property</h4>
@@ -847,6 +849,7 @@ const ViewEditDeleteProperties = () => {
                                   name="bank"
                                   className="form-select"
                                   onChange={onInputChange}
+                                  disabled
                                 >
                                   <option value=""></option>
                                   {banks ? (
@@ -880,6 +883,7 @@ const ViewEditDeleteProperties = () => {
                                   name="bank_branch_id"
                                   className="form-select"
                                   onChange={onInputChange}
+                                  disabled
                                 >
                                   <option value=""></option>
                                   {bankBranches ? (
@@ -913,6 +917,7 @@ const ViewEditDeleteProperties = () => {
                                   name="title_clear_property"
                                   className="form-select"
                                   onChange={onInputChange}
+                                  disabled
                                 >
                                   <option value=""></option>
                                   <option
@@ -1221,6 +1226,7 @@ const ViewEditDeleteProperties = () => {
                                   onChange={onInputChange}
                                   defaultValue={mortgage_date}
                                   required
+                                  disabled
                                 />
                               </div>
                             </div>
@@ -1238,6 +1244,7 @@ const ViewEditDeleteProperties = () => {
                                     value="1"
                                     id="is_sold-1"
                                     onChange={onInputChange}
+                                    disabled
                                   />
                                   <label
                                     className="form-check-label"
@@ -1266,9 +1273,8 @@ const ViewEditDeleteProperties = () => {
                               </div>
                             </div>
                             <div
-                              className={`col-xl-4 col-md-6 mb-3 mb-xl-0 ${
-                                is_sold === 1 ? "d-none" : ""
-                              }`}
+                              className={`col-xl-4 col-md-6 mb-3 mb-xl-0 ${is_sold === 1 ? "d-none" : ""
+                                }`}
                             >
                               <div className="form-group">
                                 <label
@@ -1283,6 +1289,7 @@ const ViewEditDeleteProperties = () => {
                                   className="form-select"
                                   onChange={onInputChange}
                                   required
+                                  disabled
                                 >
                                   <option
                                     value="1"

@@ -1102,15 +1102,18 @@ input:-webkit-autofill:active {
 }
 
 .subscription-wrapper .plan-card-1 .plan-header-wrapper.disabled {
-background-color: lightgrey !important;
-cursor: not-allowed !important;
+  background-color: lightgrey !important;
+  cursor: not-allowed !important;
+}
 
+.subscription-wrapper .plan-header-wrapper.disabled {
+  background-color: lightgrey !important;
+  cursor: not-allowed !important;
 }
 
 .subscription-wrapper .plan-card-2 .plan-header-wrapper.disabled {
-background-color: lightgrey !important;
-cursor: not-allowed !important;
-
+  background-color: lightgrey !important;
+  cursor: not-allowed !important;
 }
 .subscription-wrapper .plan-card-1 .plan-header-wrapper {
   background-color: #fef4ee !important;
@@ -1120,7 +1123,7 @@ cursor: not-allowed !important;
   --bs-badge-font-size: 1em !important;
 }
 .subscription-wrapper .start-100 {
-  left: 98%!important;
+  left: 98% !important;
 }
 
 .subscription-wrapper .plan-card-2 .plan-header-wrapper {
@@ -1148,12 +1151,9 @@ cursor: not-allowed !important;
   border: 1px solid #f0f1f2;
   border-radius: 0.1875rem;
 }
-.subscription-wrapper .active-plans-details-card  .list-group-item {
-  
+.subscription-wrapper .active-plans-details-card .list-group-item {
   background-color: transparent !important;
-  
 }
-
 
 .subscription-wrapper .subscribe-btn-wrapper .subscribe-btn {
   background: var(--primary-color-hover);

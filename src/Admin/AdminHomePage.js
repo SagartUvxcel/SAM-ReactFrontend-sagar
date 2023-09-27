@@ -380,7 +380,7 @@ const AdminHomePage = () => {
                         </div>
                       </div>
                     </div>
-                    {/* <div className="col-xl-6 mt-xl-0 mt-4">
+                    <div className="col-xl-6 mt-xl-0 mt-4">
                       <div
                         className="container-fluid shadow"
                         style={{ border: "1px solid var(--primary-color)" }}
@@ -446,80 +446,82 @@ const AdminHomePage = () => {
                           </div>
                         </div>
                       </div>
-                    </div> */}
+                    </div>
                   </div>
                 </>
               ) : (
-                <></>
+                <>
+                  <div className="col-xl-6 mt-xl-0 mt-4">
+                    <div
+                      className="container-fluid shadow"
+                      style={{ border: "1px solid var(--primary-color)" }}
+                    >
+                      <div className="row chart-wrapper position-relative bg-light">
+                        <div className="h-100 w-100 canvas-wrapper d-flex justify-content-center position-absolute p-4">
+                          <Bar
+                            className={`${chart2Type === "bar" ? "" : "d-none"
+                              }`}
+                            data={chart2Data}
+                            options={chart2Options}
+                          ></Bar>
+
+                          <Doughnut
+                            className={`${chart2Type === "doughnut" ? "" : "d-none"
+                              }`}
+                            data={chart2Data}
+                            options={chart2Options}
+                          ></Doughnut>
+                        </div>
+                      </div>
+                      <div className="row p-2 ">
+                        <div className="col-md-3">
+                          <span className="common-btn-font text-primary">
+                            Chart View
+                          </span>
+                        </div>
+                        <div className="col-md-3 mt-md-0 mt-2 col-6">
+                          <div className="form-check form-check-inline">
+                            <input
+                              onChange={onChart2Selection}
+                              className="form-check-input chart1check"
+                              type="radio"
+                              name="chart2"
+                              id="bar2"
+                              value="bar2"
+                            />
+                            <label
+                              className="form-check-label"
+                              htmlFor="bar2"
+                            >
+                              Bar
+                            </label>
+                          </div>
+                        </div>
+                        <div className="col-md-3 mt-md-0 mt-2 col-6">
+                          <div className="form-check form-check-inline">
+                            <input
+                              onChange={onChart2Selection}
+                              className="form-check-input chart1check"
+                              type="radio"
+                              name="chart2"
+                              id="doughnut2"
+                              value="doughnut2"
+                            />
+                            <label
+                              className="form-check-label"
+                              htmlFor="doughnut2"
+                            >
+                              Doughnut
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </>
               )}
 
-              <div className="col-xl-6 mt-xl-0 mt-4">
-                <div
-                  className="container-fluid shadow"
-                  style={{ border: "1px solid var(--primary-color)" }}
-                >
-                  <div className="row chart-wrapper position-relative bg-light">
-                    <div className="h-100 w-100 canvas-wrapper d-flex justify-content-center position-absolute p-4">
-                      <Bar
-                        className={`${chart2Type === "bar" ? "" : "d-none"
-                          }`}
-                        data={chart2Data}
-                        options={chart2Options}
-                      ></Bar>
 
-                      <Doughnut
-                        className={`${chart2Type === "doughnut" ? "" : "d-none"
-                          }`}
-                        data={chart2Data}
-                        options={chart2Options}
-                      ></Doughnut>
-                    </div>
-                  </div>
-                  <div className="row p-2 ">
-                    <div className="col-md-3">
-                      <span className="common-btn-font text-primary">
-                        Chart View
-                      </span>
-                    </div>
-                    <div className="col-md-3 mt-md-0 mt-2 col-6">
-                      <div className="form-check form-check-inline">
-                        <input
-                          onChange={onChart2Selection}
-                          className="form-check-input chart1check"
-                          type="radio"
-                          name="chart2"
-                          id="bar2"
-                          value="bar2"
-                        />
-                        <label
-                          className="form-check-label"
-                          htmlFor="bar2"
-                        >
-                          Bar
-                        </label>
-                      </div>
-                    </div>
-                    <div className="col-md-3 mt-md-0 mt-2 col-6">
-                      <div className="form-check form-check-inline">
-                        <input
-                          onChange={onChart2Selection}
-                          className="form-check-input chart1check"
-                          type="radio"
-                          name="chart2"
-                          id="doughnut2"
-                          value="doughnut2"
-                        />
-                        <label
-                          className="form-check-label"
-                          htmlFor="doughnut2"
-                        >
-                          Doughnut
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
 
 
             </div>
