@@ -37,6 +37,7 @@ import ViewEnquiryLists from "./components/10.User Enquiries/ViewEnquiryLists";
 import Subscription from "./components/11.Subscription/Subscription";
 import UpgradeSubscriptionPage from "./components/11.Subscription/UpgradeSubscriptionPage";
 import PaymentInformation from "./components/11.Subscription/PaymentInformation";
+import CommonSubscriptionNotificationMsg from "./components/11.Subscription/CommonSubscriptionNotificationMsg";
 
 
 
@@ -267,7 +268,7 @@ function App() {
           <Route path="/access-denied" element={<AccessDeniedPage />} />
         </Routes>
       </ScrollToTop>
-      <ScrollButton />
+      <ScrollButton /> <CommonSubscriptionNotificationMsg /> 
     </>
   );
 }

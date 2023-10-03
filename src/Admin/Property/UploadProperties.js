@@ -6,6 +6,7 @@ import Layout from "../../components/1.CommonLayout/Layout";
 import { rootTitle } from "../../CommonFunctions";
 import axios from "axios";
 import { toast } from "react-toastify";
+import sampleCSVFile  from "./SampleBulkFile.csv";
 import { v4 as uuid } from "uuid";
 import BreadCrumb from "../BreadCrumb";
 
@@ -256,7 +257,18 @@ const UploadProperties = () => {
         <div className="row min-100vh position-relative">
           <AdminSideBar />
           <div className="col-xl-10 col-lg-9 col-md-8">
+
+            <div className="d-flex justify-content-between align-items-center mt-2">
             <BreadCrumb />
+                <a
+                  className="btn btn-primary sample-file-download-btn me-4"
+                  href={sampleCSVFile}
+                  download="SampleBulkFile.csv"
+                >
+                   Sample Bulk File <i class="bi bi-download"> </i>
+                </a>
+              </div>
+
             <div className="container-fluid mt-4">
               <div className="row justify-content-center">
                 <div className="col-xl-7 col-md-11 shadow p-md-4 p-3 mb-5 upload-file-main-wrapper">

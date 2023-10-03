@@ -2,16 +2,29 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { checkLoginSession, rootTitle } from "../../CommonFunctions";
+import { checkLoginSession, rootTitle, calculateDays } from "../../CommonFunctions";
 import Layout from "../1.CommonLayout/Layout";
 import CommonSpinner from "../../CommonSpinner";
+import CommonSubscriptionNotificationMsg from "../11.Subscription/CommonSubscriptionNotificationMsg";
+
 let authHeaders = "";
+let isLogin = false;
+let planStatus = false;
+let planEndDate = "";
 
 const EditUserDetails = () => {
   // To store original details of user. It is required when user click on cancel button of edit form.
   const [originalValuesToShow, SetOriginalValuesToShow] = useState({});
   const [idOfState, setIdOfState] = useState(0);
   const [userType, setUserType] = useState("");
+  const [expiryDate, setExpiryDate] = useState(null);
+  const [daysCount, setDaysCount] = useState(null);
+
+
+
+
+
+
 
   // To store updated user details.
   const [commonUserDetails, setCommonUserDetails] = useState({});
@@ -86,9 +99,16 @@ const EditUserDetails = () => {
   // To navigate to particular route.
   const goTo = useNavigate();
   const data = JSON.parse(localStorage.getItem("data"));
+  const updatedSubscriptionStatus = localStorage.getItem("updatedSubscriptionStatus");
+
   if (data) {
     authHeaders = { Authorization: data.loginToken };
+    isLogin = data.isLoggedIn;
+    planStatus = updatedSubscriptionStatus ? updatedSubscriptionStatus : data.subscription_status;
+    planEndDate = data.subscription_end_date;
   }
+
+
 
   // Function will get the data of user whose details are to be edited.
   const getUserToEdit = async () => {
@@ -368,23 +388,47 @@ const EditUserDetails = () => {
   };
 
   useEffect(() => {
+    if (planEndDate) {
+      calculateDays(planEndDate);
+      setDaysCount(calculateDays(planEndDate));
+
+      // if (daysCount > 5) {
+      //   toast.warning("Your subscription will expire in 5 days!")
+      // } else if (daysCount === 0) {
+      //   toast.warning("Your subscription will expire today!")
+      // }
+
+    }
+
+  }, [planEndDate])
+
+
+  useEffect(() => {
     rootTitle.textContent = "SAM TOOL - EDIT DETAILS";
     setMainPageLoading(true);
+    // subscription Plan Expiry date
+    setExpiryDate(new Date(planEndDate));
     if (data) {
       checkLoginSession(data.loginToken).then((res) => {
         if (res === "Valid") {
           getUserToEdit();
         }
       });
+
     }
+
     // eslint-disable-next-line
   }, []);
 
   return (
     <Layout>
       <section className="edit-details-wrapper section-padding min-100vh">
-        <div className="container-fluid wrapper">
-          <div className="row justify-content-center">
+        <div className="container-fluid wrapper position-relative">
+          {/* {planStatus && expiryDate && daysCount > 5 ?
+            <CommonSubscriptionNotificationMsg />
+            :
+            ""} */}
+          <div className={`row justify-content-center ${planStatus && expiryDate && daysCount > 5 ? "mt-4" : ""}`}>
             <div className="col-xl-10 col-lg-10 col-md-12 col-sm-12 col-12">
               <form onSubmit={updateDetails} className="card h-100">
                 {mainPageLoading ? (
@@ -407,8 +451,8 @@ const EditUserDetails = () => {
                           {user_type === 0
                             ? "Personal Details"
                             : user_type === 1
-                            ? "Organization Details"
-                            : ""}
+                              ? "Organization Details"
+                              : ""}
                         </h6>
                       </div>
 
@@ -429,10 +473,10 @@ const EditUserDetails = () => {
                             {user_type === 0
                               ? "Individual User"
                               : user_type === 1
-                              ? "Organizational User"
-                              : user_type === 2
-                              ? "Bank User"
-                              : ""}
+                                ? "Organizational User"
+                                : user_type === 2
+                                  ? "Bank User"
+                                  : ""}
                           </p>
                         </div>
                       </div>
@@ -605,16 +649,16 @@ const EditUserDetails = () => {
                           >
                             {statesFromApi
                               ? statesFromApi.map((i, Index) => {
-                                  return (
-                                    <option
-                                      id={`state-name-${i.state_id}`}
-                                      key={Index}
-                                      value={i.state_id}
-                                    >
-                                      {i.state_name}
-                                    </option>
-                                  );
-                                })
+                                return (
+                                  <option
+                                    id={`state-name-${i.state_id}`}
+                                    key={Index}
+                                    value={i.state_id}
+                                  >
+                                    {i.state_name}
+                                  </option>
+                                );
+                              })
                               : ""}
                           </select>
                         </div>
@@ -635,16 +679,16 @@ const EditUserDetails = () => {
                           >
                             {citiesFromApi
                               ? citiesFromApi.map((i, Index) => {
-                                  return (
-                                    <option
-                                      id={i.city_name}
-                                      key={Index}
-                                      value={i.city_name}
-                                    >
-                                      {i.city_name}
-                                    </option>
-                                  );
-                                })
+                                return (
+                                  <option
+                                    id={i.city_name}
+                                    key={Index}
+                                    value={i.city_name}
+                                  >
+                                    {i.city_name}
+                                  </option>
+                                );
+                              })
                               : ""}
                           </select>
                         </div>
@@ -666,9 +710,8 @@ const EditUserDetails = () => {
                             required
                           />
                           <span
-                            className={`pe-1 ${
-                              zipCodeValidationMessage ? "" : "d-none"
-                            } text-danger`}
+                            className={`pe-1 ${zipCodeValidationMessage ? "" : "d-none"
+                              } text-danger`}
                           >
                             {zipCodeValidationMessage}
                           </span>
@@ -685,9 +728,8 @@ const EditUserDetails = () => {
                             style={{ width: "150px" }}
                             onClick={cancelEditing}
                             type="button"
-                            className={`btn btn-secondary me-2 ${
-                              updateBtnLoading ? "disabled" : ""
-                            }`}
+                            className={`btn btn-secondary me-2 ${updateBtnLoading ? "disabled" : ""
+                              }`}
                           >
                             Cancel
                           </button>

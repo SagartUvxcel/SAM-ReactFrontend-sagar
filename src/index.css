@@ -657,6 +657,13 @@ input:-webkit-autofill:active {
 
 /* Edit Details */
 
+.subscription-notification-container{
+  position: fixed;
+  top: 67px;
+  right: 5px;
+  margin-bottom: 300px !important;
+}
+
 .edit-details-wrapper label {
   font-weight: 600;
 }
@@ -927,6 +934,12 @@ input:-webkit-autofill:active {
 }
 
 /* Bulk upload properties*/
+
+
+.sample-file-download-btn {
+  border: 1px solid var(--secondary-color) !important;
+  background-color: var(--secondary-color) !important;
+}
 
 .csv-data-table {
   height: 400px;

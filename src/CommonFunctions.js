@@ -83,3 +83,18 @@ export const changeActiveSortStyle = (text) => {
     });
   }
 };
+
+export const calculateDays = (expiryDate) => {
+  const start = new Date();
+    const end = new Date(expiryDate);
+
+    // Calculate the time difference in milliseconds
+    const timeDifference = end - start;
+
+    // Calculate the number of days by dividing the time difference by milliseconds per day
+    const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+
+    return days;
+};
+
+
