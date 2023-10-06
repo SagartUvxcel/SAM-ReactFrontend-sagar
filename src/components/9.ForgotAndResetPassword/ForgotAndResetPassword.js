@@ -7,6 +7,7 @@ import setPassImg from "../../images/setpass.svg";
 import { rootTitle } from "../../CommonFunctions";
 
 const ForgotAndResetPassword = () => {
+  const navigate = useNavigate();
   //  Important variables for storing password data as well as validation data.
   const [details, setDetails] = useState({
     newPassword: "",
@@ -19,6 +20,7 @@ const ForgotAndResetPassword = () => {
   });
 
   const [loading, setLoading] = useState(false);
+  const [emailFromURL, setEmailFromURL] = useState(null);
 
   const [alertDetails, setAlertDetails] = useState({
     alertVisible: false,
@@ -83,6 +85,7 @@ const ForgotAndResetPassword = () => {
   // On setPassWord Button click this function will run.
   const onResetPasswordFormSubmit = async (e) => {
     e.preventDefault();
+    console.log(details);
     if (
       newPassword !== confirmPassword &&
       invalidMessage1 !== "Invalid Password"
@@ -120,20 +123,23 @@ const ForgotAndResetPassword = () => {
       });
     } else {
       setLoading(true);
+      const postData = JSON.stringify({
+        password: newPassword,
+        username: emailFromURL,
+      });
+      console.log(postData);
       try {
         await axios
           .post(
-            `/sam/v1/customer-registration/forgot-password`,
-            JSON.stringify({
-              password: newPassword,
-              username: localStorage.getItem("forgotPassUserName"),
-            })
+            `/sam/v1/customer-registration/forgot-password-change`,
+            postData
           )
           .then((res) => {
             if (res.data.status === 0) {
+              console.log(res);
               setLoading(false);
               toast.success("Password Changed Successfully !");
-              localStorage.removeItem("forgotPassUserName");
+              // localStorage.removeItem("forgotPassUserName");
               goTo("/login");
             } else {
               setLoading(false);
@@ -181,12 +187,26 @@ const ForgotAndResetPassword = () => {
     }
   };
 
+  let emailFromEmailUrl = "";
+
+  const getEmailFromURL = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    emailFromEmailUrl = urlParams.get("email");
+    console.log(emailFromEmailUrl);
+    if (emailFromEmailUrl) {
+      setEmailFromURL(emailFromEmailUrl);
+      // mainFunctionToVerifyToken(emailFromEmailUrl, "");
+    }else{
+      navigate("/access-denied");
+    }
+  };
+
   useEffect(() => {
     rootTitle.textContent = "SAM TOOL - RESET PASSWORD";
   });
   return (
     <Layout>
-      <section className="set-password-wrapper section-padding min-100vh">
+      <section className="set-password-wrapper section-padding min-100vh" onLoad={() => getEmailFromURL()}>
         <div className="container mt-5">
           <div className="row justify-content-lg-between justify-content-center">
             <div className="col-xl-5 col-lg-6 col-md-8">
@@ -194,18 +214,16 @@ const ForgotAndResetPassword = () => {
                 <h3 className="text-center fw-bold">Reset Password</h3>
                 <hr />
                 <div
-                  className={`login-alert alert alert-${alertClr} alert-dismissible show d-flex align-items-center ${
-                    alertVisible ? "" : "d-none"
-                  }`}
+                  className={`login-alert alert alert-${alertClr} alert-dismissible show d-flex align-items-center ${alertVisible ? "" : "d-none"
+                    }`}
                   role="alert"
                 >
                   <span>
                     <i
-                      className={`bi bi-exclamation-triangle-fill me-2 ${
-                        alertClr === "danger" || alertClr === "warning"
-                          ? ""
-                          : "d-none"
-                      }`}
+                      className={`bi bi-exclamation-triangle-fill me-2 ${alertClr === "danger" || alertClr === "warning"
+                        ? ""
+                        : "d-none"
+                        }`}
                     ></i>
                   </span>
                   <small className="fw-bold">{alertMsg}</small>

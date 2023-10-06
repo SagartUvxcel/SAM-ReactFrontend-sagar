@@ -3,6 +3,7 @@ import Layout from "../1.CommonLayout/Layout";
 import resetPassImg from "../../images/resetPass.svg";
 import axios from "axios";
 import { NavLink } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const ForgotPassword = () => {
   const [emailValue, setEmailValue] = useState("");
@@ -21,6 +22,31 @@ const ForgotPassword = () => {
   const { alertMsg, alertClr, alertVisible } = alertDetails;
   const { mainSectionDisplay, afterSubmitSectionDisplay } = displayOfSections;
 
+  const sendResetPasswordLinkOnMail = async () => {
+    try {
+      await axios
+        .post(
+          `/sam/v1/customer-registration/forgot-password`,
+          JSON.stringify({ username: emailValue })
+        )
+        .then((res) => {
+          if (res.data.status === 0) {
+            // localStorage.setItem("forgotPassUserName", emailValue);
+            setDisplayOfSections({
+              mainSectionDisplay: "d-none",
+              afterSubmitSectionDisplay: "",
+            });
+          } else {
+
+            setLoading(false);
+          }
+        });
+    } catch (error) {
+      setLoading(false);
+      console.log("failed to send password reset link.")
+    }
+  }
+
   const resetPassword = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -33,11 +59,7 @@ const ForgotPassword = () => {
         .then((res) => {
           if (res.data.status === 1) {
             e.target.reset();
-            localStorage.setItem("forgotPassUserName", emailValue);
-            setDisplayOfSections({
-              mainSectionDisplay: "d-none",
-              afterSubmitSectionDisplay: "",
-            });
+            sendResetPasswordLinkOnMail();
           } else {
             setLoading(false);
             setAlertDetails({
@@ -76,18 +98,16 @@ const ForgotPassword = () => {
                 <hr />
 
                 <div
-                  className={`login-alert alert alert-${alertClr} alert-dismissible show d-flex align-items-center ${
-                    alertVisible ? "" : "d-none"
-                  }`}
+                  className={`login-alert alert alert-${alertClr} alert-dismissible show d-flex align-items-center ${alertVisible ? "" : "d-none"
+                    }`}
                   role="alert"
                 >
                   <span>
                     <i
-                      className={`bi bi-exclamation-triangle-fill me-2 ${
-                        alertClr === "danger" || alertClr === "warning"
-                          ? ""
-                          : "d-none"
-                      }`}
+                      className={`bi bi-exclamation-triangle-fill me-2 ${alertClr === "danger" || alertClr === "warning"
+                        ? ""
+                        : "d-none"
+                        }`}
                     ></i>
                   </span>
                   <small className="fw-bold">{alertMsg}</small>

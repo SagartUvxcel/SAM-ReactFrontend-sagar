@@ -16,7 +16,7 @@ const ListOfProperties = () => {
   const location = useLocation();
   const secretKey = "my_secret_key";
   const queryParams = new URLSearchParams(location.search);
-  const dataFromSearchResultParams = location.state ? location.state.sensitiveData : null;
+  // const dataFromSearchResultParams = location.state ? location.state.sensitiveData : null;
   const data = queryParams.get("data");
   const dataFromParams = JSON.parse(
     CryptoJS.AES.decrypt(data, secretKey).toString(CryptoJS.enc.Utf8)
@@ -27,7 +27,7 @@ const ListOfProperties = () => {
     isBank = localData.isBank;
   }
   const [sortText, setSortText] = useState("Relevance");
-  const [dataToPost, setDataToPost] = useState(dataFromSearchResultParams);
+  const [dataToPost, setDataToPost] = useState(dataFromParams);
   const [enquiryFormData, setEnquiryFormData] = useState({
     // user_id: localData.userId ?? "",
     property_id: "",
@@ -83,6 +83,7 @@ const ListOfProperties = () => {
   const viewCurrentProperty = async () => {
     delete dataFromParams.batch_number;
     delete dataFromParams.batch_size;
+    console.log(dataFromParams);
     try {
       await axios
         .post(`/sam/v1/property/auth/view-properties`, dataFromParams, {
@@ -90,6 +91,7 @@ const ListOfProperties = () => {
         })
         .then((res) => {
           setSelectedPropertyResults(res.data);
+          console.log(res);
           localStorage.setItem(
             "defaultResultsOfProperties",
             JSON.stringify(res.data)
@@ -156,6 +158,7 @@ const ListOfProperties = () => {
   }, []);
 
   useEffect(() => {
+    console.log(dataFromParams);
     changeActiveSortStyle(sortText);
   }, [sortText]);
 
@@ -611,15 +614,14 @@ const ListOfProperties = () => {
             <div className="card px-3 border-0">
               <div className="container-fluid">
                 <div className="row">
-                  {selectedPropertyResults === null ? (
+                  { selectedPropertyResults === null ? (
                     <div className="py-5 text-center">
                       <h2 className="text-capitalize">No results found :(</h2>
                       <span className="text-muted">
                         Please try with other filters
                       </span>
                     </div>
-                  ) : (
-                    selectedPropertyResults.map((property, Index) => {
+                  ) : (selectedPropertyResults.map((property, Index) => {
                       const {
                         property_id,
                         type_name,

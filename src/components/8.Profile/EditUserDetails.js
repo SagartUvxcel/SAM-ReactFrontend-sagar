@@ -428,7 +428,7 @@ const EditUserDetails = () => {
             <CommonSubscriptionNotificationMsg />
             :
             ""} */}
-          <div className={`row justify-content-center ${planStatus && expiryDate && daysCount > 5 ? "mt-4" : ""}`}>
+          <div className={`row justify-content-center ${planStatus && expiryDate && daysCount <= 7 ? "mt-4" : ""}`}>
             <div className="col-xl-10 col-lg-10 col-md-12 col-sm-12 col-12">
               <form onSubmit={updateDetails} className="card h-100">
                 {mainPageLoading ? (

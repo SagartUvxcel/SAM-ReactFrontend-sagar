@@ -122,9 +122,9 @@ function App() {
           <Route
             path="/login"
             element={
-              <ProtectedPages>
+              // <ProtectedPages>
                 <LoginMainPage />
-              </ProtectedPages>
+              // </ProtectedPages>
             }
           />
           <Route
@@ -146,9 +146,9 @@ function App() {
           <Route
             path="/forgot-password/reset-password"
             element={
-              <ProtectForgotPasswordPage>
+              // <ProtectForgotPasswordPage>
                 <ForgotAndResetPassword />
-              </ProtectForgotPasswordPage>
+              // </ProtectForgotPasswordPage>
             }
           />
           <Route

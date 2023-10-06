@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 let authHeaders = "";
 let isLogin = false;
 let planStatus = false;
+let email = "";
 
 export const PaymentInformation = () => {
   const stripe = useStripe();
@@ -26,14 +27,15 @@ export const PaymentInformation = () => {
     authHeaders = { Authorization: data.loginToken };
     isLogin = data.isLoggedIn;
     planStatus = updatedSubscriptionStatus ? updatedSubscriptionStatus : data.subscription_status;
+    email = data.user;
   }
-
 
 
   const [cardErrorMsg, setCardErrorMsg] = useState(null);
   const [planDetails, setPlanDetails] = useState(dataFromSubscriptionPage ? dataFromSubscriptionPage : null);
   const [subscribeBtnLoading, setSubscribeBtnLoading] = useState(false);
   const [perBillingCycleName, setPerBillingCycleName] = useState("");
+  const [paymentModal, setPaymentModal] = useState(false);
 
   const cardElementOptions = {
     style: {
@@ -65,6 +67,7 @@ export const PaymentInformation = () => {
 
   // pay button function
   const handleSubmit = async (event) => {
+
     event.preventDefault();
     setSubscribeBtnLoading(true);
     if (!stripe || !elements) {
@@ -90,6 +93,7 @@ export const PaymentInformation = () => {
       plan_name: planDetails.name,
       amount: parseFloat(planDetails.price),
       billing_cycle: planDetails.billing_cycle,
+      email: email,
     }
 
     console.log(JSON.stringify(dataToPost));
@@ -102,16 +106,16 @@ export const PaymentInformation = () => {
       const response = await axios.post(urlSub, dataToPost, { headers: authHeaders });
       if (response.data) {
         if (response.data.status === 0) {
+          setPaymentModal(true);
           setSubscribeBtnLoading(false);
-          toast.success("Payment Successful.")
+          // toast.success("Payment Successful.")
           resetCardFormInputs();
           setCardErrorMsg(null);
-
           localStorage.setItem("updatedSubscriptionStatus", true);
 
-          setTimeout(() => {
-            navigate("/subscription");
-          }, 500);
+          // setTimeout(() => {
+          //   navigate("/subscription");
+          // }, 500);
         } else {
           setSubscribeBtnLoading(false);
         }
@@ -122,6 +126,11 @@ export const PaymentInformation = () => {
       setSubscribeBtnLoading(false);
     }
   };
+
+  const onModalCloseClickFunction = () => {
+    setPaymentModal(false);
+    navigate("/");
+  }
 
   // pay button function for free trial
   const onClickFreeTrialSubscribeSubmitBtn = async (event) => {
@@ -134,6 +143,7 @@ export const PaymentInformation = () => {
       amount: parseFloat(planDetails.price),
       billing_cycle: planDetails.billing_cycle,
       plan_name: planDetails.name,
+      email: email,
     }
     const pageRefreshData = true;
 
@@ -141,13 +151,14 @@ export const PaymentInformation = () => {
       const response = await axios.post("/sam/v1/customer-registration/auth/subscribe-user", dataToPost, { headers: authHeaders });
       if (response.data) {
         if (response.data.status === 0) {
+          // setPaymentModal(true);
           setSubscribeBtnLoading(false);
           toast.success("Your Free Trial Started...")
           resetCardFormInputs();
           setCardErrorMsg(null);
           localStorage.setItem("updatedSubscriptionStatus", true);
           setTimeout(() => {
-            navigate("/subscription");
+            navigate("/");
           }, 500);
         } else {
           setSubscribeBtnLoading(false);
@@ -180,6 +191,11 @@ export const PaymentInformation = () => {
       displayBillingCycleName();
     }
   }, [dataFromSubscriptionPage])
+
+  useEffect(() => {
+
+  }, [])
+  window.onload = () => { navigate("/subscription"); }
 
   return (
     <>
@@ -260,9 +276,61 @@ export const PaymentInformation = () => {
               </div>
 
             </div>
+
+
+            {/* <button type="button" className="btn btn-info btn-lg" data-toggle="modal" onClick={() => {
+              setPaymentModal(true);
+            }} data-target="#success_tic">Open Modal</button> */}
+            {/* Modal */}
+            <div
+              className={`modal fade ${paymentModal ? "show d-flex" : "d-none"}`}
+              id="success_tic"
+              aria-hidden="true"
+              style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
+            >
+              <div className="modal-dialog modal-dialog-centered">
+
+                {/* <!-- Modal content--> */}
+                <div className="modal-content">
+                  <button className="close border-0 " onClick={onModalCloseClickFunction} data-dismiss="modal">&times;</button>
+                  <div className="page-body">
+                    <div className="head">
+                      <h3 className="mb-3">Payment Successful </h3>
+
+                    </div>
+
+                    <h1 className="checkmark-circle-heading">
+                      <div className="checkmark-circle">
+                        <div className="background"></div>
+                        <div className="checkmark draw"></div>
+                      </div>
+                    </h1>
+
+                    <div className=" subscribe-list text-center">
+                      <h4 className="my-3 color-orange color-red m-5">Congratulations, Your Plan has been activated.</h4>
+                      <h4 className="my-3 color-orange color-red m-5">Enjoy your Subscription.</h4>
+
+                    </div>
+                    <div className=" d-flex justify-content-center">
+                      <ul className="list-style-none ">
+                        <li className="my-1 d-flex align-items-center "><i className="bi bi-check2 fs-5 text-success me-2"></i>   Lorem ipsum dolor sit amet consectetur adipisicing elit.</li>
+                        <li className="my-1 d-flex align-items-center "><i className="bi bi-check2 fs-5 text-success me-2"></i>Lorem ipsum dolor sit amet consectetur adipisicing elit.</li>
+                        <li className="my-1 d-flex align-items-center "><i className="bi bi-check2 fs-5 text-success me-2"></i>Lorem ipsum dolor sit amet consectetur adipisicing elit.</li>
+                        <li className="my-1 d-flex align-items-center "><i className="bi bi-check2 fs-5 text-success me-2"></i>Lorem ipsum dolor sit amet consectetur adipisicing elit.</li>
+                        <li className="my-1 d-flex align-items-center "><i className="bi bi-check2 fs-5 text-success me-2"></i>Lorem ipsum dolor sit amet consectetur adipisicing elit.</li>
+
+                      </ul>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+            </div>
           </div>
+
         </section>
-      </Layout>
+      </Layout >
     </>
   );
 }

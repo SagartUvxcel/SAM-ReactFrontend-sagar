@@ -7,6 +7,9 @@ import CommonSpinner from "../../CommonSpinner";
 import Pagination from "../../Pagination";
 import CryptoJS from "crypto-js";
 
+let authHeaders = "";
+let isLogin = false;
+
 const ViewSearchResults = () => {
   const location = useLocation();
   const dataFromParams = location.state ? location.state.sensitiveData : null;
@@ -28,7 +31,14 @@ const ViewSearchResults = () => {
   const { states, assetCategory, cities, banks } = searchFields;
   const moreFiltersForm = useRef();
 
-  console.log(dataToPost);
+
+  const data = JSON.parse(localStorage.getItem("data"));
+  if (data) {
+    authHeaders = { Authorization: data.loginToken };
+    isLogin = data.isLoggedIn;
+  }
+
+
   // It will fetch all states, banks, assets from api and will map those values to respective select fields.
   const getSearchDetails = async () => {
     let apis = {
@@ -255,6 +265,7 @@ const ViewSearchResults = () => {
     useState(false);
   const [ageFilterSelected, setAgeFilterSelected] = useState(false);
   const [territoryFilterSelected, setTerritoryFilterSelected] = useState(false);
+  const [latestAddedFilterSelected, setLatestAddedFilterSelected] = useState(false);
 
   const manageMoreFiltersCount = (filterName) => {
     if (filterName) {
@@ -272,6 +283,7 @@ const ViewSearchResults = () => {
     "age",
     "title_clear_property",
     "territory",
+    "latest_added_properties",
   ];
 
   const resetFilters = () => {
@@ -284,6 +296,7 @@ const ViewSearchResults = () => {
     setTerritoryFilterSelected(false);
     setAreaFilterSelected(false);
     setTitleClearFilterSelected(false);
+    setLatestAddedFilterSelected(false);
     setFiltersCount(0);
     getPropertyData();
   };
@@ -312,6 +325,11 @@ const ViewSearchResults = () => {
     manageMoreFiltersCount(territoryFilterSelected);
     // eslint-disable-next-line
   }, [territoryFilterSelected]);
+
+  useEffect(() => {
+    manageMoreFiltersCount(latestAddedFilterSelected);
+    // eslint-disable-next-line
+  }, [latestAddedFilterSelected]);
 
   const onMoreFiltersInputChange = (e) => {
     const { name, value } = e.target;
@@ -450,10 +468,20 @@ const ViewSearchResults = () => {
         setDataToPost({ ...dataToPost });
         setTerritoryFilterSelected(false);
       }
+    }else if (name === "latest_added_properties") {
+      if (value) {
+        setLatestAddedFilterSelected(true);
+        setDataToPost({ ...dataToPost, [name]: parseInt(value) });
+      } else {
+        delete dataToPost.latest_added_properties;
+        setDataToPost({ ...dataToPost });
+        setLatestAddedFilterSelected(false);
+      }
     }
   };
 
   const navigateToReceiver = (data) => {
+    console.log("sensetive data", data);
     // Use navigate with the encoded data in URL parameters
     const secretKey = "my_secret_key";
     // Encoding (Encryption)
@@ -491,6 +519,7 @@ const ViewSearchResults = () => {
             className="row extra-filters-row justify-content-center align-items-center py-3"
           // style={{ height: "80px" }}
           >
+            {/* State */}
             <div className="col-md-2 col-12 mt-3 mt-md-0">
               <select
                 name="states"
@@ -525,6 +554,7 @@ const ViewSearchResults = () => {
                 )}
               </select>
             </div>
+            {/* City */}
             <div className="col-md-2 col-12 mt-3 mt-md-0">
               <select
                 name="cities"
@@ -557,6 +587,7 @@ const ViewSearchResults = () => {
                   : ""}
               </select>
             </div>
+            {/* Category */}
             <div className="col-md-2 col-12 mt-3 mt-md-0">
               <select
                 name="asset"
@@ -589,6 +620,7 @@ const ViewSearchResults = () => {
                   : ""}
               </select>
             </div>
+            {/* Bank */}
             <div className="col-md-2 col-12 mt-3 mt-md-0">
               <select
                 name="bank"
@@ -609,7 +641,8 @@ const ViewSearchResults = () => {
                   : ""}
               </select>
             </div>
-            <div className="col-md-2 col-12 mt-3 mt-md-0">
+            {/* More Filters */}
+           { isLogin ? <div className="col-md-2 col-12 mt-3 mt-md-0">
               <div className="dropdown">
                 <div
                   data-bs-toggle="dropdown"
@@ -803,15 +836,13 @@ const ViewSearchResults = () => {
                       <div className="col-12">
                         <hr />
                       </div>
-                      <div className="col-12">
+                      <div className="col-md-6 mb-3">
                         <label
                           htmlFor=""
                           className="form-label common-btn-font"
                         >
                           Age of Property
                         </label>
-                      </div>
-                      <div className="col-md-6 mb-3">
                         <select
                           id="age"
                           name="age"
@@ -826,11 +857,34 @@ const ViewSearchResults = () => {
                           <option value="10">Less than 10 years</option>
                         </select>
                       </div>
+                      {/* Last 10 days added property */}
+
+                      <div className="col-md-6 mb-3">
+                        <label
+                          htmlFor="latest_added_properties"
+                          className="form-label common-btn-font"
+                        >
+                          Latest added properties
+                        </label>
+
+                        <select
+                          id="latest_added_properties"
+                          name="latest_added_properties"
+                          className="form-select form-select-sm"
+                          aria-label=".form-select-sm example"
+                          onChange={onMoreFiltersInputChange}
+                        >
+                          <option value=""></option>
+                          <option value="10">Last 10 days</option>
+                          <option value="20">Last 20 days</option>
+                        </select>
+                      </div>
                     </form>
                   </div>
                 </ul>
               </div>
-            </div>
+            </div>:""}
+            {/* searchBtn */}
             <div className="col-md-1 col-12 my-3 my-md-0">
               <button
                 onClick={() => {
@@ -842,6 +896,7 @@ const ViewSearchResults = () => {
                 <i className="bi bi-search"></i>
               </button>
             </div>
+            {/* Reset More Filters */}
             <div
               className={`col-12 text-center mt-md-3 ${filtersCount > 0 ? "" : "d-none"
                 }`}
@@ -892,8 +947,8 @@ const ViewSearchResults = () => {
                               {count ? (
                                 <div className="text-capitalize text-primary fw-bold">
                                   {`${count > 1
-                                      ? count + " Properties"
-                                      : count + " Property"
+                                    ? count + " Properties"
+                                    : count + " Property"
                                     }`}
                                 </div>
                               ) : (
