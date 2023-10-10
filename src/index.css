@@ -58,6 +58,13 @@ code {
   background-color: var(--secondary-color) !important;
 }
 
+.common-secondary-color {
+  color: var(--secondary-color) !important;
+}
+
+.loader-color {
+  color: var(--secondary-color) !important;
+}
 /* Common css */
 
 .navbar-nav .nav-link.active,
@@ -459,6 +466,13 @@ input:-webkit-autofill:active {
   padding: 13px;
 }
 
+.forgot-password-form-control {
+  border-radius: 0;
+  border-color: var(--primary-color) !important;
+  font-size: 12px;
+  padding: 13px;
+}
+
 /* CAPTCHA */
 
 .flexAndCenter {
@@ -657,7 +671,7 @@ input:-webkit-autofill:active {
 
 /* Edit Details */
 
-.subscription-notification-container{
+.subscription-notification-container {
   position: fixed;
   top: 67px;
   right: 5px;
@@ -934,7 +948,6 @@ input:-webkit-autofill:active {
 }
 
 /* Bulk upload properties*/
-
 
 .sample-file-download-btn {
   border: 1px solid var(--secondary-color) !important;

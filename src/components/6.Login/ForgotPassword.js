@@ -1,9 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Layout from "../1.CommonLayout/Layout";
 import resetPassImg from "../../images/resetPass.svg";
 import axios from "axios";
 import { NavLink } from "react-router-dom";
 import { toast } from "react-toastify";
+import {
+  LoadCanvasTemplate,
+  loadCaptchaEnginge,
+  validateCaptcha,
+} from "react-simple-captcha";
+
 
 const ForgotPassword = () => {
   const [emailValue, setEmailValue] = useState("");
@@ -21,6 +27,26 @@ const ForgotPassword = () => {
   const [loading, setLoading] = useState(false);
   const { alertMsg, alertClr, alertVisible } = alertDetails;
   const { mainSectionDisplay, afterSubmitSectionDisplay } = displayOfSections;
+  const [captchaVerified, setCaptchaVerified] = useState(false);
+  const [captchaErr, setCaptchaErr] = useState(false);
+  const captchaRef = useRef();
+
+  const onCaptchaSubmit = (e) => {
+    e.preventDefault();
+    let user_captcha = captchaRef.current.value;
+    if (user_captcha) {
+      if (validateCaptcha(user_captcha) === true) {
+        setCaptchaVerified(true);
+        setCaptchaErr(false);
+        loadCaptchaEnginge(6);
+        captchaRef.current.value = "";
+      } else {
+        setCaptchaVerified(false);
+        setCaptchaErr(true);
+        captchaRef.current.value = "";
+      }
+    }
+  };
 
   const sendResetPasswordLinkOnMail = async () => {
     try {
@@ -79,6 +105,18 @@ const ForgotPassword = () => {
       });
     }
   };
+
+  const loadCaptchaOnRefresh = () => {
+    loadCaptchaEnginge(6);
+    const captchaWrapper =
+      document.getElementById("captcha-wrapper").firstChild;
+    captchaWrapper.classList.add("flexAndCenter");
+    document.getElementById("reload_href").classList.add("d-none");
+  };
+
+  useEffect(() => {
+    loadCaptchaOnRefresh();
+  }, []);
   return (
     <Layout>
       <section className="forgot-password section-padding min-100vh">
@@ -126,7 +164,7 @@ const ForgotPassword = () => {
                     type="email"
                     name="email"
                     id="email"
-                    className="form-control"
+                    className="form-control forgot-password-form-control"
                     placeholder="Enter your email address"
                     required
                     onChange={(e) => {
@@ -134,9 +172,63 @@ const ForgotPassword = () => {
                     }}
                   />
                 </div>
+
+                <div
+                  className={`container ${captchaVerified ? "d-none" : ""
+                    }`}
+                >
+                  <div className="row">
+                    <div
+                      className="col-xl-9 col-md-8 col-7 ps-0"
+                      id="captcha-wrapper"
+                    >
+                      <LoadCanvasTemplate />
+                    </div>
+                    <div className="col-xl-3 col-md-4 col-5 btn btn-primary">
+                      <i
+                        onClick={() => {
+                          loadCaptchaEnginge(6);
+                        }}
+                        className="bi bi-arrow-clockwise"
+                      ></i>
+                    </div>
+                    <div className="col-xl-9 col-md-8 col-7 ps-0 mt-3">
+                      <input
+                        type="text"
+                        className={`form-control ${captchaErr ? "border-danger" : "border-primary"
+                          }`}
+                        ref={captchaRef}
+                        placeholder="Enter captcha"
+                      />
+                    </div>
+                    <div
+                      onClick={onCaptchaSubmit}
+                      className="col-xl-3 col-md-4 col-5 btn btn-primary mt-3"
+                    >
+                      Verify
+                    </div>
+                    <div
+                      className={`col-xl-9 ps-0 ${captchaErr ? "" : "d-none"
+                        }`}
+                    >
+                      <span className="text-danger">Invalid Captcha</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  className={`form-group mt-3 ${captchaVerified ? "" : "d-none"
+                    }`}
+                >
+                  <button className="btn btn-outline-success disabled w-100">
+                    Verified
+                    <i className="bi bi-patch-check-fill ms-1"></i>
+                  </button>
+                </div>
+
                 <button
-                  className="btn btn-primary common-btn-font"
-                  disabled={loading ? true : false}
+                  className="btn btn-primary common-btn-font mt-4"
+                  disabled={emailValue && captchaVerified && !loading ? false : true}
                 >
                   {loading ? (
                     <>

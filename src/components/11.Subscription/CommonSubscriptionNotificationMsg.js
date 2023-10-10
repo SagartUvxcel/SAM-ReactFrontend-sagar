@@ -38,21 +38,11 @@ const CommonSubscriptionNotificationMsg = (dayCount, billing_cycle) => {
         if (isLogin && planStatus && planEndDate) {
 
             setDaysCount(calculateDays(new Date(planEndDate)));
-            setExpiryDate(planEndDate);
-            // console.log(planEndDate);
-            // console.log(calculateDays(new Date(planEndDate)));
-
-            // console.log(showNotification );
-            // setShowNotification(true);
+            setExpiryDate(planEndDate);            
         }
     }, [isLogin]);
 
     useEffect(() => {
-        // console.log(showUpdatedSubscriptionStatus);
-        // console.log(planStatus);
-        // console.log(daysCount);
-
-
         if (planStatus && daysCount <= 7) {
             setShowNotification(true);
         }
@@ -61,17 +51,9 @@ const CommonSubscriptionNotificationMsg = (dayCount, billing_cycle) => {
     }, [planStatus])
 
     useEffect(() => {
-        console.log(showUpdatedSubscriptionStatus);
-        console.log(planStatus);
-        console.log(daysCount);
-        console.log("upgraded plans text");
-
-
         if (updatedSubscriptionStatus) {
             setShowNotification(false);
         }
-
-
     }, [planStatus]);
 
     useEffect(() => {

@@ -140,10 +140,12 @@ const ViewEnquiryLists = () => {
 
   const getUserEnquiriesList = async () => {
     setPageLoading(true);
+
     try {
       const resFromApi = await axios.get(`/sam/v1/property/auth/user/enquiry`, {
         headers: authHeader,
       });
+      console.log(resFromApi);
       if (resFromApi.data) {
         setEnquiryList(resFromApi.data);
         // console.log(resFromApi.data);

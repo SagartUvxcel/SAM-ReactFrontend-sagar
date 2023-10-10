@@ -211,12 +211,15 @@ export const PaymentInformation = () => {
                       <h5 className="text-start">Your Subscription </h5>
                       <div className="subscription-div d-flex justify-content-between border-bottom py-1">
                         <p className=" text-secondary p-0 mb-0">{planDetails ? planDetails.name : ""}</p>
-                        <p className=" text-secondary p-0 mb-0"><sup className="fs-5 top-0">&#8377;</sup>
-                          {planDetails ? planDetails.price : ""}{perBillingCycleName}  </p>
+                        <p className=" text-secondary p-0 mb-0"><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup>
+                          {/* {planDetails ? planDetails.price : ""} */}
+                          {perBillingCycleName}  </p>
                       </div>
                       <div className="subscription-div d-flex justify-content-between py-1">
                         <h6 className=" py-2 mb-0">Total</h6>
-                        <h6 className=" py-2 mb-0"><sup className="fs-5 top-0">&#8377;</sup> {planDetails ? planDetails.price : ""}{perBillingCycleName}</h6>
+                        <h6 className=" py-2 mb-0"><sup className="fs-5 top-0">&#8377;</sup> <sup className="fs-5 top-0">&#8377;</sup> <sup className="fs-5 top-0">&#8377;</sup> <sup className="fs-5 top-0">&#8377;</sup> 
+                        {/* {planDetails ? planDetails.price : ""} */}
+                        {perBillingCycleName}</h6>
                       </div>
                     </div>
                   </div>

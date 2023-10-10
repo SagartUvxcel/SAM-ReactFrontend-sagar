@@ -537,7 +537,9 @@ const UpgradeSubscriptionPage = () => {
                                 </span>
                                 <h4 className={`plan-title mb-4 fw-bold text-uppercase ${plan.billing_cycle === "half yearly" ? "card-text-2" : ""} ${plan.billing_cycle === "annual" ? "card-text-3" : ""}`}>{plan.name.replace(' plan', '')}</h4>
                                 <h5 className="fw-bold plan-price">
-                                  <sup>&#8377;</sup>{plan.price.replace('.00', '')}  <span className="fs-5"> / {plan.billing_cycle === "half yearly" ? "6 Months" : ""}{plan.billing_cycle === "annual" ? "Year" : ""}</span>
+                                  <sup>&#8377;</sup> <sup>&#8377;</sup> <sup>&#8377;</sup> <sup>&#8377;</sup>
+                                  {/* {plan.price.replace('.00', '')}  */}
+                                   <span className="fs-5"> / {plan.billing_cycle === "half yearly" ? "6 Months" : ""}{plan.billing_cycle === "annual" ? "Year" : ""}</span>
                                 </h5>
                               </button>
                             </>
