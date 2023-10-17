@@ -800,7 +800,7 @@ const ListOfProperties = () => {
                                           Cr.
                                         </div>
                                       </div>
-                                      <div
+                                      {/* <div
                                         className={`col-xl-3 col-lg-4 col-6 mt-xl-4 mt-3 ${distress_value ? "" : "d-none"
                                           }`}
                                       >
@@ -814,7 +814,7 @@ const ListOfProperties = () => {
                                           ).toFixed(2)}{" "}
                                           Cr.
                                         </div>
-                                      </div>
+                                      </div> */}
                                       {/* <div className="col-xl-3 col-lg-4 col-6 mt-xl-4 mt-3">
                               <small className="text-muted">Status</small>
                               <div className="common-btn-font">{status}</div>
@@ -852,7 +852,7 @@ const ListOfProperties = () => {
                                           {is_stressed === "1" ? "Yes" : "No"}
                                         </div>
                                       </div>
-                                      <div
+                                      {/* <div
                                         className={`col-xl-3 col-lg-4 col-6 mt-xl-4 mt-3 ${is_sold ? "" : "d-none"
                                           }`}
                                       >
@@ -862,7 +862,7 @@ const ListOfProperties = () => {
                                         <div className="common-btn-font text-capitalize">
                                           {is_sold === "1" ? "Yes" : "No"}
                                         </div>
-                                      </div>
+                                      </div> */}
                                       <div
                                         className={`${is_available_for_sale &&
                                           is_sold === "0"
@@ -943,7 +943,7 @@ const ListOfProperties = () => {
                                             : "No"}
                                         </div>
                                       </div>
-                                      <div
+                                      {/* <div
                                         className={`col-xl-3 col-lg-4 col-6 mt-xl-4 mt-3 ${possession_of_the_property
                                           ? ""
                                           : "d-none"
@@ -955,7 +955,7 @@ const ListOfProperties = () => {
                                         <div className="common-btn-font text-capitalize">
                                           {possession_of_the_property}
                                         </div>
-                                      </div>
+                                      </div> */}
                                       <div
                                         className={`col-xl-3 col-lg-4 col-6 mt-xl-4 mt-3 ${territory ? "" : "d-none"
                                           }`}

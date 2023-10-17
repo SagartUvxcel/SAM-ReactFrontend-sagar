@@ -77,9 +77,6 @@ const Registration = () => {
   const [validationDetails, setValidationDetails] = useState({});
 
   const { citiesByState, cityVisibilityClass } = cityUseState;
-  const [banks, setBanks] = useState([]);
-
-  const [bankBranches, setBankBranches] = useState([]);
 
   // Object destructuring.
   const {
@@ -650,7 +647,7 @@ const Registration = () => {
           [name]: parseInt(value),
         },
       });
-    } 
+    }
   };
 
   // Function will run after Individual Form submit button is clicked.
@@ -826,28 +823,18 @@ const Registration = () => {
     }
   };
 
-  const getDataFromApi = async () => {
-    const bankRes = await axios.get(`/sam/v1/property/by-bank`);
-    setBanks(bankRes.data);
-
-
-
-  };
-
-
   useEffect(() => {
     rootTitle.textContent = "SAM TOOL - REGISTER";
     resetValues();
     getAllSates();
-    getDataFromApi()
   }, []);
 
   return (
     <Layout>
       <section className="registration-wrapper min-100vh section-padding">
         <div className="container-fluid">
-          <div className="row justify-content-center ">
-            <div className="col-lg-12 mt-4">
+          <div className="row justify-content-center">
+            <div className="col-lg-12">
               <div className="card form-wrapper-card shadow pt-3 pb-5 ps-lg-3 ps-0">
                 <div className="container-fluid registration-form-container">
                   <div className="row">
@@ -871,13 +858,13 @@ const Registration = () => {
                       >
                         Organization
                       </div>
-                      {/* <div className="mx-2">|</div>
+                      <div className="mx-2">|</div>
                       <div className={`bank-label common-btn-font ${bankActiveClass}`}
                         name="bank"
                         onClick={changeForm}
                       >
                         Bank
-                      </div> */}
+                      </div>
                     </div>
                     <div className="col-12">
                       <hr />
@@ -1169,125 +1156,27 @@ const Registration = () => {
                             Bank Name
                             <span className="text-danger fw-bold">*</span>
                           </div>
-                          <div className="col-lg-2 mb-lg-0 mb-2">
+                          <div className="col-lg-2">
                             <select
-                              onChange={onInputChange}
-                              name="bank"
-                              id="bank"
+                              onBlur={onInputBlur}
+                              name="organization_type"
                               className="form-select"
                               aria-label="Default select example"
                               required
                             >
-                              <option value="" style={{ color: "lightgrey" }}>
-                                Select Bank</option>
-                              {banks ? (
-                                banks.map((data) => {
-                                  return (
-                                    <option
-                                      key={data.bank_id}
-                                      value={data.bank_id}
-                                    >
-                                      {data.bank_name}
-                                    </option>
-                                  );
-                                })
-                              ) : (
-                                <></>
-                              )}
+                              <option value="" style={{ color: "gray" }}>
+                                Select Type
+                              </option>
+                              <option value="Proprietor">Proprietor</option>
+                              <option value="LLP">LLP</option>
+                              <option value="Partnership/Joint Venture">
+                                Partnership/Joint Venture
+                              </option>
+                              <option value="Private Limited">
+                                Private Limited
+                              </option>
+                              <option value="Limited">Limited</option>
                             </select>
-                          </div>
-                          <div className="col-lg-2 mb-lg-0 mb-2">
-                            Branch Name
-                            <span className="text-danger fw-bold">*</span>
-                          </div>
-                          <div className="col-lg-2 mb-lg-0 mb-2">
-                            <select
-                              id="bank_name"
-                              name="bank_name"
-                              className="form-select"
-                              onChange={onInputChange}
-                              required
-                            >
-                              <option value=""></option>
-                              {bankBranches ? (
-                                bankBranches.map((data) => {
-                                  return (
-                                    <option
-                                      key={data.branch_id}
-                                      value={data.branch_id}
-                                    >
-                                      {data.branch_name}
-                                    </option>
-                                  );
-                                })
-                              ) : (
-                                <></>
-                              )}
-                            </select>
-                          </div>
-                          <div className="col-lg-2 mb-lg-0 mb-2">
-                            Branch Code
-                            <span className="text-danger fw-bold">*</span>
-                          </div>
-                          <div className="col-lg-2 mb-lg-0 mb-2">
-                            <input
-                              onBlur={onInputBlur}
-                              name="branch_code"
-                              type="text"
-                              placeholder="Branch Code"
-                              className="form-control"
-                              required
-                            />
-                          </div>
-                        </div>
-                        <div className="row branch_sftp mt-lg-3 mt-2">
-                          <div className="col-lg-2 mb-lg-0 mb-2">
-                            IFSC code
-                            <span className="text-danger fw-bold">*</span>
-                          </div>
-                          <div className="col-lg-2 mb-lg-0 mb-2">
-                            <input
-                              onBlur={onInputBlur}
-                              name="ifsc_code"
-                              type="text"
-                              placeholder=" IFSC code"
-                              className="form-control"
-                              required
-                            />
-                          </div>
-                          <div className="col-lg-2 mb-lg-0 mb-2">
-                            Branch SFTP
-                            <span className="text-danger fw-bold">*</span>
-                          </div>
-                          <div className="col-lg-2 mb-lg-0 mb-2">
-                            <input
-                              onBlur={onInputBlur}
-                              name="branch_sftp"
-                              type="text"
-                              placeholder=" Branch SFTP"
-                              className="form-control"
-                              required
-                            />
-                          </div>
-                          <div className="col-lg-2 mb-lg-0 mb-2">
-                            Branch UUID
-                            <span className="text-danger fw-bold">*</span>
-                          </div>
-                          <div className="col-lg-2">
-                            <input
-                              onChange={onInputChange}
-                              name="branch_UUID"
-                              type="text"
-                              placeholder="Branch UUID"
-                              className="form-control "
-                              required
-                            />
-                            <span
-                              className={`pe-1 ${gstValidationMessage ? "text-danger" : "d-none"
-                                }`}
-                            >
-                              {gstValidationMessage}
-                            </span>
                           </div>
                         </div>
 

@@ -67,7 +67,7 @@ const LoginMainPage = () => {
         )
         .then((res) => {
           console.log(res);
-          const { email, token, role_id, user_id, is_bank, subscription_end_date, subscription_status } = res.data.token;
+          const { email, token, role_id, user_id, is_bank, subscription_end_date, subscription_status, bank_id, branch_id } = res.data.token;
           console.log(res.data.token);
           let admin = null;
           let editor = null;
@@ -97,6 +97,8 @@ const LoginMainPage = () => {
                       ? viewer
                       : viewer,
                 isBank: is_bank,
+                bank_id: bank_id,
+                branch_Id: branch_id,
                 subscription_status: subscription_status,
                 subscription_end_date: subscription_end_date,
               })

@@ -247,6 +247,7 @@ const ForgotAndResetPassword = () => {
       } catch (error) {
         setShowLoader(false);
         console.log("failed to send token data for link validation.")
+        console.log(error);
       }
 
     } else {

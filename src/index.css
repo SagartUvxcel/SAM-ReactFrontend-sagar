@@ -545,7 +545,8 @@ input:-webkit-autofill:active {
 }
 
 .individual-label.active,
-.organization-label.active {
+.organization-label.active,
+.bank-label.active {
   color: var(--primary-color-hover);
   border-bottom: 2px solid var(--primary-color-hover);
 }
@@ -1319,7 +1320,8 @@ input:-webkit-autofill:active {
   }
 
   .individual-label:hover,
-  .organization-label:hover {
+  .organization-label:hover,
+  .bank-label:hover {
     cursor: pointer;
     color: var(--secondary-color);
   }

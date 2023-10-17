@@ -16,6 +16,8 @@ import { toast } from "react-toastify";
 import { toggleClassOfNextPrevPageItems } from "../../CommonFunctions";
 
 let authHeader = "";
+let bank_Id = "";
+let branch_Id = "";
 let propertiesPerPage = 4;
 let isBank = false;
 const ViewEditDeleteProperties = () => {
@@ -23,6 +25,8 @@ const ViewEditDeleteProperties = () => {
   if (data) {
     authHeader = { Authorization: data.loginToken };
     isBank = data.isBank;
+    bank_Id = data.bank_id;
+    branch_Id = data.branch_Id;
   }
 
   const [properties, setProperties] = useState([]);
@@ -49,7 +53,9 @@ const ViewEditDeleteProperties = () => {
 
   const getPropertiesFromApi = async () => {
     // Hide pagination while loading.
-    paginationRef.current.classList.add("d-none");
+    if (paginationRef) {
+      paginationRef.current.classList.add("d-none");
+    }
     let dataToPost = {
       batch_number: 1,
       batch_size: propertiesPerPage,
@@ -240,9 +246,13 @@ const ViewEditDeleteProperties = () => {
     zip,
   } = formData.address_details;
   const [banks, setBanks] = useState([]);
+  const [activeBank, setActiveBank] = useState({});
   const [bankBranches, setBankBranches] = useState([]);
+  const [activeBranch, setActiveBranch] = useState({});
   const notSoldCheckRef = useRef();
   const [mainPageLoading, setMainPageLoading] = useState(false);
+  const [pathLocation, setPathLocation] = useState("");
+
   const [viewSinglePropertyPageLoading, setViewSinglePropertyPageLoading] =
     useState(false);
 
@@ -359,6 +369,9 @@ const ViewEditDeleteProperties = () => {
       const bankRes = await axios.get(`/sam/v1/property/by-bank`);
       setBanks(bankRes.data);
 
+      if (isBank) {
+        getBankDeatails(bankRes.data);
+      }
       // Get current property values
       const currentPropertyRes = await axios.get(
         `/sam/v1/property/single-property/${propertyId}`,
@@ -448,6 +461,22 @@ const ViewEditDeleteProperties = () => {
     }
   };
 
+  const getBankDeatails = async (bankData) => {
+    const activeBankDetails = bankData.filter(bank => bank.bank_id === bank_Id)[0]
+    setActiveBank(activeBankDetails);
+    const branchRes = await axios.get(`/sam/v1/property/auth/bank-branches/${bank_Id}`, {
+      headers: authHeader,
+    });
+    const branchResData = branchRes.data;
+    console.log(branchResData, bank_Id, branch_Id);
+    const activeBranchDetails = branchResData.filter(branch => branch.branch_id === branch_Id)[0]
+    setActiveBranch(activeBranchDetails);
+
+    // branchSelectBoxRef.current.classList.remove("d-none");
+    commonFnToSaveFormData("bank", bank_Id);
+    commonFnToSaveFormData("bank_branch_id", branch_Id);
+  }
+
   const setAllDefaultValues = async (
     bank_id,
     is_sold,
@@ -502,7 +531,7 @@ const ViewEditDeleteProperties = () => {
     }
     setMainPageLoading(false);
   };
-
+  console.log(pathLocation);
   useEffect(() => {
     rootTitle.textContent = "ADMIN - PROPERTIES";
     if (data) {
@@ -514,6 +543,12 @@ const ViewEditDeleteProperties = () => {
       });
     }
     // eslint-disable-next-line
+    if (window.location.pathname) {
+      const currentPagePath = window.location.pathname;
+      const firstPathSegment = currentPagePath.split('/')[1];
+      setPathLocation(firstPathSegment);
+    }
+
   }, []);
 
   return (
@@ -844,30 +879,41 @@ const ViewEditDeleteProperties = () => {
                                 >
                                   Bank
                                 </label>
-                                <select
-                                  id="bank"
-                                  name="bank"
-                                  className="form-select"
-                                  onChange={onInputChange}
-                                  disabled
-                                >
-                                  <option value=""></option>
-                                  {banks ? (
-                                    banks.map((data) => {
-                                      return (
-                                        <option
-                                          key={data.bank_id}
-                                          value={data.bank_id}
-                                          id={`bank-${data.bank_id}`}
-                                        >
-                                          {data.bank_name}
-                                        </option>
-                                      );
-                                    })
-                                  ) : (
-                                    <></>
-                                  )}
-                                </select>
+                                {pathLocation === 'admin' ?
+                                  <select
+                                    id="bank"
+                                    name="bank"
+                                    className="form-select"
+                                    onChange={onInputChange}
+                                    disabled
+                                  >
+                                    <option value=""></option>
+                                    {banks ? (
+                                      banks.map((data) => {
+                                        return (
+                                          <option
+                                            key={data.bank_id}
+                                            value={data.bank_id}
+                                            id={`bank-${data.bank_id}`}
+                                          >
+                                            {data.bank_name}
+                                          </option>
+                                        );
+                                      })
+                                    ) : (
+                                      <></>
+                                    )}
+                                  </select> :
+                                  <input
+                                    type="text"
+                                    id="bank"
+                                    name="bank"
+                                    className="form-control"
+                                    // onChange={onInputChange}
+                                    value={activeBank.bank_name}
+                                    required
+                                    disabled
+                                  />}
                               </div>
                             </div>
                             <div className="col-xl-4 col-md-6 mt-xl-0 mt-3">
@@ -878,7 +924,7 @@ const ViewEditDeleteProperties = () => {
                                 >
                                   Branch
                                 </label>
-                                <select
+                                {pathLocation === 'admin' ? <select
                                   id="bank_branch_id"
                                   name="bank_branch_id"
                                   className="form-select"
@@ -901,7 +947,17 @@ const ViewEditDeleteProperties = () => {
                                   ) : (
                                     <></>
                                   )}
-                                </select>
+                                </select> :
+                                  <input
+                                    type="text"
+                                    id="bank_branch_id"
+                                    name="bank_branch_id"
+                                    className="form-control"
+                                    // onChange={onInputChange}
+                                    value={activeBranch.branch_name}
+                                    required
+                                    disabled
+                                  />}
                               </div>
                             </div>
                             <div className="col-xl-4 col-md-6 mt-3">
@@ -935,7 +991,7 @@ const ViewEditDeleteProperties = () => {
                                 </select>
                               </div>
                             </div>
-                            <div className="col-xl-4 col-md-6 mt-3">
+                            {/* <div className="col-xl-4 col-md-6 mt-3">
                               <div className="form-group">
                                 <label
                                   className="form-label common-btn-font"
@@ -980,7 +1036,7 @@ const ViewEditDeleteProperties = () => {
                                   </div>
                                 </div>
                               </div>
-                            </div>
+                            </div> */}
                             {is_stressed ? (
                               <div className="col-xl-4 col-md-6 mt-3">
                                 <div className="form-group">
@@ -1138,7 +1194,7 @@ const ViewEditDeleteProperties = () => {
                                 />
                               </div>
                             </div>
-                            <div className="col-xl-4 col-md-6 mt-3">
+                            {/* <div className="col-xl-4 col-md-6 mt-3">
                               <div className="form-group">
                                 <label
                                   className="form-label common-btn-font"
@@ -1156,7 +1212,7 @@ const ViewEditDeleteProperties = () => {
                                   required
                                 />
                               </div>
-                            </div>
+                            </div> */}
                           </div>
 
                           {/* Row 4 - Dates & Availability Details */}
@@ -1230,7 +1286,7 @@ const ViewEditDeleteProperties = () => {
                                 />
                               </div>
                             </div>
-                            <div className="col-xl-4 col-md-6 mb-3 mb-xl-0">
+                            {/* <div className="col-xl-4 col-md-6 mb-3 mb-xl-0">
                               <div className="form-group">
                                 <label className="form-label common-btn-font">
                                   Is sold?
@@ -1271,7 +1327,7 @@ const ViewEditDeleteProperties = () => {
                                   </label>
                                 </div>
                               </div>
-                            </div>
+                            </div> */}
                             <div
                               className={`col-xl-4 col-md-6 mb-3 mb-xl-0 ${is_sold === 1 ? "d-none" : ""
                                 }`}

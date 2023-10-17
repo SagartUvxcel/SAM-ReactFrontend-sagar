@@ -38,13 +38,24 @@ const CommonSubscriptionNotificationMsg = (dayCount, billing_cycle) => {
         if (isLogin && planStatus && planEndDate) {
 
             setDaysCount(calculateDays(new Date(planEndDate)));
-            setExpiryDate(planEndDate);            
+            setExpiryDate(planEndDate);
         }
     }, [isLogin]);
 
     useEffect(() => {
         if (planStatus && daysCount <= 7) {
-            setShowNotification(true);
+            console.log(notificationStatus);
+
+            var notificationStatus = localStorage.getItem('notificationRefresh');
+            if (notificationStatus) {
+                setShowNotification(false);
+                console.log(notificationStatus);
+            } else {
+
+                console.log(notificationStatus);
+                localStorage.setItem("notificationRefresh", true);
+                setShowNotification(true);
+            }
         }
 
 

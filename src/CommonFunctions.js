@@ -49,6 +49,7 @@ export const checkLoginSession = async (token) => {
     if (res.data === "Session expired or invalid user") {
       localStorage.removeItem("data");
       localStorage.removeItem("remainingTime");
+      localStorage.removeItem("notificationRefresh");
       return "Invalid";
     } else {
       return "Valid";

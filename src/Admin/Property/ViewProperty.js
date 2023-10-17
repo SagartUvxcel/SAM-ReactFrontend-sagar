@@ -744,7 +744,7 @@ const ViewProperty = ({
                   ) : (
                     <></>
                   )}
-                  {distress_value ? (
+                  {/* {distress_value ? (
                     <div className="col-md-4 mt-2">
                       <small className="text-muted">Distress Value</small>
                       <h5 className="mt-1">
@@ -754,7 +754,7 @@ const ViewProperty = ({
                     </div>
                   ) : (
                     <></>
-                  )}
+                  )} */}
                   {is_sold || is_available_for_sale ? (
                     <>
                       <div className="col-12">
@@ -770,7 +770,7 @@ const ViewProperty = ({
                   ) : (
                     <></>
                   )}
-                  {is_sold ? (
+                  {/* {is_sold ? (
                     <div className="col-md-4">
                       <small className="text-muted">Is Sold?</small>
                       <h5 className="mt-1 text-capitalize">
@@ -779,7 +779,7 @@ const ViewProperty = ({
                     </div>
                   ) : (
                     <></>
-                  )}
+                  )} */}
                   {is_available_for_sale ? (
                     <div className="col-md-4">
                       <small className="text-muted">
@@ -835,7 +835,7 @@ const ViewProperty = ({
                     </h5>
                   </div>
 
-                  {possession_of_the_property ? (
+                  {/* {possession_of_the_property ? (
                     <div className="col-md-6 mt-2">
                       <small className="text-muted">
                         Possession of the property
@@ -846,7 +846,7 @@ const ViewProperty = ({
                     </div>
                   ) : (
                     <></>
-                  )}
+                  )} */}
                 </div>
               </div>
             </div>

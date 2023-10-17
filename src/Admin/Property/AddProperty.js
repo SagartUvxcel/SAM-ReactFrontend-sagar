@@ -7,6 +7,8 @@ import BreadCrumb from "../BreadCrumb";
 import { checkLoginSession, openInNewTab } from "../../CommonFunctions";
 
 let authHeader = "";
+let bank_Id = "";
+let branch_Id = "";
 let zipError = false;
 let areaError = false;
 let isBank = false;
@@ -15,6 +17,8 @@ const AddProperty = () => {
   if (data) {
     authHeader = { Authorization: data.loginToken };
     isBank = data.isBank;
+    bank_Id = data.bank_id;
+    branch_Id = data.branch_Id;
   }
 
   const [possessionCheckValue, setPossessionCheckValue] = useState({
@@ -41,7 +45,9 @@ const AddProperty = () => {
 
   const [propertyCategories, setPropertyCategories] = useState([]);
   const [banks, setBanks] = useState([]);
+  const [activeBank, setActiveBank] = useState({});
   const [bankBranches, setBankBranches] = useState([]);
+  const [activeBranch, setActiveBranch] = useState({});
   const [allStates, setAllStates] = useState([]);
   const [allCities, setAllCities] = useState([]);
   const [zipCodeValidationMessage, setZipCodeValidationMessage] = useState("");
@@ -59,7 +65,28 @@ const AddProperty = () => {
     setBanks(bankRes.data);
     const statesRes = await axios.get(`/sam/v1/property/by-state`);
     setAllStates(statesRes.data);
+
+    if (isBank) {
+      getBankDeatails(bankRes.data);
+    }
+
+
   };
+
+  const getBankDeatails = async (bankData) => {
+    const activeBankDetails = bankData.filter(bank => bank.bank_id === bank_Id)[0]
+    setActiveBank(activeBankDetails);
+    const branchRes = await axios.get(`/sam/v1/property/auth/bank-branches/${bank_Id}`, {
+      headers: authHeader,
+    });
+    const branchResData = branchRes.data;
+    const activeBranchDetails = branchResData.filter(branch => branch.branch_id === branch_Id)[0]
+    setActiveBranch(activeBranchDetails);
+    branchSelectBoxRef.current.classList.remove("d-none");
+    commonFnToSaveFormData("bank", bank_Id);
+    commonFnToSaveFormData("bank_branch_id", branch_Id);
+  }
+
 
   const commonFnToSaveFormData = (name, value) => {
     setFormData({ ...formData, [name]: value });
@@ -241,38 +268,38 @@ const AddProperty = () => {
         setAreaValidationMessage("");
       }
     } else {
-      try {
-        console.log(formData);
-        await axios
-          .post(`/sam/v1/property/auth/single-property`, formData, {
-            headers: authHeader,
-          })
-          .then((res) => {
-            if (res.data.msg === 0) {
-              localStorage.setItem("upload-doc", JSON.stringify({
-                number: formData.property_number,
-                id: null,
-              }));
-              localStorage.setItem("property_number", formData.property_number);
-              resetValidationsOnSubmit();
-              localStorage.setItem("singlePropertySuccess", true);
-              e.target.reset();
-              openInNewTab(
-                `${isBank ? "/bank" : "/admin"
-                }/property/single-property-documents-upload`
-              );
-            } else if (res.data.msg === 2) {
-              toast.error(
-                `Property with property number: ${formData.property_number} already exists`
-              );
-            }
-          });
-      } catch (error) {
-        toast.error("Internal server error");
-      }
+      console.log(formData);
+      // try {
+      //   console.log(formData);
+      //   await axios
+      //     .post(`/sam/v1/property/auth/single-property`, formData, {
+      //       headers: authHeader,
+      //     })
+      //     .then((res) => {
+      //       if (res.data.msg === 0) {
+      //         localStorage.setItem("upload-doc", JSON.stringify({
+      //           number: formData.property_number,
+      //           id: null,
+      //         }));
+      //         localStorage.setItem("property_number", formData.property_number);
+      //         resetValidationsOnSubmit();
+      //         localStorage.setItem("singlePropertySuccess", true);
+      //         e.target.reset();
+      //         openInNewTab(
+      //           `${isBank ? "/bank" : "/admin"
+      //           }/property/single-property-documents-upload`
+      //         );
+      //       } else if (res.data.msg === 2) {
+      //         toast.error(
+      //           `Property with property number: ${formData.property_number} already exists`
+      //         );
+      //       }
+      //     });
+      // } catch (error) {
+      //   toast.error("Internal server error");
+      // }
     }
   };
-  console.log(pathLocation);
   useEffect(() => {
     notSoldCheckRef.current.setAttribute("checked", "true");
     defaultIsStressedRef.current.setAttribute("checked", "true");
@@ -375,7 +402,8 @@ const AddProperty = () => {
                                 Bank
                                 <span className="fw-bold text-danger">*</span>
                               </label>
-                              <select
+
+                              {pathLocation === 'admin' ? <select
                                 id="bank"
                                 name="bank"
                                 className="form-select"
@@ -394,7 +422,8 @@ const AddProperty = () => {
                                           {data.bank_name}
                                         </option>
                                       );
-                                    } else if (pathLocation === 'bank') {
+                                    }
+                                    {/* else if (pathLocation === 'bank') {
                                       return (
                                         <option
                                           key={data.bank_id}
@@ -403,20 +432,23 @@ const AddProperty = () => {
                                           {data.bank_name}
                                         </option>
                                       );
-                                    }
-                                    {/* else if (pathLocation === 'bank' && selectedBankId) {
-                                       const selectedBank = banks.find((data) => data.bank_id === selectedBankId);
-                                      return (
-                                        <div>
-                                          <p>Bank Name: {selectedBank ? selectedBank.bank_name : 'Bank not found'}</p>
-                                        </div>
-                                      );
                                     } */}
+
                                   })
                                 ) : (
                                   <> </>
                                 )}
-                              </select>
+                              </select> :
+                                <input
+                                  type="text"
+                                  id="bank"
+                                  name="bank"
+                                  className="form-control"
+                                  // onChange={onInputChange}
+                                  value={activeBank.bank_name}
+                                  required
+                                  disabled
+                                />}
                             </div>
                           </div>
                           <div
@@ -431,29 +463,41 @@ const AddProperty = () => {
                                 Branch
                                 <span className="fw-bold text-danger">*</span>
                               </label>
-                              <select
-                                id="bank_branch_id"
-                                name="bank_branch_id"
-                                className="form-select"
-                                onChange={onInputChange}
-                                required
-                              >
-                                <option value=""></option>
-                                {bankBranches ? (
-                                  bankBranches.map((data) => {
-                                    return (
-                                      <option
-                                        key={data.branch_id}
-                                        value={data.branch_id}
-                                      >
-                                        {data.branch_name}
-                                      </option>
-                                    );
-                                  })
-                                ) : (
-                                  <></>
-                                )}
-                              </select>
+
+                              {pathLocation === 'admin' ?
+                                <select
+                                  id="bank_branch_id"
+                                  name="bank_branch_id"
+                                  className="form-select"
+                                  onChange={onInputChange}
+                                  required
+                                >
+                                  <option value=""></option>
+                                  {bankBranches ? (
+                                    bankBranches.map((data) => {
+                                      return (
+                                        <option
+                                          key={data.branch_id}
+                                          value={data.branch_id}
+                                        >
+                                          {data.branch_name}
+                                        </option>
+                                      );
+                                    })
+                                  ) : (
+                                    <></>
+                                  )}
+                                </select> :
+                                <input
+                                  type="text"
+                                  id="bank_branch_id"
+                                  name="bank_branch_id"
+                                  className="form-control"
+                                  // onChange={onInputChange}
+                                  value={activeBranch.branch_name}
+                                  required
+                                  disabled
+                                />}
                             </div>
                           </div>
                           <div className="col-xl-4 col-md-6 mt-3">
@@ -478,7 +522,7 @@ const AddProperty = () => {
                               </select>
                             </div>
                           </div>
-                          <div className="col-xl-4 col-md-6 mt-3">
+                          {/* <div className="col-xl-4 col-md-6 mt-3">
                             <div className="form-group">
                               <label
                                 className="form-label common-btn-font"
@@ -523,7 +567,7 @@ const AddProperty = () => {
                                 </div>
                               </div>
                             </div>
-                          </div>
+                          </div> */}
                           <div className="col-xl-4 col-md-6 mt-3">
                             <div className="form-group">
                               <label className="form-label common-btn-font">

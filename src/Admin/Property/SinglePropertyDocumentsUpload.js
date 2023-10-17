@@ -52,6 +52,10 @@ const SinglePropertyDocumentsUpload = () => {
     useState(null);
   const [uniqueId, setUniqueId] = useState(uuid());
   const [imageLoading, setImageLoading] = useState(false);
+  const [societyDetailsStatus, setSocietyDetailsStatus] = useState(false);
+  const [allotmentLetterStatus, setAllotmentLetterStatus] = useState(false);
+  const [societyDetailsText, setSocietyDetailsText] = useState("");
+  const [allotmentLetterText, setAllotmentLetterText] = useState("");
   let defaultCategoryText = "Select one from above categories";
   const [documentsInfo, setDocumentsInfo] = useState({
     category_id: 0,
@@ -73,6 +77,9 @@ const SinglePropertyDocumentsUpload = () => {
   const { category_id, category_text, categoryTextColor, description } =
     documentsInfo;
   let otherCategoryId = null;
+  let societyDetailsCategoryId = null;
+  let allotmentLetterCategoryId = null;
+
   const getCategoriesFromDB = async () => {
     setCategoriesLoading(true);
     console.log("function started");
@@ -109,6 +116,38 @@ const SinglePropertyDocumentsUpload = () => {
     }
   };
 
+  const onSocietyRegisteredRadioCheck = (e) => {
+    const registerDetails = e.target.value;
+    if (registerDetails === "registered") {
+      setDocumentsInfo({
+        ...documentsInfo,
+        category_id: societyDetailsCategoryId,
+        category_text: "Society details",
+        categoryTextColor: "black common-btn-font",
+      });
+      setSocietyDetailsText(registerDetails)
+    } else {
+      setDocumentsInfo({
+        ...documentsInfo,
+        category_id: societyDetailsCategoryId,
+        category_text: defaultCategoryText,
+        categoryTextColor: "muted",
+      });
+    }
+  }
+
+  const onAllotmentLetterRadioCheck = (e) => {
+    const allotmentDetails = e.target.value;
+
+    setDocumentsInfo({
+      ...documentsInfo,
+      category_id: allotmentLetterCategoryId,
+      category_text: "Allotment Letter",
+      categoryTextColor: "black common-btn-font",
+    });
+    setAllotmentLetterText(allotmentDetails)
+
+  }
   const onCategoryRadioCheck = (e) => {
     let categoryText = e.target.nextElementSibling.textContent;
     if (categoryText === "Property images") {
@@ -116,20 +155,83 @@ const SinglePropertyDocumentsUpload = () => {
     } else {
       setAllowedExtensions(allAllowedExtensions);
     }
-    setDocumentsInfo({
-      ...documentsInfo,
-      category_id: parseInt(e.target.value),
-      category_text: categoryText,
-      categoryTextColor: "black common-btn-font",
-    });
-    setOtherCategoryBlankCharErr(false);
+
+    if (categoryText === "Society details") {
+      setSocietyDetailsStatus(true);
+      setAllotmentLetterStatus(false);
+      setAllotmentLetterText("");
+      setDocumentsInfo({
+        ...documentsInfo,
+        category_id: parseInt(e.target.value),
+        category_text: defaultCategoryText,
+        categoryTextColor: "muted",
+      });
+      let allotmentLetterCheck = document.querySelectorAll(".allotmentLetterCheckBox");
+      if (allotmentLetterCheck) {
+        allotmentLetterCheck.forEach((check) => {
+          if (check.checked) {
+            check.checked = false;
+          }
+        });
+      }
+    } else if (categoryText === "Allotment Letter") {
+      setAllotmentLetterStatus(true);
+      setSocietyDetailsStatus(false);
+      setSocietyDetailsText("");
+      setDocumentsInfo({
+        ...documentsInfo,
+        category_id: parseInt(e.target.value),
+        category_text: defaultCategoryText,
+        categoryTextColor: "muted",
+      });
+      let societyDetailsAllCheck = document.querySelectorAll(".society_registered-checkBox");
+      if (societyDetailsAllCheck) {
+        societyDetailsAllCheck.forEach((check) => {
+          if (check.checked) {
+            check.checked = false;
+          }
+        });
+      }
+
+    } else {
+      setDocumentsInfo({
+        ...documentsInfo,
+        category_id: parseInt(e.target.value),
+        category_text: categoryText,
+        categoryTextColor: "black common-btn-font",
+      });
+      setOtherCategoryBlankCharErr(false);
+      setSocietyDetailsStatus(false);
+      setAllotmentLetterStatus(false);
+      setSocietyDetailsText("");
+      setAllotmentLetterText("");
+      let societyDetailsAllCheck = document.querySelectorAll(".society_registered-checkBox");
+      if (societyDetailsAllCheck) {
+        societyDetailsAllCheck.forEach((check) => {
+          if (check.checked) {
+            check.checked = false;
+          }
+        });
+      }
+      let allotmentLetterCheck = document.querySelectorAll(".allotmentLetterCheckBox");
+      if (allotmentLetterCheck) {
+        allotmentLetterCheck.forEach((check) => {
+          if (check.checked) {
+            check.checked = false;
+          }
+        });
+      }
+    }
+
     otherCategoryInputRef.current.value = "";
     otherCategoryWrapperRef.current.classList.add("d-none");
   };
 
   const onOtherRadioCheck = (e) => {
     if (e.target.checked === true) {
-      setAllowedExtensions(allAllowedExtensions);
+      setAllowedExtensions(allAllowedExtensions);      
+      setSocietyDetailsStatus(false);
+      setAllotmentLetterStatus(false);
       setDocumentsInfo({
         ...documentsInfo,
         category_id: otherCategoryId,
@@ -137,12 +239,29 @@ const SinglePropertyDocumentsUpload = () => {
         categoryTextColor: "muted",
       });
       otherCategoryWrapperRef.current.classList.remove("d-none");
+      let societyDetailsAllCheck = document.querySelectorAll(".society_registered-checkBox");
+      if (societyDetailsAllCheck) {
+        societyDetailsAllCheck.forEach((check) => {
+          if (check.checked) {
+            check.checked = false;
+          }
+        });
+      }
+      let allotmentLetterCheck = document.querySelectorAll(".allotmentLetterCheckBox");
+      if (allotmentLetterCheck) {
+        allotmentLetterCheck.forEach((check) => {
+          if (check.checked) {
+            check.checked = false;
+          }
+        });
+      }
     }
   };
 
   const onResetBtnClick = () => {
     window.scrollTo(0, 0);
     let allCategoryChecks = document.querySelectorAll(".category-checks");
+    let societyDetailsAllCheck = document.querySelectorAll(".society_registered-checkBox");
     setDocumentsInfo({
       category_id: 0,
       category_text: defaultCategoryText,
@@ -155,8 +274,25 @@ const SinglePropertyDocumentsUpload = () => {
     otherCategoryInputRef.current.value = "";
     otherCategoryWrapperRef.current.classList.add("d-none");
     setOtherCategoryBlankCharErr(false);
+    setSocietyDetailsStatus(false);
+    setAllotmentLetterStatus(false);
     if (allCategoryChecks) {
       allCategoryChecks.forEach((check) => {
+        if (check.checked) {
+          check.checked = false;
+        }
+      });
+    }
+    if (societyDetailsAllCheck) {
+      societyDetailsAllCheck.forEach((check) => {
+        if (check.checked) {
+          check.checked = false;
+        }
+      });
+    }
+    let allotmentLetterCheck = document.querySelectorAll(".allotmentLetterCheckBox");
+    if (allotmentLetterCheck) {
+      allotmentLetterCheck.forEach((check) => {
         if (check.checked) {
           check.checked = false;
         }
@@ -252,6 +388,8 @@ const SinglePropertyDocumentsUpload = () => {
       file_name: file.name,
       category_id: category_id,
       description: description,
+      society_registration_status: societyDetailsText,
+      allotment_letter_status: allotmentLetterText,
       data: data,
     };
     console.log(detailsToPost);
@@ -435,9 +573,15 @@ const SinglePropertyDocumentsUpload = () => {
                             if (category.category_Name === "Other") {
                               otherCategoryId = parseInt(category.category_id);
                             }
+                            if (category.category_Name === "Society details") {
+                              societyDetailsCategoryId = parseInt(category.category_id);
+                            }
+                            if (category.category_Name === "Allotment Letter") {
+                              allotmentLetterCategoryId = parseInt(category.category_id);
+                            }
                             return (
                               <div
-                                className={`col-xl-4 ${category.category_Name === "Other"
+                                className={`col-xl-4 d-flex ${category.category_Name === "Other"
                                   ? "d-none"
                                   : ""
                                   }`}
@@ -459,9 +603,37 @@ const SinglePropertyDocumentsUpload = () => {
                                     {category.category_Name}
                                   </label>
                                 </div>
+                                {category.category_Name === "Society details" ? <div className={`societyRegisteredRadioBtn ${societyDetailsStatus ? "" : "d-none"
+                                  }`} >
+                                  <div className="form-check form-check-inline">
+                                    <input className="form-check-input society_registered-checkBox" type="radio" name="society_registered" id="society_registered" onChange={onSocietyRegisteredRadioCheck} value="registered" />
+                                    <label className="form-check-label" htmlFor="society_registered">Registered</label>
+                                  </div>
+                                  <div className="form-check form-check-inline">
+                                    <input className="form-check-input society_registered-checkBox" type="radio" name="society_registered" id="society_notRegistered" onChange={onSocietyRegisteredRadioCheck} value="notRegistered" />
+                                    <label className="form-check-label" htmlFor="society_notRegistered"> Not Registered</label>
+                                  </div>
+                                </div> : ""}
+                                {category.category_Name === "Allotment Letter" ? <div className={`societyRegisteredRadioBtn ${allotmentLetterStatus ? " ms-3 " : "d-none"
+                                  }`} >
+                                  <div className="form-check form-check-inline">
+                                    <input className="form-check-input allotmentLetterCheckBox" type="radio" name="allotment_Letter" id="allotment_Letter" onChange={onAllotmentLetterRadioCheck} value="Builder" />
+                                    <label className="form-check-label" htmlFor="allotment_Letter">Builder</label>
+                                  </div>
+                                  <div className="form-check form-check-inline">
+                                    <input className="form-check-input allotmentLetterCheckBox" type="radio" name="allotment_Letter" id="allotment_Letter" onChange={onAllotmentLetterRadioCheck} value="CIDCO" />
+                                    <label className="form-check-label" htmlFor="allotment_Letter"> Cidco</label>
+                                  </div>
+                                  <div className="form-check form-check-inline">
+                                    <input className="form-check-input allotmentLetterCheckBox" type="radio" name="allotment_Letter" id="allotment_Letter" onChange={onAllotmentLetterRadioCheck} value="MAHADA" />
+                                    <label className="form-check-label" htmlFor="allotment_Letter"> Mahada</label>
+                                  </div>
+                                </div> : ""}
                               </div>
                             );
+
                           })}
+
                           <div className="col-xl-4">
                             <div className="form-check form-check-inline">
                               <input

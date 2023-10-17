@@ -12,6 +12,7 @@ import ScrollButton from "./components/ScrollButton";
 import Contact from "./components/5.Contact/Contact";
 import PageNotFound from "./components/PageNotFound";
 import AdminHomePage from "./Admin/AdminHomePage";
+import BankRegistrationPage from "./Admin/BankRegistrationPage";
 import ViewEditDeleteProperties from "./Admin/Property/ViewEditDeleteProperties";
 import ViewProperty from "./Admin/Property/ViewProperty";
 import UploadProperties from "./Admin/Property/UploadProperties";
@@ -266,6 +267,7 @@ function App() {
 
           <Route path="*" element={<PageNotFound />} />
           <Route path="/access-denied" element={<AccessDeniedPage />} />
+          <Route path="/bank-registration" element={<BankRegistrationPage />} />
         </Routes>
       </ScrollToTop>
       <ScrollButton /> <CommonSubscriptionNotificationMsg /> 
