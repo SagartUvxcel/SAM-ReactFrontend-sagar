@@ -301,8 +301,8 @@ const AddProperty = () => {
     }
   };
   useEffect(() => {
-    notSoldCheckRef.current.setAttribute("checked", "true");
-    defaultIsStressedRef.current.setAttribute("checked", "true");
+    // notSoldCheckRef.current.setAttribute("checked", "true");
+    // defaultIsStressedRef.current.setAttribute("checked", "true");
     if (data) {
       checkLoginSession(data.loginToken).then((res) => {
         if (res === "Valid") {
@@ -568,7 +568,7 @@ const AddProperty = () => {
                               </div>
                             </div>
                           </div> */}
-                          <div className="col-xl-4 col-md-6 mt-3">
+                          {/* <div className="col-xl-4 col-md-6 mt-3">
                             <div className="form-group">
                               <label className="form-label common-btn-font">
                                 Is stressed?
@@ -607,7 +607,7 @@ const AddProperty = () => {
                                 </label>
                               </div>
                             </div>
-                          </div>
+                          </div> */}
                           <div className="col-xl-4 col-md-6 mt-3">
                             <div className="form-group">
                               <label
@@ -849,7 +849,7 @@ const AddProperty = () => {
                               />
                             </div>
                           </div>
-                          <div className="col-xl-4 col-md-6 mb-3 mb-xl-0">
+                          {/* <div className="col-xl-4 col-md-6 mb-3 mb-xl-0">
                             <div className="form-group">
                               <label className="form-label common-btn-font">
                                 Is sold?
@@ -888,7 +888,7 @@ const AddProperty = () => {
                                 </label>
                               </div>
                             </div>
-                          </div>
+                          </div> */}
                           <div
                             className={`col-xl-4 col-md-6 mb-3 mb-xl-0 ${is_sold === 1 ? "d-none" : ""
                               }`}

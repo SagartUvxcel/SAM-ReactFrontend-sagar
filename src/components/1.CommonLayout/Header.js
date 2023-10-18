@@ -138,7 +138,18 @@ function Header() {
                 </span>
               </li>
               {/* If user is loggedIn then show these navbar links in dropdown */}
-              {roleId === 3 && isBank===false || loginStatus=== false ? (
+              {roleId === 1 && isBank === false ? (
+                <li>
+                  <NavLink to="/admin/bank-registration" className="nav-link">
+                  <i className="bi bi-bank2 me-2 text-light"></i>
+                    Bank Registration
+                  </NavLink>
+                </li>
+              ) : (
+                ""
+              )}
+              {/* If user is loggedIn then show these navbar links in dropdown */}
+              {roleId === 3 && isBank === false || loginStatus === false ? (
                 <li>
                   <NavLink to="/subscription" className="nav-link">
                     <i className="bi bi-wallet2 me-2 text-light"></i>
@@ -148,15 +159,6 @@ function Header() {
               ) : (
                 ""
               )}
-              {/* <li
-                className={`nav-item subscribe-btn-wrapper ps-md-2 ${loginStatus ? "" : ""
-                  }`}
-              >
-                <NavLink to="/subscription" className="nav-link">
-                  <i className="bi bi-wallet2 me-2 text-light"></i>
-                  Subscribe
-                </NavLink>
-              </li> */}
 
               {/* If user is not loggedIn then show these navbar links in dropdown */}
               <li className="nav-item dropdown ps-md-2 d-md-block d-none">

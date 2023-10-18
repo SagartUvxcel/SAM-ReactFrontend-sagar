@@ -357,7 +357,7 @@ const ViewProperty = ({
                     <></>
                   )}
 
-                  {is_stressed ? (
+                  {/* {is_stressed ? (
                     <div className="col-6">
                       <div className="card p-2 text-center border-primary border-2 border">
                         <small className="text-muted">Is stressed</small>
@@ -368,7 +368,7 @@ const ViewProperty = ({
                     </div>
                   ) : (
                     <></>
-                  )}
+                  )} */}
                   <div className="col-12 mt-3">
                     <div className="card p-2 text-center border-primary border-2 border position-relative">
                       {propertyDocumentsList ? (

@@ -77,9 +77,7 @@ const Registration = () => {
   const [validationDetails, setValidationDetails] = useState({});
 
   const { citiesByState, cityVisibilityClass } = cityUseState;
-  const [banks, setBanks] = useState([]);
 
-  const [bankBranches, setBankBranches] = useState([]);
 
   // Object destructuring.
   const {
@@ -98,8 +96,6 @@ const Registration = () => {
     organizationActiveClass: "",
     individualDisplay: "",
     organizationDisplay: "d-none",
-    bankActiveClass: "",
-    bankDisplay: "d-none",
   });
 
   // Object destructuring.
@@ -107,9 +103,7 @@ const Registration = () => {
     individualActiveClass,
     organizationActiveClass,
     individualDisplay,
-    organizationDisplay,
-    bankActiveClass,
-    bankDisplay,
+    organizationDisplay
   } = toggleForms;
 
   // Function to reset values.
@@ -208,10 +202,8 @@ const Registration = () => {
     setToggleForms({
       individualActiveClass: "active",
       organizationActiveClass: "",
-      bankActiveClass: "",
       individualDisplay: "",
       organizationDisplay: "d-none",
-      bankDisplay: "d-none",
     });
   };
 
@@ -228,32 +220,11 @@ const Registration = () => {
     setToggleForms({
       individualActiveClass: "",
       organizationActiveClass: "active",
-      bankActiveClass: "",
       individualDisplay: "d-none",
       organizationDisplay: "",
-      bankDisplay: "d-none",
     });
   };
 
-  const showBankForm = () => {
-    resetValues();
-    setFormData({
-      ...formData,
-      contact_details: { user_type: "Bank User" },
-    });
-
-    // Reset form fields and validations.
-    document.getElementById("bankForm").reset();
-    // Toggle checkbox and visibility of forms.
-    setToggleForms({
-      individualActiveClass: "",
-      organizationActiveClass: "",
-      bankActiveClass: "active",
-      individualDisplay: "d-none",
-      organizationDisplay: "d-none",
-      bankDisplay: "",
-    });
-  };
 
   // Function to show individual form or organization or bank form on click of label.
   const changeForm = (e) => {
@@ -262,8 +233,6 @@ const Registration = () => {
       showOrganizationForm();
     } else if (attrOfForm === "individual") {
       showIndividualForm();
-    } else if (attrOfForm === "bank") {
-      showBankForm();
     }
   };
 
@@ -650,7 +619,7 @@ const Registration = () => {
           [name]: parseInt(value),
         },
       });
-    } 
+    }
   };
 
   // Function will run after Individual Form submit button is clicked.
@@ -769,77 +738,10 @@ const Registration = () => {
     }
   };
 
-  // Function will run after Organization Form submit button is clicked.
-  const onBankFormSubmit = async (e) => {
-    e.preventDefault();
-    const fieldsToDelete = [
-      "first_name",
-      "middle_name",
-      "last_name",
-      "aadhar_number",
-      "pan_number",
-    ];
-    fieldsToDelete.forEach((field) => {
-      delete formData[field];
-    });
-
-    if (addressValues.labelValue === "Add Details") {
-      setAlertDetails({
-        alertVisible: true,
-        alertMsg: "Please fill the address details",
-        alertClr: "danger",
-      });
-    } else {
-      setLoading(true);
-      // try {
-      //   await axios
-      //     .post(`/sam/v1/customer-registration/org-customer`, formData)
-      //     .then(async (res) => {
-      //       if (res.data.status === 0) {
-      //         document
-      //           .getElementById("registration-alert")
-      //           .scrollIntoView(true);
-      //         setLoading(false);
-      //         toast.success(
-      //           `Success: Please check your email for verification.`
-      //         );
-      //         e.target.reset();
-      //         resetValues();
-      //         goTo("/register/verify");
-      //       } else {
-      //         setLoading(false);
-      //         setAlertDetails({
-      //           alertVisible: true,
-      //           alertMsg: "Internal server error",
-      //           alertClr: "warning",
-      //         });
-      //       }
-      //     });
-      // } catch (error) {
-      //   setLoading(false);
-      //   setAlertDetails({
-      //     alertVisible: true,
-      //     alertMsg: "Internal server error",
-      //     alertClr: "warning",
-      //   });
-      // }
-    }
-  };
-
-  const getDataFromApi = async () => {
-    const bankRes = await axios.get(`/sam/v1/property/by-bank`);
-    setBanks(bankRes.data);
-
-
-
-  };
-
-
   useEffect(() => {
     rootTitle.textContent = "SAM TOOL - REGISTER";
     resetValues();
     getAllSates();
-    getDataFromApi()
   }, []);
 
   return (
@@ -871,13 +773,6 @@ const Registration = () => {
                       >
                         Organization
                       </div>
-                      {/* <div className="mx-2">|</div>
-                      <div className={`bank-label common-btn-font ${bankActiveClass}`}
-                        name="bank"
-                        onClick={changeForm}
-                      >
-                        Bank
-                      </div> */}
                     </div>
                     <div className="col-12">
                       <hr />
@@ -1156,154 +1051,6 @@ const Registration = () => {
                       </div>
                     </form>
 
-                    {/* Bank Main Form */}
-                    <form
-                      id="bankForm"
-                      onSubmit={onBankFormSubmit}
-                      action=""
-                      className={`row ${bankDisplay} BankForm`}
-                    >
-                      <div className="col-lg-12">
-                        <div className="row bank-type-row">
-                          <div className="col-lg-2 mb-lg-0 mb-2">
-                            Bank Name
-                            <span className="text-danger fw-bold">*</span>
-                          </div>
-                          <div className="col-lg-2 mb-lg-0 mb-2">
-                            <select
-                              onChange={onInputChange}
-                              name="bank"
-                              id="bank"
-                              className="form-select"
-                              aria-label="Default select example"
-                              required
-                            >
-                              <option value="" style={{ color: "lightgrey" }}>
-                                Select Bank</option>
-                              {banks ? (
-                                banks.map((data) => {
-                                  return (
-                                    <option
-                                      key={data.bank_id}
-                                      value={data.bank_id}
-                                    >
-                                      {data.bank_name}
-                                    </option>
-                                  );
-                                })
-                              ) : (
-                                <></>
-                              )}
-                            </select>
-                          </div>
-                          <div className="col-lg-2 mb-lg-0 mb-2">
-                            Branch Name
-                            <span className="text-danger fw-bold">*</span>
-                          </div>
-                          <div className="col-lg-2 mb-lg-0 mb-2">
-                            <select
-                              id="bank_name"
-                              name="bank_name"
-                              className="form-select"
-                              onChange={onInputChange}
-                              required
-                            >
-                              <option value=""></option>
-                              {bankBranches ? (
-                                bankBranches.map((data) => {
-                                  return (
-                                    <option
-                                      key={data.branch_id}
-                                      value={data.branch_id}
-                                    >
-                                      {data.branch_name}
-                                    </option>
-                                  );
-                                })
-                              ) : (
-                                <></>
-                              )}
-                            </select>
-                          </div>
-                          <div className="col-lg-2 mb-lg-0 mb-2">
-                            Branch Code
-                            <span className="text-danger fw-bold">*</span>
-                          </div>
-                          <div className="col-lg-2 mb-lg-0 mb-2">
-                            <input
-                              onBlur={onInputBlur}
-                              name="branch_code"
-                              type="text"
-                              placeholder="Branch Code"
-                              className="form-control"
-                              required
-                            />
-                          </div>
-                        </div>
-                        <div className="row branch_sftp mt-lg-3 mt-2">
-                          <div className="col-lg-2 mb-lg-0 mb-2">
-                            IFSC code
-                            <span className="text-danger fw-bold">*</span>
-                          </div>
-                          <div className="col-lg-2 mb-lg-0 mb-2">
-                            <input
-                              onBlur={onInputBlur}
-                              name="ifsc_code"
-                              type="text"
-                              placeholder=" IFSC code"
-                              className="form-control"
-                              required
-                            />
-                          </div>
-                          <div className="col-lg-2 mb-lg-0 mb-2">
-                            Branch SFTP
-                            <span className="text-danger fw-bold">*</span>
-                          </div>
-                          <div className="col-lg-2 mb-lg-0 mb-2">
-                            <input
-                              onBlur={onInputBlur}
-                              name="branch_sftp"
-                              type="text"
-                              placeholder=" Branch SFTP"
-                              className="form-control"
-                              required
-                            />
-                          </div>
-                          <div className="col-lg-2 mb-lg-0 mb-2">
-                            Branch UUID
-                            <span className="text-danger fw-bold">*</span>
-                          </div>
-                          <div className="col-lg-2">
-                            <input
-                              onChange={onInputChange}
-                              name="branch_UUID"
-                              type="text"
-                              placeholder="Branch UUID"
-                              className="form-control "
-                              required
-                            />
-                            <span
-                              className={`pe-1 ${gstValidationMessage ? "text-danger" : "d-none"
-                                }`}
-                            >
-                              {gstValidationMessage}
-                            </span>
-                          </div>
-                        </div>
-
-
-                        <CommonFormFields
-                          validationDetails={validationDetails}
-                          resetValues={resetValues}
-                          addressValues={addressValues}
-                          onInputChange={onInputChange}
-                          onInputBlur={onInputBlur}
-                          loading={loading}
-                          onMobileNumberInputBlur={onMobileNumberInputBlur}
-                          onMobileNumberInputChange={onMobileNumberInputChange}
-                        />
-                      </div>
-                    </form>
                   </div>
                 </div>
                 <small className="token-verify-link">

@@ -205,6 +205,15 @@ function App() {
               </AdminProtected>
             }
           />
+          {/* <Route path="/bank-registration" element={<BankRegistrationPage />} /> */}
+          <Route
+            path={`/admin/bank-registration`}
+            element={
+              <AdminProtected>
+                <BankRegistrationPage />
+              </AdminProtected>
+            }
+          />
 
           <Route
             path="/admin/users/individual-users"
@@ -267,7 +276,7 @@ function App() {
 
           <Route path="*" element={<PageNotFound />} />
           <Route path="/access-denied" element={<AccessDeniedPage />} />
-          <Route path="/bank-registration" element={<BankRegistrationPage />} />
+          
         </Routes>
       </ScrollToTop>
       <ScrollButton /> <CommonSubscriptionNotificationMsg /> 

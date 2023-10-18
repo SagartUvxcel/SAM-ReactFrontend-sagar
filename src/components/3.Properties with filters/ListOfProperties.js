@@ -841,7 +841,7 @@ const ListOfProperties = () => {
                                           {carpet_area}
                                         </div>
                                       </div>
-                                      <div
+                                      {/* <div
                                         className={`col-xl-3 col-lg-4 col-6 mt-xl-4 mt-3 ${is_stressed ? "" : "d-none"
                                           }`}
                                       >
@@ -851,7 +851,7 @@ const ListOfProperties = () => {
                                         <div className="common-btn-font text-capitalize">
                                           {is_stressed === "1" ? "Yes" : "No"}
                                         </div>
-                                      </div>
+                                      </div> */}
                                       {/* <div
                                         className={`col-xl-3 col-lg-4 col-6 mt-xl-4 mt-3 ${is_sold ? "" : "d-none"
                                           }`}

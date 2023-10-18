@@ -1037,7 +1037,7 @@ const ViewEditDeleteProperties = () => {
                                 </div>
                               </div>
                             </div> */}
-                            {is_stressed ? (
+                            {/* {is_stressed ? (
                               <div className="col-xl-4 col-md-6 mt-3">
                                 <div className="form-group">
                                   <label
@@ -1057,7 +1057,7 @@ const ViewEditDeleteProperties = () => {
                               </div>
                             ) : (
                               <></>
-                            )}
+                            )} */}
                             {territory ? (
                               <div className="col-xl-4 col-md-6 mt-3">
                                 <div className="form-group">

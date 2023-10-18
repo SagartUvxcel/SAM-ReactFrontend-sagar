@@ -138,6 +138,7 @@ const ViewEnquiryLists = () => {
     scrollToBottomOfModalBody();
   }, [messages]);
 
+  //get User Enquiries List
   const getUserEnquiriesList = async () => {
     setPageLoading(true);
 
@@ -158,6 +159,7 @@ const ViewEnquiryLists = () => {
     }
   };
 
+  // on click View Enquiry
   const onViewEnquiryClick = async (id) => {
     if (socket === null) {
       connectToWebSocket();
@@ -183,6 +185,7 @@ const ViewEnquiryLists = () => {
 
   const [socket, setSocket] = useState(null);
 
+  //connect To WebSocket
   const connectToWebSocket = () => {
     const newSocket = new WebSocket("ws://localhost:3000/ws");
     setSocket(newSocket);
@@ -250,6 +253,7 @@ const ViewEnquiryLists = () => {
                         <th scope="col">#</th>
                         <th scope="col">Property Number</th>
                         <th scope="col">Type</th>
+                        <th scope="col">User Name</th>
                         <th scope="col">
                           Date
                           <i
@@ -273,6 +277,7 @@ const ViewEnquiryLists = () => {
                             <th scope="row">{Index + 1}</th>
                             <td>{property_number}</td>
                             <td>{property_type}</td>
+                            <td></td>
                             <td>{transformDateFormat(added_date)} </td>
                             <td>
                               <button
