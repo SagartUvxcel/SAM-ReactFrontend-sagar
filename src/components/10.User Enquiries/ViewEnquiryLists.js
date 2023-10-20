@@ -7,6 +7,7 @@ import CommonSpinner from "../../CommonSpinner";
 import { transformDateFormat } from "../../CommonFunctions";
 import { w3cwebsocket as WebSocket } from "websocket";
 import { v4 as uuid } from "uuid";
+import { Form, FormControl, Button } from 'react-bootstrap';
 
 let authHeader = "";
 let isBank = false;
@@ -30,6 +31,7 @@ const ViewEnquiryLists = () => {
   const [chatWith, setChatWith] = useState("");
   const [sortOptionText, setSortOptionText] = useState("up");
 
+  // sort type for date
   const changeSortType = () => {
     if (sortOptionText === "up") {
       setSortOptionText("down");
@@ -44,6 +46,7 @@ const ViewEnquiryLists = () => {
     }
   };
 
+  // set chat person or bank person
   const setChatPersonOrBankName = async (id, is_bank) => {
     try {
       let res = await axios.get(
@@ -53,9 +56,10 @@ const ViewEnquiryLists = () => {
       if (res.data) {
         setChatWith(res.data.Name);
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
+  // get Indian Date Time Of Msg
   const getIndianDateTimeOfMsg = (date) => {
     // Convert input string to Date object in the browser's local time zone
     const dateObject = new Date(date);
@@ -73,6 +77,7 @@ const ViewEnquiryLists = () => {
     return formattedDate;
   };
 
+  // sendMessage
   const sendMessage = async (e) => {
     setSendReplyBtnLoading(true);
     e.preventDefault();
@@ -127,6 +132,7 @@ const ViewEnquiryLists = () => {
     }
   };
 
+  // scrollToBottomOfModalBody
   const scrollToBottomOfModalBody = () => {
     if (modalBodyRef.current) {
       modalBodyRef.current.scrollTop = modalBodyRef.current.scrollHeight;
@@ -175,7 +181,7 @@ const ViewEnquiryLists = () => {
         setEnquiryId(id);
         // console.log(res.data, res.data[0].property_id);
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   useEffect(() => {
@@ -230,7 +236,55 @@ const ViewEnquiryLists = () => {
         <div className="container-fluid wrapper">
           <h1 className="text-center">Enquiries</h1>
           <hr />
-          <div className="row justify-content-center mt-5">
+          <div className="row px-md-4 enquiry-filter-row ">
+
+
+            <div className=" col-md-7 mb-md-0 mb-4 ">
+              <ul className="nav nav-tabs border-0 " id="myTab" role="tablist">
+                <li className="nav-item " role="presentation">
+                  <button className="nav-link active px-5 fs-5  text-uppercase" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">New</button>
+                </li>
+                <li className="nav-item" role="presentation">
+                  <button className="nav-link px-5 fs-5 text-uppercase" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Old</button>
+                </li>
+                <li className="nav-item" role="presentation">
+                  <button className="nav-link px-5 fs-5 text-uppercase" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact-tab-pane" type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false">Oldest</button>
+                </li>
+                <li className="nav-item" role="presentation">
+                  <button className="nav-link px-5 fs-5 text-uppercase" id="disabled-tab" data-bs-toggle="tab" data-bs-target="#disabled-tab-pane" type="button" role="tab" aria-controls="disabled-tab-pane" aria-selected="false" >All</button>
+                </li>
+              </ul>
+
+            </div>
+              <div className="col-md-5 d-flex justify-content-end pb-3">
+                <input
+                  type="search"
+                  placeholder="Search"
+                  className="form-control w-50 "
+                // value={searchTerm}
+                // onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+            <div className="col-md-6 mb-md-0 mb-3 ">
+
+            </div>
+
+          </div>
+
+
+
+          {/* <div className="tab-content" id="myTabContent">
+            <div className="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">1</div>
+            <div className="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">.2.</div>
+            <div className="tab-pane fade" id="contact-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabindex="0">3</div>
+            <div className="tab-pane fade" id="disabled-tab-pane" role="tabpanel" aria-labelledby="disabled-tab" tabindex="0">.4.</div>
+          </div> */}
+
+
+
+
+
+          <div className="row justify-content-center mt-3">
             {pageLoading ? (
               <>
                 <CommonSpinner
@@ -246,7 +300,7 @@ const ViewEnquiryLists = () => {
               </h3>
             ) : (
               <>
-                <div className="enquiry-list-table-wrapper">
+                <div className="enquiry-list-table-wrapper px-md-4" >
                   <table className="table table-striped table-bordered text-center">
                     <thead>
                       <tr>

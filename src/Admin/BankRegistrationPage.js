@@ -3,6 +3,8 @@ import Layout from "../components/1.CommonLayout/Layout";
 import CommonFormFields from "../components/7.Registration/CommonFormFields";
 import axios from "axios";
 import { NavLink, useNavigate } from "react-router-dom";
+import "react-phone-input-2/lib/style.css";
+import PhoneInput from "react-phone-input-2";
 import { toast } from "react-toastify";
 import { useRef } from "react";
 import { rootTitle } from "../CommonFunctions";
@@ -35,6 +37,7 @@ const BankRegistrationPage = () => {
         zipCodeValidationMessage,
         zipCodeValidationColor,
     } = validationDetails;
+    const { emailValidationMessage, mobileValidationMessage } = validationDetails;
     const [banks, setBanks] = useState([]);
     const [loading, setLoading] = useState(false);
     const [alertDetails, setAlertDetails] = useState({
@@ -67,7 +70,6 @@ const BankRegistrationPage = () => {
         city,
         zip,
     } = addressDetails;
-
     // useState to store/remove and hide/show cities data.
     const [cityUseState, setCityUseState] = useState({
         citiesByState: [],
@@ -82,7 +84,7 @@ const BankRegistrationPage = () => {
         labelValue: "Add Details",
         textAreaVisibility: "d-none",
     });
-
+    const { addressValue, labelValue, textAreaVisibility } = addressValues;
     // useState to store ID of state so that we can validate zipCodes for each state.
     const [IdOfState, SetIdOfState] = useState("");
 
@@ -113,11 +115,13 @@ const BankRegistrationPage = () => {
             setFormData({ ...formData, [name]: value });
         } else if (name === "branch_code") {
             setFormData({ ...formData, [name]: value });
-        }else if (name === "ifsc_code") {
+        } else if (name === "ifsc_code") {
             setFormData({ ...formData, [name]: value });
-        }else if (name === "branch_sftp") {
+        } else if (name === "branch_sftp") {
             setFormData({ ...formData, [name]: value });
-        }else if (name === "branch_UUID") {
+        } else if (name === "branch_UUID") {
+            setFormData({ ...formData, [name]: value });
+        }else if (name === "branch_address") {
             setFormData({ ...formData, [name]: value });
         } else if (name === "address") {
             setFormData({
@@ -546,64 +550,65 @@ const BankRegistrationPage = () => {
     };
 
     // Function will run after Individual Form submit button is clicked.
-  const onBankFormSubmit = async (e) => {
-    console.log(JSON.stringify(formData));
-    console.log(addressDetails);
-    e.preventDefault();
-    const fieldsToDelete = [
-      "bank_name",
-      "branch_name",
-      "branch_code",
-      "ifsc_code",
-      "branch_sftp",
-      "branch_UUID",
-    ];
-    fieldsToDelete.forEach((field) => {
-      delete formData[field];
-    });
+    const onBankFormSubmit = async (e) => {
+        console.log(JSON.stringify(formData));
+        console.log(formData);
+        console.log(addressDetails);
+        e.preventDefault();
+        const fieldsToDelete = [
+            "bank_name",
+            "branch_name",
+            "branch_code",
+            "ifsc_code",
+            "branch_sftp",
+            "branch_UUID",
+        ];
+        fieldsToDelete.forEach((field) => {
+            delete formData[field];
+        });
 
-    if (addressValues.labelValue === "Add Details") {
-      setAlertDetails({
-        alertVisible: true,
-        alertMsg: "Please fill the address details",
-        alertClr: "danger",
-      });
-    } else {
-    //   setLoading(true);
-    //   try {
-    //     await axios
-    //       .post(`/sam/v1/customer-registration/individual-customer`, formData)
-    //       .then(async (res) => {
-    //         if (res.data.status === 0) {
-    //           setLoading(false);
-    //           document
-    //             .getElementById("registration-alert")
-    //             .scrollIntoView(true);
-    //           toast.success(
-    //             `Success: Please check your email for verification.`
-    //           );
-    //           e.target.reset();
-    //           resetValues();
-    //           goTo("/register/verify");
-    //         } else {
-    //           setLoading(false);
-    //           setAlertDetails({
-    //             alertVisible: true,
-    //             alertMsg: "Internal server error",
-    //             alertClr: "warning",
-    //           });
-    //         }
-    //       });
-    //   } catch (error) {
-    //     setLoading(false);
-    //     setAlertDetails({
-    //       alertVisible: true,
-    //       alertMsg: "Internal server error",
-    //       alertClr: "warning",
-    //     });
-    //   }
-    }
-  };
+        if (addressValues.labelValue === "Add Details") {
+            setAlertDetails({
+                alertVisible: true,
+                alertMsg: "Please fill the address details",
+                alertClr: "danger",
+            });
+        } else {
+            //   setLoading(true);
+            //   try {
+            //     await axios
+            //       .post(`/sam/v1/customer-registration/individual-customer`, formData)
+            //       .then(async (res) => {
+            //         if (res.data.status === 0) {
+            //           setLoading(false);
+            //           document
+            //             .getElementById("registration-alert")
+            //             .scrollIntoView(true);
+            //           toast.success(
+            //             `Success: Please check your email for verification.`
+            //           );
+            //           e.target.reset();
+            //           resetValues();
+            //           goTo("/register/verify");
+            //         } else {
+            //           setLoading(false);
+            //           setAlertDetails({
+            //             alertVisible: true,
+            //             alertMsg: "Internal server error",
+            //             alertClr: "warning",
+            //           });
+            //         }
+            //       });
+            //   } catch (error) {
+            //     setLoading(false);
+            //     setAlertDetails({
+            //       alertVisible: true,
+            //       alertMsg: "Internal server error",
+            //       alertClr: "warning",
+            //     });
+            //   }
+        }
+    };
 
 
     // useeffect functions
@@ -673,7 +678,7 @@ const BankRegistrationPage = () => {
                                                             onBlur={onInputBlur}
                                                             name="bank_name"
                                                             type="text"
-                                                            placeholder="Bank"
+                                                            placeholder="Bank Name"
                                                             className="form-control"
                                                             required
                                                         />
@@ -809,6 +814,10 @@ const BankRegistrationPage = () => {
                                                     onMobileNumberInputBlur={onMobileNumberInputBlur}
                                                     onMobileNumberInputChange={onMobileNumberInputChange}
                                                 />
+
+
+                                               
+
                                             </div>
                                         </form>
                                     </div>

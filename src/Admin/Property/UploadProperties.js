@@ -265,7 +265,7 @@ const UploadProperties = () => {
                   href={sampleCSVFile}
                   download="SampleBulkFile.csv"
                 >
-                   Sample Bulk File <i class="bi bi-download"> </i>
+                   Sample Bulk File <i className="bi bi-download"> </i>
                 </a>
               </div>
 

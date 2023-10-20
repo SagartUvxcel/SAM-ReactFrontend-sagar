@@ -14,17 +14,24 @@ import ViewProperty from "./ViewProperty";
 import { NavLink } from "react-router-dom";
 import { toast } from "react-toastify";
 import { toggleClassOfNextPrevPageItems } from "../../CommonFunctions";
+import { Form, FormControl, Button } from 'react-bootstrap';
+import { v4 as uuid } from "uuid";
+
 
 let authHeader = "";
 let bank_Id = "";
+let userId = "";
 let branch_Id = "";
 let propertiesPerPage = 4;
 let isBank = false;
+
+
 const ViewEditDeleteProperties = () => {
   const data = JSON.parse(localStorage.getItem("data"));
   if (data) {
     authHeader = { Authorization: data.loginToken };
     isBank = data.isBank;
+    userId = data.userId;
     bank_Id = data.bank_id;
     branch_Id = data.branch_Id;
   }
@@ -35,10 +42,15 @@ const ViewEditDeleteProperties = () => {
   const allPropertiesPageRef = useRef();
   const viewCurrentPropertyRef = useRef();
   const editPropertyRef = useRef();
+  const enquiriesPageRef = useRef();
+  const modalBodyRef = useRef(null);
   const [selectedProperty, setSelectedProperty] = useState([]);
   const [propertyDocumentsList, setPropertyDocumentsList] = useState([]);
   const [pageCount, setPageCount] = useState(0);
   const paginationRef = useRef();
+  const [messages, setMessages] = useState(null);
+
+  console.log(properties);
 
   // useStates for delete functionalities
   const [selectedPropertyId, setSelectedPropertyId] = useState("");
@@ -173,6 +185,7 @@ const ViewEditDeleteProperties = () => {
   };
   const [propertiesLinkDisabled, setPropertiesLinkDisabled] = useState(false);
 
+  // view Current Property button click
   const viewCurrentProperty = async (id) => {
     setViewSinglePropertyPageLoading(true);
     viewCurrentPropertyRef.current.classList.remove("d-none");
@@ -187,6 +200,7 @@ const ViewEditDeleteProperties = () => {
     getListOfPropertyDocuments(id);
   };
 
+  // get ListOfProperty Documents from API
   const getListOfPropertyDocuments = async (id) => {
     const propertyDocsListRes = await axios.get(
       `/sam/v1/property/auth/property_document_list/${id}`,
@@ -196,6 +210,7 @@ const ViewEditDeleteProperties = () => {
     setViewSinglePropertyPageLoading(false);
   };
 
+  // back ToAll Properties Page button
   const backToAllPropertiesPage = async () => {
     const propertiesRes = await axios.post(
       `/sam/v1/property/auth/all-properties`,
@@ -245,13 +260,27 @@ const ViewEditDeleteProperties = () => {
     landmark,
     zip,
   } = formData.address_details;
+
   const [banks, setBanks] = useState([]);
+  const [enquiryList, setEnquiryList] = useState([]);
   const [activeBank, setActiveBank] = useState({});
   const [bankBranches, setBankBranches] = useState([]);
   const [activeBranch, setActiveBranch] = useState({});
   const notSoldCheckRef = useRef();
   const [mainPageLoading, setMainPageLoading] = useState(false);
   const [pathLocation, setPathLocation] = useState("");
+  const [selectedPropertyNumberForEnquiry, setSelectedPropertyNumberForEnquiry] = useState(null);
+  const [selectedPropertyTypeForEnquiry, setSelectedPropertyTypeForEnquiry] = useState(null);
+  const [sortOptionText, setSortOptionText] = useState("up");
+  const [socket, setSocket] = useState(null);
+  const [newMessage, setNewMessage] = useState("");
+  const [propertyId, setPropertyId] = useState(null);
+  const [enquiryId, setEnquiryId] = useState(null);
+  const [chatWith, setChatWith] = useState("");
+  const [tempEnquiryList, setTempEnquiryList] = useState([]);
+
+  const [sendReplyBtnLoading, setSendReplyBtnLoading] = useState(false);
+
 
   const [viewSinglePropertyPageLoading, setViewSinglePropertyPageLoading] =
     useState(false);
@@ -358,6 +387,7 @@ const ViewEditDeleteProperties = () => {
   const [otherValuesToShow, setOtherValuesToShow] = useState({});
   const { type_name, state_name, city_name } = otherValuesToShow;
 
+  // Current Property DataToUpdate button click
   const getCurrentPropertyDataToUpdate = async (propertyId) => {
     setMainPageLoading(true);
     // let propertyId = localStorage.getItem("propertyId");
@@ -370,7 +400,7 @@ const ViewEditDeleteProperties = () => {
       setBanks(bankRes.data);
 
       if (isBank) {
-        getBankDeatails(bankRes.data);
+        getBankDetails(bankRes.data);
       }
       // Get current property values
       const currentPropertyRes = await axios.get(
@@ -461,7 +491,58 @@ const ViewEditDeleteProperties = () => {
     }
   };
 
-  const getBankDeatails = async (bankData) => {
+  // change Sort Type function
+  const changeSortType = () => {
+    if (sortOptionText === "up") {
+      setSortOptionText("down");
+      enquiryList.sort(
+        (a, b) => new Date(b.added_date) - new Date(a.added_date)
+      );
+    } else if (sortOptionText === "down") {
+      setSortOptionText("up");
+      enquiryList.sort(
+        (a, b) => new Date(a.added_date) - new Date(b.added_date)
+      );
+    }
+  };
+
+  // Current Property DataToUpdate button click
+  const getCurrentPropertyAllEnquires = async (propertyId, property_number,category) => {
+    setSelectedPropertyNumberForEnquiry(property_number);
+    setSelectedPropertyTypeForEnquiry(category);
+    setMainPageLoading(true);
+    // let propertyId = localStorage.getItem("propertyId");
+    if (propertyId) {
+      allPropertiesPageRef.current.classList.add("d-none");
+      enquiriesPageRef.current.classList.remove("d-none");
+      // setPropertiesLinkDisabled(true);
+      try {
+        // Get details from api.
+        const EnquiryRes = await axios.get(`/sam/v1/property/auth/property-enquiries/${propertyId}`, {
+          headers: authHeader,
+        })
+        const dataValue = EnquiryRes.data
+        console.log(dataValue);
+        if (dataValue) {
+          setEnquiryList(dataValue);
+          setTempEnquiryList(dataValue);
+          setMainPageLoading(false);
+        } else {
+          setMainPageLoading(false);
+        }
+      } catch (error) {
+        setMainPageLoading(false);
+      }
+
+      // if (isBank) {
+      //   getBankDetails(bankRes.data);
+      // }
+
+    }
+  };
+
+  // get Bank Details form API
+  const getBankDetails = async (bankData) => {
     const activeBankDetails = bankData.filter(bank => bank.bank_id === bank_Id)[0]
     setActiveBank(activeBankDetails);
     const branchRes = await axios.get(`/sam/v1/property/auth/bank-branches/${bank_Id}`, {
@@ -477,6 +558,7 @@ const ViewEditDeleteProperties = () => {
     commonFnToSaveFormData("bank_branch_id", branch_Id);
   }
 
+  // set All Default Values
   const setAllDefaultValues = async (
     bank_id,
     is_sold,
@@ -531,7 +613,136 @@ const ViewEditDeleteProperties = () => {
     }
     setMainPageLoading(false);
   };
-  console.log(pathLocation);
+
+  // on click View Enquiry
+  const onViewEnquiryClick = async (id) => {
+    if (socket === null) {
+      connectToWebSocket();
+    }
+    try {
+      let res = await axios.get(
+        `/sam/v1/property/auth/user/enquiry/property/${id}`,
+        { headers: authHeader }
+      );
+      if (res.data) {
+        setMessages(res.data);
+        setPropertyId(res.data[0].property_id);
+        setEnquiryId(id);
+        // console.log(res.data, res.data[0].property_id);
+      }
+    } catch (error) { }
+  };
+
+  // set chat person or bank person
+  const setChatPersonOrBankName = async (id, is_bank) => {
+    try {
+      let res = await axios.get(
+        `/sam/v1/property/auth/enquiry/${id}/bank/${is_bank}`,
+        { headers: authHeader }
+      );
+      if (res.data) {
+        setChatWith(res.data.Name);
+      }
+    } catch (error) { }
+  };
+
+  // get Indian Date Time Of Msg
+  const getIndianDateTimeOfMsg = (date) => {
+    // Convert input string to Date object in the browser's local time zone
+    const dateObject = new Date(date);
+    // Extract date components
+    const day = dateObject.getDate().toString().padStart(2, "0");
+    const month = (dateObject.getMonth() + 1).toString().padStart(2, "0");
+    const year = dateObject.getFullYear().toString();
+    // Get hours and minutes in 12-hour format with AM/PM
+    let hours = dateObject.getHours();
+    const amORpm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12 || 12; // Convert to 12-hour format
+    const minutes = dateObject.getMinutes().toString().padStart(2, "0");
+    // Format the date as "DD-MM-YYYY hh:mm AM/PM"
+    const formattedDate = `${day}-${month}-${year} ${hours}:${minutes} ${amORpm}`;
+    return formattedDate;
+  };
+
+  // sendMessage
+  const sendMessage = async (e) => {
+    setSendReplyBtnLoading(true);
+    e.preventDefault();
+    let dataToPost = {
+      property_id: propertyId,
+      enquiry_source: "email",
+      enquiry_comments: newMessage,
+    };
+    console.log(dataToPost);
+
+    if (isBank) {
+      dataToPost.enquiry_id = enquiryId;
+    } else {
+      delete dataToPost.enquiry_id;
+    }
+
+    if (newMessage.trim()) {
+      try {
+        let res = await axios.post(
+          `/sam/v1/property/auth/property_enquiry`,
+          dataToPost,
+          {
+            headers: authHeader,
+          }
+        );
+        if (res.data.msg === 0) {
+          onViewEnquiryClick(enquiryId);
+          setNewMessage("");
+          setSendReplyBtnLoading(false);
+
+          if (socket && socket.readyState === WebSocket.OPEN) {
+            const messageToSend = {
+              User_id: String(userId),
+              msg: newMessage,
+              message_type: "sam-user",
+              messages_id: uuid(),
+            };
+            try {
+              socket.send(JSON.stringify(messageToSend));
+              console.log("Message sent successfully");
+            } catch (error) {
+              console.error("Error sending message:", error);
+            }
+          } else {
+            console.log("WebSocket is not open.");
+          }
+        }
+      } catch (error) {
+        setSendReplyBtnLoading(false);
+      }
+    } else {
+      setSendReplyBtnLoading(false);
+    }
+  };
+
+  // on Enquiry Search Input Change
+  const onEnquirySearchInputChange = (event) => {
+    const input = event.target.value;
+    if (input.length > 0) {
+      const filtered = tempEnquiryList.filter(item =>
+        item.user_name.toLowerCase().includes(input.toLowerCase())
+      );
+      setEnquiryList(filtered);
+    } else {
+      setEnquiryList(tempEnquiryList);
+
+    }
+  };
+
+
+
+  //connect To WebSocket
+  const connectToWebSocket = () => {
+    const newSocket = new WebSocket("ws://localhost:3000/ws");
+    setSocket(newSocket);
+  };
+
+  // console.log(pathLocation);
   useEffect(() => {
     rootTitle.textContent = "ADMIN - PROPERTIES";
     if (data) {
@@ -539,6 +750,8 @@ const ViewEditDeleteProperties = () => {
       checkLoginSession(data.loginToken).then((res) => {
         if (res === "Valid") {
           getPropertiesFromApi();
+          // getUserEnquiriesList();
+
         }
       });
     }
@@ -550,6 +763,41 @@ const ViewEditDeleteProperties = () => {
     }
 
   }, []);
+
+
+  // WebSocket connection
+  useEffect(() => {
+    if (socket) {
+      socket.onopen = () => {
+        console.log("WebSocket connection opened");
+      };
+
+      socket.onclose = (event) => {
+        console.log("WebSocket connection closed:", event.code, event.reason);
+      };
+
+      socket.onmessage = (event) => {
+        try {
+          const receivedMessage = JSON.parse(event.data);
+          const { User_id, msg, message_type } = receivedMessage;
+          if (message_type === "sam_user") {
+            if (User_id !== String(userId)) {
+              const currentDate = new Date();
+              let msgObj = {
+                enquiry_comments: msg,
+                enquiry_log_date: currentDate.toISOString(),
+                reply_from: isBank ? 0 : 1,
+              };
+              console.log("Received Message: ", receivedMessage);
+              setMessages((messages) => [...messages, msgObj]);
+            }
+          }
+        } catch (error) {
+          console.error("Error handling received message:", error);
+        }
+      };
+    }
+  }, [socket]);
 
   return (
     <Layout>
@@ -590,6 +838,7 @@ const ViewEditDeleteProperties = () => {
                 <section className="admin-view-all-properties">
                   <div className="container-fluid">
                     <div className="row">
+                      {/* all-properties mapping */}
                       {properties.map((property, Index) => {
                         const {
                           category,
@@ -643,7 +892,6 @@ const ViewEditDeleteProperties = () => {
                                   ) : (
                                     <></>
                                   )}
-
                                   {expected_price ? (
                                     <div className="text-capitalize">
                                       <span>Reserved Price: </span>
@@ -658,6 +906,7 @@ const ViewEditDeleteProperties = () => {
                                     <></>
                                   )}
                                   <div className="mt-3 d-flex">
+                                    {/* view current property button */}
                                     <button
                                       onClick={() => {
                                         viewCurrentProperty(property_id);
@@ -666,7 +915,7 @@ const ViewEditDeleteProperties = () => {
                                     >
                                       <i className="bi bi-eye-fill"></i>
                                     </button>
-
+                                    {/* Current property DataToUpdate button */}
                                     <button
                                       onClick={() => {
                                         getCurrentPropertyDataToUpdate(
@@ -680,7 +929,7 @@ const ViewEditDeleteProperties = () => {
                                     >
                                       <i className="bi bi-pencil-fill"></i>
                                     </button>
-
+                                    {/* Delete Property button */}
                                     <button
                                       data-bs-toggle="modal"
                                       data-bs-target="#confirmDeletePropertyModal"
@@ -691,6 +940,7 @@ const ViewEditDeleteProperties = () => {
                                     >
                                       <i className="bi bi-trash-fill"></i>
                                     </button>
+                                    {/* single-property-documents-upload */}
                                     <NavLink
                                       target="_blank"
                                       rel="noopener noreferrer"
@@ -709,6 +959,20 @@ const ViewEditDeleteProperties = () => {
                                     >
                                       <i className="bi bi-upload"></i>
                                     </NavLink>
+                                    {/* view current property enquiry details button */}
+                                    <button
+                                      onClick={() => {
+                                        getCurrentPropertyAllEnquires(
+                                          property_id, property_number,category
+                                        );
+                                        getCurrentPropertyAllEnquires(
+                                          property_id, property_number,category
+                                        );
+                                      }}
+                                      className="mx-2 btn btn-sm btn-outline-info property-button-wrapper"
+                                    >
+                                      <i className="bi bi-chat-text"></i>
+                                    </button>
                                   </div>
                                 </div>
                               </div>
@@ -1594,6 +1858,134 @@ const ViewEditDeleteProperties = () => {
               </section>
             </>
           </div>
+
+          {/* enquiriesPageRef */}
+          <div
+            className="col-xl-10 col-lg-9 col-md-8 d-none"
+            ref={enquiriesPageRef}
+          >
+            <>
+              <BreadCrumb
+                PropertyEnquiryPageActive={true}
+                backToAllPropertiesPage={backToAllPropertiesPage}
+              />
+              <section className="add-property-wrapper mb-4">
+                <div className="container-fluid">
+                  <h3 className="text-center fw-bold ">Enquiries</h3>
+
+                  <div className="row justify-content-between align-items-center">
+                    <div className="col-md-6 col-12 d-flex  mb-md-0 mb-3">
+                      <div className="text-start "><span className="fw-bold me-1">Property Number:</span> {selectedPropertyNumberForEnquiry}</div>
+                      <div className="text-end ms-5"><span className="fw-bold me-1">Property Type:</span> {selectedPropertyTypeForEnquiry}</div>
+                    </div>
+
+                    {/* search filter for property search */}
+                    <div className="col-md-6 d-flex justify-content-end">
+                      <div className="col-lg-6 me-4">
+                        <input
+                          type="search"
+                          className="form-control "
+                          placeholder="Search"
+                          // value={searchTerm}
+                          onChange={onEnquirySearchInputChange}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <hr />
+                  <div className="row justify-content-center">
+
+                    <div className="col-xl-12">
+                      {/* <div
+                        className={`${mainPageLoading ? "" : "d-none"
+                          } d-flex align-items-center justify-content-center`}
+                        style={{ minHeight: "75vh" }}
+                      >
+                        <CommonSpinner
+                          spinnerColor="primary"
+                          height="5rem"
+                          width="5rem"
+                          spinnerType="grow"
+                        />
+                      </div> */}
+                      {mainPageLoading ? (
+                        <>
+                          <CommonSpinner
+                            spinnerColor="primary"
+                            height="4rem"
+                            width="4rem"
+                            spinnerType="grow"
+                          />
+                        </>
+                      ) : enquiryList.length < 1 ? (
+                        <h4 className="text-center fw-bold custom-heading-color mt-4">
+                          No Enquiries Found !
+                        </h4>
+                      ) : (
+                        <>
+                          <div className="enquiry-list-table-wrapper">
+                            <table className="table table-striped table-bordered text-center">
+                              <thead>
+                                <tr>
+                                  <th scope="col">#</th>
+                                  {/* <th scope="col">Property Number</th>
+                                  <th scope="col">Type</th> */}
+                                  <th scope="col">User Name</th>
+                                  <th scope="col">
+                                    Date
+                                    <i
+                                      onClick={changeSortType}
+                                      className={`ms-3 bi bi-sort-${sortOptionText}`}
+                                    ></i>
+                                  </th>
+                                  <th scope="col">Action</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {enquiryList && enquiryList.map((enquiry, Index) => {
+                                  const {
+                                    enquiry_id,
+                                    property_number,
+                                    property_type,
+                                    user_name,
+                                    added_date,
+                                  } = enquiry;
+                                  return (
+                                    <tr key={Index}>
+                                      <th scope="row">{Index + 1}</th>
+                                      {/* <td>{property_number}</td> */}
+                                      {/* <td>{property_type}</td> */}
+                                      <td className="text-capitalize">{user_name}</td>
+                                      <td>{transformDateFormat(added_date)} </td>
+                                      <td>
+                                        <button
+                                          onClick={() => {
+                                            onViewEnquiryClick(enquiry_id);
+                                            setChatPersonOrBankName(enquiry_id, isBank);
+                                          }}
+                                          className="btn btn-primary"
+                                          data-bs-toggle="modal"
+                                          data-bs-target="#enquiryChatModal"
+                                        >
+                                          View
+                                        </button>
+                                      </td>
+                                    </tr>
+                                  );
+                                })}
+                              </tbody>
+                            </table>
+                          </div>
+                        </>
+                      )}
+
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </>
+          </div>
         </div>
       </div>
       {/* Modal */}
@@ -1648,6 +2040,117 @@ const ViewEditDeleteProperties = () => {
                 Delete Property
               </button>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/*enquiry chat modal */}
+      <div
+        className="modal fade"
+        id="enquiryChatModal"
+        tabIndex="-1"
+        aria-labelledby="chatModalLabel"
+        aria-hidden="true"
+        data-bs-backdrop="static"
+        data-bs-keyboard="false"
+      >
+        <div className="modal-dialog modal-lg modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header chatBox-modal-header">
+              <h5 className="modal-title">
+                Chat with {chatWith ? chatWith : ""}
+              </h5>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+                onClick={() => {
+                  // setConditionShouldCloseWebSocket(true);
+                  if (socket) {
+                    socket.close();
+                  }
+                }}
+              ></button>
+            </div>
+            <div
+              className="modal-body chatBox-modal-body"
+              style={{
+                maxHeight: "310px",
+                minHeight: "310px",
+                overflowY: "auto",
+              }}
+              ref={modalBodyRef}
+            >
+              {messages &&
+                messages.map((msg, index) => {
+                  let classToAdd = "";
+                  if (isBank) {
+                    if (msg.reply_from === 1) {
+                      classToAdd = "chatBox-sent";
+                    } else {
+                      classToAdd = "chatBox-received";
+                    }
+                  } else {
+                    if (msg.reply_from === 0) {
+                      classToAdd = "chatBox-sent";
+                    } else {
+                      classToAdd = "chatBox-received";
+                    }
+                  }
+                  return (
+                    <div
+                      key={index}
+                      className={`chatBox-message ${classToAdd}`}
+                    >
+                      <div className="chatBox-message-content">
+                        <div className="chatBox-message-text">
+                          {msg.enquiry_comments}
+                        </div>
+                        <div className="chatBox-message-date">
+                          {getIndianDateTimeOfMsg(msg.enquiry_log_date)}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
+            <form
+              onSubmit={sendMessage}
+              className="modal-footer chatBox-modal-footer container-fluid d-block"
+            >
+              <div className="row">
+                <div className="col-xl-9 col-lg-8 col-md-7">
+                  <input
+                    type="text"
+                    className="form-control chatBox-chat-input"
+                    placeholder="Type your message..."
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                  />
+                </div>
+                <div className="col-xl-3 col-lg-4 col-md-5 mt-md-0 mt-3">
+                  <button
+                    disabled={sendReplyBtnLoading ? true : false}
+                    type="submit"
+                    className="btn btn-light w-100"
+                  >
+                    {sendReplyBtnLoading ? (
+                      <>
+                        <span
+                          className="spinner-grow spinner-grow-sm me-2"
+                          role="status"
+                          aria-hidden="true"
+                        ></span>
+                        Sending....
+                      </>
+                    ) : (
+                      "Send"
+                    )}
+                  </button>
+                </div>
+              </div>
+            </form>
           </div>
         </div>
       </div>

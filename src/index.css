@@ -765,6 +765,10 @@ input:-webkit-autofill:active {
   scroll-behavior: smooth;
 }
 
+.enquiry-filter-row {
+  border-bottom: 1px solid lightgray;
+}
+
 .chatBox-modal-header {
   background: linear-gradient(0deg, rgba(2, 48, 251) 0%, rgb(0, 191, 255) 100%);
   color: white;
