@@ -7,7 +7,8 @@ import CommonSpinner from "../../CommonSpinner";
 import { transformDateFormat } from "../../CommonFunctions";
 import { w3cwebsocket as WebSocket } from "websocket";
 import { v4 as uuid } from "uuid";
-import { Form, FormControl, Button } from 'react-bootstrap';
+import ReactPaginate from 'react-paginate';
+
 
 let authHeader = "";
 let isBank = false;
@@ -21,6 +22,7 @@ const ViewEnquiryLists = () => {
     userId = data.userId;
   }
   const [enquiryList, setEnquiryList] = useState([]);
+  const [allDatabaseEnquiryList, setAllDatabaseEnquiryList] = useState([]);
   const [pageLoading, setPageLoading] = useState(false);
   const [messages, setMessages] = useState(null);
   const [newMessage, setNewMessage] = useState("");
@@ -30,6 +32,31 @@ const ViewEnquiryLists = () => {
   const [sendReplyBtnLoading, setSendReplyBtnLoading] = useState(false);
   const [chatWith, setChatWith] = useState("");
   const [sortOptionText, setSortOptionText] = useState("up");
+  const [itemOffset, setItemOffset] = useState(0);
+
+
+
+  //get User Enquiries List
+  const getUserEnquiriesList = async () => {
+    setPageLoading(true);
+
+    try {
+      const resFromApi = await axios.get(`/sam/v1/property/auth/user/enquiry`, {
+        headers: authHeader,
+      });
+      console.log(resFromApi);
+      if (resFromApi.data) {
+        setEnquiryList(resFromApi.data);
+        setAllDatabaseEnquiryList(resFromApi.data);
+        // console.log(resFromApi.data);
+        setPageLoading(false);
+      } else {
+        setPageLoading(false);
+      }
+    } catch (error) {
+      setPageLoading(false);
+    }
+  };
 
   // sort type for date
   const changeSortType = () => {
@@ -139,31 +166,52 @@ const ViewEnquiryLists = () => {
     }
   };
 
+  // on Enquiry Search Input Change
+  const onEnquirySearchInputChange = (event) => {
+    const input = event.target.value;
+    if (input.length > 0) {
+      const filtered = allDatabaseEnquiryList.filter(item =>
+        item.user_name.toLowerCase().includes(input.toLowerCase()) || item.property_number === input
+      );
+      setEnquiryList(filtered);
+    } else {
+      setEnquiryList(allDatabaseEnquiryList);
+
+    }
+  };
+
+
+  let itemsPerPage = 4;
+  //   const PER_PAGE = 10;
+  // const offset = currentPage * PER_PAGE;
+
+  const endOffset = itemOffset + itemsPerPage;
+  console.log(`Loading items from ${itemOffset} to ${endOffset}`);
+  const currentItems = enquiryList.slice(itemOffset, endOffset);
+  const pageCount = Math.ceil(allDatabaseEnquiryList.length / itemsPerPage);
+
+
+  const paginatedItems = () => {
+    // from an API endpoint with useEffect and useState)
+    console.log(itemOffset, endOffset);
+    setEnquiryList(allDatabaseEnquiryList.slice(itemOffset, endOffset));
+  }
+  // Invoke when user click to request another page.
+  const handlePageClick = (event) => {
+    const newOffset = (event.selected * itemsPerPage) % allDatabaseEnquiryList.length;
+    console.log(
+      `User requested page number ${event.selected}, which is offset ${newOffset}`
+    );
+    setItemOffset(newOffset);
+    // setEnquiryList(allDatabaseEnquiryList.slice(itemOffset, endOffset));
+    paginatedItems();
+  };
+
   useEffect(() => {
     // Scroll to the latest message whenever messages are updated
     scrollToBottomOfModalBody();
   }, [messages]);
 
-  //get User Enquiries List
-  const getUserEnquiriesList = async () => {
-    setPageLoading(true);
-
-    try {
-      const resFromApi = await axios.get(`/sam/v1/property/auth/user/enquiry`, {
-        headers: authHeader,
-      });
-      console.log(resFromApi);
-      if (resFromApi.data) {
-        setEnquiryList(resFromApi.data);
-        // console.log(resFromApi.data);
-        setPageLoading(false);
-      } else {
-        setPageLoading(false);
-      }
-    } catch (error) {
-      setPageLoading(false);
-    }
-  };
 
   // on click View Enquiry
   const onViewEnquiryClick = async (id) => {
@@ -186,6 +234,7 @@ const ViewEnquiryLists = () => {
 
   useEffect(() => {
     getUserEnquiriesList();
+    paginatedItems();
     // eslint-disable-next-line
   }, []);
 
@@ -236,125 +285,146 @@ const ViewEnquiryLists = () => {
         <div className="container-fluid wrapper">
           <h1 className="text-center">Enquiries</h1>
           <hr />
-          <div className="row px-md-4 enquiry-filter-row ">
+          <div className="row px-md-4 ">
 
 
-            <div className=" col-md-7 mb-md-0 mb-4 ">
-              <ul className="nav nav-tabs border-0 " id="myTab" role="tablist">
+            <div className=" col-md-6 mb-md-0 mb-4 p-0 pt-2">
+              <ul className="nav nav-tabs " id="myTab" role="tablist">
                 <li className="nav-item " role="presentation">
-                  <button className="nav-link active px-5 fs-5  text-uppercase" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">New</button>
+                  <button className="nav-link active px-5 fs-lg-5   text-uppercase" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Open</button>
                 </li>
                 <li className="nav-item" role="presentation">
-                  <button className="nav-link px-5 fs-5 text-uppercase" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Old</button>
+                  <button className="nav-link px-5 fs-lg-5 text-uppercase" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">
+                  {/* Replied in 2 weeks */}
+                  2 weeks Old
+                  </button>
                 </li>
                 <li className="nav-item" role="presentation">
-                  <button className="nav-link px-5 fs-5 text-uppercase" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact-tab-pane" type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false">Oldest</button>
+                  <button className="nav-link px-5 fs-lg-5 text-uppercase" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact-tab-pane" type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false">4 weeks Old</button>
                 </li>
                 <li className="nav-item" role="presentation">
-                  <button className="nav-link px-5 fs-5 text-uppercase" id="disabled-tab" data-bs-toggle="tab" data-bs-target="#disabled-tab-pane" type="button" role="tab" aria-controls="disabled-tab-pane" aria-selected="false" >All</button>
+                  <button className="nav-link px-5 fs-lg-5 text-uppercase" id="disabled-tab" data-bs-toggle="tab" data-bs-target="#disabled-tab-pane" type="button" role="tab" aria-controls="disabled-tab-pane" aria-selected="false"  >All</button>
                 </li>
               </ul>
 
             </div>
-              <div className="col-md-5 d-flex justify-content-end pb-3">
+
+            <div className="col-md-6  mb-md-0 mb-3 p-0 enquiry-filter-row d-flex justify-content-end ">
+              <div className=" col-md-5 me-5">
                 <input
                   type="search"
                   placeholder="Search"
-                  className="form-control w-50 "
-                // value={searchTerm}
-                // onChange={(e) => setSearchTerm(e.target.value)}
+                  className="form-control "
+                  // value={searchTerm}
+                  onChange={onEnquirySearchInputChange}
                 />
               </div>
-            <div className="col-md-6 mb-md-0 mb-3 ">
-
             </div>
 
           </div>
 
 
 
-          {/* <div className="tab-content" id="myTabContent">
-            <div className="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">1</div>
-            <div className="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">.2.</div>
-            <div className="tab-pane fade" id="contact-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabindex="0">3</div>
-            <div className="tab-pane fade" id="disabled-tab-pane" role="tabpanel" aria-labelledby="disabled-tab" tabindex="0">.4.</div>
-          </div> */}
-
-
-
-
-
-          <div className="row justify-content-center mt-3">
-            {pageLoading ? (
-              <>
-                <CommonSpinner
-                  spinnerColor="primary"
-                  height="4rem"
-                  width="4rem"
-                  spinnerType="grow"
-                />
-              </>
-            ) : enquiryList.length < 1 ? (
-              <h3 className="fw-bold text-center fw-bold custom-heading-color">
-                No Enquiries Found !
-              </h3>
-            ) : (
-              <>
-                <div className="enquiry-list-table-wrapper px-md-4" >
-                  <table className="table table-striped table-bordered text-center">
-                    <thead>
-                      <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Property Number</th>
-                        <th scope="col">Type</th>
-                        <th scope="col">User Name</th>
-                        <th scope="col">
-                          Date
-                          <i
-                            onClick={changeSortType}
-                            className={`ms-3 bi bi-sort-${sortOptionText}`}
-                          ></i>
-                        </th>
-                        <th scope="col">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {enquiryList.map((enquiry, Index) => {
-                        const {
-                          enquiry_id,
-                          property_number,
-                          property_type,
-                          added_date,
-                        } = enquiry;
-                        return (
-                          <tr key={Index}>
-                            <th scope="row">{Index + 1}</th>
-                            <td>{property_number}</td>
-                            <td>{property_type}</td>
-                            <td></td>
-                            <td>{transformDateFormat(added_date)} </td>
-                            <td>
-                              <button
-                                onClick={() => {
-                                  onViewEnquiryClick(enquiry_id);
-                                  setChatPersonOrBankName(enquiry_id, isBank);
-                                }}
-                                className="btn btn-primary"
-                                data-bs-toggle="modal"
-                                data-bs-target="#chatModal"
-                              >
-                                View
-                              </button>
-                            </td>
+          <div className="tab-content" id="myTabContent">
+            <div className="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabIndex="0">1</div>
+            <div className="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabIndex="0">.2.</div>
+            <div className="tab-pane fade" id="contact-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabIndex="0">3</div>
+            <div className="tab-pane fade" id="disabled-tab-pane" role="tabpanel" aria-labelledby="disabled-tab" tabIndex="0">
+              <div className="row justify-content-center mt-3">
+                {pageLoading ? (
+                  <>
+                    <CommonSpinner
+                      spinnerColor="primary"
+                      height="4rem"
+                      width="4rem"
+                      spinnerType="grow"
+                    />
+                  </>
+                ) : enquiryList.length < 1 ? (
+                  <h3 className="fw-bold text-center fw-bold custom-heading-color">
+                    No Enquiries Found !
+                  </h3>
+                ) : (
+                  <>
+                    <div className="enquiry-list-table-wrapper px-md-4" >
+                      <table className="table table-striped table-bordered text-center">
+                        <thead>
+                          <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Property Number</th>
+                            <th scope="col">Type</th>
+                            <th scope="col">{isBank ? "User Name":"Bank Name"}</th>
+                            <th scope="col">
+                              Date
+                              <i
+                                onClick={changeSortType}
+                                className={`ms-3 bi bi-sort-${sortOptionText}`}
+                              ></i>
+                            </th>
+                            <th scope="col">Action</th>
                           </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </>
-            )}
+                        </thead>
+                        <tbody>
+                          {enquiryList.map((enquiry, Index) => {
+                            const {
+                              enquiry_id,
+                              property_number,
+                              property_type,
+                              user_name,
+                              added_date,
+                            } = enquiry;
+                            return (
+                              <tr key={Index}>
+                                <th scope="row">{Index + 1}</th>
+                                <td>{property_number}</td>
+                                <td>{property_type}</td>
+                                <td>{user_name}</td>
+                                <td>{transformDateFormat(added_date)} </td>
+                                <td>
+                                  <button
+                                    onClick={() => {
+                                      onViewEnquiryClick(enquiry_id);
+                                      setChatPersonOrBankName(enquiry_id, isBank);
+                                    }}
+                                    className="btn btn-primary"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#chatModal"
+                                  >
+                                    View
+                                  </button>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                    <nav aria-label="Page navigation example text-decoration-none">
+
+                      <ReactPaginate className="pagination enquiry-pagination justify-content-center"
+                        breakLabel="..."
+                        nextLabel="next >"
+                        onPageChange={handlePageClick}
+                        pageRangeDisplayed={5}
+                        pageCount={pageCount}
+                        previousLabel="< previous"
+                        renderOnZeroPageCount={null}
+                      />
+
+
+
+                    </nav>
+                  </>
+                )}
+              </div>
+            </div>
           </div>
+
+
+
+
+
+
         </div>
 
         <div
@@ -467,7 +537,7 @@ const ViewEnquiryLists = () => {
           </div>
         </div>
       </section>
-    </Layout>
+    </Layout >
   );
 };
 
