@@ -12,6 +12,7 @@ import ScrollButton from "./components/ScrollButton";
 import Contact from "./components/5.Contact/Contact";
 import PageNotFound from "./components/PageNotFound";
 import AdminHomePage from "./Admin/AdminHomePage";
+import BankRegistrationLinkPage from "./Admin/BankRegistrationLinkPage";
 import BankRegistrationPage from "./Admin/BankRegistrationPage";
 import ViewEditDeleteProperties from "./Admin/Property/ViewEditDeleteProperties";
 import ViewProperty from "./Admin/Property/ViewProperty";
@@ -124,7 +125,7 @@ function App() {
             path="/login"
             element={
               // <ProtectedPages>
-                <LoginMainPage />
+              <LoginMainPage />
               // </ProtectedPages>
             }
           />
@@ -148,7 +149,7 @@ function App() {
             path="/forgot-password/reset-password"
             element={
               // <ProtectForgotPasswordPage>
-                <ForgotAndResetPassword />
+              <ForgotAndResetPassword />
               // </ProtectForgotPasswordPage>
             }
           />
@@ -207,12 +208,16 @@ function App() {
           />
           {/* <Route path="/bank-registration" element={<BankRegistrationPage />} /> */}
           <Route
-            path={`/admin/bank-registration`}
+            path={`/admin/bank-registration-link`}
             element={
               <AdminProtected>
-                <BankRegistrationPage />
+                <BankRegistrationLinkPage />
               </AdminProtected>
             }
+          />
+          <Route
+            path={`/bank-registration`}
+            element={<BankRegistrationPage />}
           />
 
           <Route
@@ -276,10 +281,10 @@ function App() {
 
           <Route path="*" element={<PageNotFound />} />
           <Route path="/access-denied" element={<AccessDeniedPage />} />
-          
+
         </Routes>
       </ScrollToTop>
-      <ScrollButton /> <CommonSubscriptionNotificationMsg /> 
+      <ScrollButton /> <CommonSubscriptionNotificationMsg />
     </>
   );
 }

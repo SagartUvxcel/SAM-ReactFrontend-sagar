@@ -340,6 +340,7 @@ const AddProperty = () => {
                               Basic details
                             </h5>
                           </div>
+                          {/* Property type */}
                           <div className="col-xl-4 col-md-6">
                             <div className="form-group">
                               <label
@@ -374,6 +375,7 @@ const AddProperty = () => {
                               </select>
                             </div>
                           </div>
+                          {/* Property Number */}
                           <div className="col-xl-4 col-md-6 mt-3 mt-md-0">
                             <div className="form-group">
                               <label
@@ -393,6 +395,7 @@ const AddProperty = () => {
                               />
                             </div>
                           </div>
+                          {/* Bank */}
                           <div className="col-xl-4 col-md-6 mt-3 mt-xl-0">
                             <div className="form-group">
                               <label
@@ -451,6 +454,7 @@ const AddProperty = () => {
                                 />}
                             </div>
                           </div>
+                          {/* branch */}
                           <div
                             className="col-xl-4 col-md-6 mt-3 d-none"
                             ref={branchSelectBoxRef}
@@ -500,6 +504,7 @@ const AddProperty = () => {
                                 />}
                             </div>
                           </div>
+                          {/* Title clear Property */}
                           <div className="col-xl-4 col-md-6 mt-3">
                             <div className="form-group">
                               <label
@@ -608,6 +613,7 @@ const AddProperty = () => {
                               </div>
                             </div>
                           </div> */}
+                          {/* Territory */}
                           <div className="col-xl-4 col-md-6 mt-3">
                             <div className="form-group">
                               <label
@@ -655,6 +661,7 @@ const AddProperty = () => {
                           <div className="col-12">
                             <h5 className="fw-bold text-primary">Area</h5>
                           </div>
+                          {/* Saleable area */}
                           <div className="col-xl-4 col-md-6">
                             <div className="form-group">
                               <label
@@ -674,6 +681,7 @@ const AddProperty = () => {
                               />
                             </div>
                           </div>
+                          {/* Carpet area (sq. ft.) */}
                           <div className="col-xl-4 col-md-6 mt-3 mt-md-0">
                             <div className="form-group">
                               <label
@@ -707,6 +715,7 @@ const AddProperty = () => {
                           <div className="col-12">
                             <h5 className="fw-bold text-primary">Pricing</h5>
                           </div>
+                          {/* Market price (Rs.) */}
                           <div className="col-xl-4 col-md-6">
                             <div className="form-group">
                               <label
@@ -726,6 +735,7 @@ const AddProperty = () => {
                               />
                             </div>
                           </div>
+                          {/* Ready reckoner price (Rs.) */}
                           <div className="col-xl-4 col-md-6 mt-3 mt-md-0">
                             <div className="form-group">
                               <label
@@ -745,6 +755,7 @@ const AddProperty = () => {
                               />
                             </div>
                           </div>
+                          {/* Reserved Price (Rs.) */}
                           <div className="col-xl-4 col-md-6 mt-3 mt-xl-0">
                             <div className="form-group">
                               <label

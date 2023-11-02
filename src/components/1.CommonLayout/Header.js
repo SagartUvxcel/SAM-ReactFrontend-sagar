@@ -140,7 +140,7 @@ function Header() {
               {/* If user is loggedIn then show these navbar links in dropdown */}
               {roleId === 1 && isBank === false ? (
                 <li>
-                  <NavLink to="/admin/bank-registration" className="nav-link">
+                  <NavLink to="/admin/bank-registration-link" className="nav-link">
                   <i className="bi bi-bank2 me-2 text-light"></i>
                     Bank Registration
                   </NavLink>

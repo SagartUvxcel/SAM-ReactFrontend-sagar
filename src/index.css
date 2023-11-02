@@ -528,6 +528,10 @@ input:-webkit-autofill:active {
 }
 
 /* <----- Registration ----> */
+
+.bank-registration-link-form .form-bank-select{
+  font-size: 0.9rem !important;
+}
 .registration-wrapper .form-wrapper-card {
   border: none !important;
   position: relative;
@@ -767,6 +771,10 @@ input:-webkit-autofill:active {
 
 .enquiry-filter-row {
   border-bottom: 1px solid lightgray;
+}
+
+.enquiry-filter-row .search_input {
+ /* width:200px !important */
 }
 
 .chatBox-modal-header {

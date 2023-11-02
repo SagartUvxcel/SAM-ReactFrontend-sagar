@@ -36,7 +36,7 @@ const AdminHomePage = () => {
           headers: { Authorization: authHeaders },
         })
         .then((res) => {
-          console.log(res);
+          // console.log(res);
           individualUsersCount = res.data.individual_count;
           organizationalUsersCount = res.data.org_count;
         });

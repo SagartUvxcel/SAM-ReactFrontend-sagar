@@ -1,0 +1,46 @@
+[
+  {
+    "contact_details": {
+      "flat_number": "11",
+      "building_name": "Jai Ganesh",
+      "society_name": "Jai Ganesh society",
+      "plot_number": "33",
+      "locality": "Hadapsar",
+      "landmark": "pune",
+      "state": 1,
+      "zip": "412011",
+      "city": 1,
+      "address": "Pune"
+    },
+    "bank_name": "Bank of Baroda",
+    "email": "sagart@uvxcel.com",
+    "mobile_number": "+918888888888",
+    "branch_name": "Uruli,pune-28",
+    "branch_code": "23214",
+    "ifsc_code": "SBIB0000234",
+    "branch_sftp": "sabi3562",
+    "branch_UUID": "12322343-3323-2212-2232-123456781234",
+    "landline_number": "8775743355"
+  },
+  {
+    "bank_id": 1,
+    "branch_name": "Lokhandwala",
+    "branch_code": "25",
+    "ifsc_code": "BKID0001",
+    "branch_sftp": "BOI",
+    "address": {
+      "flat_number": 401,
+      "building_name": "Vinay Tower",
+      "society_name": "Akurli",
+      "plot_number": 21,
+      "locality": "Lokhandwala",
+      "landmark": "401",
+      "city": 0,
+      "state": 1,
+      "zip_code": 400101
+    },
+    "email": "lokhandwala@boi.com",
+    "landline": "22859882",
+    "mobile_number": "8547569850"
+  }
+]
