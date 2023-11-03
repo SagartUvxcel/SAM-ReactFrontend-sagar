@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Layout from "../components/1.CommonLayout/Layout";
-import CommonFormFields from "../components/7.Registration/CommonFormFields";
+// import CommonFormFields from "../components/7.Registration/CommonFormFields";
 import axios from "axios";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, } from "react-router-dom";
 import "react-phone-input-2/lib/style.css";
 import bankRegistrationLinkPage from "../images/bankRegistrationLinkPage.svg";
 import { toast } from "react-toastify";
@@ -26,6 +26,7 @@ const BankRegistrationPage = () => {
     const goTo = useNavigate();
     const deselectStateInput = useRef();
     const navigate = useNavigate();
+
 
     const [validationDetails, setValidationDetails] = useState({});
     // Object destructuring.
@@ -96,6 +97,61 @@ const BankRegistrationPage = () => {
     // useState to store all states coming from api.
     const [states, setStates] = useState([]);
 
+
+    // get email Token From URL
+    let tokenFromEmailUrl = "";
+    const getEmailTokenFromURL = async () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        tokenFromEmailUrl = urlParams.get("token");
+        console.log(tokenFromEmailUrl);
+        if (tokenFromEmailUrl) {
+            const emailToken = tokenFromEmailUrl;
+
+            // posting data 
+            const dataToPost = JSON.stringify({ token: emailToken })
+            console.log(dataToPost);
+
+            try {
+                await axios.post(`/sam/v1/bank-registration/branch/token/verify`, dataToPost)
+                    .then((res) => {
+                        console.log(res.data);
+
+                        if (res.data) {
+                            const emailValue = res.data.email;
+                            const bank_name_value = res.data.bank_name;
+
+                            if (emailValue && bank_name_value) {
+                                console.log(bank_name_value, emailValue);
+                                setBankEmailFromURL({ bank_name_value, emailValue });
+                                setFormData({ ...formData, bank_name: bank_name_value, email: emailValue });
+                                setBankRegistrationPageDisplay({
+                                    display: true,
+                                });
+                                setShowLoader(false);
+
+                            } else {
+                                setBankRegistrationPageDisplay({
+                                    display: false,
+                                });
+                                setShowLoader(false);
+                                navigate("/access-denied");
+                            }
+                            localStorage.setItem("bankRegistrationEmail", emailValue);
+                        }
+                    });
+            } catch (error) {
+                setShowLoader(false);
+                console.log("failed to send token data for link validation.")
+                console.log(error);
+            }
+
+        } else {
+
+            setShowLoader(false);
+            navigate("/access-denied");
+        }
+
+    };
 
     // Function to get all states from api so that we can map states in select state field.
     const getAllSates = async () => {
@@ -171,10 +227,9 @@ const BankRegistrationPage = () => {
         } else if (name === "state") {
             SetIdOfState(value);
         } else if (name === "email") {
-            setFormData({
-                ...formData,
-                contact_details: { ...formData.contact_details, [name]: value },
-            });
+            // console.log(name,value);
+            setFormData({ ...formData, [name]: value }
+            );
             // If input field is email then post its value to api for validating.
             try {
                 await axios
@@ -451,6 +506,7 @@ const BankRegistrationPage = () => {
                 zipValidationByState(value, parseInt(IdOfState));
             }
         } else if (name === "email") {
+            setFormData({ ...formData, [name]: value })
             setValidationDetails({
                 ...validationDetails,
                 emailValidationMessage: "",
@@ -574,21 +630,19 @@ const BankRegistrationPage = () => {
 
     // Function will run after Individual Form submit button is clicked.
     const onBankFormSubmit = async (e) => {
-        console.log(JSON.stringify(formData));
-        console.log(formData);
-        console.log(addressDetails);
+
         e.preventDefault();
-        const fieldsToDelete = [
-            "bank_name",
-            "branch_name",
-            "branch_code",
-            "ifsc_code",
-            "branch_sftp",
-            "branch_UUID",
-        ];
-        fieldsToDelete.forEach((field) => {
-            delete formData[field];
-        });
+        // const fieldsToDelete = [
+        //     "bank_name",
+        //     "branch_name",
+        //     "branch_code",
+        //     "ifsc_code",
+        //     "branch_sftp",
+        //     "branch_UUID",
+        // ];
+        // fieldsToDelete.forEach((field) => {
+        //     delete formData[field];
+        // });
 
         if (addressValues.labelValue === "Add Details") {
             setAlertDetails({
@@ -599,8 +653,10 @@ const BankRegistrationPage = () => {
         } else {
             setLoading(true);
             try {
+                console.log(formData);
+                console.log(formData.bank_name);
                 await axios
-                    .post(`/sam/v1/bank-registration/branch`, JSON.stringify(formData))
+                    .post(`/sam/v1/bank-registration/branch`, formData)
                     .then(async (res) => {
                         if (res.data.status === 0) {
                             setLoading(false);
@@ -632,61 +688,7 @@ const BankRegistrationPage = () => {
     };
 
 
-    // get email Token From URL
-    let tokenFromEmailUrl = "";
 
-    const getEmailTokenFromURL = async () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        tokenFromEmailUrl = urlParams.get("token");
-        console.log(tokenFromEmailUrl);
-        if (tokenFromEmailUrl) {
-            const emailToken = tokenFromEmailUrl;
-
-            // posting data 
-            const dataToPost = JSON.stringify({ token: emailToken })
-            console.log(dataToPost);
-
-            try {
-                await axios.post(`/sam/v1/bank-registration/branch/token/verify`, dataToPost)
-                    .then((res) => {
-                        console.log(res.data);
-
-                        if (res.data) {
-
-                            const emailValue = res.data.email;
-                            const bank_name_value = res.data.bank_name;
-                            if (emailValue && bank_name_value) {
-                                setBankEmailFromURL({ bank_name_value, emailValue });
-                                setFormData({ ...formData, bank_name: bank_name_value, email: emailValue });
-                                // setFormData({ ...formData,  });
-                                setBankRegistrationPageDisplay({
-                                    display: true,
-                                });
-                                setShowLoader(false);
-
-                            } else {
-                                setBankRegistrationPageDisplay({
-                                    display: false,
-                                });
-                                setShowLoader(false);
-                                navigate("/access-denied");
-                            }
-                            localStorage.setItem("bankRegistrationEmail", emailValue);
-                        }
-                    });
-            } catch (error) {
-                setShowLoader(false);
-                console.log("failed to send token data for link validation.")
-                console.log(error);
-            }
-
-        } else {
-
-            setShowLoader(false);
-            navigate("/access-denied");
-        }
-
-    };
 
     // useEffect functions
     useEffect(() => {
@@ -941,8 +943,7 @@ const BankRegistrationPage = () => {
                                                                             type="email"
                                                                             className="form-control"
                                                                             placeholder="XXX@YYY.com"
-                                                                            value={bankEmailFromURL.emailValue}
-                                                                            disabled
+                                                                            value={formData.email}
                                                                             required
                                                                         />
                                                                         <span
@@ -1052,6 +1053,7 @@ const BankRegistrationPage = () => {
                                                                                 e.preventDefault();
                                                                                 e.target.closest("form").reset();
                                                                                 resetValues();
+                                                                                goTo("/");
                                                                             }}
                                                                         >
                                                                             Cancel
@@ -1331,7 +1333,7 @@ const BankRegistrationPage = () => {
                                                             <span className="text-danger fw-bold">*</span>
                                                         </label>
                                                         <input
-                                                            type="text"
+                                                            type="number"
                                                             onChange={onInputChange}
                                                             id="zip"
                                                             onBlur={onInputBlur}

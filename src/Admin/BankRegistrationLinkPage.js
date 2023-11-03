@@ -74,23 +74,19 @@ const BankRegistrationLinkPage = () => {
         console.log(formData);
         const dataToPost = JSON.stringify(formData);
         console.log(dataToPost);
-        const fieldsToDelete = [
-            "bank_name",
-            "email",
-        ];
-        fieldsToDelete.forEach((field) => {
-            delete formData[field];
-        });
-
+      
         setLoading(true);
         try {
-            await axios.post(`/sam/v1/bank-registration/branch/token`, dataToPost)
+            await axios.post(`/sam/v1/bank-registration/auth/branch/token`, dataToPost ,{
+                headers:authHeader
+            })
                 .then((res) => {
                     if (res.data.status === 0) {
                         console.log(res);
                         setLoading(false);
                         setFormData({});
                         toast.success("Send Registration Link Successfully !");
+                        e.target.reset();
                     } else {
                         setLoading(false);
                         toast.warning("Internal server error");
