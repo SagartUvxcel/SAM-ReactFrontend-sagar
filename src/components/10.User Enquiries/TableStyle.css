@@ -18,7 +18,7 @@
 }
 
 .enquiry-table {
-  width: 105%;
+  width: 100%;
   display: grid;
   overflow-x: auto;
   overflow-y: hidden;
@@ -42,7 +42,7 @@
 .enquiry-table td {
   text-align: center;
   padding: 16px 20px;
-  min-width: 100px;
+  /* min-width: 100px; */
   border:1px solid #dee2e6 !important;
 
 }

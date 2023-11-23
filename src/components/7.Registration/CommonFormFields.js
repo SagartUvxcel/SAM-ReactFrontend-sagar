@@ -13,7 +13,7 @@ const CommonFormFields = ({
   onMobileNumberInputBlur,
   onMobileNumberInputChange,
 }) => {
-  const { emailValidationMessage, mobileValidationMessage } = validationDetails;
+  const { emailValidationMessage, mobileValidationMessage,landlineNumberValidationMessage, landlineNumberValidationColor } = validationDetails;
   const { addressValue, labelValue, textAreaVisibility } = addressValues;
 
   return (
@@ -61,9 +61,8 @@ const CommonFormFields = ({
             required
           />
           <span
-            className={`pe-1 ${
-              emailValidationMessage ? "text-danger" : "d-none"
-            }`}
+            className={`pe-1 ${emailValidationMessage ? "text-danger" : "d-none"
+              }`}
           >
             {emailValidationMessage}
           </span>
@@ -77,12 +76,19 @@ const CommonFormFields = ({
         </div>
         <div className="col-lg-2 mb-lg-0 mb-2">
           <input
+            onChange={onInputChange}
             onBlur={onInputBlur}
             name="landline_number"
             type="Number"
             placeholder="Landline"
-            className="form-control "
+            className={`form-control border-${landlineNumberValidationColor}`}
           />
+           <span
+            className={`pe-1 ${landlineNumberValidationMessage ? "text-danger" : "d-none"
+              }`}
+          >
+            {landlineNumberValidationMessage}
+          </span>
         </div>
         <div className="col-lg-2 mb-lg-0 mb-2">
           Mobile Number<span className="text-danger fw-bold">*</span>
@@ -106,9 +112,8 @@ const CommonFormFields = ({
           />
 
           <span
-            className={`pe-1 ${
-              mobileValidationMessage ? "text-danger" : "d-none"
-            }`}
+            className={`pe-1 ${mobileValidationMessage ? "text-danger" : "d-none"
+              }`}
           >
             {mobileValidationMessage}
           </span>

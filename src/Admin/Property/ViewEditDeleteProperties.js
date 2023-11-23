@@ -63,6 +63,7 @@ const ViewEditDeleteProperties = () => {
   ] = useState(true);
   const confirmDeletePropertyInputRef = useRef();
 
+  // get Properties From Api
   const getPropertiesFromApi = async () => {
     // Hide pagination while loading.
     if (paginationRef) {
@@ -78,7 +79,7 @@ const ViewEditDeleteProperties = () => {
       dataToPost,
       { headers: authHeader }
     );
-    // console.log(propertiesRes.data)
+
     const propertyCountRes = await axios.get(
       `/sam/v1/property/auth/property-count`,
       { headers: authHeader }
@@ -90,7 +91,6 @@ const ViewEditDeleteProperties = () => {
     arr && arr.forEach((type) => {
       totalCount += type.count;
     });
-
     setTotalPropertyCount(totalCount);
 
     let totalPages = Math.ceil(totalCount / propertiesPerPage);
@@ -98,7 +98,7 @@ const ViewEditDeleteProperties = () => {
       setPageCount(totalPages);
     }
 
-    if (propertiesRes.data.length > 0) {
+    if (propertiesRes.data !== null && propertiesRes.data.length > 0) {
       paginationRef.current.classList.remove("d-none");
       setProperties(propertiesRes.data);
     } else {
@@ -107,6 +107,7 @@ const ViewEditDeleteProperties = () => {
     setLoading(false);
   };
 
+  // toggleActivePageClass
   const toggleActivePageClass = (activePage) => {
     let arr = document.querySelectorAll(".page-item");
     arr && arr.forEach((pageItem) => {
@@ -144,6 +145,7 @@ const ViewEditDeleteProperties = () => {
     return propertiesRes.data;
   };
 
+  // delete Property
   const deleteProperty = async (propertyId) => {
     try {
       await axios
@@ -507,7 +509,7 @@ const ViewEditDeleteProperties = () => {
   };
 
   // Current Property DataToUpdate button click
-  const getCurrentPropertyAllEnquires = async (propertyId, property_number,category) => {
+  const getCurrentPropertyAllEnquires = async (propertyId, property_number, category) => {
     setSelectedPropertyNumberForEnquiry(property_number);
     setSelectedPropertyTypeForEnquiry(category);
     setMainPageLoading(true);
@@ -828,11 +830,11 @@ const ViewEditDeleteProperties = () => {
                     spinnerType="grow"
                   />
                 </div>
-              ) : !properties ? (
+              ) : properties.length === 0 ? (
                 <div className="d-flex align-items-center justify-content-center mt-5">
-                  <h1 className="fw-bold custom-heading-color">
-                    No Properties Found :(
-                  </h1>
+                  <h3 className="fw-bold custom-heading-color">
+                    No Properties Found !
+                  </h3>
                 </div>
               ) : (
                 <section className="admin-view-all-properties">
@@ -960,19 +962,19 @@ const ViewEditDeleteProperties = () => {
                                       <i className="bi bi-upload"></i>
                                     </NavLink>
                                     {/* view current property enquiry details button */}
-                                    <button
+                                    {isBank ? <button
                                       onClick={() => {
                                         getCurrentPropertyAllEnquires(
-                                          property_id, property_number,category
+                                          property_id, property_number, category
                                         );
                                         getCurrentPropertyAllEnquires(
-                                          property_id, property_number,category
+                                          property_id, property_number, category
                                         );
                                       }}
                                       className="mx-2 btn btn-sm btn-outline-info property-button-wrapper"
                                     >
                                       <i className="bi bi-chat-text"></i>
-                                    </button>
+                                    </button>:<></>}
                                   </div>
                                 </div>
                               </div>

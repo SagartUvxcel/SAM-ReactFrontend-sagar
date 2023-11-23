@@ -104,7 +104,7 @@ const LoginMainPage = () => {
               })
             );
             setLoading(false);
-            is_bank === true ? goTo("/bank") : goTo("/edit-details");
+            is_bank === true ? goTo("/bank") : goTo("/");
           } else {
             setLoading(false);
             setAlertDetails({

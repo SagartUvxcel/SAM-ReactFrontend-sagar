@@ -44,5 +44,25 @@
     "branch_UUID": "12322343-3323-2212-2232-123456781234",
     "mobile_number": "+918888888888",
     "landline_number": "8666666667"
+  },
+
+  {
+    "contact_details": {
+      "user_type": "Individual User",
+      "role_id": 2,
+      "locality": "Hadapsar",
+      "state": 1,
+      "city": 1,
+      "address": "Pune",
+      "zip": 411028,
+      "email": "sagart@uvxcel.com",
+      "landline_number": 8888853940,
+      "mobile_number": "+919867545432"
+    },
+    "first_name": "sagar",
+    "middle_name": "c",
+    "last_name": "Tilekar",
+    "aadhar_number": "345623417865",
+    "pan_number": "AYPYG0808Q"
   }
 ]

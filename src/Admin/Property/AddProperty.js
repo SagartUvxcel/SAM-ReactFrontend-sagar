@@ -269,35 +269,35 @@ const AddProperty = () => {
       }
     } else {
       console.log(formData);
-      // try {
-      //   console.log(formData);
-      //   await axios
-      //     .post(`/sam/v1/property/auth/single-property`, formData, {
-      //       headers: authHeader,
-      //     })
-      //     .then((res) => {
-      //       if (res.data.msg === 0) {
-      //         localStorage.setItem("upload-doc", JSON.stringify({
-      //           number: formData.property_number,
-      //           id: null,
-      //         }));
-      //         localStorage.setItem("property_number", formData.property_number);
-      //         resetValidationsOnSubmit();
-      //         localStorage.setItem("singlePropertySuccess", true);
-      //         e.target.reset();
-      //         openInNewTab(
-      //           `${isBank ? "/bank" : "/admin"
-      //           }/property/single-property-documents-upload`
-      //         );
-      //       } else if (res.data.msg === 2) {
-      //         toast.error(
-      //           `Property with property number: ${formData.property_number} already exists`
-      //         );
-      //       }
-      //     });
-      // } catch (error) {
-      //   toast.error("Internal server error");
-      // }
+      try {
+        console.log(formData);
+        await axios
+          .post(`/sam/v1/property/auth/single-property`, formData, {
+            headers: authHeader,
+          })
+          .then((res) => {
+            if (res.data.msg === 0) {
+              localStorage.setItem("upload-doc", JSON.stringify({
+                number: formData.property_number,
+                id: null,
+              }));
+              localStorage.setItem("property_number", formData.property_number);
+              resetValidationsOnSubmit();
+              localStorage.setItem("singlePropertySuccess", true);
+              e.target.reset();
+              openInNewTab(
+                `${isBank ? "/bank" : "/admin"
+                }/property/single-property-documents-upload`
+              );
+            } else if (res.data.msg === 2) {
+              toast.error(
+                `Property with property number: ${formData.property_number} already exists`
+              );
+            }
+          });
+      } catch (error) {
+        toast.error("Internal server error");
+      }
     }
   };
   useEffect(() => {

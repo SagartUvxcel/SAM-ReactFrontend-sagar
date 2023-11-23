@@ -55,7 +55,7 @@ function Home() {
         banks: allBanks.data,
         assetCategory: assetCategories.data,
       });
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const [searchBtnDisabled, setSearchBtnDisabled] = useState(true);
@@ -180,7 +180,7 @@ function Home() {
             {/* 5 select boxes */}
             <div className="d-flex justify-content-center">
               <div className="row five-box-row">
-                <div className="col-xl-2 col-lg-3 col-md-4 col-12">
+                <div className="col-lg-3 col-md-4 col-12">
                   <div className="inner-box">
                     <label htmlFor="state">State</label>
                     <div className="select-div">
@@ -194,19 +194,19 @@ function Home() {
                         <option value=""></option>
                         {states
                           ? states.map((state, Index) => {
-                              return (
-                                <option key={Index} value={state.state_id}>
-                                  {state.state_name}
-                                </option>
-                              );
-                            })
+                            return (
+                              <option key={Index} value={state.state_id}>
+                                {state.state_name}
+                              </option>
+                            );
+                          })
                           : ""}
                       </select>
                     </div>
                   </div>
                 </div>
                 <div
-                  className="col-xl-2 col-lg-3 col-md-4 col-12  mt-3 mt-md-0"
+                  className="col-lg-3 col-md-4 col-12  mt-3 mt-md-0"
                   id="city-col"
                 >
                   <div className="inner-box">
@@ -222,18 +222,18 @@ function Home() {
                         <option value=""></option>
                         {cities
                           ? cities.map((city, Index) => {
-                              return (
-                                <option key={Index} value={city.city_id}>
-                                  {city.city_name}
-                                </option>
-                              );
-                            })
+                            return (
+                              <option key={Index} value={city.city_id}>
+                                {city.city_name}
+                              </option>
+                            );
+                          })
                           : ""}
                       </select>
                     </div>
                   </div>
                 </div>
-                <div className="col-xl-2 col-lg-3 col-md-4 col-12 mt-3 mt-md-0">
+                <div className=" col-lg-3 col-md-4 col-12 mt-3 mt-md-0">
                   <div className="inner-box">
                     <label htmlFor="asset">Asset Category</label>
                     <div className="select-div">
@@ -247,12 +247,12 @@ function Home() {
                         <option value=""></option>
                         {assetCategory
                           ? assetCategory.map((category, Index) => {
-                              return (
-                                <option key={Index} value={category.type_id}>
-                                  {category.type_name}
-                                </option>
-                              );
-                            })
+                            return (
+                              <option key={Index} value={category.type_id}>
+                                {category.type_name}
+                              </option>
+                            );
+                          })
                           : ""}
                       </select>
                     </div>
@@ -265,9 +265,8 @@ function Home() {
             <div className="row justify-content-center py-4 search-btn-wrapper">
               <div className="text-center">
                 <button
-                  className={`btn btn-primary common-btn-font ${
-                    searchBtnDisabled ? "disabled" : ""
-                  }`}
+                  className={`btn btn-primary common-btn-font ${searchBtnDisabled ? "disabled" : ""
+                    }`}
                   onClick={navigateToDestination}
                 >
                   Search

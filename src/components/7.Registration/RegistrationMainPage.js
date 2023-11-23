@@ -8,6 +8,10 @@ import { useRef } from "react";
 import { rootTitle } from "../../CommonFunctions";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
 
+// regular expression 
+const landlineNumberRegularExp = /^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/
+
+
 const Registration = () => {
   const goTo = useNavigate();
   const deselectStateInput = useRef();
@@ -88,6 +92,8 @@ const Registration = () => {
     cinValidationMessage,
     zipCodeValidationColor,
     zipCodeValidationMessage,
+    landlineNumberValidationMessage,
+    landlineNumberValidationColor,
   } = validationDetails;
 
   // Things to be changed when we change form i.e. either individual or organization.
@@ -619,12 +625,27 @@ const Registration = () => {
           [name]: parseInt(value),
         },
       });
-    }
+    }else if (name === "landline_number") {
+      if (landlineNumberRegularExp.test(value) || value.length === 0) {
+          setValidationDetails({
+              ...validationDetails,
+              landlineNumberValidationMessage: "",
+          });
+          style.borderColor = "";
+      } else {
+          setValidationDetails({
+              ...validationDetails,
+              landlineNumberValidationMessage: "Invalid Landline Number Entered",
+          });
+          style.borderColor = "red";
+      }
+
+  }
   };
 
   // Function will run after Individual Form submit button is clicked.
   const onIndividualFormSubmit = async (e) => {
-    console.log(formData);
+    console.log(JSON.stringify(formData));
     console.log(addressDetails);
     e.preventDefault();
     const fieldsToDelete = [
@@ -647,6 +668,7 @@ const Registration = () => {
     } else {
       setLoading(true);
       try {
+        console.log(formData);
         await axios
           .post(`/sam/v1/customer-registration/individual-customer`, formData)
           .then(async (res) => {

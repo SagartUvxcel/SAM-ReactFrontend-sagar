@@ -4,6 +4,7 @@ import Layout from "../1.CommonLayout/Layout";
 import { NavLink } from "react-router-dom";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import SubscriptionPage_access_denied_svg from "../../images/SubscriptionPage_access_denied_svg.svg";
 import "./CardElementStyles.css";
 import { transformDateFormat } from "../../CommonFunctions";
 
@@ -101,7 +102,7 @@ const Subscription = () => {
   // subscription Plans
   const [plans, setPlans] = useState(); //all subriction plans
   const [activePlans, setActivePlans] = useState(); //all subriction plans
-  const [selectedPlan, setSelectedPlan] = useState({plan_id:""});
+  const [selectedPlan, setSelectedPlan] = useState({ plan_id: "" });
   // const [subscriptionPlanStatus, setSubscriptionPlanStatus] = useState(planStatus);
   // const [upGradePlanStatus, setUpGradePlanStatus] = useState(true);
   // const dataFromPaymentPage = location.state ? location.state.subscriptionStatus.isActive : data.subscription_status;
@@ -268,20 +269,10 @@ const Subscription = () => {
     }
   }
 
-  // default active plans
-  // const defaultActivePlans = () => {
-  //   if (plans) {
-  //     const freeTrial = plans.filter(plan => plan.plan_id === 1)[0];
-  //     setSelectedPlan(freeTrial);
-  //   }
-  // }
-
-
   // upgrade button click function
   const upGradePlansBtn = () => {
     navigate("/subscription/upgrade-plan");
   }
-
 
   // selected subscription table
   const subscriptionPlansTableRef = useRef(null);
@@ -357,14 +348,9 @@ const Subscription = () => {
         {/* if user Login */}
         {isLogin ? (
           <>
-            <div className="container-fluid wrapper">
-              <h1 className="text-center">Subscription</h1>
+            <div className="container-fluid py-3">
+              <h2 className="text-center ">Subscription</h2>
               {activePlans ? <>
-
-                {/* if subscription is active on user account the showing plans  else showing subscription plans for subscribe user  */}
-
-
-
                 <div className="card active-plans-details-card m-auto mt-5">
                   <div className="list-group list-group-fit  d-flex  justify-content-between">
                     <div className="list-group-item bg-0">
@@ -408,7 +394,7 @@ const Subscription = () => {
                 </div>
               </> :
                 <>
-                  <div className="text-center text-muted">
+                  <div className="text-center text-muted ">
                     <span>
                       Lorem ipsum dolor sit amet, consectetur adipisicing elit.
                       Deleniti, nobis.
@@ -444,7 +430,7 @@ const Subscription = () => {
                   </div>
                 </div> */}
 
-                  <div className="container mt-5">
+                  <div className="container mt-3">
                     <div className="row justify-content-center">
                       <div className="col-xl-10">
                         {/* subscription-table */}
@@ -563,7 +549,7 @@ const Subscription = () => {
                           <div className="row justify-content-between mt-3">
                             {plans && plans.map((plan, Index) => {
                               return (
-                                <button className={`packages  border-0 mb-4 mt-4 mb-md-0 plan-card-${Index + 1} position-relative plan-header-wrapper ${ selectedPlan.plan_id === plan.plan_id ? "packagesBox-shadow " : ""}`} key={Index}
+                                <button className={`packages  border-0 mb-4 mt-4 mb-md-0 plan-card-${Index + 1} position-relative plan-header-wrapper ${selectedPlan.plan_id === plan.plan_id ? "packagesBox-shadow " : ""}`} key={Index}
                                   onClick={() => {
                                     onCardBtnClick(plan, Index);
                                     setSelectedPlan(plan);
@@ -578,7 +564,7 @@ const Subscription = () => {
                                   </span>
                                   <h4 className={`plan-title mb-4 fw-bold text-uppercase ${plan.billing_cycle === "free trial" ? "card-text-1" : ""} ${plan.billing_cycle === "half yearly" ? "card-text-2" : ""} ${plan.billing_cycle === "annual" ? "card-text-3" : ""}`}>{plan.name === "Basic plan" && plan.billing_cycle === "free trial" ? "Free" : plan.name.replace(' plan', '')}</h4>
                                   <h4 className="fw-bold plan-price">
-                                  {plan.billing_cycle === "free trial" ? <sup>&#8377;</sup> : <><sup>&#8377;</sup><sup>&#8377;</sup><sup>&#8377;</sup><sup>&#8377;</sup></>}
+                                    {plan.billing_cycle === "free trial" ? <sup>&#8377;</sup> : <><sup>&#8377;</sup><sup>&#8377;</sup><sup>&#8377;</sup><sup>&#8377;</sup></>}
                                     {/* <sup>&#8377;</sup>{plan.price.replace('.00', '')}   */}
                                     <span className="fs-5"> / {plan.billing_cycle === "free trial" ? "7 Days" : ""}{plan.billing_cycle === "half yearly" ? "6 Months" : ""}{plan.billing_cycle === "annual" ? "Year" : ""}</span>
                                   </h4>
@@ -691,33 +677,42 @@ const Subscription = () => {
           </>
         ) : (
           <>
-            {/* if user not Login */}
-            <div className="container-fluid wrapper">
-              <h1 className="text-center">
-                You don't have access to this page
-              </h1>
-              <div className="text-muted text-center">
-                Please login or register{" "}
-              </div>
-
-              <div className="mt-5 row justify-content-center">
-                <NavLink
-                  to="/login"
-                  className="btn btn-outline-primary col-md-2"
-                >
-                  {" "}
-                  Login{" "}
-                </NavLink>
-                <div className="col-2 text-center">
-                  <h5>OR</h5>
+            <div className="container-fluid mt-5">
+              <div className="row justify-content-evenly">
+                <div className="col-lg-5 col-xl-5 order-lg-1 order-2 mt-lg-0 mt-5 mb-5">
+                  <img src={SubscriptionPage_access_denied_svg} alt="" className="login-img" />
                 </div>
-                <NavLink
-                  to="/register"
-                  className="btn btn-outline-primary col-md-2"
-                >
-                  {" "}
-                  Register{" "}
-                </NavLink>
+                <div className="col-lg-7 col-xl-4 col-md-7 order-lg-2 order-1 mt-4">
+                  {/* if user not Login */}
+                  {/* <div className="container-fluid wrapper"> */}
+                  <h1 className="text-center text-orange">
+                    You don't have access to this page
+                  </h1>
+                  {/* <div className="text-muted text-center">
+                      Please Login or Register{" "}
+                    </div> */}
+
+                  <div className="mt-5 row justify-content-center align-items-center subscription-access-denied-page-btn">
+                    <NavLink
+                      to="/login"
+                      className="btn btn-primary col-md-4"
+                    >
+                      {" "}
+                      Login{" "}
+                    </NavLink>
+                    <div className="col-2 text-center">
+                      <h5>OR</h5>
+                    </div>
+                    <NavLink
+                      to="/register"
+                      className="btn btn-primary col-md-4"
+                    >
+                      {" "}
+                      Register{" "}
+                    </NavLink>
+                  </div>
+                  {/* </div> */}
+                </div>
               </div>
             </div>
           </>

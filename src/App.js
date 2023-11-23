@@ -7,6 +7,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import VerifyToken from "./components/7.Registration/VerifyToken";
 import Profile from "./components/8.Profile/Profile";
 import ProtectedForLoggedInUser from "./components/ProtectedForLoggedInUser";
+import EnquiryProtected from "./components/EnquiryProtected";
 import EditUserDetails from "./components/8.Profile/EditUserDetails";
 import ScrollButton from "./components/ScrollButton";
 import Contact from "./components/5.Contact/Contact";
@@ -175,9 +176,9 @@ function App() {
           <Route
             path="/user-enquiries"
             element={
-              <ProtectedForLoggedInUser>
+              <EnquiryProtected>
                 <ViewEnquiryLists />
-              </ProtectedForLoggedInUser>
+              </EnquiryProtected>
             }
           />
 

@@ -125,7 +125,7 @@ function Header() {
                 </NavLink>
               </li>
 
-              <li className={`nav-item ps-md-2 ${loginStatus ? "" : "d-none"}`}>
+              <li className={`nav-item ps-md-2 ${loginStatus && roleId !== 1 ? "" : "d-none"}`}>
                 <NavLink to="/user-enquiries" className="nav-link">
                   <i className="bi bi-chat-text me-2 text-light"></i>
                   Enquiries

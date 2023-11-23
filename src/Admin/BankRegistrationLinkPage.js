@@ -13,7 +13,6 @@ let isBank = false;
 // regular expression
 const emailRegularExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 
-
 const BankRegistrationLinkPage = () => {
 
     // Login user details from local storage
@@ -112,19 +111,19 @@ const BankRegistrationLinkPage = () => {
     return (
         <Layout>
             <section className="vh-100 my-5">
-                <div className="container-fluid  mt-5">
-                    <div className="row d-flex justify-content-center align-items-center h-100 my-5">
-                        <div className="col-md-6 col-lg-6 col-xl-5  order-lg-1 order-2 mt-lg-5 mt-5 mb-5">
-                            <img src={bankRegistrationLinkPage} className="img-fluid w-75" alt="Sample" />
+                <div className="container-fluid wrapper mt-5">
+                    <div className="row d-flex justify-content-evenly align-items-center h-100 mt-lg-5 mb-5">
+                        <div className="col-md-5 col-lg-5 col-xl-5  order-lg-1 order-2 mt-lg-5 mt-5 mb-5">
+                            <img src={bankRegistrationLinkPage} className="img-fluid w-75 h-100" alt="Sample" />
                         </div>
-                        <div className="col-md-8 col-lg-6 col-xl-4 offset-xl-1 order-lg-2 order-1 mt-lg-0 mt-5 ">
-                            <h4 className="text-center fw-bold mb-4">Bank Registration Link</h4>
-                            <form onSubmit={onFormSubmit} className="bank-registration-link-form card py-5">
+                        <div className="col-md-8 col-lg-6 col-xl-4 offset-xl-1 order-lg-2 order-1 mt-lg-0 ms-0 mt-5 ">
+                            <form onSubmit={onFormSubmit} className="bank-registration-link-form card position-relative px-5 py-4">
 
-                                {/* <hr /> */}
+                            <h4 className="text-center fw-bold">Bank Registration Link</h4>
+                                <hr />
                                 {/* Bank */}
                                 <div className="row justify-content-center align-items-center mb-3">
-                                    <div className="col-xl-10 col-md-8 mt-3 mt-xl-0">
+                                    <div className="col-xl-12 col-md-10 mt-3 mt-xl-0">
                                         <div className="form-group d-flex align-items-center">
                                             {/* <div className="form-group mb-4"> */}
                                             <label
@@ -140,9 +139,11 @@ const BankRegistrationLinkPage = () => {
                                                 name="bank_name"
                                                 className="form-select  form-bank-select ps-3"
                                                 onChange={onInputChange}
+                                                placeholder="Select Bank Name"
+                                                value={formData.bank_name}
                                                 required
                                             >
-                                                <option value="" className="text-gray"></option>
+                                                <option value="" className="text-gray" selected > Select Bank Name</option>
                                                 {banks ? (
                                                     banks.map((data) => {
                                                         return (
@@ -165,7 +166,7 @@ const BankRegistrationLinkPage = () => {
                                 </div>
                                 {/* Email */}
                                 <div className="row justify-content-center align-items-center mb-3">
-                                    <div className="col-xl-10 col-md-8 mt-3 mt-xl-0">
+                                    <div className="col-xl-12 col-md-10 mt-3 mt-xl-0">
                                         <div className="form-group d-flex align-items-center">
                                             {/* <div className="form-group mb-4"> */}
                                             <label
@@ -188,9 +189,10 @@ const BankRegistrationLinkPage = () => {
                                         </div>
                                     </div>
                                 </div>
+                                <hr/>
                                 {/* send Link button */}
                                 <div className="row justify-content-center align-items-center mb-3">
-                                    <div className=" col-xl-10 col-md-8 text-lg-start pt-2 d-flex justify-content-center  ">
+                                    <div className=" col-xl-12 col-md-10 text-lg-start pt-2 d-flex justify-content-center  ">
                                         <button
                                             disabled={loading ? true : false}
                                             type="submit" className="btn btn-primary text-center w-100 common-btn-font "

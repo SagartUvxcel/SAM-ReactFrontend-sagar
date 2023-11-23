@@ -194,8 +194,8 @@ const ForgotAndResetPassword = () => {
   };
   // console.log(displayForgotPasswordPage);
 
+  // get token from email URL
   let emailFromEmailUrl = "";
-
   const getEmailFromURL = async () => {
 
     const urlParams = new URLSearchParams(window.location.search);

@@ -14,7 +14,7 @@ import "./TableStyle.css"
 let authHeader = "";
 let isBank = false;
 let userId = "";
-let enquiryPerPage = 10;
+let enquiryPerPage = 5;
 
 // enquiry table headers
 const tableHeaders = [
@@ -119,7 +119,7 @@ const ViewEnquiryLists = () => {
         } else {
           setTableHeight("");
         }
-        setPageCount(2);
+        setPageCount(5);
 
 
         // console.log(resFromApi.data);
@@ -139,7 +139,7 @@ const ViewEnquiryLists = () => {
 
     let normalUserDataToPost = {
       enquiry_category: "",
-      batch_size: 10,
+      batch_size: enquiryPerPage,
       batch_number: 1,
     };
     try {
@@ -156,7 +156,7 @@ const ViewEnquiryLists = () => {
         } else {
           setTableHeight("");
         }
-        setPageCount(2);
+        setPageCount(5);
         // console.log(resFromApi.data);
         setPageLoading(false);
       } else {
@@ -179,7 +179,7 @@ const ViewEnquiryLists = () => {
     setPageLoading(true);
     let dataToPost = {
       enquiry_category: category,
-      batch_size: 10,
+      batch_size: enquiryPerPage,
       batch_number: 1,
     };
     try {
@@ -344,15 +344,27 @@ const ViewEnquiryLists = () => {
     let currentPage = pageNumber.selected + 1;
     console.log(currentPage);
     const nextOrPrevPageEnquiryData = await fetchMoreEnquiry(currentPage);
-    setEnquiryData(nextOrPrevPageEnquiryData);
+    if (activeCategory === "Unread") {
+      setUnreadEnquiryList(nextOrPrevPageEnquiryData);
+    } else if (activeCategory === "All") {
+      setEnquiryList(nextOrPrevPageEnquiryData);
+      setAllDatabaseEnquiryList(nextOrPrevPageEnquiryData);
+    }
+    // setEnquiryList(resFromApi.data);
+    // setAllDatabaseEnquiryList(resFromApi.data);
+    if (nextOrPrevPageEnquiryData.length < 1 && tableElement !== null) {
+      setTableHeight(tableElement.current.offsetHeight);
+    } else {
+      setTableHeight("");
+    }
     console.log(nextOrPrevPageEnquiryData);
   };
 
   // Fetch more jobs on page click.
   const fetchMoreEnquiry = async (currentPage) => {
     let dataOfNextOrPrevPage = {
-      enquiry_category: "older than 4 week",
-      batch_size: 10,
+      enquiry_category: activeCategory,
+      batch_size: enquiryPerPage,
       batch_number: currentPage,
     };
     let apis = {
@@ -553,8 +565,8 @@ const ViewEnquiryLists = () => {
   return (
     <Layout>
       <section className="section-padding min-100vh">
-        <div className="container-fluid wrapper">
-          <h1 className="text-center">Enquiries</h1>
+        <div className="container-fluid wrapper pt-2">
+          <h1 className="text-center ">Enquiries</h1>
 
           {isBank ? <>
             <div className="row px-md-4 ">
@@ -637,9 +649,9 @@ const ViewEnquiryLists = () => {
                       />
                     </>
                   ) : unreadEnquiryList.length < 1 ? (
-                    <h3 className="fw-bold text-center fw-bold custom-heading-color">
+                    <h4 className="fw-bold text-center fw-bold custom-heading-color mt-2">
                       No Enquiries Found !
-                    </h3>
+                    </h4>
                   ) : (
                     <>
                       <div className="enquiry-list-table-wrapper px-md-4" >
@@ -727,9 +739,9 @@ const ViewEnquiryLists = () => {
                       />
                     </>
                   ) : enquiryList.length < 1 ? (
-                    <h3 className="fw-bold text-center fw-bold custom-heading-color">
+                    <h4 className="fw-bold text-center fw-bold custom-heading-color mt-2">
                       No Enquiries Found !
-                    </h3>
+                    </h4>
                   ) : (
                     <>
                       <div className="enquiry-list-table-wrapper px-md-4" >
@@ -803,7 +815,7 @@ const ViewEnquiryLists = () => {
                       </div> */}
 
                       {/* Pagination */}
-                      {/* <div className="container " ref={paginationRef}>
+                       <div className="container " ref={paginationRef}>
                         <div className="row">
                           <div className="col-12 mb-3">
                             <Pagination
@@ -812,7 +824,7 @@ const ViewEnquiryLists = () => {
                             />
                           </div>
                         </div>
-                      </div> */}
+                      </div> 
                     </>
                   )}
                 </div>
@@ -822,8 +834,9 @@ const ViewEnquiryLists = () => {
             : <>
               <hr />
               {/* for Normal User */}
-              <div className="row px-md-4 ">
+
                 {/* search filter */}
+              {/* <div className="row px-md-4 ">
                 <div className="col-md-12 p-0 d-flex justify-content-end ">
                   <div className=" col-md-3 me-4">
                     <input
@@ -835,7 +848,7 @@ const ViewEnquiryLists = () => {
                     />
                   </div>
                 </div>
-              </div>
+              </div> */}
               {/* <hr/> */}
               <div className="row justify-content-center mt-3">
                 {pageLoading ? (
@@ -848,9 +861,9 @@ const ViewEnquiryLists = () => {
                     />
                   </>
                 ) : normalUserEnquiryLis.length < 1 ? (
-                  <h3 className="fw-bold text-center fw-bold custom-heading-color">
+                  <h4 className="fw-bold text-center fw-bold custom-heading-color mt-2">
                     No Enquiries Found !
-                  </h3>
+                  </h4>
                 ) : (
                   <>
                     <div className="enquiry-list-table-wrapper px-md-4" >

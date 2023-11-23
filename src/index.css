@@ -63,7 +63,7 @@ code {
 }
 
 .loader-color {
-  color: var(--secondary-color) !important;
+  color: var(--primary-color) !important;
 }
 /* Common css */
 
@@ -531,6 +531,7 @@ input:-webkit-autofill:active {
 
 .bank-registration-link-form .form-bank-select{
   font-size: 0.9rem !important;
+  
 }
 .registration-wrapper .form-wrapper-card {
   border: none !important;
@@ -1123,6 +1124,10 @@ color: var(--secondary-color);
 }
 
 /* Subscription */
+
+.subscription-access-denied-page-btn .btn:hover{
+  color:white !important;
+}
 
 .plan-select-btn {
   border: 1px solid var(--primary-color) !important;
