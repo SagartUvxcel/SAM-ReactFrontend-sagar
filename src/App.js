@@ -285,7 +285,8 @@ function App() {
 
         </Routes>
       </ScrollToTop>
-      <ScrollButton /> <CommonSubscriptionNotificationMsg />
+      <ScrollButton />
+      <CommonSubscriptionNotificationMsg />
     </>
   );
 }

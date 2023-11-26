@@ -1424,7 +1424,7 @@ color: var(--secondary-color);
   }
 
   .nav-link:hover {
-    color: white !important;
+    color: var(--secondary-color) !important;
   }
 
   a:hover,

@@ -350,9 +350,9 @@ const ManageUsers = ({ userType }) => {
                 </>
               ) : !users ? (
                 <div className="d-flex align-items-center justify-content-center mt-5">
-                  <h1 className="fw-bold custom-heading-color">
-                    No Users Found :(
-                  </h1>
+                  <h3 className="fw-bold custom-heading-color">
+                    No Users Found !
+                  </h3>
                 </div>
               ) : (
                 <>

@@ -73,38 +73,47 @@ const ViewEditDeleteProperties = () => {
       batch_number: 1,
       batch_size: propertiesPerPage,
     };
+
     setStoredDataToPost(dataToPost);
-    const propertiesRes = await axios.post(
-      `/sam/v1/property/auth/all-properties`,
-      dataToPost,
-      { headers: authHeader }
-    );
+    
+    try {
+      const propertiesRes = await axios.post(
+        `/sam/v1/property/auth/all-properties`,
+        dataToPost,
+        { headers: authHeader }
+      );
 
-    const propertyCountRes = await axios.get(
-      `/sam/v1/property/auth/property-count`,
-      { headers: authHeader }
-    );
+      const propertyCountRes = await axios.get(
+        `/sam/v1/property/auth/property-count`,
+        { headers: authHeader }
+      );
+      console.log(propertiesRes);
+      console.log(propertyCountRes);
+      let arr = propertyCountRes.data;
+      let totalCount = 0;
 
-    let arr = propertyCountRes.data;
-    let totalCount = 0;
+      arr && arr.forEach((type) => {
+        totalCount += type.count;
+      });
+      setTotalPropertyCount(totalCount);
 
-    arr && arr.forEach((type) => {
-      totalCount += type.count;
-    });
-    setTotalPropertyCount(totalCount);
+      let totalPages = Math.ceil(totalCount / propertiesPerPage);
+      if (propertyCountRes.data) {
+        setPageCount(totalPages);
+      }
 
-    let totalPages = Math.ceil(totalCount / propertiesPerPage);
-    if (propertyCountRes.data) {
-      setPageCount(totalPages);
+      if (propertiesRes.data !== null && propertiesRes.data.length > 0) {
+        paginationRef.current.classList.remove("d-none");
+        setProperties(propertiesRes.data);
+      } else {
+        paginationRef.current.classList.add("d-none");
+      }
+      setLoading(false);
+
+    } catch (error) {
+
+      setLoading(false);
     }
-
-    if (propertiesRes.data !== null && propertiesRes.data.length > 0) {
-      paginationRef.current.classList.remove("d-none");
-      setProperties(propertiesRes.data);
-    } else {
-      paginationRef.current.classList.add("d-none");
-    }
-    setLoading(false);
   };
 
   // toggleActivePageClass
@@ -974,7 +983,7 @@ const ViewEditDeleteProperties = () => {
                                       className="mx-2 btn btn-sm btn-outline-info property-button-wrapper"
                                     >
                                       <i className="bi bi-chat-text"></i>
-                                    </button>:<></>}
+                                    </button> : <></>}
                                   </div>
                                 </div>
                               </div>

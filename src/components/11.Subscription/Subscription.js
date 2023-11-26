@@ -4,6 +4,7 @@ import Layout from "../1.CommonLayout/Layout";
 import { NavLink } from "react-router-dom";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import CommonSpinner from "../../CommonSpinner";
 import SubscriptionPage_access_denied_svg from "../../images/SubscriptionPage_access_denied_svg.svg";
 import "./CardElementStyles.css";
 import { transformDateFormat } from "../../CommonFunctions";
@@ -100,6 +101,7 @@ const Subscription = () => {
   }
 
   // subscription Plans
+  const [loading, setLoading] = useState(false);
   const [plans, setPlans] = useState(); //all subriction plans
   const [activePlans, setActivePlans] = useState(); //all subriction plans
   const [selectedPlan, setSelectedPlan] = useState({ plan_id: "" });
@@ -132,10 +134,12 @@ const Subscription = () => {
           const plansRes = response.data;
           if (plansRes) {
             setPlans(plansRes);
+            setLoading(false);
           }
         });
     } catch (error) {
       console.error("Error fetching plans:", error);
+      setLoading(false);
     }
   };
 
@@ -152,9 +156,11 @@ const Subscription = () => {
           const activePlansRes = response.data;
           if (activePlansRes) {
             setActivePlans(activePlansRes);
+            setLoading(false);
           }
         });
     } catch (error) {
+      setLoading(false);
       console.error("Error fetching plans:", error);
     }
   };
@@ -332,9 +338,11 @@ const Subscription = () => {
     handleActiveColumn(1);
     // defaultActivePlans();
     if (isLogin) {
-      getSubscriptionPlansDetails();
+      setLoading(true);
       if (planStatus) {
         getActivePlansDetails();
+      }else{
+        getSubscriptionPlansDetails();
       }
     }
 
@@ -350,49 +358,63 @@ const Subscription = () => {
           <>
             <div className="container-fluid py-3">
               <h2 className="text-center ">Subscription</h2>
-              {activePlans ? <>
-                <div className="card active-plans-details-card m-auto mt-5">
-                  <div className="list-group list-group-fit  d-flex  justify-content-between">
-                    <div className="list-group-item bg-0">
-                      <div className="form-group row mb-0">
-                        <label className="col-form-label form-label col-sm-3">Current Plan</label>
-                        <div className="col-sm-8 d-flex align-items-center justify-content-between flex-wrap">
-                          <div className="flex">{activePlans ? activePlans.plan_name : ""}</div>
-                          {/* <a href="#" className="text-secondary">Change plan</a> */}
+              {loading ? (
+                <div
+                  className="d-flex justify-content-center align-items-center"
+                  style={{ minHeight: "60vh" }}
+                >
+                  <CommonSpinner
+                    spinnerColor="primary"
+                    height="4rem"
+                    width="4rem"
+                    spinnerType="grow"
+                  />
+                </div>
+              ) : activePlans ? (
+                <>
+                  <div className="card active-plans-details-card m-auto mt-5">
+                    <div className="list-group list-group-fit  d-flex  justify-content-between">
+                      <div className="list-group-item bg-0">
+                        <div className="form-group row mb-0">
+                          <label className="col-form-label form-label col-sm-3">Current Plan</label>
+                          <div className="col-sm-8 d-flex align-items-center justify-content-between flex-wrap">
+                            <div className="flex">{activePlans ? activePlans.plan_name : ""}</div>
+                            {/* <a href="#" className="text-secondary">Change plan</a> */}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="list-group-item">
-                      <div className="form-group row mb-0">
-                        <label className="col-form-label form-label col-sm-3">Billing Cycle</label>
-                        <div className="col-sm-8 d-flex align-items-center justify-content-between flex-wrap">
-                          <p className="mb-1">{activePlans ? activePlans.billing_cycle : ""}</p>
+                      <div className="list-group-item">
+                        <div className="form-group row mb-0">
+                          <label className="col-form-label form-label col-sm-3">Billing Cycle</label>
+                          <div className="col-sm-8 d-flex align-items-center justify-content-between flex-wrap">
+                            <p className="mb-1">{activePlans ? activePlans.billing_cycle : ""}</p>
 
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="list-group-item">
-                      <div className="form-group row mb-0">
-                        <label className="col-form-label form-label col-sm-3">End Date</label>
-                        <div className="col-sm-8 d-flex align-items-center justify-content-between flex-wrap">
-                          <p className="mb-1"> {activePlans ? transformDateFormat(activePlans.end_date)
-                            .split("-")
-                            .reverse()
-                            .join("-") : ""}</p>
+                      <div className="list-group-item">
+                        <div className="form-group row mb-0">
+                          <label className="col-form-label form-label col-sm-3">End Date</label>
+                          <div className="col-sm-8 d-flex align-items-center justify-content-between flex-wrap">
+                            <p className="mb-1"> {activePlans ? transformDateFormat(activePlans.end_date)
+                              .split("-")
+                              .reverse()
+                              .join("-") : ""}</p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="list-group-item">
-                      <div className="form-group row mb-0">
-                        {/* <label className="col-form-label form-label col-sm-3">Upgrade</label> */}
-                        <div className="col-sm-8 text-center">
-                          <button type="button" onClick={(e) => upGradePlansBtn(e)} className="btn btn-primary">{activePlans.billing_cycle === "free trial" ? "Activate Plan" : "Upgrade Plan"}</button>
+                      <div className="list-group-item">
+                        <div className="form-group row mb-0">
+                          {/* <label className="col-form-label form-label col-sm-3">Upgrade</label> */}
+                          <div className="col-sm-8 text-center">
+                            <button type="button" onClick={(e) => upGradePlansBtn(e)} className="btn btn-primary">{activePlans.billing_cycle === "free trial" ? "Activate Plan" : "Upgrade Plan"}</button>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </> :
+                </>
+              ) : (
                 <>
                   <div className="text-center text-muted ">
                     <span>
@@ -671,7 +693,7 @@ const Subscription = () => {
                     </div>
                   </div>
                 </>
-              }
+              )}
             </div>
 
           </>

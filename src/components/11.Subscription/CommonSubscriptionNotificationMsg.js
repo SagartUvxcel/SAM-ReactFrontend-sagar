@@ -27,7 +27,7 @@ const CommonSubscriptionNotificationMsg = (dayCount, billing_cycle) => {
     const [showUpdatedSubscriptionStatus, setShowUpdatedSubscriptionStatus] = useState(updatedSubscriptionStatus);
 
     // get Subscription Plans Details from database
-
+console.log(daysCount);
 
     const closeNotification = () => {
         setShowNotification(false);
@@ -36,6 +36,7 @@ const CommonSubscriptionNotificationMsg = (dayCount, billing_cycle) => {
 
     useEffect(() => {
         if (isLogin && planStatus && planEndDate) {
+            console.log(calculateDays(new Date(planEndDate)));
 
             setDaysCount(calculateDays(new Date(planEndDate)));
             setExpiryDate(planEndDate);
@@ -44,17 +45,17 @@ const CommonSubscriptionNotificationMsg = (dayCount, billing_cycle) => {
 
     useEffect(() => {
         if (planStatus && daysCount <= 7) {
-            console.log(notificationStatus);
-
+            
             var notificationStatus = localStorage.getItem('notificationRefresh');
+            console.log(notificationStatus);
             if (notificationStatus) {
                 setShowNotification(false);
                 console.log(notificationStatus);
             } else {
 
-                console.log(notificationStatus);
                 localStorage.setItem("notificationRefresh", true);
                 setShowNotification(true);
+                console.log(notificationStatus);
             }
         }
 
@@ -70,7 +71,7 @@ const CommonSubscriptionNotificationMsg = (dayCount, billing_cycle) => {
     useEffect(() => {
 
         if (showNotification && daysCount >= 3 && daysCount <= 7) {
-
+            console.log(daysCount);
             const timer = setTimeout(() => {
                 closeNotification();
             }, 10000);
@@ -85,7 +86,7 @@ const CommonSubscriptionNotificationMsg = (dayCount, billing_cycle) => {
             {isLogin && planStatus && showNotification && daysCount <= 7 ? (
                 <div className="subscription-notification-container mb-5 ">
                     <button className={`btn ${daysCount <= 2 ? "btn-danger" : "btn-warning"}`}>
-                        {daysCount === 0 ? "Your subscription will expire today.   " : `Your subscription will expire in ${daysCount} days! `}
+                        {daysCount === 0 ? "Your subscription will expire today." : `Your subscription will expire in ${daysCount} days! `}
 
                         <i
                             className="bi bi-x-lg text-white"

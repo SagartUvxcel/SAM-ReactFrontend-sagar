@@ -22,7 +22,7 @@
   display: grid;
   overflow-x: auto;
   overflow-y: hidden;
-  grid-template-columns: 140px 350px 350px 350px 220px 220px;
+  grid-template-columns: 70px 228px 228px 240px 228px 220px;
   /* border:1px solid #dee2e6 !important; */
 }
 

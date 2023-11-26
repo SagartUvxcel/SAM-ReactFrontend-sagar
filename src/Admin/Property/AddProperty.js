@@ -61,6 +61,7 @@ const AddProperty = () => {
   const getDataFromApi = async () => {
     const propertyCategoryRes = await axios.get(`/sam/v1/property/by-category`);
     setPropertyCategories(propertyCategoryRes.data);
+    console.log(propertyCategoryRes.data);
     const bankRes = await axios.get(`/sam/v1/property/by-bank`);
     setBanks(bankRes.data);
     const statesRes = await axios.get(`/sam/v1/property/by-state`);
@@ -106,6 +107,7 @@ const AddProperty = () => {
   const onInputChange = async (e) => {
     const { name, value } = e.target;
     if (name === "type_id") {
+      console.log(name,value);
       if (value) {
         commonFnToSaveFormData(name, parseInt(value));
       }
@@ -237,6 +239,8 @@ const AddProperty = () => {
 
   const onFormSubmit = async (e) => {
     e.preventDefault();
+    console.log(formData);
+
     await axios
       .post(`/sam/v1/customer-registration/zipcode-validation`, {
         zipcode: String(zip),
@@ -276,6 +280,7 @@ const AddProperty = () => {
             headers: authHeader,
           })
           .then((res) => {
+            console.log(res);
             if (res.data.msg === 0) {
               localStorage.setItem("upload-doc", JSON.stringify({
                 number: formData.property_number,
@@ -296,6 +301,7 @@ const AddProperty = () => {
             }
           });
       } catch (error) {
+        console.log(error);
         toast.error("Internal server error");
       }
     }

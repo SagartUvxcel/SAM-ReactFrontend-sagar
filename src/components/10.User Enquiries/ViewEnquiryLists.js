@@ -50,7 +50,7 @@ const ViewEnquiryLists = () => {
 
   // const dataFromParams = location.state ? location.state.sensitiveData : null;
   const [enquiryList, setEnquiryList] = useState([]);
-  const [normalUserEnquiryLis, setNormalUserEnquiryList] = useState([]);
+  const [normalUserEnquiryList, setNormalUserEnquiryList] = useState([]);
   const [enquirySearchInputData, setEnquirySearchInputData] = useState({
     search_input: "",
     search_category: "property_number"
@@ -87,7 +87,7 @@ const ViewEnquiryLists = () => {
   const [chatWith, setChatWith] = useState("");
   const [sortOptionText, setSortOptionText] = useState("up");
   // const [itemOffset, setItemOffset] = useState(0);
-  const [pageCount, setPageCount] = useState(1);
+  const [pageCount, setPageCount] = useState(0);
   const [activeIndex, setActiveIndex] = useState(null);
   const [activeCategory, setActiveCategory] = useState("All");
 
@@ -112,14 +112,18 @@ const ViewEnquiryLists = () => {
       if (resFromApi.data) {
         console.log(dataToPost);
         console.log(resFromApi);
-        setEnquiryList(resFromApi.data);
+        setEnquiryList(resFromApi.data.Enquiries);
         setAllDatabaseEnquiryList(resFromApi.data);
         if (enquiryList.length < 1 && tableElement !== null) {
           setTableHeight(tableElement.current.offsetHeight);
         } else {
           setTableHeight("");
         }
-        setPageCount(5);
+        let totalPages = Math.ceil(resFromApi.data.Getcount / enquiryPerPage);
+        if (resFromApi.data) {
+          setPageCount(totalPages);
+        }
+        // setPageCount(resFromApi.data.Getcount);
 
 
         // console.log(resFromApi.data);
@@ -150,13 +154,16 @@ const ViewEnquiryLists = () => {
       // console.log(resFromApi);
       if (normalUserResFromApi.data) {
         console.log(normalUserResFromApi);
-        setNormalUserEnquiryList(normalUserResFromApi.data);
+        setNormalUserEnquiryList(normalUserResFromApi.data.Enquiries);
+        let totalPages = Math.ceil(normalUserResFromApi.data.Getcount / enquiryPerPage);
+        setPageCount(totalPages);
+        // setPageCount(normalUserResFromApi.data.Getcount);
+
         if (enquiryList.length < 1 && tableElement !== null) {
           setTableHeight(tableElement.current.offsetHeight);
         } else {
           setTableHeight("");
         }
-        setPageCount(5);
         // console.log(resFromApi.data);
         setPageLoading(false);
       } else {
@@ -191,13 +198,18 @@ const ViewEnquiryLists = () => {
       if (resFromApi.data) {
         console.log(resData);
         if (category === "Unread") {
-          setUnreadEnquiryList(resData);
+          setUnreadEnquiryList(resData.Enquiries);
+          let totalPages = Math.ceil(resFromApi.data.Getcount / enquiryPerPage);
+          setPageCount(totalPages);
+          // setPageCount(resFromApi.data.Getcount);
+
         } else if (category === "All") {
-          setEnquiryList(resData);
+          setEnquiryList(resData.Enquiries);
           setAllDatabaseEnquiryList(resData);
+          let totalPages = Math.ceil(resFromApi.data.Getcount / enquiryPerPage);
+          setPageCount(totalPages);
+          // setPageCount(resFromApi.data.Getcount);
         }
-        // setEnquiryList(resFromApi.data);
-        // setAllDatabaseEnquiryList(resFromApi.data);
         if (resData.length < 1 && tableElement !== null) {
           setTableHeight(tableElement.current.offsetHeight);
         } else {
@@ -221,9 +233,15 @@ const ViewEnquiryLists = () => {
       enquiryList.sort(
         (a, b) => new Date(b.added_date) - new Date(a.added_date)
       );
+      normalUserEnquiryList.sort(
+        (a, b) => new Date(b.added_date) - new Date(a.added_date)
+      );
     } else if (sortOptionText === "down") {
       setSortOptionText("up");
       enquiryList.sort(
+        (a, b) => new Date(a.added_date) - new Date(b.added_date)
+      );
+      normalUserEnquiryList.sort(
         (a, b) => new Date(a.added_date) - new Date(b.added_date)
       );
     }
@@ -345,10 +363,11 @@ const ViewEnquiryLists = () => {
     console.log(currentPage);
     const nextOrPrevPageEnquiryData = await fetchMoreEnquiry(currentPage);
     if (activeCategory === "Unread") {
-      setUnreadEnquiryList(nextOrPrevPageEnquiryData);
+      setUnreadEnquiryList(nextOrPrevPageEnquiryData.Enquiries);
     } else if (activeCategory === "All") {
-      setEnquiryList(nextOrPrevPageEnquiryData);
-      setAllDatabaseEnquiryList(nextOrPrevPageEnquiryData);
+      setEnquiryList(nextOrPrevPageEnquiryData.Enquiries);
+      setPageCount(nextOrPrevPageEnquiryData.Getcount)
+      setAllDatabaseEnquiryList(nextOrPrevPageEnquiryData.Enquiries);
     }
     // setEnquiryList(resFromApi.data);
     // setAllDatabaseEnquiryList(resFromApi.data);
@@ -411,7 +430,7 @@ const ViewEnquiryLists = () => {
       if (resFromApi.data) {
         console.log(dataToPost);
         console.log(resFromApi.data);
-        setEnquiryList(resFromApi.data);
+        setEnquiryList(resFromApi.data.Enquiries);
         // setAllDatabaseEnquiryList(resFromApi.data);
         // if (enquiryList.length < 1 && tableElement !== null) {
         //   setTableHeight(tableElement.current.offsetHeight);
@@ -815,7 +834,7 @@ const ViewEnquiryLists = () => {
                       </div> */}
 
                       {/* Pagination */}
-                       <div className="container " ref={paginationRef}>
+                      <div className="container " ref={paginationRef}>
                         <div className="row">
                           <div className="col-12 mb-3">
                             <Pagination
@@ -824,7 +843,7 @@ const ViewEnquiryLists = () => {
                             />
                           </div>
                         </div>
-                      </div> 
+                      </div>
                     </>
                   )}
                 </div>
@@ -835,7 +854,7 @@ const ViewEnquiryLists = () => {
               <hr />
               {/* for Normal User */}
 
-                {/* search filter */}
+              {/* search filter */}
               {/* <div className="row px-md-4 ">
                 <div className="col-md-12 p-0 d-flex justify-content-end ">
                   <div className=" col-md-3 me-4">
@@ -860,7 +879,7 @@ const ViewEnquiryLists = () => {
                       spinnerType="grow"
                     />
                   </>
-                ) : normalUserEnquiryLis.length < 1 ? (
+                ) : normalUserEnquiryList.length < 1 ? (
                   <h4 className="fw-bold text-center fw-bold custom-heading-color mt-2">
                     No Enquiries Found !
                   </h4>
@@ -885,7 +904,7 @@ const ViewEnquiryLists = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {normalUserEnquiryLis.map((enquiry, Index) => {
+                          {normalUserEnquiryList.map((enquiry, Index) => {
                             const {
                               enquiry_id,
                               property_number,
