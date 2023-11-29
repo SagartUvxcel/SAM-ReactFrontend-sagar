@@ -47,7 +47,7 @@ const ListOfProperties = () => {
   });
 
   const { states, assetCategory, cities, banks } = searchFields;
-  console.log(dataToPost);
+  // console.log(dataToPost);
 
   // It will fetch all states, banks, assets from api and will map those values to respective select fields.
   const getSearchDetails = async () => {
@@ -84,7 +84,7 @@ const ListOfProperties = () => {
   const viewCurrentProperty = async () => {
     delete dataFromParams.batch_number;
     delete dataFromParams.batch_size;
-    console.log(dataFromParams);
+    // console.log(dataFromParams);
     try {
       await axios
         .post(`/sam/v1/property/auth/view-properties`, dataFromParams, {
@@ -161,7 +161,7 @@ const ListOfProperties = () => {
   }, []);
 
   useEffect(() => {
-    console.log(dataFromParams);
+    // console.log(dataFromParams);
     changeActiveSortStyle(sortText);
   }, [sortText]);
 

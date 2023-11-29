@@ -662,48 +662,57 @@ const BankRegistrationPage = () => {
         // fieldsToDelete.forEach((field) => {
         //     delete formData[field];
         // });
-
+        console.log(formData);
         if (addressValues.labelValue === "Add Details") {
-            setAlertDetails({
+            return setAlertDetails({
                 alertVisible: true,
                 alertMsg: "Please fill the address details",
                 alertClr: "danger",
             });
-        } else {
-            setLoading(true);
-            try {
-                console.log(formData);
-                console.log(formData.bank_name);
-                await axios
-                    .post(`/sam/v1/bank-registration/branch`, formData)
-                    .then(async (res) => {
-                        if (res.data.status === 0) {
-                            setLoading(false);
-                            document.getElementById("registration-alert").scrollIntoView(true);
-                            toast.success(
-                                `Success: Please check your email for verification.`
-                            );
-                            e.target.reset();
-                            resetValues();
-                            goTo("/register/verify");
-                        } else {
-                            setLoading(false);
-                            setAlertDetails({
-                                alertVisible: true,
-                                alertMsg: "Internal server error",
-                                alertClr: "warning",
-                            });
-                        }
-                    });
-            } catch (error) {
-                setLoading(false);
-                setAlertDetails({
-                    alertVisible: true,
-                    alertMsg: "Internal server error",
-                    alertClr: "warning",
-                });
-            }
         }
+
+        setLoading(true);
+        if (formData.email.length !== 0) {
+            console.log(formData.email);
+            try {
+                // checking email exist or not 
+                const { data } = await axios.post(`/sam/v1/customer-registration/email-validation`,
+                    JSON.stringify({ email: formData.email })
+                )
+                if (data.status === 1) {
+                    setValidationDetails({
+                        ...validationDetails,
+                        emailValidationMessage: "Email id already exists.",
+                    });
+                    setLoading(false);
+                    return toast.error(`error: Email already exists.`);
+                }
+
+                // posting data for registration
+                const { data:bankCreateRes } = await axios.post(`/sam/v1/bank-registration/branch`, formData)
+                if (bankCreateRes.status === 0) {
+                    setLoading(false);
+                    document.getElementById("registration-alert").scrollIntoView(true);
+                    toast.success(
+                        `Success: Please check your email for verification.`
+                    );
+                    e.target.reset();
+                    resetValues();
+                    goTo("/register/verify");
+                } else {
+                    setLoading(false);
+                    setAlertDetails({
+                        alertVisible: true,
+                        alertMsg: "Internal server error",
+                        alertClr: "warning",
+                    });
+                }
+                    
+            } catch (error) {
+                toast.error("Server error while validating email");
+                setLoading(false);
+            }
+        }       
     };
 
 
@@ -1116,7 +1125,7 @@ const BankRegistrationPage = () => {
                                                             className="form-label common-btn-font"
                                                         >
                                                             Flat Number
-                                                            <span className="ps-1 text-muted">(optional)</span>
+                                                            <span className="text-danger fw-bold">*</span>
                                                         </label>
                                                         <input
                                                             id="flat_number"
@@ -1136,7 +1145,7 @@ const BankRegistrationPage = () => {
                                                             className="form-label common-btn-font"
                                                         >
                                                             Building Name
-                                                            <span className="ps-1 text-muted">(optional)</span>
+                                                            <span className="text-danger fw-bold">*</span>
                                                         </label>
                                                         <input
                                                             id="building_name"
@@ -1156,7 +1165,7 @@ const BankRegistrationPage = () => {
                                                             className="form-label common-btn-font"
                                                         >
                                                             Society Name
-                                                            <span className="ps-1 text-muted">(optional)</span>
+                                                            <span className="text-danger fw-bold">*</span>
                                                         </label>
                                                         <input
                                                             id="society_name"
@@ -1177,7 +1186,7 @@ const BankRegistrationPage = () => {
                                                             className="form-label common-btn-font"
                                                         >
                                                             Plot Number
-                                                            <span className="ps-1 text-muted">(optional)</span>
+                                                            <span className="text-danger fw-bold">*</span>
                                                         </label>
                                                         <input
                                                             id="plot_number"

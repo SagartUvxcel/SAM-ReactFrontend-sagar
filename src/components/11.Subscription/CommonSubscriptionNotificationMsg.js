@@ -27,7 +27,7 @@ const CommonSubscriptionNotificationMsg = (dayCount, billing_cycle) => {
     const [showUpdatedSubscriptionStatus, setShowUpdatedSubscriptionStatus] = useState(updatedSubscriptionStatus);
 
     // get Subscription Plans Details from database
-console.log(daysCount);
+// console.log(daysCount);
 
     const closeNotification = () => {
         setShowNotification(false);
@@ -36,7 +36,7 @@ console.log(daysCount);
 
     useEffect(() => {
         if (isLogin && planStatus && planEndDate) {
-            console.log(calculateDays(new Date(planEndDate)));
+            // console.log(calculateDays(new Date(planEndDate)));
 
             setDaysCount(calculateDays(new Date(planEndDate)));
             setExpiryDate(planEndDate);
@@ -47,15 +47,15 @@ console.log(daysCount);
         if (planStatus && daysCount <= 7) {
             
             var notificationStatus = localStorage.getItem('notificationRefresh');
-            console.log(notificationStatus);
+            // console.log(notificationStatus);
             if (notificationStatus) {
                 setShowNotification(false);
-                console.log(notificationStatus);
+                // console.log(notificationStatus);
             } else {
 
                 localStorage.setItem("notificationRefresh", true);
                 setShowNotification(true);
-                console.log(notificationStatus);
+                // console.log(notificationStatus);
             }
         }
 
@@ -71,7 +71,7 @@ console.log(daysCount);
     useEffect(() => {
 
         if (showNotification && daysCount >= 3 && daysCount <= 7) {
-            console.log(daysCount);
+            // console.log(daysCount);
             const timer = setTimeout(() => {
                 closeNotification();
             }, 10000);
