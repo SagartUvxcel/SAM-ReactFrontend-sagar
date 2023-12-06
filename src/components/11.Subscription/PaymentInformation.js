@@ -146,7 +146,7 @@ export const PaymentInformation = () => {
       email: email,
     }
     const pageRefreshData = true;
-
+    
     try {
       const response = await axios.post("/sam/v1/customer-registration/auth/subscribe-user", dataToPost, { headers: authHeaders });
       if (response.data) {

@@ -533,6 +533,10 @@ input:-webkit-autofill:active {
   font-size: 0.9rem !important;
   
 }
+/* .bank-registration-link-form label{
+  width: 150px !important;
+  
+} */
 .registration-wrapper .form-wrapper-card {
   border: none !important;
   position: relative;

@@ -64,5 +64,13 @@
     "last_name": "Tilekar",
     "aadhar_number": "345623417865",
     "pan_number": "AYPYG0808Q"
+  },
+  {
+    "plan_id": 5,
+    "payment_token": "tok_1OJXWcSFFIGXloQFn5pVAIh8",
+    "plan_name": "Advanced plan",
+    "amount": 4999,
+    "billing_cycle": "annual",
+    "email": "sagartilekar9696@gmail.com"
   }
 ]

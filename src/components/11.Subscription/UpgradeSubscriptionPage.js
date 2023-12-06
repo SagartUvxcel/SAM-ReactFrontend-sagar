@@ -514,7 +514,7 @@ const UpgradeSubscriptionPage = () => {
                     </div> */}
 
                     <div className="container-fluid my-5">
-                      <div className="row justify-content-between mt-3">
+                      <div className="row justify-content-between  mt-3">
                         {plans && plans.map((plan, Index) => {
                           return (
                             <>
@@ -539,7 +539,7 @@ const UpgradeSubscriptionPage = () => {
                                 <h5 className="fw-bold plan-price">
                                   <sup>&#8377;</sup> <sup>&#8377;</sup> <sup>&#8377;</sup> <sup>&#8377;</sup>
                                   {/* {plan.price.replace('.00', '')}  */}
-                                   <span className="fs-5"> / {plan.billing_cycle === "half yearly" ? "6 Months" : ""}{plan.billing_cycle === "annual" ? "Year" : ""}</span>
+                                  <span className="fs-5"> / {plan.billing_cycle === "half yearly" ? "6 Months" : ""}{plan.billing_cycle === "annual" ? "Year" : ""}</span>
                                 </h5>
                               </button>
                             </>

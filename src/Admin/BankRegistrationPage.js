@@ -55,6 +55,10 @@ const BankRegistrationPage = () => {
     });
     const { alertMsg, alertClr, alertVisible } = alertDetails;
     const [bankEmailFromURL, setBankEmailFromURL] = useState(null);
+    const [splittedBankEmailId, setSplittedBankEmailId] = useState({
+        userName: "",
+        domain: ""
+    });
     const [bankRegistrationPageDisplay, setBankRegistrationPageDisplay] = useState({
         display: false,
     });
@@ -121,13 +125,20 @@ const BankRegistrationPage = () => {
                         console.log(res.data);
 
                         if (res.data) {
-                            const emailValue = res.data.email;
-                            const bank_name_value = res.data.bank_name;
-
-                            if (emailValue && bank_name_value) {
-                                console.log(bank_name_value, emailValue);
-                                setBankEmailFromURL({ bank_name_value, emailValue });
-                                setFormData({ ...formData, bank_name: bank_name_value, email: emailValue });
+                            const email = res.data.email;
+                            const bank_name = res.data.bank_name;
+                            const branch_code = res.data.branch_code;
+                            const branch_name = res.data.branch_name;
+                            const branch_sftp = res.data.branch_sftp
+                            const ifsc_code = res.data.ifsc_code;
+                            if (email && bank_name) {
+                                console.log(bank_name, email);
+                                const splitedEmail = email.split('@')
+                                console.log(splitedEmail);
+                                const emailDomainPart = "@" + splitedEmail[1];
+                                setSplittedBankEmailId({ userName: splitedEmail[0], domain: emailDomainPart });
+                                setBankEmailFromURL({ bank_name, email, branch_code, branch_name, branch_sftp, ifsc_code });
+                                setFormData({ ...formData, bank_name, email, branch_code, branch_name, branch_sftp, ifsc_code });
                                 setBankRegistrationPageDisplay({
                                     display: true,
                                 });
@@ -140,7 +151,7 @@ const BankRegistrationPage = () => {
                                 setShowLoader(false);
                                 navigate("/access-denied");
                             }
-                            localStorage.setItem("bankRegistrationEmail", emailValue);
+                            localStorage.setItem("bankRegistrationEmail", email);
                         }
                     });
             } catch (error) {
@@ -231,15 +242,18 @@ const BankRegistrationPage = () => {
         } else if (name === "state") {
             SetIdOfState(value);
         } else if (name === "email") {
-            // console.log(name,value);
-            setFormData({ ...formData, [name]: value }
+            console.log(name, value);
+            const emailValue = value + splittedBankEmailId.domain;
+            console.log(emailValue);
+            setSplittedBankEmailId({ ...splittedBankEmailId, userName: value })
+            setFormData({ ...formData, [name]: emailValue }
             );
             // If input field is email then post its value to api for validating.
             try {
                 await axios
                     .post(
                         `/sam/v1/customer-registration/email-validation`,
-                        JSON.stringify({ email: value })
+                        JSON.stringify({ email: emailValue })
                     )
                     .then((res) => {
                         var emailFormat = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
@@ -249,7 +263,7 @@ const BankRegistrationPage = () => {
                                 emailValidationMessage: "Email id already exists.",
                             });
                             style.borderColor = "red";
-                        } else if (!emailFormat.test(value)) {
+                        } else if (!emailFormat.test(emailValue)) {
                             setValidationDetails({
                                 ...validationDetails,
                                 emailValidationMessage: "Invalid email Id.",
@@ -525,7 +539,10 @@ const BankRegistrationPage = () => {
                 zipValidationByState(value, parseInt(IdOfState));
             }
         } else if (name === "email") {
-            setFormData({ ...formData, [name]: value })
+            const emailValue = value + splittedBankEmailId.domain;
+            console.log(emailValue);
+            setSplittedBankEmailId({ ...splittedBankEmailId, userName: value })
+            setFormData({ ...formData, [name]: emailValue })
             setValidationDetails({
                 ...validationDetails,
                 emailValidationMessage: "",
@@ -671,48 +688,48 @@ const BankRegistrationPage = () => {
             });
         }
 
-        setLoading(true);
+        // setLoading(true);
         if (formData.email.length !== 0) {
-            console.log(formData.email);
-            try {
-                // checking email exist or not 
-                const { data } = await axios.post(`/sam/v1/customer-registration/email-validation`,
-                    JSON.stringify({ email: formData.email })
-                )
-                if (data.status === 1) {
-                    setValidationDetails({
-                        ...validationDetails,
-                        emailValidationMessage: "Email id already exists.",
-                    });
-                    setLoading(false);
-                    return toast.error(`error: Email already exists.`);
-                }
+            console.log(formData);
+            // try {
+            //     // checking email exist or not 
+            //     const { data } = await axios.post(`/sam/v1/customer-registration/email-validation`,
+            //         JSON.stringify({ email: formData.email })
+            //     )
+            //     if (data.status === 1) {
+            //         setValidationDetails({
+            //             ...validationDetails,
+            //             emailValidationMessage: "Email id already exists.",
+            //         });
+            //         setLoading(false);
+            //         return toast.error(`error: Email already exists.`);
+            //     }
 
-                // posting data for registration
-                const { data:bankCreateRes } = await axios.post(`/sam/v1/bank-registration/branch`, formData)
-                if (bankCreateRes.status === 0) {
-                    setLoading(false);
-                    document.getElementById("registration-alert").scrollIntoView(true);
-                    toast.success(
-                        `Success: Please check your email for verification.`
-                    );
-                    e.target.reset();
-                    resetValues();
-                    goTo("/register/verify");
-                } else {
-                    setLoading(false);
-                    setAlertDetails({
-                        alertVisible: true,
-                        alertMsg: "Internal server error",
-                        alertClr: "warning",
-                    });
-                }
-                    
-            } catch (error) {
-                toast.error("Server error while validating email");
-                setLoading(false);
-            }
-        }       
+            //     // posting data for registration
+            //     const { data: bankCreateRes } = await axios.post(`/sam/v1/bank-registration/branch`, formData)
+            //     if (bankCreateRes.status === 0) {
+            //         setLoading(false);
+            //         document.getElementById("registration-alert").scrollIntoView(true);
+            //         toast.success(
+            //             `Success: Please check your email for verification.`
+            //         );
+            //         e.target.reset();
+            //         resetValues();
+            //         goTo("/register/verify");
+            //     } else {
+            //         setLoading(false);
+            //         setAlertDetails({
+            //             alertVisible: true,
+            //             alertMsg: "Internal server error",
+            //             alertClr: "warning",
+            //         });
+            //     }
+
+            // } catch (error) {
+            //     toast.error("Server error while validating email");
+            //     setLoading(false);
+            // }
+        }
     };
 
 
@@ -793,7 +810,7 @@ const BankRegistrationPage = () => {
                                                                         type="text"
                                                                         placeholder="Bank Name"
                                                                         className="form-control"
-                                                                        value={bankEmailFromURL.bank_name_value}
+                                                                        value={bankEmailFromURL.bank_name}
                                                                         disabled
                                                                         required
                                                                     />
@@ -817,6 +834,8 @@ const BankRegistrationPage = () => {
                                                                         type="text"
                                                                         placeholder="Branch Name"
                                                                         className="form-control"
+                                                                        value={bankEmailFromURL.branch_name}
+                                                                        disabled
                                                                         required
                                                                     />
                                                                     <span
@@ -839,6 +858,8 @@ const BankRegistrationPage = () => {
                                                                         type="text"
                                                                         placeholder="Branch Code"
                                                                         className="form-control"
+                                                                        value={bankEmailFromURL.branch_code}
+                                                                        disabled
                                                                         required
                                                                     />
                                                                     <span
@@ -863,6 +884,8 @@ const BankRegistrationPage = () => {
                                                                         type="text"
                                                                         placeholder=" IFSC code"
                                                                         className="form-control"
+                                                                        value={bankEmailFromURL.ifsc_code}
+                                                                        disabled
                                                                         required
                                                                     />
                                                                     <span
@@ -885,6 +908,8 @@ const BankRegistrationPage = () => {
                                                                         type="text"
                                                                         placeholder=" Branch SFTP"
                                                                         className="form-control"
+                                                                        value={bankEmailFromURL.branch_sftp}
+                                                                        disabled
                                                                         required
                                                                     />
                                                                     <span
@@ -949,17 +974,34 @@ const BankRegistrationPage = () => {
                                                                 <div className="col-lg-2 mb-lg-0 mb-2">
                                                                     Email Address<span className="text-danger fw-bold">*</span>
                                                                 </div>
-                                                                <div className="col-lg-2">
-                                                                    <input
-                                                                        onChange={onInputChange}
-                                                                        onBlur={onInputBlur}
-                                                                        name="email"
-                                                                        type="email"
-                                                                        className="form-control"
-                                                                        placeholder="XXX@YYY.com"
-                                                                        value={formData.email}
-                                                                        required
-                                                                    />
+                                                                <div className="col-lg-3">
+                                                                    {/* <div className="col-lg-2 ">
+                                                                        <input
+                                                                            onChange={onInputChange}
+                                                                            onBlur={onInputBlur}
+                                                                            name="email"
+                                                                            type="email"
+                                                                            className="form-control"
+                                                                            placeholder="XXX@YYY.com"
+                                                                            value={formData.email}
+                                                                            required
+                                                                        />
+                                                                    </div>
+                                                                    <div className="col-lg-8 "> */}
+
+                                                                    <div className="input-group ">
+                                                                        <input
+                                                                            onChange={onInputChange}
+                                                                            onBlur={onInputBlur}
+                                                                            type="text"
+                                                                            name="email"
+                                                                            className="form-control" placeholder="Email"
+                                                                            value={splittedBankEmailId.userName}
+                                                                            required
+                                                                        />
+                                                                        <span className="input-group-text" id="basic-addon2">{splittedBankEmailId.domain}</span>
+                                                                    </div>
+                                                                    {/* </div> */}
                                                                     <span
                                                                         className={`pe-1 ${emailValidationMessage ? "text-danger" : "d-none"
                                                                             }`}
@@ -1125,7 +1167,7 @@ const BankRegistrationPage = () => {
                                                             className="form-label common-btn-font"
                                                         >
                                                             Flat Number
-                                                            <span className="text-danger fw-bold">*</span>
+                                                            {/* <span className="ps-1 text-muted"></span> */}
                                                         </label>
                                                         <input
                                                             id="flat_number"
@@ -1145,7 +1187,7 @@ const BankRegistrationPage = () => {
                                                             className="form-label common-btn-font"
                                                         >
                                                             Building Name
-                                                            <span className="text-danger fw-bold">*</span>
+                                                            {/* <span className="ps-1 text-muted">(optional)</span> */}
                                                         </label>
                                                         <input
                                                             id="building_name"
@@ -1165,7 +1207,7 @@ const BankRegistrationPage = () => {
                                                             className="form-label common-btn-font"
                                                         >
                                                             Society Name
-                                                            <span className="text-danger fw-bold">*</span>
+                                                            {/* <span className="ps-1 text-muted">(optional)</span> */}
                                                         </label>
                                                         <input
                                                             id="society_name"
@@ -1186,7 +1228,7 @@ const BankRegistrationPage = () => {
                                                             className="form-label common-btn-font"
                                                         >
                                                             Plot Number
-                                                            <span className="text-danger fw-bold">*</span>
+                                                            {/* <span className="ps-1 text-muted">(optional)</span> */}
                                                         </label>
                                                         <input
                                                             id="plot_number"
@@ -1370,7 +1412,8 @@ const BankRegistrationPage = () => {
                                                         </span>
                                                     </div>
                                                 </div>
-                                                <div className="modal-footer">
+                                                <div className="modal-footer justify-content-between">
+                                                    <p className='text-secondary'>All fields marked with an asterisk (<span className="text-danger fw-bold">*</span>) are required</p>
                                                     <button
                                                         onClick={onAddressFormSubmit}
                                                         className={`btn btn-primary ${locality &&
