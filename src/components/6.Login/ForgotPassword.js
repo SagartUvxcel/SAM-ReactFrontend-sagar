@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import Layout from "../1.CommonLayout/Layout";
 import resetPassImg from "../../images/resetPass.svg";
 import axios from "axios";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
   LoadCanvasTemplate,
@@ -12,6 +12,8 @@ import {
 
 
 const ForgotPassword = () => {
+  const goTo = useNavigate();
+
   const [emailValue, setEmailValue] = useState("");
   const [alertDetails, setAlertDetails] = useState({
     alertVisible: false,
@@ -52,24 +54,24 @@ const ForgotPassword = () => {
     try {
       await axios
         .post(
-          `/sam/v1/customer-registration/forgot-password`,
+          `/sam/v1/customer-registration/forget-password/email/verify`,
           JSON.stringify({ username: emailValue })
         )
         .then((res) => {
-          if (res.data.status === 0) {
-            // localStorage.setItem("forgotPassUserName", emailValue);
-            setDisplayOfSections({
-              mainSectionDisplay: "d-none",
-              afterSubmitSectionDisplay: "",
-            });
-          } else {
-
+          console.log(res);
+          if (res.data) {
+            const sensitiveData = { email: res.data.username, question: res.data.question}
+            goTo("/forgot-password/password-reset", { state: { sensitiveData } });
             setLoading(false);
-          }
+          } 
         });
     } catch (error) {
       setLoading(false);
-      console.log("failed to send password reset link.")
+      setAlertDetails({
+        alertVisible: true,
+        alertMsg: "Failed to send password reset link",
+        alertClr: "warning",
+      });
     }
   }
 
@@ -237,10 +239,10 @@ const ForgotPassword = () => {
                         role="status"
                         aria-hidden="true"
                       ></span>
-                      Sending....
+                      Resetting password....
                     </>
                   ) : (
-                    "Send password reset email"
+                    "Reset password"
                   )}
                 </button>
               </form>

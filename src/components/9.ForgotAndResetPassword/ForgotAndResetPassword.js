@@ -133,34 +133,31 @@ const ForgotAndResetPassword = () => {
         password: newPassword,
         username: emailFromURL,
       });
-      console.log(postData);
+      console.log("sending data===>", postData);
       try {
-        await axios
-          .post(
-            `/sam/v1/customer-registration/forgot-password-change`,
-            postData
-          )
-          .then((res) => {
-            if (res.data.status === 0) {
-              console.log(res);
-              setLoading(false);
-              toast.success("Password Changed Successfully !");
-              // localStorage.removeItem("forgotPassUserName");
-              goTo("/login");
-            } else {
-              setLoading(false);
-              setAlertDetails({
-                alertVisible: true,
-                alertMsg: "Internal server error",
-                alertClr: "warning",
-              });
-            }
+        const { data } = await axios.post(`/sam/v1/customer-registration/forgot-password-change`, postData)
+        console.log("response from API ====>", data);
+
+        if (data.status === 0) {
+          setLoading(false);
+          toast.success("Password Changed Successfully !");
+          // localStorage.removeItem("forgotPassUserName");
+          goTo("/login");
+        } else {
+          setLoading(false);
+          setAlertDetails({
+            alertVisible: true,
+            alertMsg: "Something went wrong",
+            alertClr: "warning",
           });
+        }
       } catch (error) {
+        console.log("error from api===>", error);
         setLoading(false);
+        // toast.error("Password must be different from the last 3 passwords");
         setAlertDetails({
           alertVisible: true,
-          alertMsg: "Internal server error",
+          alertMsg: "Password must be different from the last password",
           alertClr: "warning",
         });
       }
@@ -198,11 +195,15 @@ const ForgotAndResetPassword = () => {
   let emailFromEmailUrl = "";
   const getEmailFromURL = async () => {
 
+    // console.log("full url from window location==>", window.location.search);
     const urlParams = new URLSearchParams(window.location.search);
+    // console.log("urlParams from window location==>", urlParams);
+
     emailFromEmailUrl = urlParams.get("email");
 
     if (emailFromEmailUrl) {
       const forgotPasswordUrlToken = emailFromEmailUrl.split('=');
+      // console.log("url token==>", forgotPasswordUrlToken);
       const emailToken = forgotPasswordUrlToken[0];
       const tokenDataToPost = forgotPasswordUrlToken[1];
 
@@ -215,16 +216,13 @@ const ForgotAndResetPassword = () => {
           mail_id: emailToken,
           token: tokenDataToPost
         })
-      console.log(dataToPost);
-      console.log(loading);
 
       try {
         await axios.post(`/sam/v1/customer-registration/verify-link-token`, dataToPost)
           .then((res) => {
-            console.log(res.data);
 
             if (res.data) {
-
+              // console.log("response data==>", res.data);
               const emailValue = res.data.email
               const validValue = res.data.valid
               if (emailValue && validValue) {
@@ -384,7 +382,7 @@ const ForgotAndResetPassword = () => {
               <div className="row justify-content-lg-between justify-content-center mt-5">
                 <div className="col-xl-5 col-lg-5 col-md-8 order-2 order-lg-1 mt-lg-0 mt-5">
                   <h1 className="text-bold mt-5 common-secondary-color">Oops! This link has expired.</h1><br></br>
-                    <h3 className="">Please request a <a href="/forgot-password" className="text-decoration-none"> new link</a> or <a href="/contact" className="text-decoration-none">contact </a>support for assistance.
+                  <h3 className="">Please request a <a href="/forgot-password" className="text-decoration-none"> new link</a> or <a href="/contact" className="text-decoration-none">contact </a>support for assistance.
                   </h3>
                 </div>
                 <div className="col-xl-5 col-lg-6 col-md-8 order-1 order-lg-2 mt-5 ">

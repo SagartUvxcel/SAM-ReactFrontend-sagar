@@ -14,6 +14,8 @@ import Loader from "../components/1.CommonLayout/Loader";
 
 const bankNameRegularExp = /^[A-Za-z0-9&\s.-]+$/
 const branchNameRegularExp = /^[A-Za-z0-9\s\-&.,'()]+/
+// const emailUserNameRegularExp = /^([a-zA-Z0-9._%+-]+)@/
+const emailUserNameRegularExp = /^[a-zA-Z0-9._]+$/
 const branchCodeRegularExp = /^\d{1,5}$/
 const ifscCodeRegularExp = /^[A-Z]{4}0\d{6}$/
 const branchSftpRegularExp = /^[A-Za-z0-9_-]+$/
@@ -111,18 +113,14 @@ const BankRegistrationPage = () => {
     const getEmailTokenFromURL = async () => {
         const urlParams = new URLSearchParams(window.location.search);
         tokenFromEmailUrl = urlParams.get("token");
-        console.log(tokenFromEmailUrl);
         if (tokenFromEmailUrl) {
             const emailToken = tokenFromEmailUrl;
 
             // posting data 
             const dataToPost = JSON.stringify({ token: emailToken })
-            console.log(dataToPost);
-
             try {
                 await axios.post(`/sam/v1/bank-registration/branch/token/verify`, dataToPost)
                     .then((res) => {
-                        console.log(res.data);
 
                         if (res.data) {
                             const email = res.data.email;
@@ -132,9 +130,7 @@ const BankRegistrationPage = () => {
                             const branch_sftp = res.data.branch_sftp
                             const ifsc_code = res.data.ifsc_code;
                             if (email && bank_name) {
-                                console.log(bank_name, email);
                                 const splitedEmail = email.split('@')
-                                console.log(splitedEmail);
                                 const emailDomainPart = "@" + splitedEmail[1];
                                 setSplittedBankEmailId({ userName: splitedEmail[0], domain: emailDomainPart });
                                 setBankEmailFromURL({ bank_name, email, branch_code, branch_name, branch_sftp, ifsc_code });
@@ -542,12 +538,21 @@ const BankRegistrationPage = () => {
             const emailValue = value + splittedBankEmailId.domain;
             console.log(emailValue);
             setSplittedBankEmailId({ ...splittedBankEmailId, userName: value })
-            setFormData({ ...formData, [name]: emailValue })
-            setValidationDetails({
-                ...validationDetails,
-                emailValidationMessage: "",
-            });
-            style.borderColor = "";
+
+            if (emailUserNameRegularExp.test(value)) {
+                setValidationDetails({
+                    ...validationDetails,
+                    emailValidationMessage:  "",
+                });
+                style.borderColor = "";
+                setFormData({ ...formData, [name]: emailValue })
+            } else {
+                setValidationDetails({
+                    ...validationDetails,
+                    emailValidationMessage: "Invalid email Id.",
+                });
+                style.borderColor = "red";
+            }
         } else if (name === "state") {
             addressDetails.city = "";
             if (value) {
@@ -679,6 +684,20 @@ const BankRegistrationPage = () => {
         // fieldsToDelete.forEach((field) => {
         //     delete formData[field];
         // });
+       if(!formData.contact_details.flat_number){
+        delete formData.contact_details["flat_number"]
+    } 
+      if(!formData.contact_details.plot_number ){
+        delete formData.contact_details["plot_number"]
+    } 
+      if(!formData.contact_details.society_name ){
+        delete formData.contact_details["society_name"]
+    } 
+      if(!formData.contact_details.building_name ){
+        delete formData.contact_details["building_name"]
+    } 
+        
+
         console.log(formData);
         if (addressValues.labelValue === "Add Details") {
             return setAlertDetails({
@@ -691,44 +710,45 @@ const BankRegistrationPage = () => {
         // setLoading(true);
         if (formData.email.length !== 0) {
             console.log(formData);
-            // try {
-            //     // checking email exist or not 
-            //     const { data } = await axios.post(`/sam/v1/customer-registration/email-validation`,
-            //         JSON.stringify({ email: formData.email })
-            //     )
-            //     if (data.status === 1) {
-            //         setValidationDetails({
-            //             ...validationDetails,
-            //             emailValidationMessage: "Email id already exists.",
-            //         });
-            //         setLoading(false);
-            //         return toast.error(`error: Email already exists.`);
-            //     }
+            try {
+                // checking email exist or not 
+                const { data } = await axios.post(`/sam/v1/customer-registration/email-validation`,
+                    JSON.stringify({ email: formData.email })
+                )
+                if (data.status === 1) {
+                    setValidationDetails({
+                        ...validationDetails,
+                        emailValidationMessage: "Email id already exists.",
+                    });
+                    setLoading(false);
+                    return toast.error(`error: Email already exists.`);
+                }
+                console.log(formData);
+                // posting data for registration
+                const { data: bankCreateRes } = await axios.post(`/sam/v1/bank-registration/branch`, formData)
+                if (bankCreateRes.status === 0) {
+                    setLoading(false);
+                    document.getElementById("registration-alert").scrollIntoView(true);
+                    toast.success(
+                        `Success: Please check your email for verification.`
+                    );
+                    e.target.reset();
+                    resetValues();
+                    goTo("/register/verify");
+                } else {
+                    setLoading(false);
+                    setAlertDetails({
+                        alertVisible: true,
+                        alertMsg: "Internal server error",
+                        alertClr: "warning",
+                    });
+                }
 
-            //     // posting data for registration
-            //     const { data: bankCreateRes } = await axios.post(`/sam/v1/bank-registration/branch`, formData)
-            //     if (bankCreateRes.status === 0) {
-            //         setLoading(false);
-            //         document.getElementById("registration-alert").scrollIntoView(true);
-            //         toast.success(
-            //             `Success: Please check your email for verification.`
-            //         );
-            //         e.target.reset();
-            //         resetValues();
-            //         goTo("/register/verify");
-            //     } else {
-            //         setLoading(false);
-            //         setAlertDetails({
-            //             alertVisible: true,
-            //             alertMsg: "Internal server error",
-            //             alertClr: "warning",
-            //         });
-            //     }
-
-            // } catch (error) {
-            //     toast.error("Server error while validating email");
-            //     setLoading(false);
-            // }
+            } catch (error) {
+                toast.error("Server error while validating email");
+                toast.error(error);
+                setLoading(false);
+            }
         }
     };
 
@@ -995,7 +1015,7 @@ const BankRegistrationPage = () => {
                                                                             onBlur={onInputBlur}
                                                                             type="text"
                                                                             name="email"
-                                                                            className="form-control" placeholder="Email"
+                                                                            className="form-control" placeholder="UserName"
                                                                             value={splittedBankEmailId.userName}
                                                                             required
                                                                         />
@@ -1413,7 +1433,7 @@ const BankRegistrationPage = () => {
                                                     </div>
                                                 </div>
                                                 <div className="modal-footer justify-content-between">
-                                                    <p className='text-secondary'>All fields marked with an asterisk (<span className="text-danger fw-bold">*</span>) are required</p>
+                                                    <p className='text-secondary'>All fields marked with an asterisk (<span className="text-danger fw-bold">*</span>) are mandatory.</p>
                                                     <button
                                                         onClick={onAddressFormSubmit}
                                                         className={`btn btn-primary ${locality &&

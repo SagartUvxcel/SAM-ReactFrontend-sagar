@@ -306,7 +306,7 @@ input:-webkit-autofill:active {
   background-position: center;
   background-size: cover;
   background-attachment: fixed;
-  padding: 200px 0 100px 0;
+  padding: 68px 0 100px 0;
   position: relative;
 }
 
@@ -322,6 +322,32 @@ input:-webkit-autofill:active {
   justify-content: center;
   width: 80%;
   padding: 2rem !important;
+}
+
+.home-wrapper .searchHistoryDiv {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+.home-wrapper .searchHistoryDiv .fa {
+  font-size: small !important;
+}
+.searchHistoryDiv .historyLink:hover {
+  cursor: pointer;
+  color: var(--primary-color-hover);
+}
+
+.searchHistoryDiv .historyLink {
+  font-size: 13px !important;
+}
+
+.searchHistoryDiv .btn-close {
+  font-size: smaller !important;
+}
+
+
+.historyDropdownMenu{
+  overflow: auto !important;
+    width: 828px !important;
+    height: 400px !important;
 }
 
 .more-filters-dropdown-menu {
@@ -529,9 +555,8 @@ input:-webkit-autofill:active {
 
 /* <----- Registration ----> */
 
-.bank-registration-link-form .form-bank-select{
+.bank-registration-link-form .form-bank-select {
   font-size: 0.9rem !important;
-  
 }
 /* .bank-registration-link-form label{
   width: 150px !important;
@@ -618,6 +643,13 @@ input:-webkit-autofill:active {
   border-radius: unset !important;
   padding: 0.2rem 0.1rem !important;
 }
+.set-password-wrapper .modal .form-control {
+  /* border-top: none;
+  border-left: none;
+  border-right: none;*/
+  border-radius: initial !important;
+  padding: 0.2rem 0.4rem !important;
+}
 
 .set-password-wrapper .form-control:focus {
   border-color: lightgray;
@@ -670,6 +702,14 @@ input:-webkit-autofill:active {
 .set-pass-img {
   height: 100%;
   width: 100%;
+}
+
+.forgot-password .securityQuestionAnswer {
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-radius: unset !important;
+  padding: 0.2rem 0.1rem !important;
 }
 
 /* Verify Token */
@@ -779,7 +819,7 @@ input:-webkit-autofill:active {
 }
 
 .enquiry-filter-row .search_input {
- /* width:200px !important */
+  /* width:200px !important */
 }
 
 .chatBox-modal-header {
@@ -848,23 +888,20 @@ input:-webkit-autofill:active {
   white-space: nowrap;
 }
 
-.enquiry-pagination .selected{
-color: var(--secondary-color);
+.enquiry-pagination .selected {
+  color: var(--secondary-color);
 }
 
-
-.enquiry-pagination>li>a{ 
-    position: relative;
-    display: block;
-    padding: 0.5rem 0.75rem;
-    margin-left: -1px;
-    line-height: 1.25;
-    color: #007bff;
-    background-color: #fff;
-    border: 1px solid #dee2e6;
-
+.enquiry-pagination > li > a {
+  position: relative;
+  display: block;
+  padding: 0.5rem 0.75rem;
+  margin-left: -1px;
+  line-height: 1.25;
+  color: #007bff;
+  background-color: #fff;
+  border: 1px solid #dee2e6;
 }
-
 
 /* Admin  */
 
@@ -1129,8 +1166,8 @@ color: var(--secondary-color);
 
 /* Subscription */
 
-.subscription-access-denied-page-btn .btn:hover{
-  color:white !important;
+.subscription-access-denied-page-btn .btn:hover {
+  color: white !important;
 }
 
 .plan-select-btn {
@@ -1456,6 +1493,12 @@ color: var(--secondary-color);
 
   .home-wrapper {
     background-attachment: unset;
+  }
+
+  .historyDropdownMenu{
+    overflow: auto !important;
+      width: auto !important;
+      /* height: 700px !important; */
   }
 
   .w-22 {

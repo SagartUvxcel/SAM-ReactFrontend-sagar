@@ -22,6 +22,7 @@ import ChangePassword from "./components/6.Login/ChangePassword";
 import AboutUs from "./components/4.About/AboutUs";
 import AddProperty from "./Admin/Property/AddProperty";
 import ForgotPassword from "./components/6.Login/ForgotPassword";
+import SecurityQuestionAndEmailLinkPasswordReset from "./components/9.ForgotAndResetPassword/SecurityQuestionAndEmailLinkPasswordReset";
 import AdminProtected from "./components/AdminProtected";
 import UserProtected from "./components/UserProtected";
 import AccessDeniedPage from "./components/AccessDeniedPage";
@@ -67,10 +68,13 @@ function App() {
           let res = await axios.get(`/sam/v1/user-registration/logout`, {
             headers: { Authorization: data.loginToken },
           });
-
+          // console.log(res);
           if (res.data !== "Session expired or invalid user") {
             let remainingTime = parseInt(res.data.TimeRemaining);
             // console.log("Time Remaining = ", remainingTime);
+            if(remainingTime > 5){
+              localStorage.removeItem("remainingTime");
+            }
             if (remainingTime === 5) {
               const sessionTimeRemaining =
                 localStorage.getItem("remainingTime");
@@ -172,6 +176,8 @@ function App() {
           />
 
           <Route path="/forgot-password/*" element={<ForgotPassword />} />
+
+          <Route path="/forgot-password/password-reset/*" element={<SecurityQuestionAndEmailLinkPasswordReset />} />
 
           <Route
             path="/user-enquiries"

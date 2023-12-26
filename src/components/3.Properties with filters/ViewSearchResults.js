@@ -101,6 +101,7 @@ const ViewSearchResults = () => {
     window.scrollTo(0, 0);
     let apis = {
       searchAPI: `/sam/v1/property/count-category`,
+      authSearchAPI: `/sam/v1/property/auth/count-category`,
     };
     let dataForTotalCount = {
       ...dataToPost,
@@ -109,7 +110,9 @@ const ViewSearchResults = () => {
     };
     try {
       // This api is only for getting all the records and count length of array of properties so that we can decide page numbers for pagination.
-      await axios.post(apis.searchAPI, dataForTotalCount).then((res) => {
+      await axios.post(isLogin ? apis.authSearchAPI : apis.searchAPI, dataForTotalCount, {
+        headers: authHeaders,
+      }).then((res) => {
         if (res.data) {
           setPageCount(Math.ceil(res.data.length / batch_size));
         }
@@ -157,8 +160,11 @@ const ViewSearchResults = () => {
     };
     let apis = {
       searchAPI: `/sam/v1/property/count-category`,
+      authSearchAPI: `/sam/v1/property/auth/count-category`,
     };
-    const res = await axios.post(apis.searchAPI, dataOfNextOrPrevPage);
+    const res = await axios.post(isLogin ? apis.authSearchAPI : apis.searchAPI, dataOfNextOrPrevPage, {
+      headers: authHeaders,
+    });
     return res.data;
   };
 
@@ -468,7 +474,7 @@ const ViewSearchResults = () => {
         setDataToPost({ ...dataToPost });
         setTerritoryFilterSelected(false);
       }
-    }else if (name === "latest_added_properties") {
+    } else if (name === "latest_added_properties") {
       if (value) {
         setLatestAddedFilterSelected(true);
         setDataToPost({ ...dataToPost, [name]: parseInt(value) });
@@ -642,7 +648,7 @@ const ViewSearchResults = () => {
               </select>
             </div>
             {/* More Filters */}
-           { isLogin ? <div className="col-md-2 col-12 mt-3 mt-md-0">
+            {isLogin ? <div className="col-md-2 col-12 mt-3 mt-md-0">
               <div className="dropdown">
                 <div
                   data-bs-toggle="dropdown"
@@ -883,7 +889,7 @@ const ViewSearchResults = () => {
                   </div>
                 </ul>
               </div>
-            </div>:""}
+            </div> : ""}
             {/* searchBtn */}
             <div className="col-md-1 col-12 my-3 my-md-0">
               <button
@@ -1064,14 +1070,14 @@ const ViewSearchResults = () => {
               </div>
             </div>
             <div className="container d-none" ref={paginationRef}>
-              <div className="row">
+              {pageCount > 1 ? <div className="row">
                 <div className="col-12 mb-3">
                   <Pagination
                     handlePageClick={handlePageClick}
                     pageCount={pageCount}
                   />
                 </div>
-              </div>
+              </div> : ""}
             </div>
           </div>
         </div>

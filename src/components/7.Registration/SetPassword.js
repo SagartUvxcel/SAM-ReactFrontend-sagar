@@ -1,10 +1,18 @@
 import axios from "axios";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Layout from "../1.CommonLayout/Layout";
 import setPassImg from "../../images/setpass.svg";
 import { rootTitle } from "../../CommonFunctions";
+
+// const passwordSecurityQuestions = [
+//   { id: 1, question: "What city were you born in?" },
+//   { id: 2, question: "What is your mother's maiden name?" },
+//   { id: 3, question: "What is the name of your first pet?" },
+//   { id: 4, question: "Who was your childhood hero?" },
+//   { id: 5, question: "What high school did you attend?" },
+// ]
 
 const SetPassword = () => {
   //  Important variables for storing password data as well as validation data.
@@ -16,8 +24,18 @@ const SetPassword = () => {
     eyeIcon2: "eye-slash",
     passwordType1: "password",
     passwordType2: "password",
+    questionNotSelectedMessage: "",
+    answerNotSelectedMessage: "",
   });
 
+  const [securityQuestions, setSecurityQuestions] = useState([]);
+
+  const [securityQuestionsDetails, setSecurityQuestionsDetails] = useState({
+    id: "",
+    answer: ""
+  });
+  const { id, answer } = securityQuestionsDetails;
+  const answerInput = useRef();
   const [loading, setLoading] = useState(false);
   const [alertDetails, setAlertDetails] = useState({
     alertVisible: false,
@@ -36,7 +54,23 @@ const SetPassword = () => {
     eyeIcon2,
     passwordType1,
     passwordType2,
+    questionNotSelectedMessage,
+    answerNotSelectedMessage,
   } = details;
+
+  // Function getSecurityQuestion.
+  const getSecurityQuestion = async () => {
+
+    try {
+      const { data } = await axios.get("/sam/v1/customer-registration/security-questions");
+      // console.log(data);
+      if (data) {
+        setSecurityQuestions(data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   // Function to check if the password satisfies the given password condition.
   const onPasswordsBlur = (e) => {
@@ -79,6 +113,49 @@ const SetPassword = () => {
     }
   };
 
+  // console.log(securityQuestionsDetails);
+  // Onchange function for both password fields.
+  const onSecurityQuestionAnswerChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "securityQuestions") {
+      if (securityQuestions.filter(obj => obj.id === value)) {
+        setSecurityQuestionsDetails({
+          ...securityQuestionsDetails,
+          id: value,
+        });
+        answerInput.current.classList.remove("d-none");
+        setDetails({
+          ...details,
+          questionNotSelectedMessage: "",
+        });
+
+      } else {
+        setSecurityQuestionsDetails({
+          ...securityQuestionsDetails,
+          id: "",
+        });
+        answerInput.current.classList.add("d-none");
+      }
+
+      if (value === "0") {
+        answerInput.current.classList.add("d-none");
+
+      }
+    } else if (name === "securityAnswer") {
+      // console.log(value);
+      setSecurityQuestionsDetails({
+        ...securityQuestionsDetails,
+        answer: value,
+      });
+      setDetails({
+        ...details,
+        answerNotSelectedMessage: "",
+      });
+    }
+    // console.log(securityQuestionsDetails);
+
+  };
+
   // On setPassWord Button click this function will run.
   const onSetPasswordFormSubmit = async (e) => {
     e.preventDefault();
@@ -117,6 +194,16 @@ const SetPassword = () => {
         eyeIcon2: "eye",
         passwordType2: "text",
       });
+    } else if (id === "") {
+      setDetails({
+        ...details,
+        questionNotSelectedMessage: "Please select security question",
+      });
+    } else if (answer === "") {
+      setDetails({
+        ...details,
+        answerNotSelectedMessage: "Please enter your answer",
+      });
     } else {
       setLoading(true);
       try {
@@ -126,6 +213,8 @@ const SetPassword = () => {
             JSON.stringify({
               password: newPassword,
               token: localStorage.getItem("token"),
+              security_question_id: parseInt(id),
+              security_question_answer: answer.trim(),
             })
           )
           .then((res) => {
@@ -183,30 +272,29 @@ const SetPassword = () => {
 
   useEffect(() => {
     rootTitle.textContent = "SAM TOOL - SET PASSWORD";
+    getSecurityQuestion();
   });
 
   return (
     <Layout>
       <section className="set-password-wrapper section-padding min-100vh">
-        <div className="container mt-5">
+        <div className="container my-5">
           <div className="row justify-content-lg-between justify-content-center">
             <div className="col-xl-5 col-lg-6 col-md-8">
-              <form onSubmit={onSetPasswordFormSubmit} className="card p-5">
+              <form onSubmit={onSetPasswordFormSubmit} className="card px-5 py-3">
                 <h3 className="text-center fw-bold">Set Password</h3>
                 <hr />
                 <div
-                  className={`login-alert alert alert-${alertClr} alert-dismissible show d-flex align-items-center ${
-                    alertVisible ? "" : "d-none"
-                  }`}
+                  className={`login-alert alert alert-${alertClr} alert-dismissible show d-flex align-items-center ${alertVisible ? "" : "d-none"
+                    }`}
                   role="alert"
                 >
                   <span>
                     <i
-                      className={`bi bi-exclamation-triangle-fill me-2 ${
-                        alertClr === "danger" || alertClr === "warning"
-                          ? ""
-                          : "d-none"
-                      }`}
+                      className={`bi bi-exclamation-triangle-fill me-2 ${alertClr === "danger" || alertClr === "warning"
+                        ? ""
+                        : "d-none"
+                        }`}
                     ></i>
                   </span>
                   <small className="fw-bold">{alertMsg}</small>
@@ -215,8 +303,9 @@ const SetPassword = () => {
                     className="bi bi-x login-alert-close-btn close"
                   ></i>
                 </div>
-                <div className="row mt-3">
-                  <div className="col-lg-12 mb-4">
+                <div className="row mt-1">
+                  {/* password */}
+                  <div className="col-lg-12 mb-3">
                     <div className="form-group position-relative">
                       <label className="text-muted" htmlFor="set-password">
                         Password<span className="text-danger ps-1">*</span>
@@ -244,13 +333,14 @@ const SetPassword = () => {
                     ) : (
                       <span className="d-none"></span>
                     )}
-                    <span className="text-muted password-condition">
+                    <p className="text-muted password-condition mt-2">
                       Password should contain at least 1 uppercase letter, 1
                       lowercase letter, 1 number, 1 special character and should
                       be 8-15 characters long.
-                    </span>
+                    </p>
                   </div>
-                  <div className="col-lg-12 mb-4">
+                  {/* confirm password */}
+                  <div className="col-lg-12 mb-3">
                     <label className="text-muted" htmlFor="confirm-password">
                       Confirm Password
                       <span className="text-danger ps-1">*</span>
@@ -271,6 +361,76 @@ const SetPassword = () => {
                       ></i>
                     </div>
                   </div>
+                  {/* question */}
+                  <div className="col-lg-12 mb-3">
+                    <label className="text-muted" htmlFor="confirm-password">
+                      Update your security questions
+                      <span className="text-danger ps-1">*</span>
+                    </label>
+                    <div className="form-group position-relative">
+                      <select
+                        id="securityQuestions"
+                        name="securityQuestions"
+                        className="form-select  form-control ps-3 mt-2"
+                        onChange={onSecurityQuestionAnswerChange}
+                        // placeholder="Select your question"
+                        // value={formData.bank_name}
+                        required
+                      >
+                        {/* <option value="" className="text-gray"  > Select Your Question</option> */}
+                        <option className="text-gray" hidden >Select Your Security Question</option>
+                        {securityQuestions ? (
+                          securityQuestions.map((data, index) => {
+                            return (
+                              <option
+                                key={index}
+                                value={data.question_id}
+                              >
+                                {data.question}
+                              </option>
+                            );
+
+                          })
+                        ) : (
+                          <> </>
+                        )}
+                      </select>
+
+                    </div>
+                    {questionNotSelectedMessage ? (
+                      <span className="pe-1 text-danger">
+                        {questionNotSelectedMessage}
+                      </span>
+                    ) : (
+                      <span className="d-none"></span>
+                    )}
+                  </div>
+                  {/* Answer */}
+                  <div className="col-lg-12 mb-3 d-none" ref={answerInput}>
+                    <label className="text-muted" htmlFor="confirm-password">
+                      Answer
+                      <span className="text-danger ps-1">*</span>
+                    </label>
+                    <div className="form-group position-relative">
+                      <input
+                        id="securityAnswer"
+                        name="securityAnswer"
+                        type="text"
+                        className="form-control"
+                        onChange={onSecurityQuestionAnswerChange}
+
+                      />
+
+                    </div>
+                    {answerNotSelectedMessage ? (
+                      <span className="pe-1 text-danger">
+                        {answerNotSelectedMessage}
+                      </span>
+                    ) : (
+                      <span className="d-none"></span>
+                    )}
+                  </div>
+                  {/* set password button */}
                   <div className="col-lg-12">
                     <button
                       disabled={loading ? true : false}

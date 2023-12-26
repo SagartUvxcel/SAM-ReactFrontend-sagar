@@ -66,7 +66,7 @@ const LoginMainPage = () => {
           JSON.stringify({ username: email, password: password })
         )
         .then((res) => {
-          console.log(res);
+          // console.log(res);
           const { email, token, role_id, user_id, is_bank, subscription_end_date, subscription_status, bank_id, branch_id } = res.data.token;
           console.log(res.data.token);
           let admin = null;

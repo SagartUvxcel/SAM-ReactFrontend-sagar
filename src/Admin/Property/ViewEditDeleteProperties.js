@@ -75,7 +75,7 @@ const ViewEditDeleteProperties = () => {
     };
 
     setStoredDataToPost(dataToPost);
-    
+
     try {
       const propertiesRes = await axios.post(
         `/sam/v1/property/auth/all-properties`,
@@ -996,14 +996,14 @@ const ViewEditDeleteProperties = () => {
                 </section>
               )}
               <div className="container d-none" ref={paginationRef}>
-                <div className="row">
+                {pageCount > 1 ? <div className="row">
                   <div className="col-12 mb-3">
                     <Pagination
                       handlePageClick={handlePageClick}
                       pageCount={pageCount}
                     />
                   </div>
-                </div>
+                </div> : ""}
               </div>
             </>
           </div>

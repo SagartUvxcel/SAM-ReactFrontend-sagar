@@ -123,7 +123,6 @@ const ViewEnquiryLists = () => {
         if (resFromApi.data) {
           setPageCount(totalPages);
         }
-        // setPageCount(resFromApi.data.Getcount);
 
 
         // console.log(resFromApi.data);
@@ -151,26 +150,20 @@ const ViewEnquiryLists = () => {
       const normalUserResFromApi = await axios.post(`/sam/v1/property/auth/user/enquiry`, normalUserDataToPost, {
         headers: authHeader,
       });
-      // console.log(resFromApi);
       if (normalUserResFromApi.data) {
         console.log(normalUserResFromApi);
         setNormalUserEnquiryList(normalUserResFromApi.data.Enquiries);
         let totalPages = Math.ceil(normalUserResFromApi.data.Getcount / enquiryPerPage);
         setPageCount(totalPages);
-        // setPageCount(normalUserResFromApi.data.Getcount);
-
         if (enquiryList.length < 1 && tableElement !== null) {
           setTableHeight(tableElement.current.offsetHeight);
         } else {
           setTableHeight("");
         }
-        // console.log(resFromApi.data);
         setPageLoading(false);
       } else {
         setPageLoading(false);
       }
-
-      // console.log(resFromApi);
 
     } catch (error) {
       setPageLoading(false);
@@ -835,14 +828,14 @@ const ViewEnquiryLists = () => {
 
                       {/* Pagination */}
                       <div className="container " ref={paginationRef}>
-                        <div className="row">
+                        {pageCount > 1 ? <div className="row">
                           <div className="col-12 mb-3">
                             <Pagination
                               handlePageClick={handlePageClick}
                               pageCount={pageCount}
                             />
                           </div>
-                        </div>
+                        </div> : ""}
                       </div>
                     </>
                   )}
@@ -940,14 +933,14 @@ const ViewEnquiryLists = () => {
                     </div>
 
                     <div className="container d-none" ref={paginationRef}>
-                      <div className="row">
+                      {pageCount > 1 ? <div className="row">
                         <div className="col-12 mb-3">
                           <Pagination
                             handlePageClick={handlePageClick}
                             pageCount={pageCount}
                           />
                         </div>
-                      </div>
+                      </div> : ""}
                     </div>
 
 

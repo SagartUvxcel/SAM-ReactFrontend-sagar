@@ -200,7 +200,7 @@ const ManageUsers = ({ userType }) => {
           }
         );
         setRoles(allRoles.data);
-      } catch (error) {}
+      } catch (error) { }
     }
   };
 
@@ -334,6 +334,9 @@ const ManageUsers = ({ userType }) => {
     // eslint-disable-next-line
   }, []);
 
+  console.log(roles);
+  console.log(defaultRoleIds);
+
   return (
     <Layout>
       <div className="container-fluid admin-users-wrapper section-padding">
@@ -393,8 +396,8 @@ const ManageUsers = ({ userType }) => {
                                 {user.individual_user
                                   ? user.individual_user.first_name
                                   : user.org_user
-                                  ? user.org_user.company_name
-                                  : ""}
+                                    ? user.org_user.company_name
+                                    : ""}
                               </td>
                               <td>{email_address}</td>
                               <td>{arrayOfRoles.join(", ")}</td>
@@ -429,11 +432,10 @@ const ManageUsers = ({ userType }) => {
                                     <div
                                       data-bs-toggle="modal"
                                       data-bs-target="#confirmDeleteUserModal"
-                                      className={`dropdown-item ${
-                                        email_address === data.user
+                                      className={`dropdown-item ${email_address === data.user
                                           ? "d-none"
                                           : ""
-                                      }`}
+                                        }`}
                                       onClick={() => {
                                         onDeleteBtnClick(
                                           user_id,
@@ -454,12 +456,12 @@ const ManageUsers = ({ userType }) => {
                     </table>
                   </div>
                   <div className="container mt-4">
-                    <div className="row">
+                    {pageCount > 1 ? <div className="row">
                       <Pagination
                         handlePageClick={handlePageClick}
                         pageCount={pageCount}
                       />
-                    </div>
+                    </div> : ""}
                   </div>
                 </>
               )}
@@ -509,10 +511,10 @@ const ManageUsers = ({ userType }) => {
                             >
                               Role
                               <span className={`ms-4 ${classOnPageLoad}`}>
-                                <i
+                                {!defaultRoleIds.includes(1) && <i
                                   onClick={editDetails}
                                   className="bi bi-pencil-square"
-                                ></i>
+                                ></i>}
                               </span>
                               <span
                                 onClick={cancelEditing}
@@ -551,7 +553,7 @@ const ManageUsers = ({ userType }) => {
                                     className="form-check form-check-inline"
                                   >
                                     <input
-                                      className="form-check-input roles-checkbox"
+                                      className={`form-check-input roles-checkbox`}
                                       type="checkbox"
                                       onClick={(e) => {
                                         onRoleSelect(e);
@@ -560,7 +562,7 @@ const ManageUsers = ({ userType }) => {
                                       value={data.id}
                                       disabled={
                                         user_id === loggedInUserId &&
-                                        data.id === 1
+                                          data.id === 1
                                           ? true
                                           : false
                                       }
@@ -589,10 +591,10 @@ const ManageUsers = ({ userType }) => {
                             {user_type === 0
                               ? "Individual User"
                               : user_type === 1
-                              ? "Organizational User"
-                              : user_type === 2
-                              ? "Bank User"
-                              : ""}
+                                ? "Organizational User"
+                                : user_type === 2
+                                  ? "Bank User"
+                                  : ""}
                           </div>
                         </div>
                         {/* Show Data As Per User Type*/}
