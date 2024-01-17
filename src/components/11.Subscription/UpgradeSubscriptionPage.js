@@ -303,30 +303,6 @@ const UpgradeSubscriptionPage = () => {
                   Lorem ipsum dolor sit amet consectetur adipisicing elit.
                 </span>
               </div>
-              {/* <div className="row mt-5 justify-content-center"> */}
-              {/*  Checkboxes - Individual & Organization */}
-              {/* <div className="col-lg-12 d-flex justify-content-center">
-                  <div
-                    className={`plan-select-btn d-flex justify-content-center align-items-center ${halfYearlyCycleSelected ? "active" : ""
-                      }`}
-                    name="individual"
-                    onClick={onHalfYearlyBtnClick}
-                  >
-                    6 Month
-                  </div>
-                  <div className="mx-4 d-flex justify-content-center align-items-center">
-                    |
-                  </div>
-                  <div
-                    className={`plan-select-btn d-flex justify-content-center align-items-center ${annualCycleSelected ? "active" : ""
-                      }`}
-                    name="organization"
-                    onClick={onAnnualBtnClick}
-                  >
-                    Annual
-                  </div>
-                </div> */}
-              {/* </div> */}
 
 
               <div className="container mt-5">
@@ -442,77 +418,7 @@ const UpgradeSubscriptionPage = () => {
                         </tbody>
                       </table>
                     </div>
-
-                    {/* subscription-Plans */}
-                    {/* <div className="container-fluid mt-5">
-                      <div className="row justify-content-between">
-                        {/* basic card */}
-                    {/* <div className={`col-md-6 mb-4 mb-md-0 plan-card-1 `}>
-                          <button
-                            className={`w-100 shadow plan-header-wrapper border-0 p-4 position-relative mb-4 ${
-                              basicCardDisable ? "disabled" : ""
-                            }`}
-                            disabled={basicCardDisable}
-                            onClick={() => {
-                              handleActiveColumn(1);
-                              onBasicCardClick();
-                            }}
-                          >
-                            <span
-                              className={`position-absolute top-0 start-100 translate-middle badge  bg-success ${
-                                selectedPlan &&
-                                selectedPlan.name === "Basic plan"
-                                  ? ""
-                                  : "d-none"
-                              }`}
-                            >
-                              <i className="bi bi-check-circle-fill"></i>
-                            </span>
-                            <h4 className="plan-title mb-4 fw-bold text-uppercase">
-                              Basic
-                            </h4>
-                            <h3 className="fw-bold plan-price">
-                              <sup>&#8377;</sup>
-                              {basicPlanOnCard ? basicPlanOnCard.price : ""}
-                            </h3>
-                          </button>
-                        </div> */}
-                    {/* advance card  */}
-                    {/* <div className={`col-md-6 mb-4 mb-md-0 plan-card-2`}>
-                          <button
-                            className={`w-100 shadow plan-header-wrapper border-0 p-4 position-relative mb-4 ${
-                              advancedCardDisable ? "disabled" : ""
-                            }`}
-                            disabled={advancedCardDisable}
-                            onClick={() => {
-                              handleActiveColumn(2);
-                              onAdvancedCardClick();
-                            }}
-                          >
-                            <span
-                              className={`position-absolute top-0 start-100 translate-middle badge  bg-success ${
-                                selectedPlan &&
-                                selectedPlan.name === "Advanced plan"
-                                  ? ""
-                                  : "d-none"
-                              }`}
-                            >
-                              <i className="bi bi-check-circle-fill"></i>
-                            </span>
-                            <h4 className="plan-title mb-4 fw-bold text-uppercase">
-                              Advanced
-                            </h4>
-                            <h3 className="fw-bold plan-price">
-                              <sup>&#8377;</sup>
-                              {advancedPlanOnCard
-                                ? advancedPlanOnCard.price
-                                : ""}
-                            </h3>
-                          </button>
-                        </div> */}
-                    {/* </div>
-                    </div> */}
-
+                    {/* subscription-button */}
                     <div className="container-fluid my-5">
                       <div className="row justify-content-between  mt-3">
                         {plans && plans.map((plan, Index) => {

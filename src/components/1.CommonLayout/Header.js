@@ -89,7 +89,8 @@ function Header() {
             data-bs-target="#offcanvasExample"
             aria-controls="offcanvasExample"
           >
-            <span className="navbar-toggler-icon"></span>
+            {/* <span className="navbar-toggler-icon"></span> */}
+            <i className="fas fa-ellipsis-v"></i>
           </button>
           <span className="navbar-brand px-lg-4">Assets Class</span>
           <button
@@ -101,7 +102,8 @@ function Header() {
             aria-expanded="false"
             aria-label="Toggle navigation"
           >
-            <span className="navbar-toggler-icon"></span>
+            {/* <span className="navbar-toggler-icon"></span> */}
+            <i className="fas fa-bars"></i>
           </button>
           <div className="collapse navbar-collapse mt-2 mt-md-0" id="navbarNav">
             <ul className="navbar-nav ms-auto">
@@ -140,7 +142,7 @@ function Header() {
               {/* If user is loggedIn then show these navbar links in dropdown */}
               {roleId === 1 && isBank === false ? (
                 <li>
-                  <NavLink to="/admin/bank-registration-link" className="nav-link">
+                  <NavLink to="/bank-registration-link" className="nav-link">
                   <i className="bi bi-bank2 me-2 text-light"></i>
                     Bank Registration
                   </NavLink>

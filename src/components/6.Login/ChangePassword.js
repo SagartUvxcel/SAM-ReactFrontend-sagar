@@ -188,7 +188,7 @@ const ChangePassword = () => {
         <div className="container mt-5">
           <div className="row justify-content-lg-between justify-content-center">
             <div className="col-xl-5 col-lg-6 col-md-8 order-1 order-lg-2">
-              <form onSubmit={onChangePasswordFormSubmit} className="card p-5">
+              <form onSubmit={onChangePasswordFormSubmit} className="card p-3 p-sm-5 ">
                 <h3 className="text-center fw-bold">Change Password</h3>
                 <hr />
                 <div

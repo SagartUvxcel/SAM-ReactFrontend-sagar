@@ -149,7 +149,7 @@ const LoginMainPage = () => {
               <form
                 onSubmit={onLogin}
                 action=""
-                className="card form-card position-relative p-5"
+                className="card form-card position-relative p-4 px-sm-5 py-sm-4 "
               >
                 <h3 className="text-center fw-bold">Login</h3>
                 <hr />

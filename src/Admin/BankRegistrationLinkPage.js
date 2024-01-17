@@ -179,13 +179,13 @@ const BankRegistrationLinkPage = () => {
 
     return (
         <Layout>
-            <section className=" my-5">
+            <section className=" my-5 min-100vh">
                 <div className="container-fluid wrapper mt-5">
-                    <div className="row d-flex justify-content-evenly align-items-center h-100 mt-lg-5 mb-5">
-                        <div className="col-md-4 col-lg-4 col-xl-4  order-lg-1 order-2 mt-lg-5 mt-5 mb-5">
-                            <img src={bankRegistrationLinkPage} className="img-fluid w-75 h-100" alt="Sample" />
+                    <div className="row d-flex justify-content-evenly align-items-center h-100 mt-lg-5 mb-md-5">
+                        <div className="col-md-4 col-lg-4 col-xl-5  order-lg-1 order-2 mt-lg-5 mt-5 mb-md-5 text-center">
+                            <img src={bankRegistrationLinkPage} className="img-fluid h-100" alt="bankLinkImg" />
                         </div>
-                        <div className="col-md-8 col-lg-8 col-xl-8 offset-xl-1 order-lg-2 order-1 mt-lg-0 ms-0 mt-5 ">
+                        <div className="col-md-8 col-lg-8 col-xl-7 offset-xl-1 order-lg-2 order-1 mt-lg-0 ms-0 mt-5 ">
                             <form onSubmit={onFormSubmit} className="bank-registration-link-form card position-relative px-5 py-4">
 
                                 <h4 className="text-center fw-bold mb-4">Bank Registration Link</h4>

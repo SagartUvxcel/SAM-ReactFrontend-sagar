@@ -357,7 +357,7 @@ const Subscription = () => {
         {isLogin ? (
           <>
             <div className="container-fluid py-3">
-              <h2 className="text-center ">Subscription</h2>
+              <h2 className="text-center my-3">Subscription</h2>
               {loading ? (
                 <div
                   className="d-flex justify-content-center align-items-center"
@@ -376,7 +376,7 @@ const Subscription = () => {
                     <div className="list-group list-group-fit  d-flex  justify-content-between">
                       <div className="list-group-item bg-0">
                         <div className="form-group row mb-0">
-                          <label className="col-form-label form-label col-sm-3">Current Plan</label>
+                          <label className="col-form-label form-label fw-bold col-sm-3">Current Plan</label>
                           <div className="col-sm-8 d-flex align-items-center justify-content-between flex-wrap">
                             <div className="flex">{activePlans ? activePlans.plan_name : ""}</div>
                             {/* <a href="#" className="text-secondary">Change plan</a> */}
@@ -385,7 +385,7 @@ const Subscription = () => {
                       </div>
                       <div className="list-group-item">
                         <div className="form-group row mb-0">
-                          <label className="col-form-label form-label col-sm-3">Billing Cycle</label>
+                          <label className="col-form-label form-label fw-bold col-sm-3">Billing Cycle</label>
                           <div className="col-sm-8 d-flex align-items-center justify-content-between flex-wrap">
                             <p className="mb-1">{activePlans ? activePlans.billing_cycle : ""}</p>
 
@@ -394,7 +394,7 @@ const Subscription = () => {
                       </div>
                       <div className="list-group-item">
                         <div className="form-group row mb-0">
-                          <label className="col-form-label form-label col-sm-3">End Date</label>
+                          <label className="col-form-label form-label fw-bold col-sm-3">End Date</label>
                           <div className="col-sm-8 d-flex align-items-center justify-content-between flex-wrap">
                             <p className="mb-1"> {activePlans ? transformDateFormat(activePlans.end_date)
                               .split("-")

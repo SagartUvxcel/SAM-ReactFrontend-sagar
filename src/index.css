@@ -327,6 +327,20 @@ input:-webkit-autofill:active {
 .home-wrapper .searchHistoryDiv {
   background-color: rgba(255, 255, 255, 0.4);
 }
+
+.even-row {
+  background-color: #e0e0e0 !important; /* Bootstrap's table-striped even row color */
+}
+
+.odd-row {
+  background-color: #ffffff !important; /* Bootstrap's table-striped odd row color */
+}
+
+.home-wrapper .searchHistoryDiv .dropdown:hover .historyDropdownMenu {
+  display: block;
+  margin-top: 0;
+}
+
 .home-wrapper .searchHistoryDiv .fa {
   font-size: small !important;
 }
@@ -343,11 +357,10 @@ input:-webkit-autofill:active {
   font-size: smaller !important;
 }
 
-
-.historyDropdownMenu{
+.historyDropdownMenu {
   overflow: auto !important;
-    width: 828px !important;
-    height: 400px !important;
+  width: 828px !important;
+  height: 400px !important;
 }
 
 .more-filters-dropdown-menu {
@@ -573,6 +586,12 @@ input:-webkit-autofill:active {
   right: 30px;
 }
 
+.need-help-link {
+  position: absolute;
+  bottom: 11px;
+  right: 30px;
+}
+
 .form-text {
   font-size: 0.78em !important;
   margin-top: 0.1rem !important;
@@ -636,12 +655,17 @@ input:-webkit-autofill:active {
 
 /* Set Password */
 
-.set-password-wrapper .form-control {
+.set-password-wrapper .form-control,
+.security-question-wrapper .form-control {
   border-top: none;
   border-left: none;
   border-right: none;
   border-radius: unset !important;
   padding: 0.2rem 0.1rem !important;
+}
+
+.security-question-wrapper .security-question-box {
+  height: fit-content !important;
 }
 .set-password-wrapper .modal .form-control {
   /* border-top: none;
@@ -978,6 +1002,14 @@ input:-webkit-autofill:active {
 
 .property-button-wrapper:hover {
   color: white !important;
+}
+
+.searched-results-wrapper .filter-button-smallWindow {
+  display: none !important;
+}
+
+.searched-results-wrapper .filter-button-smallWindow .dropdown-menu.show {
+  display: flex !important;
 }
 
 /* View single property */
@@ -1495,10 +1527,10 @@ input:-webkit-autofill:active {
     background-attachment: unset;
   }
 
-  .historyDropdownMenu{
+  .historyDropdownMenu {
     overflow: auto !important;
-      width: auto !important;
-      /* height: 700px !important; */
+    width: auto !important;
+    /* height: 700px !important; */
   }
 
   .w-22 {
@@ -1510,6 +1542,11 @@ input:-webkit-autofill:active {
   }
 
   .token-verify-link {
+    bottom: 10px;
+    right: 15px;
+  }
+  
+  .need-help-link {
     bottom: 10px;
     right: 15px;
   }
@@ -1533,7 +1570,11 @@ input:-webkit-autofill:active {
 
 @media screen and (max-width: 767px) {
   small {
-    font-size: 0.5em !important;
+    font-size: .875em !important;
+  }
+
+  .admin-edit-property .property-details h5{
+    font-size: initial !important;
   }
 
   .subscribe-btn-wrapper {
@@ -1611,6 +1652,10 @@ input:-webkit-autofill:active {
     font-size: 0.8rem;
   }
 
+  .profile-wrapper .profile-top-cards .titleBtn:hover {
+    color: var(--secondary-color) !important;
+  }
+
   .profile-icon-wrapper {
     height: 65px;
     width: 65px;
@@ -1619,5 +1664,31 @@ input:-webkit-autofill:active {
   .canvas-wrapper canvas {
     height: 268px !important;
     width: 268px !important;
+  }
+
+  .searched-results-wrapper .filter-button-smallWindow {
+    display: flex !important;
+  }
+
+  .searched-results-wrapper .filter-fullWindow {
+    display: none !important;
+  }
+
+  .showMoreFilter {
+    display: flex !important;
+  }
+
+  .enquiry-section .tbody,
+  td,
+  tfoot,
+  th,
+  thead,
+  tr {
+    font-size: 13px !important;
+  }
+
+  .plans-table th:not(:first-child),
+  .plans-table td:not(:first-child) {
+    width: auto !important;
   }
 }

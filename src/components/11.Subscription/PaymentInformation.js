@@ -209,17 +209,20 @@ export const PaymentInformation = () => {
                   <div id="card-element">
                     <div className="StripeElement w-100">
                       <h5 className="text-start">Your Subscription </h5>
-                      <div className="subscription-div d-flex justify-content-between border-bottom py-1">
-                        <p className=" text-secondary p-0 mb-0">{planDetails ? planDetails.name : ""}</p>
+                      <div>
+                        <hr />
+                      </div>
+                      <div className="subscription-div d-flex justify-content-between border-bottom py-1 align-items-center">
+                        <h6 className="py-2 mb-0">{planDetails ? planDetails.name : ""}</h6>
                         <p className=" text-secondary p-0 mb-0"><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup>
                           {/* {planDetails ? planDetails.price : ""} */}
                           {perBillingCycleName}  </p>
                       </div>
-                      <div className="subscription-div d-flex justify-content-between py-1">
+                      <div className="subscription-div d-flex justify-content-between py-1 align-items-center">
                         <h6 className=" py-2 mb-0">Total</h6>
-                        <h6 className=" py-2 mb-0"><sup className="fs-5 top-0">&#8377;</sup> <sup className="fs-5 top-0">&#8377;</sup> <sup className="fs-5 top-0">&#8377;</sup> <sup className="fs-5 top-0">&#8377;</sup> 
+                        <p className=" text-secondary p-0 mb-0 "><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup> 
                         {/* {planDetails ? planDetails.price : ""} */}
-                        {perBillingCycleName}</h6>
+                        {perBillingCycleName}</p>
                       </div>
                     </div>
                   </div>
@@ -245,7 +248,7 @@ export const PaymentInformation = () => {
                       <div className="StripeElement w-50 mb-4">
                         <div className="subscription-div d-flex align-items-center flex-wrap">
                           <i className="fa fa-credit-card"></i>
-                          <h4 className="my-0 ms-3 ">Card</h4>
+                          <h6 className="my-0 ms-3 ">Card</h6>
                         </div>
                       </div>
 
@@ -273,17 +276,9 @@ export const PaymentInformation = () => {
                   </>
                   }
                 </div>
-
-
-
               </div>
-
             </div>
 
-
-            {/* <button type="button" className="btn btn-info btn-lg" data-toggle="modal" onClick={() => {
-              setPaymentModal(true);
-            }} data-target="#success_tic">Open Modal</button> */}
             {/* Modal */}
             <div
               className={`modal fade ${paymentModal ? "show d-flex" : "d-none"}`}

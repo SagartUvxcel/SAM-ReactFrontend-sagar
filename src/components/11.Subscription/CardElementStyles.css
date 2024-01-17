@@ -284,6 +284,12 @@ input:checked + .slider:before {
   .upgradePackages {
     /* margin: 20px;
     width: 300px; */
+    flex-basis: calc(50% - 1rem);
+  }
+}
+@media screen and (max-width: 767px) {
+  .packages,
+  .upgradePackages {
     flex-basis: auto;
   }
 }

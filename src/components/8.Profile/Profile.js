@@ -50,6 +50,7 @@ const Profile = () => {
             headers: authHeaders,
           })
           .then(async (res) => {
+            console.log(res.data);
             const { individual_user, org_user, user_details } = res.data;
             if (individual_user) {
               const {
@@ -141,17 +142,17 @@ const Profile = () => {
         <section className="profile-wrapper section-padding min-100vh bg-light">
           <div className="container-fluid wrapper">
             <div className="row">
+              {/* Personal Details or Organization Details*/}
               <div className="col-xl-4 col-lg-6">
                 <div className="profile-top-cards p-2">
                   <div className="card-body text-center">
                     <div className="d-flex justify-content-center">
                       <div className="profile-icon-wrapper text-center">
                         <i
-                          className={`bi ${
-                            user_type === 1
-                              ? "bi-laptop-fill"
-                              : "bi-person-square"
-                          } fs-1 text-white`}
+                          className={`bi ${user_type === 1
+                            ? "bi-laptop-fill"
+                            : "bi-person-square"
+                            } fs-1 text-white`}
                         ></i>
                       </div>
                     </div>
@@ -247,10 +248,10 @@ const Profile = () => {
                             {user_type === 0
                               ? "Individual User"
                               : user_type === 1
-                              ? "Organizational User"
-                              : user_type === 2
-                              ? "Bank User"
-                              : ""}
+                                ? "Organizational User"
+                                : user_type === 2
+                                  ? "Bank User"
+                                  : ""}
                           </small>
                         </div>
                       </div>
@@ -261,8 +262,8 @@ const Profile = () => {
                             {userRole === 1
                               ? "Admin"
                               : userRole === 2
-                              ? "Editor"
-                              : "Viewer"}
+                                ? "Editor"
+                                : "Viewer"}
                           </small>
                         </div>
                       </div>
@@ -270,6 +271,7 @@ const Profile = () => {
                   </div>
                 </div>
               </div>
+              {/* Address Details */}
               <div className="col-xl-4 col-lg-6 mt-4 mt-lg-0">
                 <div className="profile-top-cards p-2">
                   <div className="card-body text-center">
@@ -311,6 +313,7 @@ const Profile = () => {
                   </div>
                 </div>
               </div>
+              {/* Quick Access*/}
               <div className="col-xl-4 col-lg-6 mt-4 mt-xl-0">
                 <div className="profile-top-cards p-2">
                   <div className="card-body text-center">
@@ -324,32 +327,43 @@ const Profile = () => {
                     </h3>
                     <div className="profile-top-hr my-3" />
                     <div className="row justify-content-md-start justify-content-center">
+                      {/* CHANGE PASSWORD */}
                       <div className="col-md-6">
                         <NavLink
                           to="/change-password"
                           className="card py-2 profile-inner-card text-decoration-none"
                         >
-                          <h6 className="m-0">CHANGE PASSWORD</h6>
+                          <h6 className="m-0 titleBtn">CHANGE PASSWORD</h6>
                         </NavLink>
                       </div>
+                      {/* EDIT PROFILE */}
                       <div className="col-md-6 mt-2 mt-md-0">
                         <NavLink
                           to="/edit-details"
                           className="card py-2 profile-inner-card text-decoration-none"
                         >
-                          <h6 className="m-0">EDIT PROFILE</h6>
+                          <h6 className="m-0 titleBtn">EDIT PROFILE</h6>
                         </NavLink>
                       </div>
+                      {/*ADMINISTRATION */}
                       <div
-                        className={`col-md-6 mt-2 mt-md-4 ${
-                          userRole === 1 ? "" : "d-none"
-                        }`}
+                        className={`col-md-6 mt-2 mt-md-4 ${userRole === 1 ? "" : "d-none"
+                          }`}
                       >
                         <NavLink
                           to="/admin"
                           className="card py-2 profile-inner-card text-decoration-none"
                         >
-                          <h6 className="m-0">ADMINISTRATION</h6>
+                          <h6 className="m-0 titleBtn">ADMINISTRATION</h6>
+                        </NavLink>
+                      </div>
+                      {/* update security questions answer */}
+                      <div className="col-md-6 mt-2 mt-md-4">
+                        <NavLink
+                          to="/security-question"
+                          className="card py-2 profile-inner-card text-decoration-none"
+                        >
+                          <h6 className="m-0 titleBtn">SECURITY QUESTION</h6>
                         </NavLink>
                       </div>
                     </div>

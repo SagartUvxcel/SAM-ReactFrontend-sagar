@@ -1,0 +1,174 @@
+
+
+30//
+
+
+    questionNotSelectedMessage: "",
+    answerNotSelectedMessage: "",
+  const [securityQuestionsDetails, setSecurityQuestionsDetails] = useState({
+    id: "",
+    answer: ""
+  });
+  const { id, answer } = securityQuestionsDetails;
+
+
+61//
+
+// Function getSecurityQuestion.
+  const getSecurityQuestion = async () => {
+
+    try {
+      const { data } = await axios.get("/sam/v1/customer-registration/security-questions");
+      // console.log(data);
+      if (data) {
+        setSecurityQuestions(data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+
+93//
+ // console.log(securityQuestionsDetails);
+  // Onchange function for both password fields.
+  const onSecurityQuestionAnswerChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "securityQuestions") {
+      if (securityQuestions.filter(obj => obj.id === value)) {
+        setSecurityQuestionsDetails({
+          ...securityQuestionsDetails,
+          id: value,
+        });
+        answerInput.current.classList.remove("d-none");
+        setDetails({
+          ...details,
+          questionNotSelectedMessage: "",
+        });
+
+      } else {
+        setSecurityQuestionsDetails({
+          ...securityQuestionsDetails,
+          id: "",
+        });
+        answerInput.current.classList.add("d-none");
+      }
+
+      if (value === "0") {
+        answerInput.current.classList.add("d-none");
+
+      }
+    } else if (name === "securityAnswer") {
+      // console.log(value);
+      setSecurityQuestionsDetails({
+        ...securityQuestionsDetails,
+        answer: value,
+      });
+      setDetails({
+        ...details,
+        answerNotSelectedMessage: "",
+      });
+    }
+    // console.log(securityQuestionsDetails);
+
+  };
+
+
+197//
+
+
+    else if (id === "") {
+      setDetails({
+        ...details,
+        questionNotSelectedMessage: "Please select security question",
+      });
+    } else if (answer === "") {
+      setDetails({
+        ...details,
+        answerNotSelectedMessage: "Please enter your answer",
+      });
+    }
+
+
+    //206
+
+    
+              security_question_id: parseInt(id),
+              security_question_answer: answer.trim(),
+
+
+
+328//
+                  {/* question */}
+                  <div className="col-lg-12 mb-3">
+                    <label className="text-muted" htmlFor="confirm-password">
+                      Update your security questions
+                      <span className="text-danger ps-1">*</span>
+                    </label>
+                    <div className="form-group position-relative">
+                      <select
+                        id="securityQuestions"
+                        name="securityQuestions"
+                        className="form-select  form-control ps-3 mt-2"
+                        onChange={onSecurityQuestionAnswerChange}
+                        // placeholder="Select your question"
+                        // value={formData.bank_name}
+                        required
+                      >
+                        {/* <option value="" className="text-gray"  > Select Your Question</option> */}
+                        <option className="text-gray" hidden >Select Your Security Question</option>
+                        {securityQuestions ? (
+                          securityQuestions.map((data, index) => {
+                            return (
+                              <option
+                                key={index}
+                                value={data.question_id}
+                              >
+                                {data.question}
+                              </option>
+                            );
+
+                          })
+                        ) : (
+                          <> </>
+                        )}
+                      </select>
+
+                    </div>
+                    {questionNotSelectedMessage ? (
+                      <span className="pe-1 text-danger">
+                        {questionNotSelectedMessage}
+                      </span>
+                    ) : (
+                      <span className="d-none"></span>
+                    )}
+                  </div>
+                  {/* Answer */}
+                  <div className="col-lg-12 mb-3 d-none" ref={answerInput}>
+                    <label className="text-muted" htmlFor="confirm-password">
+                      Answer
+                      <span className="text-danger ps-1">*</span>
+                    </label>
+                    <div className="form-group position-relative">
+                      <input
+                        id="securityAnswer"
+                        name="securityAnswer"
+                        type="text"
+                        className="form-control"
+                        onChange={onSecurityQuestionAnswerChange}
+
+                      />
+
+                    </div>
+                    {answerNotSelectedMessage ? (
+                      <span className="pe-1 text-danger">
+                        {answerNotSelectedMessage}
+                      </span>
+                    ) : (
+                      <span className="d-none"></span>
+                    )}
+                  </div>
+
+
+
+

@@ -19,6 +19,7 @@ import ViewEditDeleteProperties from "./Admin/Property/ViewEditDeleteProperties"
 import ViewProperty from "./Admin/Property/ViewProperty";
 import UploadProperties from "./Admin/Property/UploadProperties";
 import ChangePassword from "./components/6.Login/ChangePassword";
+import SecurityQuestion from "./components/8.Profile/SecurityQuestion";
 import AboutUs from "./components/4.About/AboutUs";
 import AddProperty from "./Admin/Property/AddProperty";
 import ForgotPassword from "./components/6.Login/ForgotPassword";
@@ -30,7 +31,7 @@ import ForgotAndResetPassword from "./components/9.ForgotAndResetPassword/Forgot
 import SinglePropertyDocumentsUpload from "./Admin/Property/SinglePropertyDocumentsUpload";
 import ProtectedPages from "./components/ProtectedPages";
 import ProtectSetPasswordPage from "./components/ProtectSetPasswordPage";
-import ProtectForgotPasswordPage from "./components/ProtectForgotPasswordPage";
+// import ProtectForgotPasswordPage from "./components/ProtectForgotPasswordPage";
 import { ToastContainer, toast } from "react-toastify";
 import ManageUsers from "./Admin/User/ManageUsers";
 import { useEffect } from "react";
@@ -72,7 +73,7 @@ function App() {
           if (res.data !== "Session expired or invalid user") {
             let remainingTime = parseInt(res.data.TimeRemaining);
             // console.log("Time Remaining = ", remainingTime);
-            if(remainingTime > 5){
+            if (remainingTime > 5) {
               localStorage.removeItem("remainingTime");
             }
             if (remainingTime === 5) {
@@ -89,6 +90,10 @@ function App() {
           }
         } catch (error) {
           console.log("error");
+          localStorage.removeItem("data");
+          localStorage.removeItem("remainingTime");
+          localStorage.removeItem("notificationRefresh");
+          goTo("/login");
         }
       }
     }, MINUTE_MS);
@@ -139,6 +144,14 @@ function App() {
             element={
               <ProtectedForLoggedInUser>
                 <ChangePassword />
+              </ProtectedForLoggedInUser>
+            }
+          />
+          <Route
+            path="/security-question"
+            element={
+              <ProtectedForLoggedInUser>
+                <SecurityQuestion />
               </ProtectedForLoggedInUser>
             }
           />
@@ -215,7 +228,7 @@ function App() {
           />
           {/* <Route path="/bank-registration" element={<BankRegistrationPage />} /> */}
           <Route
-            path={`/admin/bank-registration-link`}
+            path={`/bank-registration-link`}
             element={
               <AdminProtected>
                 <BankRegistrationLinkPage />

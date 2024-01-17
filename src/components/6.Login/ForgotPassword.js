@@ -33,6 +33,7 @@ const ForgotPassword = () => {
   const [captchaErr, setCaptchaErr] = useState(false);
   const captchaRef = useRef();
 
+  // captcha submit button function
   const onCaptchaSubmit = (e) => {
     e.preventDefault();
     let user_captcha = captchaRef.current.value;
@@ -50,7 +51,8 @@ const ForgotPassword = () => {
     }
   };
 
-  const sendResetPasswordLinkOnMail = async () => {
+  // if email valiate
+  const verifySecurityQuestionForResetPassword = async () => {
     try {
       await axios
         .post(
@@ -59,11 +61,16 @@ const ForgotPassword = () => {
         )
         .then((res) => {
           console.log(res);
-          if (res.data) {
-            const sensitiveData = { email: res.data.username, question: res.data.question}
+          if (res.data.EmailSent === false) {
+            const sensitiveData = { email: res.data.username, question: res.data.question }
             goTo("/forgot-password/password-reset", { state: { sensitiveData } });
             setLoading(false);
-          } 
+          } else if(res.data.EmailSent === true){
+            toast.success(
+              `Success: Please check your email for password-reset link.`
+            );
+            goTo("/login");
+          }
         });
     } catch (error) {
       setLoading(false);
@@ -75,6 +82,7 @@ const ForgotPassword = () => {
     }
   }
 
+  // onclick reset password button
   const resetPassword = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -87,7 +95,7 @@ const ForgotPassword = () => {
         .then((res) => {
           if (res.data.status === 1) {
             e.target.reset();
-            sendResetPasswordLinkOnMail();
+            verifySecurityQuestionForResetPassword();
           } else {
             setLoading(false);
             setAlertDetails({
@@ -108,6 +116,7 @@ const ForgotPassword = () => {
     }
   };
 
+  // load captcha button function
   const loadCaptchaOnRefresh = () => {
     loadCaptchaEnginge(6);
     const captchaWrapper =
@@ -156,7 +165,7 @@ const ForgotPassword = () => {
                     className="bi bi-x login-alert-close-btn close"
                   ></i>
                 </div>
-
+                {/* email */}
                 <div className="form-group mb-3">
                   <label htmlFor="email" className="form-label common-btn-font">
                     Enter your user account's verified email address and we will
@@ -175,6 +184,7 @@ const ForgotPassword = () => {
                   />
                 </div>
 
+                {/* captcha code */}
                 <div
                   className={`container ${captchaVerified ? "d-none" : ""
                     }`}
@@ -228,6 +238,7 @@ const ForgotPassword = () => {
                   </button>
                 </div>
 
+                {/* submit button */}
                 <button
                   className="btn btn-primary common-btn-font mt-4"
                   disabled={emailValue && captchaVerified && !loading ? false : true}

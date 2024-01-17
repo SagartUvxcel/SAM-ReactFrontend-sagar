@@ -576,7 +576,7 @@ const ViewEnquiryLists = () => {
 
   return (
     <Layout>
-      <section className="section-padding min-100vh">
+      <section className="section-padding min-100vh enquiry-section">
         <div className="container-fluid wrapper pt-2">
           <h1 className="text-center ">Enquiries</h1>
 
@@ -588,7 +588,7 @@ const ViewEnquiryLists = () => {
                 <ul className="nav nav-tabs " id="myTab" role="tablist">
                   {/* Unread */}
                   <li className="nav-item " role="presentation">
-                    <button className="nav-link  px-5 fs-lg-5 text-uppercase" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane"
+                    <button className="nav-link  px-3 px-md-5 fs-lg-5 text-uppercase" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane"
                       onClick={() => onCategoryChange("Unread")}
                       type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Unread</button>
                   </li>
@@ -627,7 +627,7 @@ const ViewEnquiryLists = () => {
                         <div className="input-field second-wrap">
                           {/* <div className="input-select"> */}
 
-                          <select class="form-select form-select-sm h-100 rounded-0" name="search_category" onChange={onSearchFormInputChange} aria-label="Default select example">
+                          <select className="form-select form-select-sm h-100 rounded-0" name="search_category" onChange={onSearchFormInputChange} aria-label="Default select example">
                             <option value="property_number" selected>Property Number</option>
                             <option value="username">User Name</option>
                           </select>
@@ -991,6 +991,7 @@ const ViewEnquiryLists = () => {
                 }}
                 ref={modalBodyRef}
               >
+              <a href="/" className="text-center mx-auto text-white">View more</a>
                 {messages &&
                   messages.map((msg, index) => {
                     let classToAdd = "";

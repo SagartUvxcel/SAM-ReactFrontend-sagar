@@ -13,8 +13,10 @@ let isLogin = false;
 const ViewSearchResults = () => {
   const location = useLocation();
   const dataFromParams = location.state ? location.state.sensitiveData : null;
+  // console.log(dataFromParams);
   const goTo = useNavigate();
   const [dataToPost, setDataToPost] = useState(dataFromParams);
+
   const [loading, setLoading] = useState(false);
   const [pageCount, setPageCount] = useState(0);
   const paginationRef = useRef();
@@ -46,6 +48,8 @@ const ViewSearchResults = () => {
       bankAPI: `/sam/v1/property/by-bank`,
       categoryAPI: `/sam/v1/property/by-category`,
     };
+    console.log("hiiiiiiiiii1111");
+
     try {
       // Get all states from api.
       const allStates = await axios.get(apis.stateAPI);
@@ -117,7 +121,7 @@ const ViewSearchResults = () => {
           setPageCount(Math.ceil(res.data.length / batch_size));
         }
       });
-      console.log(dataToPost);
+      // console.log(dataToPost);
       // Post data and get Searched result from response.
       await axios.post(apis.searchAPI, dataToPost).then((res) => {
         // Store Searched results into propertyData useState.
@@ -519,10 +523,646 @@ const ViewSearchResults = () => {
   return (
     <Layout>
       <section className="section-padding searched-results-wrapper">
-        <div className="container-fluid min-200vh">
-          {/* search bar */}
+        <div className="container-fluid min-200vh ">
+
+          <div className="row justify-content-end filter-button-smallWindow dropdown">
+            <button type="button" className="m-2 btn btn-outline-secondary text-center col-md-2 col-4 dropdown-toggle" variant="primary" id="dropdownMenu2"
+              data-bs-toggle="dropdown">
+              <i className="bi bi-funnel"> </i> Filter
+            </button>
+            {/* search bar for mobile view*/}
+            <div
+              className="row extra-filters-row justify-content-center align-items-center py-3 dropdown-menu " aria-labelledby="dropdownMenu2" id="mainDropdownBox"
+            // style={{ height: "80px" }}
+            >
+              {/* State */}
+              <div className="col-md-2 col-6 mt-3 mt-md-0">
+                <select
+                  name="states"
+                  id="states"
+                  className="form-select"
+                  aria-label=".form-select-sm example"
+                  onChange={onFieldsChange}
+                >
+                  <option value="">State</option>
+                  {states ? (
+                    states.map((state, Index) => {
+                      let optionToSelectByDefault = document.getElementById(
+                        `stateFilter-${state.state_id}`
+                      );
+                      if (dataToPost.state_id && optionToSelectByDefault) {
+                        if (dataToPost.state_id === state.state_id) {
+                          optionToSelectByDefault.selected = true;
+                        }
+                      }
+                      return (
+                        <option
+                          id={`stateFilter-${state.state_id}`}
+                          key={Index}
+                          value={state.state_id}
+                        >
+                          {state.state_name}
+                        </option>
+                      );
+                    })
+                  ) : (
+                    <></>
+                  )}
+                </select>
+              </div>
+              {/* City */}
+              <div className="col-md-2 col-6 mt-3 mt-md-0">
+                <select
+                  name="cities"
+                  id="cities"
+                  className="form-select"
+                  aria-label=".form-select-sm example"
+                  onChange={onFieldsChange}
+                >
+                  <option value="">City</option>
+                  {cities
+                    ? cities.map((city, Index) => {
+                      let optionToSelectByDefault = document.getElementById(
+                        `cityFilter-${city.city_id}`
+                      );
+                      if (dataToPost.city_id && optionToSelectByDefault) {
+                        if (dataToPost.city_id === city.city_id) {
+                          optionToSelectByDefault.selected = true;
+                        }
+                      }
+                      return (
+                        <option
+                          id={`cityFilter-${city.city_id}`}
+                          key={Index}
+                          value={city.city_id}
+                        >
+                          {city.city_name}
+                        </option>
+                      );
+                    })
+                    : ""}
+                </select>
+              </div>
+              {/* Category */}
+              <div className="col-md-2 col-6 mt-3 mt-md-0">
+                <select
+                  name="asset"
+                  id="asset"
+                  className="form-select"
+                  aria-label=".form-select-sm example"
+                  onChange={onFieldsChange}
+                >
+                  <option value="">Category</option>
+                  {assetCategory
+                    ? assetCategory.map((category, Index) => {
+                      let optionToSelectByDefault = document.getElementById(
+                        `categoryFilter-${category.type_id}`
+                      );
+                      if (dataToPost.type_id && optionToSelectByDefault) {
+                        if (dataToPost.type_id === category.type_id) {
+                          optionToSelectByDefault.selected = true;
+                        }
+                      }
+                      return (
+                        <option
+                          id={`categoryFilter-${category.type_id}`}
+                          key={Index}
+                          value={category.type_id}
+                        >
+                          {category.type_name}
+                        </option>
+                      );
+                    })
+                    : ""}
+                </select>
+              </div>
+              {/* Bank */}
+              <div className="col-md-2 col-6 mt-3 mt-md-0">
+                <select
+                  name="bank"
+                  id="bank"
+                  className="form-select"
+                  aria-label=".form-select-sm example"
+                  onChange={onFieldsChange}
+                >
+                  <option value="">Bank</option>
+                  {banks
+                    ? banks.map((bank, Index) => {
+                      return (
+                        <option key={Index} value={bank.bank_id}>
+                          {bank.bank_name}
+                        </option>
+                      );
+                    })
+                    : ""}
+                </select>
+              </div>
+              <div className="col-12">
+                <hr className="mt-3 mb-2" />
+              </div>
+              {/* More Filters */}
+              {isLogin ?
+                <div className="container-fluid px-3">
+                  <form className="row " ref={moreFiltersForm}>
+                    {/* Price */}
+                    <div className="col-12">
+                      <label
+                        htmlFor=""
+                        className="form-label common-btn-font"
+                      >
+                        Price (<i className="bi bi-currency-rupee"></i>)
+                      </label>
+                    </div>
+                    {/* price Min max */}
+                    <div className="col-12 d-flex flex-wrap">
+                      <div className="col-md-6 col-6 mb-1 pe-2">
+                        <select
+                          id="min_price"
+                          name="min_price"
+                          className="form-select form-select-sm"
+                          aria-label=".form-select-sm example"
+                          onChange={onMoreFiltersInputChange}
+                        >
+                          <option className="min-price-options" value="">
+                            Min
+                          </option>
+                          {propertyMinPrices.map((price, Index) => {
+                            return (
+                              <option
+                                className="min-price-options"
+                                value={price}
+                                key={Index}
+                              >
+                                {price}
+                              </option>
+                            );
+                          })}
+                        </select>
+                      </div>
+                      <div className="col-md-6 col-6 mb-1 ps-2">
+                        <select
+                          id="max_price"
+                          name="max_price"
+                          className="form-select form-select-sm"
+                          aria-label=".form-select-sm example"
+                          onChange={onMoreFiltersInputChange}
+                        >
+                          <option className="max-price-options" value="">
+                            Max
+                          </option>
+                          {propertyMaxPrices.map((price, Index) => {
+                            return (
+                              <option
+                                className="max-price-options"
+                                value={price}
+                                key={Index}
+                              >
+                                {price}
+                              </option>
+                            );
+                          })}
+                        </select>
+                      </div>
+                    </div>
+                    {/* hr */}
+                    <div className="col-12">
+                      <hr className="my-2" />
+                    </div>
+                    {/* Title clear property */}
+                    <div className="col-md-6 col-6 mb-1">
+                      <label
+                        htmlFor="title_clear_property"
+                        className="form-label common-btn-font"
+                      >
+                        Title clear property
+                      </label>
+                      <select
+                        id="title_clear_property"
+                        name="title_clear_property"
+                        className="form-select form-select-sm"
+                        aria-label=".form-select-sm example"
+                        onChange={onMoreFiltersInputChange}
+                      >
+                        <option value=""></option>
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                      </select>
+                    </div>
+                    {/* Territory */}
+                    <div className="col-md-6 col-6 mb-1">
+                      <label
+                        htmlFor="territory"
+                        className="form-label common-btn-font"
+                      >
+                        Territory
+                      </label>
+                      <select
+                        id="territory"
+                        name="territory"
+                        className="form-select form-select-sm"
+                        aria-label=".form-select-sm example"
+                        onChange={onMoreFiltersInputChange}
+                      >
+                        <option value=""></option>
+                        <option value="gram panchayat limit">
+                          Gram Panchayat Limit
+                        </option>
+                        <option value="corporate">Corporate limit</option>
+                      </select>
+                    </div>
+                    {/* hr */}
+                    <div className="col-12">
+                      <hr className="my-2" />
+                    </div>
+                    {/*  Carpet Area ( sqft ) */}
+                    <div className="col-12">
+                      <label
+                        htmlFor=""
+                        className="form-label common-btn-font"
+                      >
+                        Carpet Area ( sqft )
+                      </label>
+                    </div>
+                    {/*  Carpet Area ( sqft ) Min max */}
+                    <div className="col-12 d-flex flex-wrap">
+                      <div className="col-md-6 col-6 mb-1 pe-2">
+                        <select
+                          id="min_area"
+                          name="min_area"
+                          className="form-select form-select-sm"
+                          aria-label=".form-select-sm example"
+                          onChange={onMoreFiltersInputChange}
+                        >
+                          <option className="min-carpet-area-options" value="">
+                            Min
+                          </option>
+                          {propertyMinArea.map((area, Index) => {
+                            return (
+                              <option
+                                className="min-carpet-area-options"
+                                value={area}
+                                key={Index}
+                              >
+                                {area}
+                              </option>
+                            );
+                          })}
+                        </select>
+                      </div>
+
+                      <div className="col-md-6 col-6 mb-1 ps-2">
+                        <select
+                          id="max_area"
+                          name="max_area"
+                          className="form-select form-select-sm"
+                          aria-label=".form-select-sm example"
+                          onChange={onMoreFiltersInputChange}
+                        >
+                          <option className="max-carpet-area-options" value="">
+                            Max
+                          </option>
+                          {propertyMaxArea.map((area, Index) => {
+                            return (
+                              <option
+                                className="max-carpet-area-options"
+                                value={area}
+                                key={Index}
+                              >
+                                {area}
+                              </option>
+                            );
+                          })}
+                        </select>
+                      </div>
+                    </div>
+                    {/* hr */}
+                    <div className="col-12">
+                      <hr className="my-2" />
+                    </div>
+                    {/* Age of Property */}
+                    <div className="col-md-6 col-5 mb-1">
+                      <label
+                        htmlFor=""
+                        className="form-label common-btn-font"
+                      >
+                        Age of Property
+                      </label>
+                      <select
+                        id="age"
+                        name="age"
+                        className="form-select form-select-sm"
+                        aria-label=".form-select-sm example"
+                        onChange={onMoreFiltersInputChange}
+                      >
+                        <option value=""></option>
+                        <option value="1">Less than 1 year</option>
+                        <option value="3">Less than 3 years</option>
+                        <option value="5">Less than 5 years</option>
+                        <option value="10">Less than 10 years</option>
+                      </select>
+                    </div>
+                    {/* Last 10 days added property */}
+                    <div className="col-md-6 col-7 mb-1">
+                      <label
+                        htmlFor="latest_added_properties"
+                        className="form-label common-btn-font"
+                      >
+                        Latest added properties
+                      </label>
+
+                      <select
+                        id="latest_added_properties"
+                        name="latest_added_properties"
+                        className="form-select form-select-sm"
+                        aria-label=".form-select-sm example"
+                        onChange={onMoreFiltersInputChange}
+                      >
+                        <option value=""></option>
+                        <option value="10">Last 10 days</option>
+                        <option value="20">Last 20 days</option>
+                      </select>
+                    </div>
+                  </form>
+                </div> : ""}
+
+
+              {/* More Filters */}
+              {/* {isLogin ?
+                <div className="col-md-2 col-12 mt-3 mt-md-0 dropdown-item ">
+                  <div className="  more-filter-dropdown"  >
+                    <div
+                      className="form-select "
+                    // data-bs-toggle="modal" data-bs-target="#moreFilterModal"
+                    >
+                      <div
+                        value=""
+                        style={{
+                          overflow: "hidden",
+                          fontWeight: "normal",
+                          // display: "block",
+                          whiteSpaceCollapse: "collapse",
+                          textWrap: "nowrap",
+                          minHeight: "1.2em",
+                          padding: "0px 2px 1px",
+                        }}
+                      >
+                        <span className="me-2 badge bg-dark">{filtersCount}</span>
+                        More Filters
+                      </div>
+                    </div>
+                    <ul
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                      className="small-window-more-Filter more-filters-dropdown-menu  shadow modal fade" id="moreFilterModal"
+                      tabIndex="-1"
+                      aria-labelledby="chatModalLabel"
+                      aria-hidden="true"
+                      data-bs-backdrop="static"
+                      data-bs-keyboard="false"
+                    >
+                      <div className="container-fluid p-3">
+                        <form className="row" ref={moreFiltersForm}>
+                          <div className="col-12">
+                            <label
+                              htmlFor=""
+                              className="form-label common-btn-font"
+                            >
+                              Price (<i className="bi bi-currency-rupee"></i>)
+                            </label>
+                          </div>
+                          <div className="col-md-6 mb-3">
+                            <select
+                              id="min_price"
+                              name="min_price"
+                              className="form-select form-select-sm"
+                              aria-label=".form-select-sm example"
+                              onChange={onMoreFiltersInputChange}
+                            >
+                              <option className="min-price-options" value="">
+                                Min
+                              </option>
+                              {propertyMinPrices.map((price, Index) => {
+                                return (
+                                  <option
+                                    className="min-price-options"
+                                    value={price}
+                                    key={Index}
+                                  >
+                                    {price}
+                                  </option>
+                                );
+                              })}
+                            </select>
+                          </div>
+                          <div className="col-md-6 mb-3">
+                            <select
+                              id="max_price"
+                              name="max_price"
+                              className="form-select form-select-sm"
+                              aria-label=".form-select-sm example"
+                              onChange={onMoreFiltersInputChange}
+                            >
+                              <option className="max-price-options" value="">
+                                Max
+                              </option>
+                              {propertyMaxPrices.map((price, Index) => {
+                                return (
+                                  <option
+                                    className="max-price-options"
+                                    value={price}
+                                    key={Index}
+                                  >
+                                    {price}
+                                  </option>
+                                );
+                              })}
+                            </select>
+                          </div>
+                          <div className="col-12">
+                            <hr />
+                          </div>
+                          <div className="col-md-6 mb-3">
+                            <label
+                              htmlFor="title_clear_property"
+                              className="form-label common-btn-font"
+                            >
+                              Title clear property
+                            </label>
+                            <select
+                              id="title_clear_property"
+                              name="title_clear_property"
+                              className="form-select form-select-sm"
+                              aria-label=".form-select-sm example"
+                              onChange={onMoreFiltersInputChange}
+                            >
+                              <option value=""></option>
+                              <option value="yes">Yes</option>
+                              <option value="no">No</option>
+                            </select>
+                          </div>
+                          <div className="col-md-6 mb-3">
+                            <label
+                              htmlFor="territory"
+                              className="form-label common-btn-font"
+                            >
+                              Territory
+                            </label>
+                            <select
+                              id="territory"
+                              name="territory"
+                              className="form-select form-select-sm"
+                              aria-label=".form-select-sm example"
+                              onChange={onMoreFiltersInputChange}
+                            >
+                              <option value=""></option>
+                              <option value="gram panchayat limit">
+                                Gram Panchayat Limit
+                              </option>
+                              <option value="corporate">Corporate limit</option>
+                            </select>
+                          </div>
+                          <div className="col-12">
+                            <hr />
+                          </div>
+                          <div className="col-12">
+                            <label
+                              htmlFor=""
+                              className="form-label common-btn-font"
+                            >
+                              Carpet Area ( sqft )
+                            </label>
+                          </div>
+                          <div className="col-md-6 mb-3">
+                            <select
+                              id="min_area"
+                              name="min_area"
+                              className="form-select form-select-sm"
+                              aria-label=".form-select-sm example"
+                              onChange={onMoreFiltersInputChange}
+                            >
+                              <option className="min-carpet-area-options" value="">
+                                Min
+                              </option>
+                              {propertyMinArea.map((area, Index) => {
+                                return (
+                                  <option
+                                    className="min-carpet-area-options"
+                                    value={area}
+                                    key={Index}
+                                  >
+                                    {area}
+                                  </option>
+                                );
+                              })}
+                            </select>
+                          </div>
+
+                          <div className="col-md-6 mb-3">
+                            <select
+                              id="max_area"
+                              name="max_area"
+                              className="form-select form-select-sm"
+                              aria-label=".form-select-sm example"
+                              onChange={onMoreFiltersInputChange}
+                            >
+                              <option className="max-carpet-area-options" value="">
+                                Max
+                              </option>
+                              {propertyMaxArea.map((area, Index) => {
+                                return (
+                                  <option
+                                    className="max-carpet-area-options"
+                                    value={area}
+                                    key={Index}
+                                  >
+                                    {area}
+                                  </option>
+                                );
+                              })}
+                            </select>
+                          </div>
+                          <div className="col-12">
+                            <hr />
+                          </div>
+                          <div className="col-md-6 mb-3">
+                            <label
+                              htmlFor=""
+                              className="form-label common-btn-font"
+                            >
+                              Age of Property
+                            </label>
+                            <select
+                              id="age"
+                              name="age"
+                              className="form-select form-select-sm"
+                              aria-label=".form-select-sm example"
+                              onChange={onMoreFiltersInputChange}
+                            >
+                              <option value=""></option>
+                              <option value="1">Less than 1 year</option>
+                              <option value="3">Less than 3 years</option>
+                              <option value="5">Less than 5 years</option>
+                              <option value="10">Less than 10 years</option>
+                            </select>
+                          </div>
+
+                          <div className="col-md-6 mb-3">
+                            <label
+                              htmlFor="latest_added_properties"
+                              className="form-label common-btn-font"
+                            >
+                              Latest added properties
+                            </label>
+
+                            <select
+                              id="latest_added_properties"
+                              name="latest_added_properties"
+                              className="form-select form-select-sm"
+                              aria-label=".form-select-sm example"
+                              onChange={onMoreFiltersInputChange}
+                            >
+                              <option value=""></option>
+                              <option value="10">Last 10 days</option>
+                              <option value="20">Last 20 days</option>
+                            </select>
+                          </div>
+                        </form>
+                      </div>
+                    </ul>
+                  </div>
+                </div>
+                : ""} */}
+              {/* searchBtn */}
+              <div className="col-md-1 col-12 my-3 my-md-0">
+                <button
+                  onClick={() => {
+                    getPropertyData();
+                  }}
+                  disabled={searchBtnDisabled}
+                  className="btn w-100 btn-primary text-center"
+                >
+                  <i className="bi bi-search"></i>
+                </button>
+              </div>
+              {/* Reset More Filters */}
+              {/* <div
+                className={`col-12 text-center mt-md-3 ${filtersCount > 0 ? "" : "d-none"
+                  }`}
+              >
+                <button
+                  onClick={resetFilters}
+                  className="btn btn-secondary text-center"
+                >
+                  Reset More Filters
+                </button>
+              </div> */}
+            </div>
+          </div>
+
+          {/* for desktop screen search bar */}
           <div
-            className="row extra-filters-row justify-content-center align-items-center py-3"
+            className="row extra-filters-row filter-fullWindow justify-content-center align-items-center py-3 "
           // style={{ height: "80px" }}
           >
             {/* State */}
@@ -538,7 +1178,7 @@ const ViewSearchResults = () => {
                 {states ? (
                   states.map((state, Index) => {
                     let optionToSelectByDefault = document.getElementById(
-                      `stateFilter-${state.state_id}`
+                      `stateFilter1-${state.state_id}`
                     );
                     if (dataToPost.state_id && optionToSelectByDefault) {
                       if (dataToPost.state_id === state.state_id) {
@@ -547,7 +1187,7 @@ const ViewSearchResults = () => {
                     }
                     return (
                       <option
-                        id={`stateFilter-${state.state_id}`}
+                        id={`stateFilter1-${state.state_id}`}
                         key={Index}
                         value={state.state_id}
                       >
@@ -573,7 +1213,7 @@ const ViewSearchResults = () => {
                 {cities
                   ? cities.map((city, Index) => {
                     let optionToSelectByDefault = document.getElementById(
-                      `cityFilter-${city.city_id}`
+                      `cityFilter1-${city.city_id}`
                     );
                     if (dataToPost.city_id && optionToSelectByDefault) {
                       if (dataToPost.city_id === city.city_id) {
@@ -582,7 +1222,7 @@ const ViewSearchResults = () => {
                     }
                     return (
                       <option
-                        id={`cityFilter-${city.city_id}`}
+                        id={`cityFilter1-${city.city_id}`}
                         key={Index}
                         value={city.city_id}
                       >
@@ -606,7 +1246,7 @@ const ViewSearchResults = () => {
                 {assetCategory
                   ? assetCategory.map((category, Index) => {
                     let optionToSelectByDefault = document.getElementById(
-                      `categoryFilter-${category.type_id}`
+                      `categoryFilter1-${category.type_id}`
                     );
                     if (dataToPost.type_id && optionToSelectByDefault) {
                       if (dataToPost.type_id === category.type_id) {
@@ -615,7 +1255,7 @@ const ViewSearchResults = () => {
                     }
                     return (
                       <option
-                        id={`categoryFilter-${category.type_id}`}
+                        id={`categoryFilter1-${category.type_id}`}
                         key={Index}
                         value={category.type_id}
                       >
@@ -634,6 +1274,8 @@ const ViewSearchResults = () => {
                 className="form-select"
                 aria-label=".form-select-sm example"
                 onChange={onFieldsChange}
+                value={dataToPost.bank_id}
+
               >
                 <option value="">Bank</option>
                 {banks
@@ -649,11 +1291,12 @@ const ViewSearchResults = () => {
             </div>
             {/* More Filters */}
             {isLogin ? <div className="col-md-2 col-12 mt-3 mt-md-0">
-              <div className="dropdown">
+              <div className="dropdown ">
                 <div
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
                   className="form-select"
+                  data-bs-toggle="dropdown"
+                  id="dropdownMenuButton2"
+                  aria-expanded="true"
                 >
                   <div
                     value=""
@@ -676,7 +1319,7 @@ const ViewSearchResults = () => {
                     e.stopPropagation();
                   }}
                   className="dropdown-menu more-filters-dropdown-menu shadow"
-                  aria-labelledby="dropdownMenuButton1"
+                  aria-labelledby="dropdownMenuButton2"
                 >
                   <div className="container-fluid p-3">
                     <form className="row" ref={moreFiltersForm}>

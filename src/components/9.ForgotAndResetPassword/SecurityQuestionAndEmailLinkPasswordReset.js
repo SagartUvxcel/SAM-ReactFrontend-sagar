@@ -40,7 +40,7 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
     eyeIcon2: "eye-slash",
     passwordType1: "password",
     passwordType2: "password",
-    question: emailAndQuestionData.question,
+    question_id:"",
     answer: "",
   });
 
@@ -53,7 +53,7 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
     eyeIcon2,
     passwordType1,
     passwordType2,
-    questionId,
+    question_id,
     answer,
   } = details;
   const [displayOfSections, setDisplayOfSections] = useState({
@@ -71,10 +71,21 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
   const [loading, setLoading] = useState(false);
   const { alertMsg, alertClr, alertVisible } = alertDetails;
   const { mainSectionDisplay, afterSubmitSectionDisplay } = displayOfSections;
-  // const [captchaVerified, setCaptchaVerified] = useState(false);
-  // const [captchaErr, setCaptchaErr] = useState(false);
-  // const captchaRef = useRef();
+  const [securityQuestionsList, setSecurityQuestionsList] = useState([]);
 
+  // Function getSecurityQuestionList.
+  const getSecurityQuestionList = async () => {
+
+    try {
+      const { data } = await axios.get("/sam/v1/customer-registration/security-questions");
+      // console.log(data);
+      if (data) {
+        setSecurityQuestionsList(data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
 
   // radio button handle function
@@ -161,13 +172,25 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
         ...details,
         answer: value,
       });
+    }else if (name === "securityQuestion") {
+      setDetails({
+        ...details,
+        question_id: value,
+      });
     }
   };
 
   // On setPassWord Button click this function will run.
   const onSetPasswordFormSubmit = async (e) => {
     e.preventDefault();
-    if (
+     if (question_id.length===0) {
+      setAlertDetails({
+        alertVisible: true,
+        alertMsg: "Please select question",
+        alertClr: "warning",
+      });
+     
+    }else if (
       newPassword !== confirmPassword &&
       invalidMessage1 !== "Invalid Password"
     ) {
@@ -207,43 +230,45 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
         password: newPassword,
         username: emailAndQuestionData.email,
         security_answer: answer,
+        question_id:question_id,
       });
-      setLoading(true);
-      try {
-        await axios
-          .put(
-            `/sam/v1/customer-registration/forget-password/security-answer/update`,
-            JSON.stringify({
-              password: newPassword,
-              username: emailAndQuestionData.email,
-              security_answer: answer,
-            })
-          )
-          .then((res) => {
-            if (res.data.status === 0) {
-              setLoading(false);
-              e.target.reset();
-              toast.success("Password Saved Successfully !");
-              localStorage.removeItem("token");
-              goTo("/login");
-            } else {
-              setLoading(false);
-              setAlertDetails({
-                alertVisible: true,
-                alertMsg: "Internal server error",
-                alertClr: "warning",
-              });
-            }
-          });
-      } catch (error) {
-        setLoading(false);
-        console.log(error);
-        setAlertDetails({
-          alertVisible: true,
-          alertMsg: "Password must be different from the last password",
-          alertClr: "warning",
-        });
-      }
+      // setLoading(true);
+      // try {
+      //   await axios
+      //     .put(
+      //       `/sam/v1/customer-registration/forget-password/security-answer/update`,
+      //       JSON.stringify({
+      //         password: newPassword,
+      //         username: emailAndQuestionData.email,
+      //         security_answer: answer,
+      //         question_id:question_id,
+      //       })
+      //     )
+      //     .then((res) => {
+      //       if (res.data.status === 0) {
+      //         setLoading(false);
+      //         e.target.reset();
+      //         toast.success("Password Saved Successfully !");
+      //         localStorage.removeItem("token");
+      //         goTo("/login");
+      //       } else {
+      //         setLoading(false);
+      //         setAlertDetails({
+      //           alertVisible: true,
+      //           alertMsg: "Internal server error",
+      //           alertClr: "warning",
+      //         });
+      //       }
+      //     });
+      // } catch (error) {
+      //   setLoading(false);
+      //   console.log(error);
+      //   setAlertDetails({
+      //     alertVisible: true,
+      //     alertMsg: "Internal server error",
+      //     alertClr: "warning",
+      //   });
+      // }
     }
   };
 
@@ -290,6 +315,7 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
     if (verifiedDataFromBackend !== null) {
       setEmailAndQuestionData(verifiedDataFromBackend);
       setShowLoader(false);
+      getSecurityQuestionList();
     } else {
       setShowLoader(false);
       goTo("/login");
@@ -325,7 +351,7 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
                   <form className={` ${securityQuestionInputDisplay === true ? "" : "d-none"}`}
                     onSubmit={onSetPasswordFormSubmit}>
                     <div
-                      className={`login-alert alert alert-${alertClr} alert-dismissible show d-flex align-items-center ${alertVisible ? "" : "d-none"
+                      className={`login-alert alert p-2 mt-2 alert-${alertClr} alert-dismissible show d-flex align-items-center ${alertVisible ? "" : "d-none"
                         }`}
                       role="alert"
                     >
@@ -346,14 +372,50 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
                     <div className="row mt-1 px-3">
 
                       {/* Question */}
-                      <div className="col-lg-12 mt-3 ">
-                        <label className="text-muted mb-2" htmlFor="confirm-password">
-                          Question: <span className="text-black">  {emailAndQuestionData ? emailAndQuestionData.question : ""}</span>
+                      <div className="col-lg-12 my-3">
+                        <label className="text-muted" htmlFor="securityQuestion">
+                          Security Question
+                          <span className="text-danger ps-1">*</span>
                         </label>
+                        <div className="form-group position-relative">
+                          <select
+                            id="securityQuestion"
+                            name="securityQuestion"
+                            className="form-select  form-control ps-3 mt-2 securityQuestionAnswer"
+                            onChange={onFormInputsChange}
+                            // value={formData.bank_name}
+                            required
+                          >
+                            <option className="text-gray" hidden >Select Your Security Question</option>
+                            {securityQuestionsList ? (
+                              securityQuestionsList.map((data, index) => {
+                                return (
+                                  <option
+                                    key={index}
+                                    value={data.question_id}
+                                  >
+                                    {data.question}
+                                  </option>
+                                );
+
+                              })
+                            ) : (
+                              <> </>
+                            )}
+                          </select>
+
+                        </div>
+                        {/* {questionNotSelectedMessage ? (
+                                                    <span className="pe-1 text-danger">
+                                                        {questionNotSelectedMessage}
+                                                    </span>
+                                                ) : (
+                                                    <span className="d-none"></span>
+                                                )} */}
                       </div>
                       {/* answer */}
                       <div className="col-lg-12 mb-3 " >
-                        <label className="text-muted" htmlFor="confirm-password">
+                        <label className="text-muted" htmlFor="securityQuestionAnswer">
                           Answer
                           <span className="text-danger ps-1">*</span>
                         </label>
@@ -371,7 +433,7 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
                       </div>
                       {/* new Password */}
                       <div className="col-lg-12 mb-3 " >
-                        <label className="text-muted" htmlFor="confirm-password">
+                        <label className="text-muted" htmlFor="set-password">
                           New Password:
                           <span className="text-danger ps-1">*</span>
                         </label>
@@ -448,11 +510,12 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
                         </button>
                       </div>
                     </div>
+                    <hr className="mt-4"/>
                   </form>
 
 
                   {/* option 2 for reset password(email link) */}
-                  <div className={`card p-2 text-muted ${emailLink === true ? "mt-3 bg-light" : "mt-5"}`}>
+                  <div className={`card p-2 text-muted ${emailLink === true ? "mt-3 bg-light" : "mt-4"}`}>
                     <div className="form-check">
                       <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2"
                         value="option2"

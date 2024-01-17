@@ -526,7 +526,7 @@ const ViewProperty = ({
                 </div>
               </div>
             </div>
-            <div className="col-xl-7 mt-xl-0 mt-4">
+            <div className="col-xl-7 mt-xl-0 mt-4 property-details">
               <div className="container-fluid">
                 <div className="row">
                   {flat_no ||
@@ -547,7 +547,7 @@ const ViewProperty = ({
                   )}
 
                   {flat_no ? (
-                    <div className="col-md-4">
+                    <div className="col-md-4 col-6">
                       <small className="text-muted">Flat Number</small>
                       <h5 className="mt-1">{flat_no}</h5>
                     </div>
@@ -556,7 +556,7 @@ const ViewProperty = ({
                   )}
 
                   {plot_no ? (
-                    <div className="col-md-4">
+                    <div className="col-md-4 col-6">
                       <small className="text-muted">Plot Number</small>
                       <h5 className="mt-1">{plot_no}</h5>
                     </div>
@@ -565,7 +565,7 @@ const ViewProperty = ({
                   )}
 
                   {society_name ? (
-                    <div className="col-md-4">
+                    <div className="col-md-4 col-6">
                       <small className="text-muted">Society Name</small>
                       <h5 className="mt-1">{society_name}</h5>
                     </div>
@@ -574,7 +574,7 @@ const ViewProperty = ({
                   )}
 
                   {locality ? (
-                    <div className="col-md-4">
+                    <div className="col-md-4 col-6">
                       <small className="text-muted">Locality</small>
                       <h5 className="mt-1">{locality}</h5>
                     </div>
@@ -583,7 +583,7 @@ const ViewProperty = ({
                   )}
 
                   {city_name ? (
-                    <div className="col-md-4">
+                    <div className="col-md-4 col-6">
                       <small className="text-muted">City</small>
                       <h5 className="mt-1">{city_name}</h5>
                     </div>
@@ -592,7 +592,7 @@ const ViewProperty = ({
                   )}
 
                   {state_name ? (
-                    <div className="col-md-4">
+                    <div className="col-md-4 col-6">
                       <small className="text-muted">State</small>
                       <h5 className="mt-1">{state_name}</h5>
                     </div>
@@ -601,7 +601,7 @@ const ViewProperty = ({
                   )}
 
                   {zip ? (
-                    <div className="col-md-4">
+                    <div className="col-md-4 col-6">
                       <small className="text-muted">Zip</small>
                       <h5 className="mt-1">{zip}</h5>
                     </div>
@@ -624,7 +624,7 @@ const ViewProperty = ({
                     <></>
                   )}
                   {saleable_area ? (
-                    <div className="col-md-4">
+                    <div className="col-md-4 col-6">
                       <small className="text-muted">Saleable Area</small>
                       <h5 className="mt-1">{saleable_area}</h5>
                     </div>
@@ -632,7 +632,7 @@ const ViewProperty = ({
                     <></>
                   )}
                   {carpet_area ? (
-                    <div className="col-md-4">
+                    <div className="col-md-4 col-6">
                       <small className="text-muted">Carpet Area</small>
                       <h5 className="mt-1">{carpet_area}</h5>
                     </div>
@@ -655,7 +655,7 @@ const ViewProperty = ({
                     <></>
                   )}
                   {completion_date ? (
-                    <div className="col-md-4">
+                    <div className="col-md-4 col-6">
                       <small className="text-muted">Completion Date</small>
                       <h5 className="mt-1">
                         {transformDateFormat(completion_date)
@@ -668,7 +668,7 @@ const ViewProperty = ({
                     <></>
                   )}
                   {purchase_date ? (
-                    <div className="col-md-4">
+                    <div className="col-md-4 col-6">
                       <small className="text-muted">Purchase Date</small>
                       <h5 className="mt-1">
                         {transformDateFormat(purchase_date)
@@ -681,7 +681,7 @@ const ViewProperty = ({
                     <></>
                   )}
                   {mortgage_date ? (
-                    <div className="col-md-4">
+                    <div className="col-md-4 col-6">
                       <small className="text-muted">Mortgage Date</small>
                       <h5 className="mt-1">
                         {transformDateFormat(mortgage_date)
@@ -712,7 +712,7 @@ const ViewProperty = ({
                     <></>
                   )}
                   {market_price ? (
-                    <div className="col-md-4">
+                    <div className="col-md-4 col-6">
                       <small className="text-muted">Market Price</small>
                       <h5 className="mt-1">
                         <i className="bi bi-currency-rupee"></i>
@@ -723,7 +723,7 @@ const ViewProperty = ({
                     <></>
                   )}
                   {ready_reckoner_price ? (
-                    <div className="col-md-4">
+                    <div className="col-md-4 col-6">
                       <small className="text-muted">Ready Reckoner Price</small>
                       <h5 className="mt-1">
                         <i className="bi bi-currency-rupee"></i>
@@ -734,7 +734,7 @@ const ViewProperty = ({
                     <></>
                   )}
                   {expected_price ? (
-                    <div className="col-md-4">
+                    <div className="col-md-4 col-6">
                       <small className="text-muted">Reserved Price</small>
                       <h5 className="mt-1">
                         <i className="bi bi-currency-rupee"></i>
@@ -771,7 +771,7 @@ const ViewProperty = ({
                     <></>
                   )}
                   {/* {is_sold ? (
-                    <div className="col-md-4">
+                    <div className="col-md-4 col-6">
                       <small className="text-muted">Is Sold?</small>
                       <h5 className="mt-1 text-capitalize">
                         {is_sold === "1" ? "Yes" : "No"}

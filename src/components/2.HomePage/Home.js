@@ -2,12 +2,31 @@ import React, { useEffect, useRef, useState } from "react";
 import HomeAboutUs from "./HomeAboutUs";
 import Layout from "../1.CommonLayout/Layout";
 import axios from "axios";
-import { rootTitle } from "../../CommonFunctions";
+import { checkLoginSession, rootTitle } from "../../CommonFunctions";
 import { useNavigate } from "react-router-dom";
 
 
 const historyData = [
   {
+    "state_name": "maharashtra",
+    "city": "Pune", "type": "plots", "bank_id": "SBI",
+    "min_price": "100000",
+    "max_price": "40000000",
+    "title_clear_property": "yes",
+    "territory": "gram panchayat limit",
+    "min_area": "300",
+    "max_area": "25000",
+    "age": 10,
+    "latest_added_properties": 20
+  },
+  {
+    "state": "Goa", "city": "Panaji", "type": "plots", "bank_id": "SBI",
+    "min_price": "100000",
+    "max_price": "40000000",
+    "title_clear_property": "yes",
+    "territory": "gram panchayat limit",
+    "min_area": "300",
+  }, {
     "state": "maharashtra", "city": "Pune", "type": "plots", "bank_id": "SBI",
     "min_price": "100000",
     "max_price": "40000000",
@@ -25,7 +44,7 @@ const historyData = [
     "title_clear_property": "yes",
     "territory": "gram panchayat limit",
     "min_area": "300",
-  },{
+  }, {
     "state": "maharashtra", "city": "Pune", "type": "plots", "bank_id": "SBI",
     "min_price": "100000",
     "max_price": "40000000",
@@ -43,7 +62,7 @@ const historyData = [
     "title_clear_property": "yes",
     "territory": "gram panchayat limit",
     "min_area": "300",
-  },{
+  }, {
     "state": "maharashtra", "city": "Pune", "type": "plots", "bank_id": "SBI",
     "min_price": "100000",
     "max_price": "40000000",
@@ -55,30 +74,7 @@ const historyData = [
     "latest_added_properties": 20
   },
   {
-    "state": "Goa", "city": "Panaji", "type": "plots", "bank_id": "SBI",
-    "min_price": "100000",
-    "max_price": "40000000",
-    "title_clear_property": "yes",
-    "territory": "gram panchayat limit",
-    "min_area": "300",
-  },{
-    "state": "maharashtra", "city": "Pune", "type": "plots", "bank_id": "SBI",
-    "min_price": "100000",
-    "max_price": "40000000",
-    "title_clear_property": "yes",
-    "territory": "gram panchayat limit",
-    "min_area": "300",
-    "max_area": "25000",
-    "age": 10,
-    "latest_added_properties": 20
-  },
-  {
-    "state": "Goa", "city": "Panaji", "type": "plots", "bank_id": "SBI",
-    "min_price": "100000",
-    "max_price": "40000000",
-    "title_clear_property": "yes",
-    "territory": "gram panchayat limit",
-    "min_area": "300",
+    "state": "1",
   },
 
 ]
@@ -92,7 +88,7 @@ function Home() {
 
 
   const homePageRef = useRef();
-  const historyModal = useRef();
+  const historyBtnRef = useRef();
 
   const data = JSON.parse(localStorage.getItem("data"));
   const updatedSubscriptionStatus = localStorage.getItem("updatedSubscriptionStatus");
@@ -122,8 +118,9 @@ function Home() {
   const { states, assetCategory, cities } = searchFields;
 
   const [searchHistory, setSearchHistory] = useState([]);
+  const [historyBtn, setHistoryBtn] = useState(false);
 
-
+// console.log(searchHistory.SearchName);
 
   // date and time convert into local time function
   const dateTimeConvertor = (dateAndTime) => {
@@ -185,9 +182,14 @@ function Home() {
       if (data !== null) {
         const filteredData = data.map(item => ({
           search_json: JSON.parse(item.search_json),
-          updated_date: item.updated_date
+          updated_date: item.updated_date,
+          SearchName: item.SearchName,
+          added_date: item.added_date,
+          search_id: item.search_id,
         }));
-        console.log(data);
+        // console.log(data);
+        console.log(filteredData);
+
         dateTimeConvertor(data[0].updated_date);
         setSearchHistory(filteredData);
         searchHistoryJsonDataConvertor(filteredData);
@@ -239,7 +241,7 @@ function Home() {
       const result = data.map((searchItem) => {
         const { city_id, state_id } = searchItem.search_json;
         // let cities = cityValue(state_id);
-        console.log(cities);
+        // console.log(cities);
         // Find the city and state based on the search_json
         // const cityName = cities.find((city) => city.city_id === city_id)?.city_name || '';
         const stateName = states.find((state) => state.state_id === state_id)?.state_name || '';
@@ -251,7 +253,7 @@ function Home() {
         };
       });
 
-      console.log(result);
+      // console.log(result);
 
 
 
@@ -338,20 +340,26 @@ function Home() {
     };
   };
 
+
+  // on click history button
+  const onClickHistory = (e) => {
+    const data =e.search_json;
+    // setDataToPost({ ...dataToPost, data });
+    
+    console.log(data);
+    const sensitiveData = { ...dataToPost, ...data };
+    console.log(sensitiveData);
+    navigate("/property-search-results", { state: { sensitiveData } });
+  }
+  // navigate to properties list page
   const navigate = useNavigate();
 
   const navigateToDestination = () => {
     const sensitiveData = dataToPost;
+    console.log(sensitiveData);
     navigate("/property-search-results", { state: { sensitiveData } });
   };
 
-  const historyBtnClick = () => {
-    setModalStatus(true);
-    let body = document.getElementById("body");
-    body.style.removeProperty("overflow");
-    body.style.removeProperty("padding");
-
-  }
 
   useEffect(() => {
     if (modalStatus) {
@@ -374,16 +382,27 @@ function Home() {
     if (isLogin && subscription_status) {
       getSearchHistory();
     }
-  }, []);
+    // checkLoginSession(data.loginToken).then((res) => {
+    //   if (res === "Valid") {
+    //     // console.log(res);
+    //     // console.log(historyBtnRef);
+    //     setHistoryBtn(true);
+
+    //   }else{
+    //     setHistoryBtn(false);
+    //   }
+    // });
+
+  }, [isLogin, subscription_status]);
 
   return (
     <Layout>
-      <section className="full-home-page-section skyblue-bg" ref={homePageRef}>
-        <section className="home-wrapper">
+      <section className="full-home-page-section skyblue-bg " ref={homePageRef} >
+        <section className="home-wrapper min-100vh">
           <div className="container-fluid">
-            <div className="d-flex justify-content-end mb-5  dropdown ">
+            <div className="d-flex justify-content-end mb-5  dropdown" >
               {isLogin && subscription_status ?
-                <div className="col-md-2 searchHistoryDiv d-flex justify-content-center mt-2">
+                <div ref={historyBtnRef} className="col-md-2 searchHistoryDiv d-flex justify-content-center mt-2 " >
                   <button
                     type="button"
                     className="btn btn-link text-decoration-none dropdown-toggle "
@@ -392,26 +411,28 @@ function Home() {
                     aria-haspopup="true"
                     aria-expanded="false"
                   ><span><i className="fa fa-history fs-small" aria-hidden="true"></i> </span> History</button>
-                  <div className="dropdown-menu historyDropdownMenu p-3" aria-labelledby="dropdownMenu2">
+                  <div className="dropdown-menu historyDropdownMenu p-3 " aria-labelledby="dropdownMenu2">
                     <h5 className="modal-title fs-6" id="recentSearchHistoryTitle">History</h5>
-                    <hr />
-                    {historyData.map((data, index) => {
+                    <hr className="my-2" />
+                    {searchHistory.map((data, index) => {
+                      
+                      const isEvenRow = index % 2 === 0;
+                      const rowClasses = `row border-bottom my-1 ${isEvenRow ? 'even-row' : 'odd-row'}`;
                       return (
-                        <div key={index + 1} className="row border-bottom my-1">
-                          {/* <div className="col-4 searchHistoryList d-flex align-items-center justify-content-between flex-wrap ">
-                            <p className="">20/12/2023 </p>
-                            <p> 05:17 PM</p>
-                          </div> */}
-                          <div className="col-12 d-flex">
-                            <p className="searchHistoryList historyLink"><span><i className="bi bi-clock-history text-primary"></i></span>State={data.state}, City={data.city}, Type={data.type}, bank Name: {data.bank_id},
-                          min_price: {data.min_price},
-                          max_price: {data.max_price},
-                          title_clear_property: {data.title_clear_property},
-                          territory: {data.territory},
-                          min_area: {data.min_area},
-                          max_area: {data.max_area},
-                          age: {data.age},
-                          latest_added_properties: {data.latest_added_properties}</p>
+                        <div key={index + 1} className={rowClasses}>
+                          <div className="col-12 d-flex ">
+                            <p className="searchHistoryList historyLink" onClick={() => onClickHistory(data)}><span><i className="bi bi-clock-history text-primary"></i> </span>
+                            {data.SearchName}
+                            {/* State={data.state}, City={data.city}, Type={data.type}, bank Name: {data.bank_id},
+                              min_price: {data.min_price},
+                              max_price: {data.max_price},
+                              title_clear_property: {data.title_clear_property},
+                              territory: {data.territory},
+                              min_area: {data.min_area},
+                              max_area: {data.max_area},
+                              age: {data.age},
+                              latest_added_properties: {data.latest_added_properties} */}
+                              </p>
                           </div>
 
 
@@ -526,7 +547,7 @@ function Home() {
         {/* About us section component */}
         <HomeAboutUs />
 
-       
+
 
 
       </section>

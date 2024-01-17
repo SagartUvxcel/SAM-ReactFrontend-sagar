@@ -625,22 +625,22 @@ const Registration = () => {
           [name]: parseInt(value),
         },
       });
-    }else if (name === "landline_number") {
+    } else if (name === "landline_number") {
       if (landlineNumberRegularExp.test(value) || value.length === 0) {
-          setValidationDetails({
-              ...validationDetails,
-              landlineNumberValidationMessage: "",
-          });
-          style.borderColor = "";
+        setValidationDetails({
+          ...validationDetails,
+          landlineNumberValidationMessage: "",
+        });
+        style.borderColor = "";
       } else {
-          setValidationDetails({
-              ...validationDetails,
-              landlineNumberValidationMessage: "Invalid Landline Number Entered",
-          });
-          style.borderColor = "red";
+        setValidationDetails({
+          ...validationDetails,
+          landlineNumberValidationMessage: "Invalid Landline Number Entered",
+        });
+        style.borderColor = "red";
       }
 
-  }
+    }
   };
 
   // Function will run after Individual Form submit button is clicked.
@@ -773,7 +773,7 @@ const Registration = () => {
           <div className="row justify-content-center ">
             <div className="col-lg-12 mt-4">
               <div className="card form-wrapper-card shadow pt-3 pb-5 ps-lg-3 ps-0">
-                <div className="container-fluid registration-form-container">
+                <div className="container-fluid registration-form-container mb-5">
                   <div className="row">
                     {/* Individual Form Heading */}
                     <div className="col-lg-12">
@@ -1075,12 +1075,23 @@ const Registration = () => {
 
                   </div>
                 </div>
-                <small className="token-verify-link">
-                  Already registered?
+                {/* <hr /> */}
+
+                
+                {/* Already registered? */}
+                <small className="token-verify-link ">
+                <div> Already registered?
                   <NavLink to="/register/verify" className="fw-bold ps-1">
                     click here to verify
-                  </NavLink>
+                  </NavLink></div>
+                <div className="mt-2"> Already have an inactive account? 
+                  <NavLink to="/register/verify" className="fw-bold ps-1">
+                    click here for activate 
+                  </NavLink></div>
+                 
                 </small>
+
+
               </div>
             </div>
           </div>

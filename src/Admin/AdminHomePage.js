@@ -104,6 +104,11 @@ const AdminHomePage = () => {
     ],
   };
 
+  useEffect(() => {
+    
+  }, [typeWisePropertyDetails])
+  
+
   const chart1Options = {
     responsive: true,
     plugins: {
@@ -163,6 +168,9 @@ const AdminHomePage = () => {
     let bar2 = document.getElementById("bar2");
     if (pie && bar2) {
       pie.checked = true;
+      bar2.checked = true;
+    }
+    if(bar2){
       bar2.checked = true;
     }
     if (data) {
