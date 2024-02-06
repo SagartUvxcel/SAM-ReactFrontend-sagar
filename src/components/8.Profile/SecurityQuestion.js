@@ -30,23 +30,41 @@ const SecurityQuestion = () => {
     });
     const { alertMsg, alertClr, alertVisible } = alertDetails;
     const [details, setDetails] = useState({
-        invalidMessage1: "",
+        invalidCurrentPasswordMsg: "",
         eyeIcon: "eye-slash",
+        passwordEyeIcon: "eye-slash",
         answerType: "password",
+        passwordType: "password",
         questionNotSelectedMessage: "",
         answerNotSelectedMessage: "",
     });
     const {
-        invalidMessage1,
+        invalidCurrentPasswordMsg,
         eyeIcon,
+        passwordEyeIcon,
         answerType,
+        passwordType,
         questionNotSelectedMessage,
         answerNotSelectedMessage,
     } = details;
 
+    // Toggle the eye-icon to show and hide password for field 1.
+    const changeEyeIcon1 = () => {
+        if (passwordEyeIcon === "eye-slash") {
+            setDetails({ ...details, passwordEyeIcon: "eye", passwordType: "text" });
+        } else if (passwordEyeIcon === "eye") {
+            setDetails({
+                ...details,
+                passwordEyeIcon: "eye-slash",
+                passwordType: "password",
+            });
+        }
+    };
+
     // if question already set and present in database
     const [securityQuestionsFromDatabase, setSecurityQuestionsFromDatabase] = useState({
         questionExist: false,
+        question_id: 0,
         questionFromDatabase: "",
     });
     const { questionExist, questionFromDatabase } = securityQuestionsFromDatabase;
@@ -81,12 +99,18 @@ const SecurityQuestion = () => {
             const { data } = await axios.get("/sam/v1/customer-registration/auth/get/security-question", {
                 headers: authHeader,
             });
-            // console.log(data);
-            if (data) {
-                console.log(data);
+            if (data.question_id !== 0) {
                 setSecurityQuestionsFromDatabase({
                     questionExist: true,
+                    question_id: data.question_id,
                     questionFromDatabase: data.question,
+                })
+                setLoading(false);
+            } else {
+                setSecurityQuestionsFromDatabase({
+                    questionExist: false,
+                    question_id: "",
+                    questionFromDatabase: "",
                 })
                 setLoading(false);
             }
@@ -122,12 +146,56 @@ const SecurityQuestion = () => {
         }
     };
 
+    // Function to check if the password satisfies the given password condition.
+    const onPasswordsBlur = (e) => {
+        const { name, value } = e.target;
+        if (name === "currentPassword") {
+            const regexForPassword =
+                /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/;
+            if (value) {
+                if (value.match(regexForPassword)) {
+                    setSecurityQuestionsDetails({
+                        ...securityQuestionsDetails,
+                        currentPassword: value,
+                    });
+                    setDetails({
+                        ...details,
+                        invalidCurrentPasswordMsg: "",
+                    });
+                } else {
+                    setDetails({
+                        ...details,
+                        invalidCurrentPasswordMsg: "Invalid Password",
+                    });
+                }
+            }
+        }
+    }
     // Onchange function for both password fields.
     const onSecurityQuestionAnswerChange = (e) => {
         const { name, value } = e.target;
-        if (name === "securityQuestions") {
+        if (name === "currentPassword") {
+            const regexForPassword =
+                /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/;
+            if (value) {
+                if (value.match(regexForPassword)) {
+                    setSecurityQuestionsDetails({
+                        ...securityQuestionsDetails,
+                        currentPassword: value,
+                    });
+                    setDetails({
+                        ...details,
+                        invalidCurrentPasswordMsg: "",
+                    });
+                } else {
+                    setDetails({
+                        ...details,
+                        invalidCurrentPasswordMsg: "Invalid Password",
+                    });
+                }
+            }
+        } else if (name === "securityQuestions") {
             if (securityQuestionsList.filter(obj => obj.id === value)) {
-                console.log(name, value);
                 setSecurityQuestionsDetails({
                     ...securityQuestionsDetails,
                     id: value,
@@ -148,7 +216,6 @@ const SecurityQuestion = () => {
 
             }
         } else if (name === "securityAnswer") {
-            console.log(name, value);
             setSecurityQuestionsDetails({
                 ...securityQuestionsDetails,
                 answer: value.trim(),
@@ -158,17 +225,13 @@ const SecurityQuestion = () => {
                 answerNotSelectedMessage: "",
             });
         }
-        // console.log(securityQuestionsDetails);
-
     };
 
     // on form submit 
     const onSecurityQuestionAnswerSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        console.log(securityQuestionsDetails.id.length);
-        console.log(securityQuestionsDetails.answer.length);
-        if (securityQuestionsDetails.id.length === 0 ) {
+        if (securityQuestionsDetails.id.length === 0) {
             setAlertDetails({
                 alertVisible: true,
                 alertClr: "warning",
@@ -178,8 +241,10 @@ const SecurityQuestion = () => {
         } else {
             const dataToPost = JSON.stringify({
                 "security_question_id": parseInt(securityQuestionsDetails.id),
-                "security_answer": securityQuestionsDetails.answer
+                "security_answer": securityQuestionsDetails.answer,
+                "password": securityQuestionsDetails.currentPassword
             })
+            console.log(dataToPost);
             try {
                 await axios
                     .post(
@@ -194,11 +259,16 @@ const SecurityQuestion = () => {
                             e.target.reset();
                             toast.success("Security details updated successfully.")
                             setLoading(false);
+                            setAlertDetails({
+                                alertVisible: false,
+                                alertClr: "",
+                                alertMsg: "",
+                            });
                         } else {
                             setLoading(false);
                             setAlertDetails({
                                 alertVisible: true,
-                                alertClr: "danger",
+                                alertClr: "warning",
                                 alertMsg: "Something went wrong",
                             });
                         }
@@ -207,8 +277,8 @@ const SecurityQuestion = () => {
                 setLoading(false);
                 setAlertDetails({
                     alertVisible: true,
-                    alertClr: "warning",
-                    alertMsg: error,
+                    alertClr: "danger",
+                    alertMsg: error.response.data.error,
                 });
             }
         }
@@ -224,8 +294,8 @@ const SecurityQuestion = () => {
         <Layout>
             <section className="security-question-wrapper section-padding min-100vh">
                 <div className="container mt-5">
-                    <div className="row justify-content-lg-between justify-content-center mb-3">
-                        <div className="col-xl-6 col-lg-6 col-md-8 order-1 order-lg-2 security-question-box card p-3 p-sm-5">
+                    <div className="row justify-content-lg-between justify-content-center p-2 p-md-0 mb-3">
+                        <div className="col-xl-6 col-lg-6 col-md-8 order-1 order-lg-2 security-question-box card p-4 p-sm-5">
                             <h4 className="text-center fw-bold">Your Security Questions</h4>
                             {loading ? (
                                 <div
@@ -243,6 +313,7 @@ const SecurityQuestion = () => {
                                 <>
                                     <form className=" " onSubmit={onSecurityQuestionAnswerSubmit}>
                                         <hr />
+                                        {/* alert msg div */}
                                         <div
                                             className={`login-alert alert alert-${alertClr} alert-dismissible show d-flex align-items-center ${alertVisible ? alertMsg : "d-none"
                                                 }`}
@@ -308,7 +379,7 @@ const SecurityQuestion = () => {
                                                 )}
                                             </div>
                                             {/* Answer */}
-                                            <div className="col-lg-12 mb-5 " >
+                                            <div className="col-lg-12 mb-3 " >
                                                 <label className="text-muted" htmlFor="securityAnswer">
                                                     Answer
                                                     <span className="text-danger ps-1">*</span>
@@ -337,7 +408,38 @@ const SecurityQuestion = () => {
                                                     <span className="d-none"></span>
                                                 )}
                                             </div>
-                                            <div className="col-lg-12">
+                                            {/*current password */}
+                                            <div className="col-lg-12 mb-3">
+                                                <div className="form-group position-relative">
+                                                    <label className="text-muted" htmlFor="current-password">
+                                                        Current Password<span className="text-danger ps-1">*</span>
+                                                    </label>
+                                                    <input
+                                                        id="current-password"
+                                                        name="currentPassword"
+                                                        type={passwordType}
+                                                        className="form-control"
+                                                        onBlur={onPasswordsBlur}
+                                                        onChange={onSecurityQuestionAnswerChange}
+                                                        required
+                                                    />
+
+                                                    <i
+                                                        placeholder={eyeIcon}
+                                                        onClick={changeEyeIcon1}
+                                                        className={`icon-eye-setpass bi bi-${passwordEyeIcon}`}
+                                                    ></i>
+                                                </div>
+                                                {invalidCurrentPasswordMsg ? (
+                                                    <span className="pe-1 text-danger">
+                                                        {invalidCurrentPasswordMsg}
+                                                    </span>
+                                                ) : (
+                                                    <span className="d-none"></span>
+                                                )}
+                                            </div>
+                                            {/* submit button */}
+                                            <div className="col-lg-12 mt-3">
                                                 <button
                                                     disabled={loading ? true : false}
                                                     type="submit"
@@ -352,8 +454,9 @@ const SecurityQuestion = () => {
                                                             ></span>
                                                             Setting....
                                                         </>
-                                                    ) : (
-                                                        `${!questionExist ? "Set Security Question" : "Update Security Question"}`
+                                                    ) : (<>
+                                                        {questionFromDatabase.length === 0 ? ("Set Security Question") : ("Update Security Question")}
+                                                    </>
                                                     )}
                                                 </button>
                                             </div>

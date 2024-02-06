@@ -424,10 +424,10 @@ const UpgradeSubscriptionPage = () => {
                         {plans && plans.map((plan, Index) => {
                           return (
                             <>
-                              <button className={`upgradePackages  border-0 mb-4 mt-4 mb-md-0 plan-card-${Index + 1} position-relative plan-header-wrapper 
+                              <button key={Index} className={`upgradePackages  border-0 mb-4 mt-4 mb-md-0 plan-card-${Index + 1} position-relative plan-header-wrapper 
                             ${selectedPlan.plan_id === plan.plan_id ? "packagesBox-shadow " : ""} 
                             ${plan.plan_id === disabledIndex ? "disabled" : ""}`}
-                                key={Index}
+                                
                                 disabled={plan.plan_id === disabledIndex}
                                 onClick={() => {
                                   onCardBtnClick(plan, Index);

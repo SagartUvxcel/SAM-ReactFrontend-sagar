@@ -82,6 +82,7 @@ let authHeader = "";
 let isLogin = false;
 let subscription_status = false;
 let userId = "";
+let roleId = "";
 
 
 function Home() {
@@ -92,11 +93,12 @@ function Home() {
 
   const data = JSON.parse(localStorage.getItem("data"));
   const updatedSubscriptionStatus = localStorage.getItem("updatedSubscriptionStatus");
-  // console.log(updatedSubscriptionStatus);
+  console.log(updatedSubscriptionStatus);
   if (data) {
     authHeader = { Authorization: data.loginToken };
     isLogin = data.isLoggedIn;
     userId = data.userId;
+    roleId = data.roleId;
     subscription_status = updatedSubscriptionStatus ? updatedSubscriptionStatus : data.subscription_status;
   }
 
@@ -120,7 +122,7 @@ function Home() {
   const [searchHistory, setSearchHistory] = useState([]);
   const [historyBtn, setHistoryBtn] = useState(false);
 
-// console.log(searchHistory.SearchName);
+  // console.log(searchHistory.SearchName);
 
   // date and time convert into local time function
   const dateTimeConvertor = (dateAndTime) => {
@@ -187,17 +189,11 @@ function Home() {
           added_date: item.added_date,
           search_id: item.search_id,
         }));
-        // console.log(data);
-        console.log(filteredData);
 
         dateTimeConvertor(data[0].updated_date);
         setSearchHistory(filteredData);
         searchHistoryJsonDataConvertor(filteredData);
 
-        // console.log(data);
-        // console.log(filteredData);
-
-        // console.log(jsonHistoryData);
       } else {
 
       }
@@ -343,9 +339,9 @@ function Home() {
 
   // on click history button
   const onClickHistory = (e) => {
-    const data =e.search_json;
+    const data = e.search_json;
     // setDataToPost({ ...dataToPost, data });
-    
+
     console.log(data);
     const sensitiveData = { ...dataToPost, ...data };
     console.log(sensitiveData);
@@ -382,17 +378,6 @@ function Home() {
     if (isLogin && subscription_status) {
       getSearchHistory();
     }
-    // checkLoginSession(data.loginToken).then((res) => {
-    //   if (res === "Valid") {
-    //     // console.log(res);
-    //     // console.log(historyBtnRef);
-    //     setHistoryBtn(true);
-
-    //   }else{
-    //     setHistoryBtn(false);
-    //   }
-    // });
-
   }, [isLogin, subscription_status]);
 
   return (
@@ -401,7 +386,7 @@ function Home() {
         <section className="home-wrapper min-100vh">
           <div className="container-fluid">
             <div className="d-flex justify-content-end mb-5  dropdown" >
-              {isLogin && subscription_status ?
+              {isLogin && roleId === 3 ?
                 <div ref={historyBtnRef} className="col-md-2 searchHistoryDiv d-flex justify-content-center mt-2 " >
                   <button
                     type="button"
@@ -412,33 +397,32 @@ function Home() {
                     aria-expanded="false"
                   ><span><i className="fa fa-history fs-small" aria-hidden="true"></i> </span> History</button>
                   <div className="dropdown-menu historyDropdownMenu p-3 " aria-labelledby="dropdownMenu2">
-                    <h5 className="modal-title fs-6" id="recentSearchHistoryTitle">History</h5>
+                    <h5 className="modal-title fs-5" id="recentSearchHistoryTitle">History</h5>
                     <hr className="my-2" />
-                    {searchHistory.map((data, index) => {
-                      
+                    {searchHistory.length > 0 && subscription_status ? (searchHistory.map((data, index) => {
+
                       const isEvenRow = index % 2 === 0;
                       const rowClasses = `row border-bottom my-1 ${isEvenRow ? 'even-row' : 'odd-row'}`;
                       return (
                         <div key={index + 1} className={rowClasses}>
                           <div className="col-12 d-flex ">
                             <p className="searchHistoryList historyLink" onClick={() => onClickHistory(data)}><span><i className="bi bi-clock-history text-primary"></i> </span>
-                            {data.SearchName}
-                            {/* State={data.state}, City={data.city}, Type={data.type}, bank Name: {data.bank_id},
-                              min_price: {data.min_price},
-                              max_price: {data.max_price},
-                              title_clear_property: {data.title_clear_property},
-                              territory: {data.territory},
-                              min_area: {data.min_area},
-                              max_area: {data.max_area},
-                              age: {data.age},
-                              latest_added_properties: {data.latest_added_properties} */}
-                              </p>
+                              {data.SearchName}
+                            </p>
                           </div>
 
 
                         </div>
                       )
-                    })}
+                    })) : (<>
+                      <p className="text-center fw-bold">No History Found !</p>
+                      {/* <div>{subscription_status ?  */}
+                      {/*  
+                       {/* :<p className="text-center d-flex align-items-center">To view your history, please upgrade your subscription. To choose your subscription, <button type="button" className="btn btn-link p-0" onClick={()=>navigate("/subscription")}>click here</button></p>  */}
+                      {/* } */}
+                      {/* </div>  */}
+                    </>)
+                    }
                   </div>
 
                 </div> : ""}

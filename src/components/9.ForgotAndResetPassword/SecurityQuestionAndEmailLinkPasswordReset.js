@@ -38,9 +38,11 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
     invalidMessage1: "",
     eyeIcon: "eye-slash",
     eyeIcon2: "eye-slash",
+    eyeIcon3: "eye-slash",
     passwordType1: "password",
     passwordType2: "password",
-    question_id:"",
+    passwordType3: "password",
+    question_id: "",
     answer: "",
   });
 
@@ -51,8 +53,10 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
     invalidMessage1,
     eyeIcon,
     eyeIcon2,
+    eyeIcon3,
     passwordType1,
     passwordType2,
+    passwordType3,
     question_id,
     answer,
   } = details;
@@ -130,10 +134,22 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
     }
   };
 
+  // Toggle the eye-icon to show and hide text for answer.
+  const changeEyeIcon3 = () => {
+    if (eyeIcon3 === "eye-slash") {
+      setDetails({ ...details, eyeIcon3: "eye", passwordType3: "text" });
+    } else if (eyeIcon3 === "eye") {
+      setDetails({
+        ...details,
+        eyeIcon3: "eye-slash",
+        passwordType3: "password",
+      });
+    }
+  };
+
   // Function to check if the password and answer satisfies the given password condition.
   const onFormInputsBlur = (e) => {
     const { name, value } = e.target;
-    console.log(name, value);
     if (name === "setPassword") {
       if (value) {
         if (value.match(regexForPassword)) {
@@ -170,9 +186,9 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
     } else if (name === "securityQuestionAnswer") {
       setDetails({
         ...details,
-        answer: value,
+        answer: value.trim(),
       });
-    }else if (name === "securityQuestion") {
+    } else if (name === "securityQuestion") {
       setDetails({
         ...details,
         question_id: value,
@@ -183,14 +199,14 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
   // On setPassWord Button click this function will run.
   const onSetPasswordFormSubmit = async (e) => {
     e.preventDefault();
-     if (question_id.length===0) {
+    if (question_id.length === 0) {
       setAlertDetails({
         alertVisible: true,
         alertMsg: "Please select question",
         alertClr: "warning",
       });
-     
-    }else if (
+
+    } else if (
       newPassword !== confirmPassword &&
       invalidMessage1 !== "Invalid Password"
     ) {
@@ -226,49 +242,46 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
         passwordType2: "text",
       });
     } else {
-      console.log({
-        password: newPassword,
-        username: emailAndQuestionData.email,
-        security_answer: answer,
-        question_id:question_id,
-      });
-      // setLoading(true);
-      // try {
-      //   await axios
-      //     .put(
-      //       `/sam/v1/customer-registration/forget-password/security-answer/update`,
-      //       JSON.stringify({
-      //         password: newPassword,
-      //         username: emailAndQuestionData.email,
-      //         security_answer: answer,
-      //         question_id:question_id,
-      //       })
-      //     )
-      //     .then((res) => {
-      //       if (res.data.status === 0) {
-      //         setLoading(false);
-      //         e.target.reset();
-      //         toast.success("Password Saved Successfully !");
-      //         localStorage.removeItem("token");
-      //         goTo("/login");
-      //       } else {
-      //         setLoading(false);
-      //         setAlertDetails({
-      //           alertVisible: true,
-      //           alertMsg: "Internal server error",
-      //           alertClr: "warning",
-      //         });
-      //       }
-      //     });
-      // } catch (error) {
-      //   setLoading(false);
-      //   console.log(error);
-      //   setAlertDetails({
-      //     alertVisible: true,
-      //     alertMsg: "Internal server error",
-      //     alertClr: "warning",
-      //   });
-      // }
+      setLoading(true);
+      try {
+        await axios
+          .put(
+            `/sam/v1/customer-registration/forget-password/security-answer/update`,
+            JSON.stringify({
+              password: newPassword,
+              username: emailAndQuestionData.email,
+              security_answer: answer,
+              question_id: parseInt(question_id),
+            })
+          )
+          .then((res) => {
+            if (res.data.status === 0) {
+              setLoading(false);
+              e.target.reset();
+              toast.success("Password Saved Successfully !");
+              localStorage.removeItem("token");
+              goTo("/login");
+            } else {
+              setLoading(false);
+              setAlertDetails({
+                alertVisible: true,
+                alertMsg: "Internal server error",
+                alertClr: "warning",
+              });
+            }
+          });
+      } catch (error) {
+        setLoading(false);
+        console.log(error);
+        if (error.response.data.error !== "You are block for 24 hour to reset your password") {
+          toast.warning(`Invalid credentials.${error.response.data.remaining_attempted} attempts remaining.`);
+        }
+        setAlertDetails({
+          alertVisible: true,
+          alertMsg: error.response.data.error,
+          alertClr: "danger",
+        });
+      }
     }
   };
 
@@ -300,17 +313,7 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
     }
   }
 
-
-  const loadCaptchaOnRefresh = () => {
-    loadCaptchaEnginge(6);
-    const captchaWrapper =
-      document.getElementById("captcha-wrapper").firstChild;
-    captchaWrapper.classList.add("flexAndCenter");
-    document.getElementById("reload_href").classList.add("d-none");
-  };
-
   useEffect(() => {
-    // loadCaptchaOnRefresh();
     const verifiedDataFromBackend = location.state ? location.state.sensitiveData : null;
     if (verifiedDataFromBackend !== null) {
       setEmailAndQuestionData(verifiedDataFromBackend);
@@ -321,6 +324,7 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
       goTo("/login");
     }
   }, []);
+
   return (
     <Layout>
       {showLoader ? <>
@@ -423,12 +427,16 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
                           <input
                             id="securityQuestionAnswer"
                             name="securityQuestionAnswer"
-                            type="text"
+                            type={passwordType3}
                             className="form-control securityQuestionAnswer"
                             onChange={onFormInputsChange}
                             required
                           />
-
+                          <i
+                            placeholder={eyeIcon}
+                            onClick={changeEyeIcon3}
+                            className={`icon-eye-setpass bi bi-${eyeIcon3}`}
+                          ></i>
                         </div>
                       </div>
                       {/* new Password */}
@@ -510,7 +518,7 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
                         </button>
                       </div>
                     </div>
-                    <hr className="mt-4"/>
+                    <hr className="mt-4" />
                   </form>
 
 

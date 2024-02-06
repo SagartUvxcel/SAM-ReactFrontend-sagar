@@ -213,6 +213,7 @@ const ViewEditDeleteProperties = () => {
 
   // get ListOfProperty Documents from API
   const getListOfPropertyDocuments = async (id) => {
+    console.log(id);
     const propertyDocsListRes = await axios.get(
       `/sam/v1/property/auth/property_document_list/${id}`,
       { headers: authHeader }

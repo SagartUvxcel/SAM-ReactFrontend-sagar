@@ -1,15 +1,13 @@
 import axios from "axios";
-import React, { useRef, useCallback } from "react";
-import { useState } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import Layout from "../1.CommonLayout/Layout";
-import { useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation} from "react-router-dom";
 import CommonSpinner from "../../CommonSpinner";
 import { transformDateFormat } from "../../CommonFunctions";
 import { w3cwebsocket as WebSocket } from "websocket";
 import { v4 as uuid } from "uuid";
 import Pagination from "../../Pagination";
-import "./TableStyle.css"
+import "./TableStyle.css";
 
 let authHeader = "";
 let isBank = false;
@@ -61,28 +59,18 @@ const ViewEnquiryLists = () => {
   const [enquiryData, setEnquiryData] = useState([]);
   const [allDatabaseEnquiryList, setAllDatabaseEnquiryList] = useState([]);
   const [pageLoading, setPageLoading] = useState(false);
+  const [chatPageLoading, setChatPageLoading] = useState(false);
   const [messages, setMessages] = useState(null);
   const [newMessage, setNewMessage] = useState("");
   const [tableHeight, setTableHeight] = useState("auto");
   const modalBodyRef = useRef(null);
   const paginationRef = useRef();
   const tableElement = useRef(null);
+  const newMessagesRef = useRef(null);
   const bankEnquiryTableColumns = createHeaders(tableHeaders);
-
-  useEffect(() => {
-    //   let tableReference=document.querySelectorAll(".enquiry-table");
-    //   console.log(tableElement,tableReference,enquiryList.length);
-    // if (enquiryList.length < 1 && tableElement !== null && tableReference !== null) {
-    //   setTableHeight(tableElement.current.offsetHeight);
-    // }else {
-    //   setTableHeight("");
-    // }
-  }, []);
-
-  // const { batch_size } = dataFromParams;
-
   const [propertyId, setPropertyId] = useState(null);
   const [enquiryId, setEnquiryId] = useState(null);
+  const [newComingMessage, setNewComingMessage] = useState(null);
   const [sendReplyBtnLoading, setSendReplyBtnLoading] = useState(false);
   const [chatWith, setChatWith] = useState("");
   const [sortOptionText, setSortOptionText] = useState("up");
@@ -90,7 +78,10 @@ const ViewEnquiryLists = () => {
   const [pageCount, setPageCount] = useState(0);
   const [activeIndex, setActiveIndex] = useState(null);
   const [activeCategory, setActiveCategory] = useState("All");
-
+  const [isMoreMassage, setIsMoreMassage] = useState(false);
+  const [currentMassageBatch, setCurrentMassageBatch] = useState(1);
+  const [currentChatMassageSize, setCurrentChatMassageSize] = useState(25);
+  const [oldScrollTop, setOldScrollTop] = useState(0);
 
   // console.log(enquiryData);
 
@@ -110,8 +101,8 @@ const ViewEnquiryLists = () => {
 
       // console.log(resFromApi);
       if (resFromApi.data) {
-        console.log(dataToPost);
-        console.log(resFromApi);
+        // console.log(dataToPost);
+        // console.log(resFromApi);
         setEnquiryList(resFromApi.data.Enquiries);
         setAllDatabaseEnquiryList(resFromApi.data);
         if (enquiryList.length < 1 && tableElement !== null) {
@@ -151,7 +142,7 @@ const ViewEnquiryLists = () => {
         headers: authHeader,
       });
       if (normalUserResFromApi.data) {
-        console.log(normalUserResFromApi);
+        // console.log(normalUserResFromApi);
         setNormalUserEnquiryList(normalUserResFromApi.data.Enquiries);
         let totalPages = Math.ceil(normalUserResFromApi.data.Getcount / enquiryPerPage);
         setPageCount(totalPages);
@@ -297,20 +288,23 @@ const ViewEnquiryLists = () => {
           }
         );
         if (res.data.msg === 0) {
-          onViewEnquiryClick(enquiryId);
+          // onViewEnquiryClick(enquiryId);
           setNewMessage("");
           setSendReplyBtnLoading(false);
 
           if (socket && socket.readyState === WebSocket.OPEN) {
             const messageToSend = {
-              User_id: String(userId),
-              msg: newMessage,
+              // User_id: String(userId),
+              message_id: String(uuid()),
               message_type: "sam-user",
-              messages_id: uuid(),
+              msg: newMessage,
+              reply_from: isBank ? 1 : 0,
+              enquiry_log_date: new Date().toISOString(),
+              // property_id: propertyId,
+              enquiry_id: enquiryId,
             };
             try {
               socket.send(JSON.stringify(messageToSend));
-              console.log("Message sent successfully");
             } catch (error) {
               console.error("Error sending message:", error);
             }
@@ -323,13 +317,6 @@ const ViewEnquiryLists = () => {
       }
     } else {
       setSendReplyBtnLoading(false);
-    }
-  };
-
-  // scrollToBottomOfModalBody
-  const scrollToBottomOfModalBody = () => {
-    if (modalBodyRef.current) {
-      modalBodyRef.current.scrollTop = modalBodyRef.current.scrollHeight;
     }
   };
 
@@ -412,7 +399,6 @@ const ViewEnquiryLists = () => {
       search_input: enquirySearchInputData.search_input
     };
 
-
     setPageLoading(true);
     try {
       const resFromApi = await axios.post(`/sam/v1/property/auth/user/enquiry`, dataToPost, {
@@ -445,10 +431,13 @@ const ViewEnquiryLists = () => {
 
   }
 
-
+  // Scroll to the latest message
   useEffect(() => {
     // Scroll to the latest message whenever messages are updated
-    scrollToBottomOfModalBody();
+    if (messages && (newComingMessage || messages.length === currentChatMassageSize) && modalBodyRef.current) {
+      modalBodyRef.current.scrollTop = modalBodyRef.current.scrollHeight;
+    }
+    return (() => setNewComingMessage(null))
   }, [messages]);
 
   // on click View Enquiry
@@ -456,19 +445,68 @@ const ViewEnquiryLists = () => {
     if (socket === null) {
       connectToWebSocket();
     }
+
     try {
-      let res = await axios.get(
-        `/sam/v1/property/auth/user/enquiry/property/${id}`,
+      const dataToPost = {
+        "batch_size": currentChatMassageSize,
+        "batch_number": currentMassageBatch,
+        "enquiry_id": id
+      }
+      let res = await axios.post(
+        `/sam/v1/property/auth/user/enquiry/property/`, dataToPost,
         { headers: authHeader }
       );
+      console.log(res);
       if (res.data) {
-        setMessages(res.data);
-        setPropertyId(res.data[0].property_id);
+        setMessages(res.data.EnquiryLogDetails);
+        setPropertyId(res.data.EnquiryLogDetails[0].property_id);
         setEnquiryId(id);
-        // console.log(res.data, res.data[0].property_id);
+        setIsMoreMassage(res.data.IsMoreEnquiryLog);
       }
-    } catch (error) { }
+    } catch (error) {
+      console.log(error);
+    }
   };
+
+  //on click view more button in modal fetch More Chat Message
+  const fetchMoreChatMessage = async () => {
+
+    setChatPageLoading(true);
+    try {
+      const dataToPost = {
+        "batch_size": currentChatMassageSize,
+        "batch_number": currentMassageBatch,
+        "enquiry_id": enquiryId
+      }
+      let res = await axios.post(
+        `/sam/v1/property/auth/user/enquiry/property/`, dataToPost,
+        { headers: authHeader }
+      );
+      // console.log(res);
+      if (res.data) {
+        let currentChatArray = res.data.EnquiryLogDetails;
+        setMessages((msg) => [...currentChatArray, ...msg]);
+        // setPropertyId(res.data.EnquiryLogDetails[0].property_id);
+        setIsMoreMassage(res.data.IsMoreEnquiryLog)
+        setChatPageLoading(false);
+        if (modalBodyRef.current) {
+          modalBodyRef.current.scrollTop = modalBodyRef.current.offsetTop;
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      setChatPageLoading(false);
+    }
+
+  }
+
+  // on click view more chat if currentMassage batch change
+  useEffect(() => {
+    if (currentMassageBatch) {
+      fetchMoreChatMessage();     
+    }
+  }, [currentMassageBatch])
+
 
   useEffect(() => {
     getUserEnquiriesList();
@@ -497,18 +535,12 @@ const ViewEnquiryLists = () => {
       socket.onmessage = (event) => {
         try {
           const receivedMessage = JSON.parse(event.data);
-          const { User_id, msg, message_type } = receivedMessage;
-          if (message_type === "sam_user") {
-            if (User_id !== String(userId)) {
-              const currentDate = new Date();
-              let msgObj = {
-                enquiry_comments: msg,
-                enquiry_log_date: currentDate.toISOString(),
-                reply_from: isBank ? 0 : 1,
-              };
-              console.log("Received Message: ", receivedMessage);
-              setMessages((messages) => [...messages, msgObj]);
-            }
+          // console.log("received data", receivedMessage)
+          const { User_id, msg, message_type, enquiry_id } = receivedMessage;
+          // console.log("from en 1")
+          if (message_type === "sam-user") {
+            // console.log("newMessage")
+            setNewComingMessage({ ...receivedMessage })
           }
         } catch (error) {
           console.error("Error handling received message:", error);
@@ -516,6 +548,22 @@ const ViewEnquiryLists = () => {
       };
     }
   }, [socket]);
+
+  useEffect(() => {
+    if (newComingMessage) {
+      if (enquiryId === newComingMessage.enquiry_id) {
+        let msgObj = {
+          enquiry_comments: newComingMessage.msg,
+          enquiry_log_date: newComingMessage.enquiry_log_date,
+          reply_from: newComingMessage.reply_from,
+        };
+        console.log(msgObj)
+        setMessages((messages) => [...messages, msgObj]);
+      }
+
+    }
+    // return(()=>setNewComingMessage(null))
+  }, [newComingMessage, enquiryId])
 
   // on column line press
   const mouseDown = (index) => {
@@ -568,11 +616,6 @@ const ViewEnquiryLists = () => {
       removeListeners();
     };
   }, [activeIndex, mouseMove, mouseUp, removeListeners]);
-
-  // reset table button click
-  const resetTableCells = () => {
-    tableElement.current.style.gridTemplateColumns = "";
-  };
 
   return (
     <Layout>
@@ -861,6 +904,7 @@ const ViewEnquiryLists = () => {
                   </div>
                 </div>
               </div> */}
+              
               {/* <hr/> */}
               <div className="row justify-content-center mt-3">
                 {pageLoading ? (
@@ -976,8 +1020,15 @@ const ViewEnquiryLists = () => {
                   aria-label="Close"
                   onClick={() => {
                     // setConditionShouldCloseWebSocket(true);
+                    // console.log("enquiryid==>", enquiryId)
+                    setNewComingMessage(null);
+                    setPropertyId(null);
+                    setEnquiryId(null);
+                    setMessages([]);
+                    setCurrentMassageBatch(1);
                     if (socket) {
                       socket.close();
+                      setSocket(null)
                     }
                   }}
                 ></button>
@@ -991,7 +1042,17 @@ const ViewEnquiryLists = () => {
                 }}
                 ref={modalBodyRef}
               >
-              <a href="/" className="text-center mx-auto text-white">View more</a>
+                {chatPageLoading ? <>
+                  <CommonSpinner
+                    spinnerColor="primary"
+                    height="2rem"
+                    width="2rem"
+                    spinnerType="grow"
+                  />
+                </> : (<>
+                  {isMoreMassage ? <button type="button" onClick={() => setCurrentMassageBatch(currentMassageBatch + 1)} className="btn btn-link text-center mx-auto text-white underline">View more</button> : ""}
+                </>)}
+                {/* massage mapping div */}
                 {messages &&
                   messages.map((msg, index) => {
                     let classToAdd = "";

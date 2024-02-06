@@ -12,15 +12,16 @@ let isLogin = false;
 
 const ViewSearchResults = () => {
   const location = useLocation();
-  const dataFromParams = location.state ? location.state.sensitiveData : null;
-  // console.log(dataFromParams);
+  // const dataFromParams = location.state ? location.state.sensitiveData : null;
   const goTo = useNavigate();
-  const [dataToPost, setDataToPost] = useState(dataFromParams);
-
+  const [batch_size, setBatch_size] = useState(4);
+  const [dataFromHome, setDataFromHome] = useState(null);
+  const [dataToPost, setDataToPost] = useState([]);
+  const [dataFromParams, setDataFromParams] = useState(null);
   const [loading, setLoading] = useState(false);
   const [pageCount, setPageCount] = useState(0);
   const paginationRef = useRef();
-  const { batch_size } = dataFromParams;
+  // const { batch_size } = dataFromParams;
   const [propertyData, setPropertyData] = useState([]);
   const localData = JSON.parse(localStorage.getItem("data"));
   const [searchFields, setSearchFields] = useState({
@@ -48,8 +49,6 @@ const ViewSearchResults = () => {
       bankAPI: `/sam/v1/property/by-bank`,
       categoryAPI: `/sam/v1/property/by-category`,
     };
-    console.log("hiiiiiiiiii1111");
-
     try {
       // Get all states from api.
       const allStates = await axios.get(apis.stateAPI);
@@ -57,6 +56,7 @@ const ViewSearchResults = () => {
       const allBanks = await axios.get(apis.bankAPI);
       // Get all asset Categories from api.
       const assetCategories = await axios.get(apis.categoryAPI);
+
       let cityByState = {};
       if (dataFromParams.state_id) {
         cityByState = await axios.post(`/sam/v1/property/by-city`, {
@@ -73,12 +73,13 @@ const ViewSearchResults = () => {
         assetCategory: assetCategories.data,
       });
     } catch (error) { }
+
   };
 
   const showUpdatedMinMaxPriceRage = () => {
-    if (dataToPost.max_price && dataToPost.min_price) {
+    if (dataToPost && dataToPost.max_price && dataToPost.min_price) {
       let minPriceToDisplay = `${(
-        parseInt(dataToPost.min_price) / 10000000
+        parseInt(dataToPost && dataToPost.min_price) / 10000000
       ).toFixed(2)} Cr.`;
 
       let maxPriceToDisplay = `${(
@@ -99,6 +100,7 @@ const ViewSearchResults = () => {
     }
   };
 
+  // get all property data
   const getPropertyData = async () => {
     setLoading(true);
     paginationRef.current.classList.add("d-none");
@@ -121,16 +123,17 @@ const ViewSearchResults = () => {
           setPageCount(Math.ceil(res.data.length / batch_size));
         }
       });
-      // console.log(dataToPost);
+
       // Post data and get Searched result from response.
       await axios.post(apis.searchAPI, dataToPost).then((res) => {
         // Store Searched results into propertyData useState.
         if (res.data !== null) {
+          console.log(res.data);
           setPropertyData(res.data);
           setLoading(false);
           setTimeout(() => {
             showUpdatedMinMaxPriceRage();
-          }, 500);
+          }, 1000);
           paginationRef.current.classList.remove("d-none");
         } else {
           paginationRef.current.classList.add("d-none");
@@ -141,6 +144,7 @@ const ViewSearchResults = () => {
     } catch (error) {
       // toast.error("Internal server error");
       setLoading(false);
+      console.log("error===>", error);
     }
   };
 
@@ -175,7 +179,7 @@ const ViewSearchResults = () => {
   const [searchBtnDisabled, setSearchBtnDisabled] = useState(true);
 
   useEffect(() => {
-    if (Object.keys(dataToPost).length > 2) {
+    if (dataToPost && Object.keys(dataToPost).length > 2) {
       setSearchBtnDisabled(false);
     } else {
       setSearchBtnDisabled(true);
@@ -296,6 +300,7 @@ const ViewSearchResults = () => {
     "latest_added_properties",
   ];
 
+  // reset filter btn function
   const resetFilters = () => {
     moreFiltersForm.current.reset();
     moreFiltersKeys.forEach((key) => {
@@ -310,6 +315,37 @@ const ViewSearchResults = () => {
     setFiltersCount(0);
     getPropertyData();
   };
+
+  // set filter value as per home data
+  const setFiltersValue = () => {
+    let count = 0;
+
+    // Check if min_price, min_area, and territory are present in the object
+    if (dataToPost.min_price) {
+      count++;
+    }
+    if (dataToPost.min_area) {
+      count++;
+    }
+    if (dataToPost.territory) {
+      count++;
+    }
+    if (dataToPost.latest_added_properties) {
+      count++;
+    }
+    if (dataToPost.title_clear_property) {
+      count++;
+    }
+    if (dataToPost.age) {
+      count++;
+    }
+    setFiltersCount(count);
+    return count;
+    // setPriceFilterSelected(!!dataToPost.min_price);
+    // setAreaFilterSelected(!!dataToPost.min_area);
+    // setLatestAddedFilterSelected(!!dataToPost.latest_added_properties);
+
+  }
 
   useEffect(() => {
     manageMoreFiltersCount(priceFilterSelected);
@@ -341,6 +377,7 @@ const ViewSearchResults = () => {
     // eslint-disable-next-line
   }, [latestAddedFilterSelected]);
 
+  // on more filter input change
   const onMoreFiltersInputChange = (e) => {
     const { name, value } = e.target;
     if (name === "min_price") {
@@ -351,6 +388,7 @@ const ViewSearchResults = () => {
           if (parseInt(value) >= parseInt(option.value)) {
             option.setAttribute("disabled", true);
             option.nextElementSibling.selected = true;
+            console.log(option.nextElementSibling.value);
             setDataToPost({
               ...dataToPost,
               [name]: value,
@@ -507,18 +545,22 @@ const ViewSearchResults = () => {
 
   };
 
-  // const navigateToListOfProperty = () => {
-  //   const sensitiveData = dataToPost;
-  //   goTo("/list-of-properties", { state: { sensitiveData } });
-  // };
-
   useEffect(() => {
-    if (dataToPost) {
-      getSearchDetails();
-      getPropertyData();
+    // location.state ? location.state.sensitiveData : null
+    if (location.state) {
+      setDataFromHome(location.state.sensitiveData);
+      setDataToPost(location.state.sensitiveData);
+      setBatch_size(location.state.sensitiveData.batch_size);
+      setDataFromParams(location.state.sensitiveData);
     }
-    // eslint-disable-next-line
-  }, []);
+    if (dataFromHome) {
+      getPropertyData();
+      setFiltersValue();
+      getSearchDetails();
+      // setDataFromHome(null);
+    }
+  }, [location, dataFromHome])
+
 
   return (
     <Layout>
@@ -543,6 +585,7 @@ const ViewSearchResults = () => {
                   className="form-select"
                   aria-label=".form-select-sm example"
                   onChange={onFieldsChange}
+                  value={dataToPost && dataToPost.state_id}
                 >
                   <option value="">State</option>
                   {states ? (
@@ -550,7 +593,7 @@ const ViewSearchResults = () => {
                       let optionToSelectByDefault = document.getElementById(
                         `stateFilter-${state.state_id}`
                       );
-                      if (dataToPost.state_id && optionToSelectByDefault) {
+                      if (dataToPost && dataToPost.state_id && optionToSelectByDefault) {
                         if (dataToPost.state_id === state.state_id) {
                           optionToSelectByDefault.selected = true;
                         }
@@ -578,6 +621,7 @@ const ViewSearchResults = () => {
                   className="form-select"
                   aria-label=".form-select-sm example"
                   onChange={onFieldsChange}
+                  value={dataToPost && dataToPost.city_id}
                 >
                   <option value="">City</option>
                   {cities
@@ -585,7 +629,7 @@ const ViewSearchResults = () => {
                       let optionToSelectByDefault = document.getElementById(
                         `cityFilter-${city.city_id}`
                       );
-                      if (dataToPost.city_id && optionToSelectByDefault) {
+                      if (dataToPost && dataToPost.city_id && optionToSelectByDefault) {
                         if (dataToPost.city_id === city.city_id) {
                           optionToSelectByDefault.selected = true;
                         }
@@ -611,6 +655,7 @@ const ViewSearchResults = () => {
                   className="form-select"
                   aria-label=".form-select-sm example"
                   onChange={onFieldsChange}
+                  value={dataToPost && dataToPost.type_id}
                 >
                   <option value="">Category</option>
                   {assetCategory
@@ -644,6 +689,7 @@ const ViewSearchResults = () => {
                   className="form-select"
                   aria-label=".form-select-sm example"
                   onChange={onFieldsChange}
+                  value={dataToPost && dataToPost.bank_id}
                 >
                   <option value="">Bank</option>
                   {banks
@@ -682,6 +728,7 @@ const ViewSearchResults = () => {
                           className="form-select form-select-sm"
                           aria-label=".form-select-sm example"
                           onChange={onMoreFiltersInputChange}
+                          value={dataToPost && dataToPost.min_price}
                         >
                           <option className="min-price-options" value="">
                             Min
@@ -706,6 +753,7 @@ const ViewSearchResults = () => {
                           className="form-select form-select-sm"
                           aria-label=".form-select-sm example"
                           onChange={onMoreFiltersInputChange}
+                          value={dataToPost && dataToPost.max_price}
                         >
                           <option className="max-price-options" value="">
                             Max
@@ -742,6 +790,7 @@ const ViewSearchResults = () => {
                         className="form-select form-select-sm"
                         aria-label=".form-select-sm example"
                         onChange={onMoreFiltersInputChange}
+                        value={dataToPost && dataToPost.title_clear_property}
                       >
                         <option value=""></option>
                         <option value="yes">Yes</option>
@@ -762,6 +811,7 @@ const ViewSearchResults = () => {
                         className="form-select form-select-sm"
                         aria-label=".form-select-sm example"
                         onChange={onMoreFiltersInputChange}
+                        value={dataToPost && dataToPost.territory}
                       >
                         <option value=""></option>
                         <option value="gram panchayat limit">
@@ -792,6 +842,7 @@ const ViewSearchResults = () => {
                           className="form-select form-select-sm"
                           aria-label=".form-select-sm example"
                           onChange={onMoreFiltersInputChange}
+                          value={dataToPost && dataToPost.min_area}
                         >
                           <option className="min-carpet-area-options" value="">
                             Min
@@ -817,6 +868,7 @@ const ViewSearchResults = () => {
                           className="form-select form-select-sm"
                           aria-label=".form-select-sm example"
                           onChange={onMoreFiltersInputChange}
+                          value={dataToPost && dataToPost.max_area}
                         >
                           <option className="max-carpet-area-options" value="">
                             Max
@@ -853,6 +905,7 @@ const ViewSearchResults = () => {
                         className="form-select form-select-sm"
                         aria-label=".form-select-sm example"
                         onChange={onMoreFiltersInputChange}
+                        value={dataToPost && dataToPost.age}
                       >
                         <option value=""></option>
                         <option value="1">Less than 1 year</option>
@@ -876,6 +929,7 @@ const ViewSearchResults = () => {
                         className="form-select form-select-sm"
                         aria-label=".form-select-sm example"
                         onChange={onMoreFiltersInputChange}
+                        value={dataToPost && dataToPost.latest_added_properties}
                       >
                         <option value=""></option>
                         <option value="10">Last 10 days</option>
@@ -885,254 +939,6 @@ const ViewSearchResults = () => {
                   </form>
                 </div> : ""}
 
-
-              {/* More Filters */}
-              {/* {isLogin ?
-                <div className="col-md-2 col-12 mt-3 mt-md-0 dropdown-item ">
-                  <div className="  more-filter-dropdown"  >
-                    <div
-                      className="form-select "
-                    // data-bs-toggle="modal" data-bs-target="#moreFilterModal"
-                    >
-                      <div
-                        value=""
-                        style={{
-                          overflow: "hidden",
-                          fontWeight: "normal",
-                          // display: "block",
-                          whiteSpaceCollapse: "collapse",
-                          textWrap: "nowrap",
-                          minHeight: "1.2em",
-                          padding: "0px 2px 1px",
-                        }}
-                      >
-                        <span className="me-2 badge bg-dark">{filtersCount}</span>
-                        More Filters
-                      </div>
-                    </div>
-                    <ul
-                      onClick={(e) => {
-                        e.stopPropagation();
-                      }}
-                      className="small-window-more-Filter more-filters-dropdown-menu  shadow modal fade" id="moreFilterModal"
-                      tabIndex="-1"
-                      aria-labelledby="chatModalLabel"
-                      aria-hidden="true"
-                      data-bs-backdrop="static"
-                      data-bs-keyboard="false"
-                    >
-                      <div className="container-fluid p-3">
-                        <form className="row" ref={moreFiltersForm}>
-                          <div className="col-12">
-                            <label
-                              htmlFor=""
-                              className="form-label common-btn-font"
-                            >
-                              Price (<i className="bi bi-currency-rupee"></i>)
-                            </label>
-                          </div>
-                          <div className="col-md-6 mb-3">
-                            <select
-                              id="min_price"
-                              name="min_price"
-                              className="form-select form-select-sm"
-                              aria-label=".form-select-sm example"
-                              onChange={onMoreFiltersInputChange}
-                            >
-                              <option className="min-price-options" value="">
-                                Min
-                              </option>
-                              {propertyMinPrices.map((price, Index) => {
-                                return (
-                                  <option
-                                    className="min-price-options"
-                                    value={price}
-                                    key={Index}
-                                  >
-                                    {price}
-                                  </option>
-                                );
-                              })}
-                            </select>
-                          </div>
-                          <div className="col-md-6 mb-3">
-                            <select
-                              id="max_price"
-                              name="max_price"
-                              className="form-select form-select-sm"
-                              aria-label=".form-select-sm example"
-                              onChange={onMoreFiltersInputChange}
-                            >
-                              <option className="max-price-options" value="">
-                                Max
-                              </option>
-                              {propertyMaxPrices.map((price, Index) => {
-                                return (
-                                  <option
-                                    className="max-price-options"
-                                    value={price}
-                                    key={Index}
-                                  >
-                                    {price}
-                                  </option>
-                                );
-                              })}
-                            </select>
-                          </div>
-                          <div className="col-12">
-                            <hr />
-                          </div>
-                          <div className="col-md-6 mb-3">
-                            <label
-                              htmlFor="title_clear_property"
-                              className="form-label common-btn-font"
-                            >
-                              Title clear property
-                            </label>
-                            <select
-                              id="title_clear_property"
-                              name="title_clear_property"
-                              className="form-select form-select-sm"
-                              aria-label=".form-select-sm example"
-                              onChange={onMoreFiltersInputChange}
-                            >
-                              <option value=""></option>
-                              <option value="yes">Yes</option>
-                              <option value="no">No</option>
-                            </select>
-                          </div>
-                          <div className="col-md-6 mb-3">
-                            <label
-                              htmlFor="territory"
-                              className="form-label common-btn-font"
-                            >
-                              Territory
-                            </label>
-                            <select
-                              id="territory"
-                              name="territory"
-                              className="form-select form-select-sm"
-                              aria-label=".form-select-sm example"
-                              onChange={onMoreFiltersInputChange}
-                            >
-                              <option value=""></option>
-                              <option value="gram panchayat limit">
-                                Gram Panchayat Limit
-                              </option>
-                              <option value="corporate">Corporate limit</option>
-                            </select>
-                          </div>
-                          <div className="col-12">
-                            <hr />
-                          </div>
-                          <div className="col-12">
-                            <label
-                              htmlFor=""
-                              className="form-label common-btn-font"
-                            >
-                              Carpet Area ( sqft )
-                            </label>
-                          </div>
-                          <div className="col-md-6 mb-3">
-                            <select
-                              id="min_area"
-                              name="min_area"
-                              className="form-select form-select-sm"
-                              aria-label=".form-select-sm example"
-                              onChange={onMoreFiltersInputChange}
-                            >
-                              <option className="min-carpet-area-options" value="">
-                                Min
-                              </option>
-                              {propertyMinArea.map((area, Index) => {
-                                return (
-                                  <option
-                                    className="min-carpet-area-options"
-                                    value={area}
-                                    key={Index}
-                                  >
-                                    {area}
-                                  </option>
-                                );
-                              })}
-                            </select>
-                          </div>
-
-                          <div className="col-md-6 mb-3">
-                            <select
-                              id="max_area"
-                              name="max_area"
-                              className="form-select form-select-sm"
-                              aria-label=".form-select-sm example"
-                              onChange={onMoreFiltersInputChange}
-                            >
-                              <option className="max-carpet-area-options" value="">
-                                Max
-                              </option>
-                              {propertyMaxArea.map((area, Index) => {
-                                return (
-                                  <option
-                                    className="max-carpet-area-options"
-                                    value={area}
-                                    key={Index}
-                                  >
-                                    {area}
-                                  </option>
-                                );
-                              })}
-                            </select>
-                          </div>
-                          <div className="col-12">
-                            <hr />
-                          </div>
-                          <div className="col-md-6 mb-3">
-                            <label
-                              htmlFor=""
-                              className="form-label common-btn-font"
-                            >
-                              Age of Property
-                            </label>
-                            <select
-                              id="age"
-                              name="age"
-                              className="form-select form-select-sm"
-                              aria-label=".form-select-sm example"
-                              onChange={onMoreFiltersInputChange}
-                            >
-                              <option value=""></option>
-                              <option value="1">Less than 1 year</option>
-                              <option value="3">Less than 3 years</option>
-                              <option value="5">Less than 5 years</option>
-                              <option value="10">Less than 10 years</option>
-                            </select>
-                          </div>
-
-                          <div className="col-md-6 mb-3">
-                            <label
-                              htmlFor="latest_added_properties"
-                              className="form-label common-btn-font"
-                            >
-                              Latest added properties
-                            </label>
-
-                            <select
-                              id="latest_added_properties"
-                              name="latest_added_properties"
-                              className="form-select form-select-sm"
-                              aria-label=".form-select-sm example"
-                              onChange={onMoreFiltersInputChange}
-                            >
-                              <option value=""></option>
-                              <option value="10">Last 10 days</option>
-                              <option value="20">Last 20 days</option>
-                            </select>
-                          </div>
-                        </form>
-                      </div>
-                    </ul>
-                  </div>
-                </div>
-                : ""} */}
               {/* searchBtn */}
               <div className="col-md-1 col-12 my-3 my-md-0">
                 <button
@@ -1145,18 +951,6 @@ const ViewSearchResults = () => {
                   <i className="bi bi-search"></i>
                 </button>
               </div>
-              {/* Reset More Filters */}
-              {/* <div
-                className={`col-12 text-center mt-md-3 ${filtersCount > 0 ? "" : "d-none"
-                  }`}
-              >
-                <button
-                  onClick={resetFilters}
-                  className="btn btn-secondary text-center"
-                >
-                  Reset More Filters
-                </button>
-              </div> */}
             </div>
           </div>
 
@@ -1173,6 +967,7 @@ const ViewSearchResults = () => {
                 className="form-select"
                 aria-label=".form-select-sm example"
                 onChange={onFieldsChange}
+                value={dataToPost && dataToPost.state_id}
               >
                 <option value="">State</option>
                 {states ? (
@@ -1180,7 +975,7 @@ const ViewSearchResults = () => {
                     let optionToSelectByDefault = document.getElementById(
                       `stateFilter1-${state.state_id}`
                     );
-                    if (dataToPost.state_id && optionToSelectByDefault) {
+                    if (dataToPost && dataToPost.state_id && optionToSelectByDefault) {
                       if (dataToPost.state_id === state.state_id) {
                         optionToSelectByDefault.selected = true;
                       }
@@ -1208,6 +1003,7 @@ const ViewSearchResults = () => {
                 className="form-select"
                 aria-label=".form-select-sm example"
                 onChange={onFieldsChange}
+                value={dataToPost && dataToPost.city_id}
               >
                 <option value="">City</option>
                 {cities
@@ -1241,6 +1037,7 @@ const ViewSearchResults = () => {
                 className="form-select"
                 aria-label=".form-select-sm example"
                 onChange={onFieldsChange}
+                value={dataToPost && dataToPost.type_id}
               >
                 <option value="">Category</option>
                 {assetCategory
@@ -1274,7 +1071,7 @@ const ViewSearchResults = () => {
                 className="form-select"
                 aria-label=".form-select-sm example"
                 onChange={onFieldsChange}
-                value={dataToPost.bank_id}
+                value={dataToPost && dataToPost.bank_id}
 
               >
                 <option value="">Bank</option>
@@ -1323,6 +1120,7 @@ const ViewSearchResults = () => {
                 >
                   <div className="container-fluid p-3">
                     <form className="row" ref={moreFiltersForm}>
+                      {/* Price */}
                       <div className="col-12">
                         <label
                           htmlFor=""
@@ -1331,6 +1129,7 @@ const ViewSearchResults = () => {
                           Price (<i className="bi bi-currency-rupee"></i>)
                         </label>
                       </div>
+                      {/* min_Price */}
                       <div className="col-md-6 mb-3">
                         <select
                           id="min_price"
@@ -1338,6 +1137,7 @@ const ViewSearchResults = () => {
                           className="form-select form-select-sm"
                           aria-label=".form-select-sm example"
                           onChange={onMoreFiltersInputChange}
+                          value={dataToPost && dataToPost.min_price}
                         >
                           <option className="min-price-options" value="">
                             Min
@@ -1355,6 +1155,7 @@ const ViewSearchResults = () => {
                           })}
                         </select>
                       </div>
+                      {/* max_Price */}
                       <div className="col-md-6 mb-3">
                         <select
                           id="max_price"
@@ -1362,6 +1163,7 @@ const ViewSearchResults = () => {
                           className="form-select form-select-sm"
                           aria-label=".form-select-sm example"
                           onChange={onMoreFiltersInputChange}
+                          value={dataToPost && dataToPost.max_price}
                         >
                           <option className="max-price-options" value="">
                             Max
@@ -1379,9 +1181,11 @@ const ViewSearchResults = () => {
                           })}
                         </select>
                       </div>
+                      {/* hr */}
                       <div className="col-12">
                         <hr />
                       </div>
+                      {/* Title clear property */}
                       <div className="col-md-6 mb-3">
                         <label
                           htmlFor="title_clear_property"
@@ -1395,12 +1199,14 @@ const ViewSearchResults = () => {
                           className="form-select form-select-sm"
                           aria-label=".form-select-sm example"
                           onChange={onMoreFiltersInputChange}
+                          value={dataToPost && dataToPost.title_clear_property}
                         >
                           <option value=""></option>
                           <option value="yes">Yes</option>
                           <option value="no">No</option>
                         </select>
                       </div>
+                      {/* Territory */}
                       <div className="col-md-6 mb-3">
                         <label
                           htmlFor="territory"
@@ -1414,6 +1220,8 @@ const ViewSearchResults = () => {
                           className="form-select form-select-sm"
                           aria-label=".form-select-sm example"
                           onChange={onMoreFiltersInputChange}
+
+                          value={dataToPost && dataToPost.territory}
                         >
                           <option value=""></option>
                           <option value="gram panchayat limit">
@@ -1422,9 +1230,11 @@ const ViewSearchResults = () => {
                           <option value="corporate">Corporate limit</option>
                         </select>
                       </div>
+                      {/* hr */}
                       <div className="col-12">
                         <hr />
                       </div>
+                      {/* Carpet Area */}
                       <div className="col-12">
                         <label
                           htmlFor=""
@@ -1433,6 +1243,7 @@ const ViewSearchResults = () => {
                           Carpet Area ( sqft )
                         </label>
                       </div>
+                      {/* min_area */}
                       <div className="col-md-6 mb-3">
                         <select
                           id="min_area"
@@ -1440,6 +1251,7 @@ const ViewSearchResults = () => {
                           className="form-select form-select-sm"
                           aria-label=".form-select-sm example"
                           onChange={onMoreFiltersInputChange}
+                          value={dataToPost && dataToPost.min_area}
                         >
                           <option className="min-carpet-area-options" value="">
                             Min
@@ -1457,7 +1269,7 @@ const ViewSearchResults = () => {
                           })}
                         </select>
                       </div>
-
+                      {/* max_area */}
                       <div className="col-md-6 mb-3">
                         <select
                           id="max_area"
@@ -1465,6 +1277,7 @@ const ViewSearchResults = () => {
                           className="form-select form-select-sm"
                           aria-label=".form-select-sm example"
                           onChange={onMoreFiltersInputChange}
+                          value={dataToPost && dataToPost.max_area}
                         >
                           <option className="max-carpet-area-options" value="">
                             Max
@@ -1482,9 +1295,11 @@ const ViewSearchResults = () => {
                           })}
                         </select>
                       </div>
+                      {/* hr */}
                       <div className="col-12">
                         <hr />
                       </div>
+                      {/* Age of Property */}
                       <div className="col-md-6 mb-3">
                         <label
                           htmlFor=""
@@ -1498,6 +1313,7 @@ const ViewSearchResults = () => {
                           className="form-select form-select-sm"
                           aria-label=".form-select-sm example"
                           onChange={onMoreFiltersInputChange}
+                          value={dataToPost && dataToPost.age}
                         >
                           <option value=""></option>
                           <option value="1">Less than 1 year</option>
@@ -1507,7 +1323,6 @@ const ViewSearchResults = () => {
                         </select>
                       </div>
                       {/* Last 10 days added property */}
-
                       <div className="col-md-6 mb-3">
                         <label
                           htmlFor="latest_added_properties"
@@ -1522,6 +1337,7 @@ const ViewSearchResults = () => {
                           className="form-select form-select-sm"
                           aria-label=".form-select-sm example"
                           onChange={onMoreFiltersInputChange}
+                          value={dataToPost && dataToPost.latest_added_properties}
                         >
                           <option value=""></option>
                           <option value="10">Last 10 days</option>

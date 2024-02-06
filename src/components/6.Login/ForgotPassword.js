@@ -86,7 +86,8 @@ const ForgotPassword = () => {
   const resetPassword = async (e) => {
     e.preventDefault();
     setLoading(true);
-    try {
+    if(captchaVerified){
+      try {
       await axios
         .post(
           `/sam/v1/customer-registration/email-validation`,
@@ -114,6 +115,12 @@ const ForgotPassword = () => {
         alertMsg: "Internal server error",
       });
     }
+  }else{
+    setCaptchaVerified(false);
+        setCaptchaErr(true);
+        captchaRef.current.value = "";
+        setLoading(false);
+  }
   };
 
   // load captcha button function
@@ -211,6 +218,7 @@ const ForgotPassword = () => {
                           }`}
                         ref={captchaRef}
                         placeholder="Enter captcha"
+                        
                       />
                     </div>
                     <div

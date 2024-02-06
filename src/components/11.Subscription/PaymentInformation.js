@@ -52,6 +52,10 @@ export const PaymentInformation = () => {
         iconColor: '#fa755a',
       },
     },
+    layout: {
+      type: 'tabs',
+      defaultCollapsed: false,
+    }
   };
 
   // reset input function
@@ -135,7 +139,7 @@ export const PaymentInformation = () => {
   // pay button function for free trial
   const onClickFreeTrialSubscribeSubmitBtn = async (event) => {
     event.preventDefault();
-    // setSubscribeBtnLoading(true);
+    setSubscribeBtnLoading(true);
 
     let dataToPost = {
       plan_id: planDetails.plan_id,
@@ -146,7 +150,7 @@ export const PaymentInformation = () => {
       email: email,
     }
     const pageRefreshData = true;
-    
+
     try {
       const response = await axios.post("/sam/v1/customer-registration/auth/subscribe-user", dataToPost, { headers: authHeaders });
       if (response.data) {
@@ -220,9 +224,9 @@ export const PaymentInformation = () => {
                       </div>
                       <div className="subscription-div d-flex justify-content-between py-1 align-items-center">
                         <h6 className=" py-2 mb-0">Total</h6>
-                        <p className=" text-secondary p-0 mb-0 "><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup> 
-                        {/* {planDetails ? planDetails.price : ""} */}
-                        {perBillingCycleName}</p>
+                        <p className=" text-secondary p-0 mb-0 "><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup>
+                          {/* {planDetails ? planDetails.price : ""} */}
+                          {perBillingCycleName}</p>
                       </div>
                     </div>
                   </div>
@@ -237,7 +241,7 @@ export const PaymentInformation = () => {
                             role="status"
                             aria-hidden="true"
                           ></span>
-                          Subscribing....
+                          Starting....
                         </>
                       ) : (
                         "Start Your Free Trial"

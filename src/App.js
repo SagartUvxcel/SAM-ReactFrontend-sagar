@@ -5,6 +5,7 @@ import SetPassword from "./components/7.Registration/SetPassword";
 import Registration from "./components/7.Registration/RegistrationMainPage";
 import ScrollToTop from "./components/ScrollToTop";
 import VerifyToken from "./components/7.Registration/VerifyToken";
+import InactiveAccount from "./components/7.Registration/InactiveAccount";
 import Profile from "./components/8.Profile/Profile";
 import ProtectedForLoggedInUser from "./components/ProtectedForLoggedInUser";
 import EnquiryProtected from "./components/EnquiryProtected";
@@ -61,46 +62,47 @@ function App() {
   if (data) {
     isBank = data.isBank;
   }
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      const data = JSON.parse(localStorage.getItem("data"));
-      if (data) {
-        try {
-          let res = await axios.get(`/sam/v1/user-registration/logout`, {
-            headers: { Authorization: data.loginToken },
-          });
-          // console.log(res);
-          if (res.data !== "Session expired or invalid user") {
-            let remainingTime = parseInt(res.data.TimeRemaining);
-            // console.log("Time Remaining = ", remainingTime);
-            if (remainingTime > 5) {
-              localStorage.removeItem("remainingTime");
-            }
-            if (remainingTime === 5) {
-              const sessionTimeRemaining =
-                localStorage.getItem("remainingTime");
-              if (sessionTimeRemaining === null) {
-                toast.warn("Your session will expire in 5 minutes");
-                localStorage.setItem("remainingTime", 5);
-              }
-            }
-          } else {
-            localStorage.setItem("userSession", "invalid");
-            goTo("/login");
-          }
-        } catch (error) {
-          console.log("error");
-          localStorage.removeItem("data");
-          localStorage.removeItem("remainingTime");
-          localStorage.removeItem("notificationRefresh");
-          goTo("/login");
-        }
-      }
-    }, MINUTE_MS);
+  // useEffect(() => {
+  //   const interval = setInterval(async () => {
+  //     const data = JSON.parse(localStorage.getItem("data"));
+  //     if (data) {
+  //       try {
+  //         let res = await axios.get(`/sam/v1/user-registration/logout`, {
+  //           headers: { Authorization: data.loginToken },
+  //         });
+  //         // console.log(res.data);
+  //         if (res.data !== "Session expired or invalid user") {
+  //           let remainingTime = parseInt(res.data.TimeRemaining);
+  //           // console.log("Time Remaining = ", remainingTime);
+  //           if (remainingTime > 5) {
+  //             localStorage.removeItem("remainingTime");
+  //           }
+  //           if (remainingTime === 4) {
+  //             const sessionTimeRemaining =
+  //               localStorage.getItem("remainingTime");
+  //             if (sessionTimeRemaining === null) {
+  //               toast.warn("Your session will expire in 5 minutes");
+  //               localStorage.setItem("remainingTime", 5);
+  //             }
+  //           }
+  //         } else {
+  //           localStorage.setItem("userSession", "invalid");
+  //           goTo("/login");
+  //         }
+  //       } catch (error) {
+  //         console.log("error");
+  //         localStorage.removeItem("data");
+  //         localStorage.removeItem("remainingTime");
+  //         localStorage.removeItem("notificationRefresh");
+  //         localStorage.removeItem("updatedSubscriptionStatus");
+  //         goTo("/login");
+  //       }
+  //     }
+  //   }, MINUTE_MS);
 
-    return () => clearInterval(interval);
-    // eslint-disable-next-line
-  }, []);
+  //   return () => clearInterval(interval);
+  //   // eslint-disable-next-line
+  // }, []);
 
   return (
     <>
@@ -189,6 +191,7 @@ function App() {
           />
 
           <Route path="/forgot-password/*" element={<ForgotPassword />} />
+          <Route path="/inactive-account/*" element={< InactiveAccount />} />
 
           <Route path="/forgot-password/password-reset/*" element={<SecurityQuestionAndEmailLinkPasswordReset />} />
 

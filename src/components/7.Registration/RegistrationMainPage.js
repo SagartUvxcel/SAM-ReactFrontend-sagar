@@ -1085,7 +1085,7 @@ const Registration = () => {
                     click here to verify
                   </NavLink></div>
                 <div className="mt-2"> Already have an inactive account? 
-                  <NavLink to="/register/verify" className="fw-bold ps-1">
+                  <NavLink to="/inactive-account" className="fw-bold ps-1">
                     click here for activate 
                   </NavLink></div>
                  

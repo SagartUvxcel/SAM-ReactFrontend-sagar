@@ -91,7 +91,7 @@ const ForgotAndResetPassword = () => {
   // On setPassWord Button click this function will run.
   const onResetPasswordFormSubmit = async (e) => {
     e.preventDefault();
-    console.log(details);
+    // console.log(details);
     if (
       newPassword !== confirmPassword &&
       invalidMessage1 !== "Invalid Password"
@@ -208,8 +208,6 @@ const ForgotAndResetPassword = () => {
       const tokenDataToPost = forgotPasswordUrlToken[1];
 
 
-
-
       // posting data 
       const dataToPost = JSON.stringify(
         {
@@ -218,6 +216,7 @@ const ForgotAndResetPassword = () => {
         })
 
       try {
+        // console.log(dataToPost);
         await axios.post(`/sam/v1/customer-registration/verify-link-token`, dataToPost)
           .then((res) => {
 

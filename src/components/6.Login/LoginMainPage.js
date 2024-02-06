@@ -3,6 +3,8 @@ import React, { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import Layout from "../1.CommonLayout/Layout";
 import login from "../../images/loginsvg.svg";
+import { toast } from "react-toastify";
+
 import { rootTitle } from "../../CommonFunctions";
 
 const LoginMainPage = () => {
@@ -116,10 +118,13 @@ const LoginMainPage = () => {
         });
     } catch (error) {
       console.log(error);
+      if (error.response.data.error !== "Your account block for 24 hour") {
+        toast.warning(`Invalid credentials.${error.response.data.remaining_attempt} attempts remaining.`);
+      }
       setAlertDetails({
         alertVisible: true,
-        alertMsg: "Internal server error",
-        alertClr: "warning",
+        alertMsg: error.response.data.error,
+        alertClr: "danger",
       });
       setLoading(false);
     }

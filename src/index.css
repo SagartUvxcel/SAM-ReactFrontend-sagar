@@ -505,7 +505,7 @@ input:-webkit-autofill:active {
   padding: 13px;
 }
 
-.forgot-password-form-control {
+.forgot-password-form-control, .inactive-account-form-control {
   border-radius: 0;
   border-color: var(--primary-color) !important;
   font-size: 12px;
@@ -1691,4 +1691,10 @@ input:-webkit-autofill:active {
   .plans-table td:not(:first-child) {
     width: auto !important;
   }
+  .need-help-link {
+    position: initial ;
+    text-align: end;
+    bottom: 11px;
+    right: 30px;
+}
 }
