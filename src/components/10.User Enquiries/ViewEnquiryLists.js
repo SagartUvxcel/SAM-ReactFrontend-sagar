@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import Layout from "../1.CommonLayout/Layout";
-import { useLocation} from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import CommonSpinner from "../../CommonSpinner";
 import { transformDateFormat } from "../../CommonFunctions";
 import { w3cwebsocket as WebSocket } from "websocket";
@@ -38,7 +38,6 @@ const createHeaders = (headers) => {
 
 // const websocket = new WebSocket(websocketUrl);
 const ViewEnquiryLists = () => {
-  const location = useLocation();
   const data = JSON.parse(localStorage.getItem("data"));
   if (data) {
     authHeader = { Authorization: data.loginToken };
@@ -46,27 +45,20 @@ const ViewEnquiryLists = () => {
     userId = data.userId;
   }
 
-  // const dataFromParams = location.state ? location.state.sensitiveData : null;
   const [enquiryList, setEnquiryList] = useState([]);
   const [normalUserEnquiryList, setNormalUserEnquiryList] = useState([]);
   const [enquirySearchInputData, setEnquirySearchInputData] = useState({
     search_input: "",
     search_category: "property_number"
   });
-  const [twoWeekEnquiryList, setTwoWeekEnquiryList] = useState([]);
-  const [fourWeekEnquiryList, setFourWeekEnquiryList] = useState([]);
   const [unreadEnquiryList, setUnreadEnquiryList] = useState([]);
-  const [enquiryData, setEnquiryData] = useState([]);
-  const [allDatabaseEnquiryList, setAllDatabaseEnquiryList] = useState([]);
   const [pageLoading, setPageLoading] = useState(false);
   const [chatPageLoading, setChatPageLoading] = useState(false);
   const [messages, setMessages] = useState(null);
   const [newMessage, setNewMessage] = useState("");
-  const [tableHeight, setTableHeight] = useState("auto");
   const modalBodyRef = useRef(null);
   const paginationRef = useRef();
   const tableElement = useRef(null);
-  const newMessagesRef = useRef(null);
   const bankEnquiryTableColumns = createHeaders(tableHeaders);
   const [propertyId, setPropertyId] = useState(null);
   const [enquiryId, setEnquiryId] = useState(null);
@@ -74,16 +66,12 @@ const ViewEnquiryLists = () => {
   const [sendReplyBtnLoading, setSendReplyBtnLoading] = useState(false);
   const [chatWith, setChatWith] = useState("");
   const [sortOptionText, setSortOptionText] = useState("up");
-  // const [itemOffset, setItemOffset] = useState(0);
   const [pageCount, setPageCount] = useState(0);
   const [activeIndex, setActiveIndex] = useState(null);
   const [activeCategory, setActiveCategory] = useState("All");
   const [isMoreMassage, setIsMoreMassage] = useState(false);
   const [currentMassageBatch, setCurrentMassageBatch] = useState(1);
   const [currentChatMassageSize, setCurrentChatMassageSize] = useState(25);
-  const [oldScrollTop, setOldScrollTop] = useState(0);
-
-  // console.log(enquiryData);
 
   //get User Enquiries List
   const getUserEnquiriesList = async () => {
@@ -98,18 +86,8 @@ const ViewEnquiryLists = () => {
       const resFromApi = await axios.post(`/sam/v1/property/auth/user/enquiry`, dataToPost, {
         headers: authHeader,
       });
-
-      // console.log(resFromApi);
       if (resFromApi.data) {
-        // console.log(dataToPost);
-        // console.log(resFromApi);
         setEnquiryList(resFromApi.data.Enquiries);
-        setAllDatabaseEnquiryList(resFromApi.data);
-        if (enquiryList.length < 1 && tableElement !== null) {
-          setTableHeight(tableElement.current.offsetHeight);
-        } else {
-          setTableHeight("");
-        }
         let totalPages = Math.ceil(resFromApi.data.Getcount / enquiryPerPage);
         if (resFromApi.data) {
           setPageCount(totalPages);
@@ -146,11 +124,6 @@ const ViewEnquiryLists = () => {
         setNormalUserEnquiryList(normalUserResFromApi.data.Enquiries);
         let totalPages = Math.ceil(normalUserResFromApi.data.Getcount / enquiryPerPage);
         setPageCount(totalPages);
-        if (enquiryList.length < 1 && tableElement !== null) {
-          setTableHeight(tableElement.current.offsetHeight);
-        } else {
-          setTableHeight("");
-        }
         setPageLoading(false);
       } else {
         setPageLoading(false);
@@ -189,15 +162,9 @@ const ViewEnquiryLists = () => {
 
         } else if (category === "All") {
           setEnquiryList(resData.Enquiries);
-          setAllDatabaseEnquiryList(resData);
           let totalPages = Math.ceil(resFromApi.data.Getcount / enquiryPerPage);
           setPageCount(totalPages);
           // setPageCount(resFromApi.data.Getcount);
-        }
-        if (resData.length < 1 && tableElement !== null) {
-          setTableHeight(tableElement.current.offsetHeight);
-        } else {
-          setTableHeight("");
         }
         // console.log(resFromApi.data);
         setPageLoading(false);
@@ -320,22 +287,6 @@ const ViewEnquiryLists = () => {
     }
   };
 
-  // on Enquiry Search Input Change
-  const onEnquirySearchInputChange = (event) => {
-    const input = event.target.value;
-    if (input.length > 0) {
-      const filtered = allDatabaseEnquiryList.filter((item) => (
-        item.user_name.toLowerCase().includes(input.toLowerCase()) || item.property_number === input) ||
-        item.property_type.toLowerCase().includes(input.toLowerCase()) ||
-        item.added_date === input
-      );
-      setEnquiryList(filtered);
-    } else {
-      setEnquiryList(allDatabaseEnquiryList);
-
-    }
-  };
-
   // This will run when we click any page link in pagination. e.g. prev, 1, 2, 3, 4, next.
   const handlePageClick = async (pageNumber) => {
     window.scrollTo(0, 0);
@@ -347,14 +298,6 @@ const ViewEnquiryLists = () => {
     } else if (activeCategory === "All") {
       setEnquiryList(nextOrPrevPageEnquiryData.Enquiries);
       setPageCount(nextOrPrevPageEnquiryData.Getcount)
-      setAllDatabaseEnquiryList(nextOrPrevPageEnquiryData.Enquiries);
-    }
-    // setEnquiryList(resFromApi.data);
-    // setAllDatabaseEnquiryList(resFromApi.data);
-    if (nextOrPrevPageEnquiryData.length < 1 && tableElement !== null) {
-      setTableHeight(tableElement.current.offsetHeight);
-    } else {
-      setTableHeight("");
     }
     console.log(nextOrPrevPageEnquiryData);
   };
@@ -373,7 +316,6 @@ const ViewEnquiryLists = () => {
     console.log(res);
     return res.data;
   };
-
 
   // search form  onchange
   const onSearchFormInputChange = (e) => {
@@ -410,16 +352,6 @@ const ViewEnquiryLists = () => {
         console.log(dataToPost);
         console.log(resFromApi.data);
         setEnquiryList(resFromApi.data.Enquiries);
-        // setAllDatabaseEnquiryList(resFromApi.data);
-        // if (enquiryList.length < 1 && tableElement !== null) {
-        //   setTableHeight(tableElement.current.offsetHeight);
-        // } else {
-        //   setTableHeight("");
-        // }
-        // setPageCount(2);
-
-
-        // console.log(resFromApi.data);
         setPageLoading(false);
       } else {
         setPageLoading(false);
@@ -503,7 +435,7 @@ const ViewEnquiryLists = () => {
   // on click view more chat if currentMassage batch change
   useEffect(() => {
     if (currentMassageBatch) {
-      fetchMoreChatMessage();     
+      fetchMoreChatMessage();
     }
   }, [currentMassageBatch])
 
@@ -562,18 +494,12 @@ const ViewEnquiryLists = () => {
       }
 
     }
-    // return(()=>setNewComingMessage(null))
   }, [newComingMessage, enquiryId])
 
-  // on column line press
-  const mouseDown = (index) => {
-    setActiveIndex(index);
-  };
 
   // on column mouse move 
   const mouseMove = useCallback(
     (e) => {
-      setTableHeight(tableElement.current.offsetHeight);
       const gridColumns = bankEnquiryTableColumns.map((col, i) => {
         if (i === activeIndex) {
           const width = e.clientX - col.ref.current.offsetLeft;
@@ -625,7 +551,6 @@ const ViewEnquiryLists = () => {
 
           {isBank ? <>
             <div className="row px-md-4 ">
-
               {/* enquiry category  */}
               <div className=" col-md-6 mb-md-0 mb-4 p-0 pt-2">
                 <ul className="nav nav-tabs " id="myTab" role="tablist">
@@ -635,24 +560,10 @@ const ViewEnquiryLists = () => {
                       onClick={() => onCategoryChange("Unread")}
                       type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Unread</button>
                   </li>
-                  {/*  2 weeks Old */}
-                  {/* <li className="nav-item" role="presentation">
-                    <button className="nav-link px-5 fs-lg-5 text-uppercase" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false"
-                      onClick={() => onCategoryChange("2week")}
-                    >
-                      2 weeks Old
-                    </button>
-                  </li>
-                  <li className="nav-item" role="presentation">
-                    <button className="nav-link px-5 fs-lg-5 text-uppercase" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact-tab-pane" type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false"
-                      onClick={() => onCategoryChange("4week")}
-                    >4 weeks Old</button>
-                  </li> */}
                   <li className="nav-item" role="presentation">
                     <button className="nav-link active px-5 fs-lg-5 text-uppercase" id="disabled-tab" data-bs-toggle="tab" data-bs-target="#disabled-tab-pane" type="button" role="tab" aria-controls="disabled-tab-pane" aria-selected="false" onClick={() => onCategoryChange("All")} >All</button>
                   </li>
                 </ul>
-
               </div>
               {/* search filter */}
               <div className="col-md-6  mb-md-0 mb-0 p-0 enquiry-filter-row d-flex justify-content-end ">
@@ -687,10 +598,8 @@ const ViewEnquiryLists = () => {
                 </div>
               </div>
             </div>
-
             {/* category page as per filter */}
             <div className="tab-content" id="myTabContent">
-
               {/* unread */}
               <div className="tab-pane fade " id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabIndex="0">
                 <div className="row justify-content-center mt-3">
@@ -710,20 +619,21 @@ const ViewEnquiryLists = () => {
                   ) : (
                     <>
                       <div className="enquiry-list-table-wrapper px-md-4" >
-                        <table className="table table-striped  text-center enquiry-table" ref={tableElement}>
+                        <table className="table table-striped table-bordered text-center">
                           <thead>
                             <tr>
-                              {bankEnquiryTableColumns.map(({ ref, text }, i) => (
-                                <th ref={ref} key={text} className="">
-                                  <span>{text}</span>
-                                  <div
-                                    style={{ height: tableHeight }}
-                                    onMouseDown={() => mouseDown(i)}
-                                    className={`resize-handle ${activeIndex === i ? "active" : "idle"
-                                      }`}
-                                  />
-                                </th>
-                              ))}
+                              <th scope="col">#</th>
+                              <th scope="col">Property Number</th>
+                              <th scope="col">Type</th>
+                              <th scope="col">{isBank ? "User Name" : "Bank Name"}</th>
+                              <th scope="col">
+                                Date
+                                <i
+                                  onClick={changeSortType}
+                                  className={`ms-3 bi bi-sort-${sortOptionText}`}
+                                ></i>
+                              </th>
+                              <th scope="col">Action</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -761,26 +671,10 @@ const ViewEnquiryLists = () => {
                           </tbody>
                         </table>
                       </div>
-                      {/* <div className="enquiry-list-table-wrapper px-md-4">
-                        <button className="btn btn-primary" onClick={resetTableCells}>RESET</button>
-                      </div> */}
-
-                      {/* Pagination */}
-                      {/* <div className="container " ref={paginationRef}>
-                        <div className="row">
-                          <div className="col-12 mb-3">
-                            <Pagination
-                              handlePageClick={handlePageClick}
-                              pageCount={pageCount}
-                            />
-                          </div>
-                        </div>
-                      </div> */}
                     </>
                   )}
                 </div>
               </div>
-
               {/* ALL */}
               <div className="tab-pane fade show active" id="disabled-tab-pane" role="tabpanel" aria-labelledby="disabled-tab" tabIndex="0">
                 <div className="row justify-content-center mt-3">
@@ -800,9 +694,9 @@ const ViewEnquiryLists = () => {
                   ) : (
                     <>
                       <div className="enquiry-list-table-wrapper px-md-4" >
-                        <table className="table table-striped  text-center enquiry-table" ref={tableElement}>
+                        <table className="table table-striped table-bordered text-center">
                           <thead>
-                            {/* <tr>
+                            <tr>
                               <th scope="col">#</th>
                               <th scope="col">Property Number</th>
                               <th scope="col">Type</th>
@@ -815,8 +709,8 @@ const ViewEnquiryLists = () => {
                                 ></i>
                               </th>
                               <th scope="col">Action</th>
-                            </tr> */}
-                            <tr>
+                            </tr>
+                            {/* <tr>
                               {bankEnquiryTableColumns.map(({ ref, text }, i) => (
                                 <th ref={ref} key={text} className="">
                                   <span>{text}</span>
@@ -828,7 +722,7 @@ const ViewEnquiryLists = () => {
                                   />
                                 </th>
                               ))}
-                            </tr>
+                            </tr> */}
                           </thead>
                           <tbody>
                             {enquiryList.map((enquiry, Index) => {
@@ -865,9 +759,6 @@ const ViewEnquiryLists = () => {
                           </tbody>
                         </table>
                       </div>
-                      {/* <div className="enquiry-list-table-wrapper px-md-4">
-                        <button className="btn btn-primary" onClick={resetTableCells}>RESET</button>
-                      </div> */}
 
                       {/* Pagination */}
                       <div className="container " ref={paginationRef}>
@@ -889,23 +780,6 @@ const ViewEnquiryLists = () => {
             : <>
               <hr />
               {/* for Normal User */}
-
-              {/* search filter */}
-              {/* <div className="row px-md-4 ">
-                <div className="col-md-12 p-0 d-flex justify-content-end ">
-                  <div className=" col-md-3 me-4">
-                    <input
-                      type="search"
-                      placeholder="Search"
-                      className="form-control "
-                      // value={searchTerm}
-                      onChange={onEnquirySearchInputChange}
-                    />
-                  </div>
-                </div>
-              </div> */}
-              
-              {/* <hr/> */}
               <div className="row justify-content-center mt-3">
                 {pageLoading ? (
                   <>
@@ -986,16 +860,11 @@ const ViewEnquiryLists = () => {
                         </div>
                       </div> : ""}
                     </div>
-
-
                   </>
                 )}
               </div>
-
             </>}
         </div>
-
-
 
         {/* chat modal */}
         <div
@@ -1104,7 +973,7 @@ const ViewEnquiryLists = () => {
                     <button
                       disabled={sendReplyBtnLoading ? true : false}
                       type="submit"
-                      className="btn btn-light w-100"
+                      className="btn btn-light w-100 chatBox-msg-send-btn"
                     >
                       {sendReplyBtnLoading ? (
                         <>

@@ -12,14 +12,12 @@ let individualUsersCount = 0; // Default count of individual users.
 let bankUsersCount = 0; // Default count of individual users.
 let isBank = false;
 let roleId = "";
-const AdminHomePage = () => {
+const BankAdminHomePage = () => {
   CharJs.register(...registerables);
   const data = JSON.parse(localStorage.getItem("data"));
-  console.log(data);
   if (data) {
     isBank = data.isBank;
     roleId = data.roleId;
-
   }
   const [countOfUsers, setCountOfUsers] = useState({
     countOfIndividualUsers: 0,
@@ -249,122 +247,90 @@ const AdminHomePage = () => {
                   </NavLink>
                 </div>
                 {!isBank ? (
-                  <>
-                    {/* Individual Users */}
-                    <div className="col-xl-2 col-md-4 mt-4 mt-xl-0">
-                      <NavLink
-                        to="/admin/users/individual-users"
-                        className="card admin-top-card text-decoration-none"
-                      >
-                        <div className="container-fluid">
-                          <div className="row justify-content-center">
-                            <div className="col-12 col-5 text-center fw-bold text-white hover-color-secondary fs-5">
-                              <div>
-                                <i className="bi bi-person-circle text-white hover-color-secondary icon fs-1 me-4"></i>
-                                {usersCountLoading ? (
-                                  <span className="fs-2 spinner spinner-border"></span>
-                                ) : (
-                                  <span className="fs-1" id="individualCount">
-                                    {individualUsersCount}
-                                  </span>
-                                )}
-                              </div>
-                              <span>Individual Users</span>
-                            </div>
+                <>
+                {/* Individual Users */}
+                <div className="col-xl-2 col-md-4 mt-4 mt-xl-0">
+                  <NavLink
+                    to="/admin/users/individual-users"
+                    className="card admin-top-card text-decoration-none"
+                  >
+                    <div className="container-fluid">
+                      <div className="row justify-content-center">
+                        <div className="col-12 col-5 text-center fw-bold text-white hover-color-secondary fs-5">
+                          <div>
+                            <i className="bi bi-person-circle text-white hover-color-secondary icon fs-1 me-4"></i>
+                            {usersCountLoading ? (
+                              <span className="fs-2 spinner spinner-border"></span>
+                            ) : (
+                              <span className="fs-1" id="individualCount">
+                                {individualUsersCount}
+                              </span>
+                            )}
                           </div>
+                          <span>Individual Users</span>
                         </div>
-                      </NavLink>
+                      </div>
                     </div>
-                    {/* Organizational Users */}
-                    <div className="col-xl-2 col-md-4 mt-4 mt-xl-0">
-                      <NavLink
-                        to="/admin/users/organizational-users"
-                        className="card admin-top-card text-decoration-none"
-                      >
-                        <div className="container-fluid">
-                          <div className="row justify-content-center">
-                            <div className="col-12 col-5 text-center fw-bold text-white hover-color-secondary fs-5">
-                              <div>
-                                <i className="bi bi-laptop-fill text-white hover-color-secondary icon fs-1 me-4"></i>
-                                {usersCountLoading ? (
-                                  <span className="fs-2 spinner spinner-border"></span>
-                                ) : (
-                                  <span
-                                    className="fs-1"
-                                    id="organizationalCount"
-                                  >
-                                    {organizationalUsersCount}
-                                  </span>
-                                )}
-                              </div>
-                              <span>Organizational Users</span>
-                            </div>
+                  </NavLink>
+                </div>
+                {/* Organizational Users */}
+                <div className="col-xl-2 col-md-4 mt-4 mt-xl-0">
+                  <NavLink
+                    to="/admin/users/organizational-users"
+                    className="card admin-top-card text-decoration-none"
+                  >
+                    <div className="container-fluid">
+                      <div className="row justify-content-center">
+                        <div className="col-12 col-5 text-center fw-bold text-white hover-color-secondary fs-5">
+                          <div>
+                            <i className="bi bi-laptop-fill text-white hover-color-secondary icon fs-1 me-4"></i>
+                            {usersCountLoading ? (
+                              <span className="fs-2 spinner spinner-border"></span>
+                            ) : (
+                              <span
+                                className="fs-1"
+                                id="organizationalCount"
+                              >
+                                {organizationalUsersCount}
+                              </span>
+                            )}
                           </div>
+                          <span>Organizational Users</span>
                         </div>
-                      </NavLink>
+                      </div>
                     </div>
-                    {/* bankUsersCount */}
-                     <div className="col-xl-2 col-md-4 mt-4 mt-xl-0">
-                      <NavLink
-                        to="/admin/users/bank-users"
-                        className="card admin-top-card text-decoration-none"
-                      >
-                        <div className="container-fluid">
-                          <div className="row justify-content-center">
-                            <div className="col-12 col-5 text-center fw-bold text-white hover-color-secondary fs-5">
-                              <div>
-                                <i className="bi bi-laptop-fill text-white hover-color-secondary icon fs-1 me-4"></i>
-                                {usersCountLoading ? (
-                                  <span className="fs-2 spinner spinner-border"></span>
-                                ) : (
-                                  <span
-                                    className="fs-1"
-                                    id="bankCount"
-                                  >
-                                    {bankUsersCount}
-                                  </span>
-                                )}
-                              </div>
-                              <span>Bank Users</span>
-                            </div>
+                  </NavLink>
+                </div>
+                {/* bankUsersCount */}
+                <div className="col-xl-2 col-md-4 mt-4 mt-xl-0">
+                  <NavLink
+                    to="/admin/users/bank-users"
+                    className="card admin-top-card text-decoration-none"
+                  >
+                    <div className="container-fluid">
+                      <div className="row justify-content-center">
+                        <div className="col-12 col-5 text-center fw-bold text-white hover-color-secondary fs-5">
+                          <div>
+                            <i className="bi bi-laptop-fill text-white hover-color-secondary icon fs-1 me-4"></i>
+                            {usersCountLoading ? (
+                              <span className="fs-2 spinner spinner-border"></span>
+                            ) : (
+                              <span
+                                className="fs-1"
+                                id="bankCount"
+                              >
+                                {bankUsersCount}
+                              </span>
+                            )}
                           </div>
+                          <span>Bank Users</span>
                         </div>
-                      </NavLink>
-                    </div> 
-
-                  </>) : (
-
-                  <>
-                    {/* bank branch Users Count */}
-                    {roleId === 6 ? <div className="col-xl-3 col-md-6 mt-4 mt-xl-0">
-                      <NavLink
-                        to={`/bank/users/bank-users`}
-                        className="card admin-top-card text-decoration-none"
-                      >
-                        <div className="container-fluid">
-                          <div className="row justify-content-center">
-                            <div className="col-12 col-5 text-center fw-bold text-white hover-color-secondary fs-5">
-                              <div>
-                                <i className="bi bi-laptop-fill text-white hover-color-secondary icon fs-1 me-4"></i>
-                                {usersCountLoading ? (
-                                  <span className="fs-2 spinner spinner-border"></span>
-                                ) : (
-                                  <span
-                                    className="fs-1"
-                                    id="bankCount"
-                                  >
-                                    {bankUsersCount}
-                                  </span>
-                                )}
-                              </div>
-                              <span>Branch Users</span>
-                            </div>
-                          </div>
-                        </div>
-                      </NavLink>
-                    </div> : ""}
-                  </>
-                )}
+                      </div>
+                    </div>
+                  </NavLink>
+                </div>
+                
+                </>) : ""}
               </div>
               <hr className="my-4" />
               {!isBank ? (
@@ -610,6 +576,6 @@ const AdminHomePage = () => {
       </div>
     </Layout>
   );
-};
+}
 
-export default AdminHomePage;
+export default BankAdminHomePage

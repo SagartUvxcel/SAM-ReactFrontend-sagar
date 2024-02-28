@@ -9,6 +9,7 @@ import { checkLoginSession, openInNewTab } from "../../CommonFunctions";
 let authHeader = "";
 let bank_Id = "";
 let branch_Id = "";
+let roleId = "";
 let zipError = false;
 let areaError = false;
 let isBank = false;
@@ -18,6 +19,7 @@ const AddProperty = () => {
     authHeader = { Authorization: data.loginToken };
     isBank = data.isBank;
     bank_Id = data.bank_id;
+    roleId = data.roleId;
     branch_Id = data.branch_Id;
   }
 
@@ -67,14 +69,14 @@ const AddProperty = () => {
     const statesRes = await axios.get(`/sam/v1/property/by-state`);
     setAllStates(statesRes.data);
 
-    if (isBank) {
-      getBankDeatails(bankRes.data);
+    if (isBank && roleId !== 6) {
+      getBankDetails(bankRes.data);
     }
 
 
   };
 
-  const getBankDeatails = async (bankData) => {
+  const getBankDetails = async (bankData) => {
     const activeBankDetails = bankData.filter(bank => bank.bank_id === bank_Id)[0]
     setActiveBank(activeBankDetails);
     const branchRes = await axios.get(`/sam/v1/property/auth/bank-branches/${bank_Id}`, {
@@ -291,7 +293,7 @@ const AddProperty = () => {
               localStorage.setItem("singlePropertySuccess", true);
               e.target.reset();
               openInNewTab(
-                `${isBank ? "/bank" : "/admin"
+                `${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"
                 }/property/single-property-documents-upload`
               );
             } else if (res.data.msg === 2) {

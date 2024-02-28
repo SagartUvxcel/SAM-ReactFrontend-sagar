@@ -20,12 +20,6 @@ const EditUserDetails = () => {
   const [expiryDate, setExpiryDate] = useState(null);
   const [daysCount, setDaysCount] = useState(null);
 
-
-
-
-
-
-
   // To store updated user details.
   const [commonUserDetails, setCommonUserDetails] = useState({});
 
@@ -392,16 +386,10 @@ const EditUserDetails = () => {
       calculateDays(planEndDate);
       setDaysCount(calculateDays(planEndDate));
 
-      // if (daysCount > 5) {
-      //   toast.warning("Your subscription will expire in 5 days!")
-      // } else if (daysCount === 0) {
-      //   toast.warning("Your subscription will expire today!")
-      // }
 
     }
 
   }, [planEndDate])
-
 
   useEffect(() => {
     rootTitle.textContent = "SAM TOOL - EDIT DETAILS";
@@ -414,20 +402,13 @@ const EditUserDetails = () => {
           getUserToEdit();
         }
       });
-
     }
-
-    // eslint-disable-next-line
   }, []);
 
   return (
     <Layout>
       <section className="edit-details-wrapper section-padding min-100vh">
         <div className="container-fluid wrapper position-relative">
-          {/* {planStatus && expiryDate && daysCount > 5 ?
-            <CommonSubscriptionNotificationMsg />
-            :
-            ""} */}
           <div className={`row justify-content-center ${planStatus && expiryDate && daysCount <= 7 ? "mt-4" : ""}`}>
             <div className="col-xl-10 col-lg-10 col-md-12 col-sm-12 col-12">
               <form onSubmit={updateDetails} className="card h-100">
@@ -455,7 +436,7 @@ const EditUserDetails = () => {
                               : ""}
                         </h6>
                       </div>
-
+                      {/* View Profile */}
                       <div className="col-md-4 col-6 text-end">
                         <NavLink
                           to="/profile"
@@ -464,6 +445,7 @@ const EditUserDetails = () => {
                           View Profile <i className="bi bi-arrow-right"></i>
                         </NavLink>
                       </div>
+                      {/* User Type: */}
                       <div className="col-xl-4 col-lg-4 col-md-6 col-12">
                         <div className="form-group mb-3">
                           <label htmlFor="userType" className="form-label">
@@ -480,6 +462,7 @@ const EditUserDetails = () => {
                           </p>
                         </div>
                       </div>
+                      {/* Email */}
                       <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                         <div className="form-group mb-3">
                           <label htmlFor="eMail" className="form-label">
@@ -488,6 +471,7 @@ const EditUserDetails = () => {
                           <p>{email}</p>
                         </div>
                       </div>
+                      {/* Phone */}
                       <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                         <div className="form-group mb-3">
                           <label htmlFor="phone" className="form-label">
@@ -496,9 +480,10 @@ const EditUserDetails = () => {
                           <p>{mobile_number}</p>
                         </div>
                       </div>
-
+                      {/* Individual  user */}
                       {userType === 0 ? (
                         <>
+                          {/* First Name */}
                           <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                             <div className="form-group mb-3">
                               <label htmlFor="firstName" className="form-label">
@@ -507,6 +492,7 @@ const EditUserDetails = () => {
                               <p>{first_name}</p>
                             </div>
                           </div>
+                          {/* middle Name */}
                           <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                             <div className="form-group mb-3">
                               <label
@@ -518,6 +504,7 @@ const EditUserDetails = () => {
                               <p>{middle_name}</p>
                             </div>
                           </div>
+                          {/* last Name */}
                           <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                             <div className="form-group mb-3">
                               <label htmlFor="lastName" className="form-label">
@@ -526,6 +513,7 @@ const EditUserDetails = () => {
                               <p>{last_name}</p>
                             </div>
                           </div>
+                          {/*  PAN Number */}
                           <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                             <div className="form-group mb-3">
                               <label htmlFor="pan" className="form-label">
@@ -534,6 +522,7 @@ const EditUserDetails = () => {
                               <p>{pan_number}</p>
                             </div>
                           </div>
+                          {/* Aadhaar Number */}
                           <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                             <div className="form-group mb-3">
                               <label htmlFor="aadhaar" className="form-label">
@@ -545,6 +534,7 @@ const EditUserDetails = () => {
                         </>
                       ) : userType === 1 ? (
                         <>
+                          {/*  Organization Type */}
                           <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                             <div className="form-group mb-3">
                               <label
@@ -556,6 +546,7 @@ const EditUserDetails = () => {
                               <p>{organization_type}</p>
                             </div>
                           </div>
+                          {/* Company Name */}
                           <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                             <div className="form-group mb-3">
                               <label
@@ -567,6 +558,7 @@ const EditUserDetails = () => {
                               <p>{company_name}</p>
                             </div>
                           </div>
+                          {/* GST Number */}
                           <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                             <div className="form-group mb-3">
                               <label
@@ -578,6 +570,7 @@ const EditUserDetails = () => {
                               <p>{gst_number}</p>
                             </div>
                           </div>
+                          {/* TAN Number */}
                           <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                             <div className="form-group mb-3">
                               <label
@@ -589,6 +582,7 @@ const EditUserDetails = () => {
                               <p>{tan_number}</p>
                             </div>
                           </div>
+                          {/* CIN Number */}
                           <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                             <div className="form-group mb-3">
                               <label
@@ -606,6 +600,7 @@ const EditUserDetails = () => {
                       )}
                     </div>
                     <div className="row mt-3">
+                      {/* Address */}
                       <div className="col-12">
                         <h6 className="text-primary">
                           Address
@@ -615,7 +610,7 @@ const EditUserDetails = () => {
                           ></i>
                         </h6>
                       </div>
-
+                      {/* Locality */}
                       <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                         <div className="form-group mb-3">
                           <label htmlFor="locality" className="form-label">
@@ -633,7 +628,7 @@ const EditUserDetails = () => {
                           />
                         </div>
                       </div>
-
+                      {/* State */}
                       <div className="col-xl-4 col-lg-4 col-md-6  col-12">
                         <div className="form-group mb-3">
                           <label className="form-label">State</label>
@@ -663,7 +658,7 @@ const EditUserDetails = () => {
                           </select>
                         </div>
                       </div>
-
+                      {/* City */}
                       <div className="col-xl-4 col-lg-4 col-md-6 col-12">
                         <div className="form-group mb-3">
                           <label htmlFor="city" className="form-label">
@@ -693,7 +688,7 @@ const EditUserDetails = () => {
                           </select>
                         </div>
                       </div>
-
+                      {/* Zip Code */}
                       <div className="col-xl-4 col-lg-4 col-md-6 col-12">
                         <div className="form-group mb-3">
                           <label htmlFor="zip" className="form-label">
@@ -718,6 +713,7 @@ const EditUserDetails = () => {
                         </div>
                       </div>
                     </div>
+                    {/* Cancel and Update button */}
                     <div
                       className={`row mt-4 ${cancelUpdateBtnClassName}`}
                       id="update-cancel"

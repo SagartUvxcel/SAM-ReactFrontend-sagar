@@ -50,7 +50,7 @@ const Profile = () => {
             headers: authHeaders,
           })
           .then(async (res) => {
-            console.log(res.data);
+            // console.log(res.data);
             const { individual_user, org_user, user_details } = res.data;
             if (individual_user) {
               const {

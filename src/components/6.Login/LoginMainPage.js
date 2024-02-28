@@ -74,6 +74,7 @@ const LoginMainPage = () => {
           let admin = null;
           let editor = null;
           let viewer = null;
+          let bank_admin = null;
           if (email !== "" && token !== "") {
             role_id && role_id.forEach((role) => {
               if (role.role_id === 3) {
@@ -82,6 +83,8 @@ const LoginMainPage = () => {
                 editor = 2;
               } else if (role.role_id === 1) {
                 admin = 1;
+              } else if (role.role_id === 6) {
+                bank_admin = 6;
               }
             });
             localStorage.setItem(
@@ -97,7 +100,9 @@ const LoginMainPage = () => {
                     ? editor
                     : viewer
                       ? viewer
-                      : viewer,
+                      : viewer
+                        ? bank_admin
+                        : bank_admin,
                 isBank: is_bank,
                 bank_id: bank_id,
                 branch_Id: branch_id,
@@ -106,7 +111,7 @@ const LoginMainPage = () => {
               })
             );
             setLoading(false);
-            is_bank === true ? goTo("/bank") : goTo("/");
+            is_bank === true ? goTo(`${bank_admin === 6 ? "/bank" : "/branch"}`) : goTo("/");
           } else {
             setLoading(false);
             setAlertDetails({
@@ -117,8 +122,8 @@ const LoginMainPage = () => {
           }
         });
     } catch (error) {
-      console.log(error);
-      if (error.response.data.error !== "Your account block for 24 hour") {
+      console.log(error.response.data.error);
+      if (error.response.data.error !== "Your account block for 24 hour" && error.response.data.error !== "Your account has been deactivated") {
         toast.warning(`Invalid credentials.${error.response.data.remaining_attempt} attempts remaining.`);
       }
       setAlertDetails({
@@ -273,8 +278,17 @@ const LoginMainPage = () => {
                       <NavLink className="ps-1" to="/register">
                         Click here.
                       </NavLink>
+
                     </small>
                   </div>
+                </div>
+                <div className="mt-2 ps-1 text-end">
+                  <small className="register-link text-end fw-bold">
+                    To active your account
+                    <NavLink to="/inactive-account" className="fw-bold ps-1">
+                      Click here.
+                    </NavLink>
+                  </small>
                 </div>
               </form>
             </div>

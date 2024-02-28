@@ -125,6 +125,7 @@ const ChangePassword = () => {
             new_password: newPassword,
           })
           .then((res) => {
+            console.log(res.data)
             if (res.data.status === 0) {
               setLoading(false);
               toast.success("Password changed successfully");

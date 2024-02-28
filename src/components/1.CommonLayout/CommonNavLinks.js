@@ -20,13 +20,12 @@ const CommonNavLinks = ({ allUseStates, logOut }) => {
       {/* If user is loggedIn then show these navbar links in dropdown */}
       {roleId === 1 || isBank ? (
         <li>
-          <NavLink to={`${isBank ? "/bank" : "/admin"}`} className="nav-link">
+          <NavLink to={`${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"}`} className="nav-link">
             <i
-              className={`bi bi-${
-                isBank ? "bank" : "person-fill-check"
-              } text-white me-2`}
+              className={`bi bi-${isBank ? "bank" : "person-fill-check"
+                } text-white me-2`}
             ></i>
-            {isBank ? "Bank" : "Administration"}
+            {isBank ? `${roleId === 6 ? "Bank" : "Branch"}` : "Administration"}
           </NavLink>
         </li>
       ) : (

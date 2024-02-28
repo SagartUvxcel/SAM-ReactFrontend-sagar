@@ -197,8 +197,6 @@ const ForgotAndResetPassword = () => {
 
     // console.log("full url from window location==>", window.location.search);
     const urlParams = new URLSearchParams(window.location.search);
-    // console.log("urlParams from window location==>", urlParams);
-
     emailFromEmailUrl = urlParams.get("email");
 
     if (emailFromEmailUrl) {

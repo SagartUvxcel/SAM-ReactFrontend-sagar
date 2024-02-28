@@ -10,6 +10,7 @@ import JSZip from "jszip";
 
 let cnt = 0;
 let authHeader = "";
+let roleId = "";
 let isBank = false;
 const ViewProperty = ({
   selectedProperty,
@@ -20,6 +21,7 @@ const ViewProperty = ({
   const data = JSON.parse(localStorage.getItem("data"));
   if (data) {
     isBank = data.isBank;
+    roleId = data.roleId;
   }
   const [srcOfFile, setSrcOfFile] = useState(null);
   const [fileExtension, setFileExtension] = useState(null);
@@ -505,7 +507,7 @@ const ViewProperty = ({
                           );
                         }}
                         to={`${
-                          isBank ? "/bank" : "/admin"
+                          isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"
                         }/property/single-property-documents-upload`}
                         className="text-decoration-none mt-1 upload-refresh"
                       >

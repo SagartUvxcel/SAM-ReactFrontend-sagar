@@ -26,6 +26,7 @@ const ManageUsers = ({ userType }) => {
   const [otherDetailsOfUser, setOtherDetailsOfUser] = useState({});
   const [categoryWiseUserDetails, setCategoryWiseUserDetails] = useState({});
   const [roles, setRoles] = useState([]);
+  const [accountStatus, setAccountStatus] = useState(0);
   const [loggedInUserId, setLoggedInUserId] = useState(null);
   const [displayClassesOfMainSections, setDisplayClassesOfMainSections] =
     useState({
@@ -53,26 +54,34 @@ const ManageUsers = ({ userType }) => {
   const [currentPageNumber, setCurrentPageNumber] = useState(1);
 
   const getAllUsers = async () => {
+    setLoading(true)
     const dataToPost = {
       type: userType,
       page_number: 1,
+      status: accountStatus,
       number_of_records: records_per_page,
     };
+    console.log(dataToPost);
+
     try {
       await axios
         .post(`${url}/get-users`, dataToPost, { headers: authHeader })
         .then((res) => {
           setUsers(res.data);
+          console.log(res.data);
           setLoading(false);
         });
       await axios
         .get(`${url}/type-count`, { headers: authHeader })
         .then((res) => {
           let usersCount = null;
+          // console.log(res.data);
           if (userType === 0) {
             usersCount = parseInt(res.data.individual_count);
-          } else {
+          } else if (userType === 1) {
             usersCount = parseInt(res.data.org_count);
+          } else {
+            usersCount = parseInt(res.data.bank_count);
           }
           setTotalUsersCount(usersCount);
           setPageCount(Math.ceil(usersCount / records_per_page));
@@ -199,6 +208,7 @@ const ManageUsers = ({ userType }) => {
             headers: authHeader,
           }
         );
+        console.log(allRoles.data);
         setRoles(allRoles.data);
       } catch (error) { }
     }
@@ -323,6 +333,13 @@ const ManageUsers = ({ userType }) => {
   };
 
   useEffect(() => {
+    if (accountStatus !== null) {
+      getAllUsers();
+    }
+
+  }, [accountStatus]);
+
+  useEffect(() => {
     if (data) {
       setLoading(true);
       checkLoginSession(data.loginToken).then((res) => {
@@ -334,9 +351,6 @@ const ManageUsers = ({ userType }) => {
     // eslint-disable-next-line
   }, []);
 
-  console.log(roles);
-  console.log(defaultRoleIds);
-
   return (
     <Layout>
       <div className="container-fluid admin-users-wrapper section-padding">
@@ -346,12 +360,55 @@ const ManageUsers = ({ userType }) => {
             className={`col-xl-10 col-lg-9 col-md-8 users-admin ${showAllUsersSectionClass}`}
           >
             <BreadCrumb userType={userType} />
+            {/* <h2 className="text-center text-primary fw-bold">{userType === 0
+                  ? "Individual User"
+                  : userType === 1
+                    ? "Organizational User"
+                    : userType === 2
+                      ? "Bank User"
+                      : ""}</h2>
+              <hr /> */}
+
+            {/* search filter */}
+            <div className="row px-md-4 mt-4 admin-users-filter d-flex justify-content-between flex-wrap">
+              {/* <div className="col-md-12 p-0 "> */}
+              <div className=" col-md-5 px-4 px-md-0 ">
+                <div className="inner-box d-flex align-items-center col-12">
+                  <label htmlFor="state " className="px-3 py-1">User Status:</label>
+                  <div className="select-div ms-2 w-md-25 w-50">
+                    <select
+                      id="state"
+                      name="states"
+                      className="form-select form-select-sm px-5 py-2"
+                      aria-label=".form-select-sm example"
+                      onChange={(e) => setAccountStatus(Number(e.target.value))}
+                    >
+                      <option value={0}>Active</option>
+                      <option value={1}>Inactive</option>
+
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div className=" col-md-3   p-4 p-md-0">
+                <input
+                  type="search"
+                  placeholder="Search"
+                  className="form-control "
+                // value={searchTerm}
+                // onChange={onEnquirySearchInputChange}
+                />
+              </div>
+              {/* </div> */}
+            </div>
+            <hr />
+
             <div className="mt-4">
               {loading ? (
                 <>
                   <CommonSpinner spinnerColor="primary" spinnerType="grow" />
                 </>
-              ) : !users ? (
+              ) : !users || users.length < 1 ? (
                 <div className="d-flex align-items-center justify-content-center mt-5">
                   <h3 className="fw-bold custom-heading-color">
                     No Users Found !
@@ -364,7 +421,7 @@ const ManageUsers = ({ userType }) => {
                       <thead>
                         <tr>
                           <th>User ID</th>
-                          <th>{userType === 0 ? "Name" : "Company Name"}</th>
+                          <th>{userType === 0 ? "Name" : userType === 1 ? "Company Name" : "Bank Name"}</th>
                           <th>Email</th>
                           <th>Role</th>
                           <th>Action</th>
@@ -388,6 +445,9 @@ const ManageUsers = ({ userType }) => {
                             } else if (i === 3) {
                               arrayOfRoles.push("Viewer");
                             }
+                            {/* else if (i === 6) {
+                              arrayOfRoles.push("Bank Admin");
+                            } */}
                           }
                           return (
                             <tr key={Index}>
@@ -397,7 +457,9 @@ const ManageUsers = ({ userType }) => {
                                   ? user.individual_user.first_name
                                   : user.org_user
                                     ? user.org_user.company_name
-                                    : ""}
+                                    : user.bank_user
+                                      ? user.bank_user.branch_name
+                                      : ""}
                               </td>
                               <td>{email_address}</td>
                               <td>{arrayOfRoles.join(", ")}</td>
@@ -433,8 +495,8 @@ const ManageUsers = ({ userType }) => {
                                       data-bs-toggle="modal"
                                       data-bs-target="#confirmDeleteUserModal"
                                       className={`dropdown-item ${email_address === data.user
-                                          ? "d-none"
-                                          : ""
+                                        ? "d-none"
+                                        : ""
                                         }`}
                                       onClick={() => {
                                         onDeleteBtnClick(
@@ -479,11 +541,14 @@ const ManageUsers = ({ userType }) => {
             />
             <section className="admin-edit-user">
               <div className="container-fluid">
+                {/* heading */}
                 <h2 className="text-center mb-4">
                   {user_type === 0
                     ? `${categoryWiseUserDetails.first_name} ${categoryWiseUserDetails.middle_name} ${categoryWiseUserDetails.last_name}`
-                    : `${categoryWiseUserDetails.company_name}`}
+                    : user_type === 1 ? `${categoryWiseUserDetails.company_name}`
+                      : `${categoryWiseUserDetails.branch_name}`}
                 </h2>
+                {/* details div */}
                 <div className="row justify-content-center">
                   <div className="col-xl-10 col-lg-11">
                     <form
@@ -491,6 +556,7 @@ const ManageUsers = ({ userType }) => {
                       className="card shadow p-xl-5 p-lg-4 p-3 position-relative"
                     >
                       <div className="row">
+                        {/* USER ID */}
                         <div className="col-md-6 col-12 text-center text-md-start">
                           <div className="form-group mb-3">
                             <label
@@ -503,6 +569,7 @@ const ManageUsers = ({ userType }) => {
                             {user_id}
                           </div>
                         </div>
+                        {/* Role */}
                         <div className="col-md-6 col-12 text-center text-md-start">
                           <div className="form-group mb-3">
                             <label
@@ -579,6 +646,7 @@ const ManageUsers = ({ userType }) => {
                             </div>
                           </div>
                         </div>
+                        {/* USER TYPE */}
                         <div className="col-md-6 col-12 text-center text-md-start">
                           <div className="form-group mb-3">
                             <label
@@ -600,6 +668,7 @@ const ManageUsers = ({ userType }) => {
                         {/* Show Data As Per User Type*/}
                         {user_type === 0 ? (
                           <>
+                            {/* First Name: */}
                             <div className="col-md-6 col-12 text-center text-md-start">
                               <div className="form-group mb-3">
                                 <label
@@ -612,6 +681,7 @@ const ManageUsers = ({ userType }) => {
                                 {categoryWiseUserDetails.first_name}
                               </div>
                             </div>
+                            {/* Middle Name */}
                             <div className="col-md-6 col-12 text-center text-md-start">
                               <div className="form-group mb-3">
                                 <label
@@ -624,6 +694,7 @@ const ManageUsers = ({ userType }) => {
                                 {categoryWiseUserDetails.middle_name}
                               </div>
                             </div>
+                            {/*  Last Name */}
                             <div className="col-md-6 col-12 text-center text-md-start">
                               <div className="form-group mb-3">
                                 <label
@@ -636,6 +707,7 @@ const ManageUsers = ({ userType }) => {
                                 {categoryWiseUserDetails.last_name}
                               </div>
                             </div>
+                            {/* Aadhaar Number */}
                             <div className="col-md-6 col-12 text-center text-md-start">
                               <div className="form-group mb-3">
                                 <label
@@ -648,6 +720,7 @@ const ManageUsers = ({ userType }) => {
                                 {categoryWiseUserDetails.aadhar_number}
                               </div>
                             </div>
+                            {/* PAN Number */}
                             <div className="col-md-6 col-12 text-center text-md-start">
                               <div className="form-group mb-3">
                                 <label
@@ -661,7 +734,7 @@ const ManageUsers = ({ userType }) => {
                               </div>
                             </div>
                           </>
-                        ) : (
+                        ) : user_type === 1 ? (
                           <>
                             <div className="col-md-6 col-12 text-center text-md-start">
                               <div className="form-group mb-3">
@@ -721,6 +794,75 @@ const ManageUsers = ({ userType }) => {
                                 </label>
                                 <br />
                                 {categoryWiseUserDetails.cin_number}
+                              </div>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            {/* bank user */}
+                            {/* Branch Name */}
+                            <div className="col-md-6 col-12 text-center text-md-start">
+                              <div className="form-group mb-3">
+                                <label
+                                  className="form-label fw-bold"
+                                  htmlFor="branch_name}"
+                                >
+                                  Branch Name:
+                                </label>
+                                <br />
+                                {categoryWiseUserDetails.branch_name}
+                              </div>
+                            </div>
+                            {/* Branch Code */}
+                            <div className="col-md-6 col-12 text-center text-md-start">
+                              <div className="form-group mb-3">
+                                <label
+                                  className="form-label fw-bold"
+                                  htmlFor="branch_code"
+                                >
+                                  Branch Code:
+                                </label>
+                                <br />
+                                {categoryWiseUserDetails.branch_code}
+                              </div>
+                            </div>
+                            {/* branch_sftp */}
+                            <div className="col-md-6 col-12 text-center text-md-start">
+                              <div className="form-group mb-3">
+                                <label
+                                  className="form-label fw-bold"
+                                  htmlFor="branch_sftp"
+                                >
+                                  SFTP Number:
+                                </label>
+                                <br />
+                                {categoryWiseUserDetails.branch_sftp}
+                              </div>
+                            </div>
+                            {/* /ifsc_code */}
+                            <div className="col-md-6 col-12 text-center text-md-start">
+                              <div className="form-group mb-3">
+                                <label
+                                  className="form-label fw-bold"
+                                  htmlFor="ifsc_code"
+                                >
+                                  IFSC Code:
+                                </label>
+                                <br />
+                                {categoryWiseUserDetails.ifsc_code}
+                              </div>
+                            </div>
+                            {/* BranchId */}
+                            <div className="col-md-6 col-12 text-center text-md-start">
+                              <div className="form-group mb-3">
+                                <label
+                                  className="form-label fw-bold"
+                                  htmlFor="cin_number"
+                                >
+                                  Branch ID:
+                                </label>
+                                <br />
+                                {categoryWiseUserDetails.BranchId}
                               </div>
                             </div>
                           </>

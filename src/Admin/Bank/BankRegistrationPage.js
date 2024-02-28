@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react'
-import Layout from "../components/1.CommonLayout/Layout";
+import Layout from "../../components/1.CommonLayout/Layout";
 // import CommonFormFields from "../components/7.Registration/CommonFormFields";
 import axios from "axios";
 import { NavLink, useNavigate, } from "react-router-dom";
 import "react-phone-input-2/lib/style.css";
-import bankRegistrationLinkPage from "../images/bankRegistrationLinkPage.svg";
+import bankRegistrationLinkPage from "../../images/bankRegistrationLinkPage.svg";
 import { toast } from "react-toastify";
 import PhoneInput from "react-phone-input-2";
-import { rootTitle } from "../CommonFunctions";
+import { rootTitle } from "../../CommonFunctions";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
-import Loader from "../components/1.CommonLayout/Loader";
+import Loader from "../../components/1.CommonLayout/Loader";
 
 
 const bankNameRegularExp = /^[A-Za-z0-9&\s.-]+$/
@@ -67,6 +67,7 @@ const BankRegistrationPage = () => {
 
     // useState to store each field's data from form.
     const [formData, setFormData] = useState({
+        // mobile_number: "",
         contact_details: {
         },
     });
@@ -115,26 +116,29 @@ const BankRegistrationPage = () => {
         tokenFromEmailUrl = urlParams.get("token");
         if (tokenFromEmailUrl) {
             const emailToken = tokenFromEmailUrl;
-
+            console.log(emailToken);
             // posting data 
             const dataToPost = JSON.stringify({ token: emailToken })
+            console.log(dataToPost);
             try {
                 await axios.post(`/sam/v1/bank-registration/branch/token/verify`, dataToPost)
                     .then((res) => {
 
                         if (res.data) {
+                            console.log(res.data);
                             const email = res.data.email;
                             const bank_name = res.data.bank_name;
                             const branch_code = res.data.branch_code;
                             const branch_name = res.data.branch_name;
                             const branch_sftp = res.data.branch_sftp
                             const ifsc_code = res.data.ifsc_code;
+                            const is_bank_admin = res.data.is_bank_admin;
                             if (email && bank_name) {
                                 const splitedEmail = email.split('@')
                                 const emailDomainPart = "@" + splitedEmail[1];
                                 setSplittedBankEmailId({ userName: splitedEmail[0], domain: emailDomainPart });
-                                setBankEmailFromURL({ bank_name, email, branch_code, branch_name, branch_sftp, ifsc_code });
-                                setFormData({ ...formData, bank_name, email, branch_code, branch_name, branch_sftp, ifsc_code });
+                                setBankEmailFromURL({ bank_name, email, branch_code, branch_name, branch_sftp, ifsc_code, is_bank_admin });
+                                setFormData({ ...formData, bank_name, email, branch_code, branch_name, branch_sftp, ifsc_code,is_bank_admin });
                                 setBankRegistrationPageDisplay({
                                     display: true,
                                 });
@@ -203,12 +207,12 @@ const BankRegistrationPage = () => {
         } else if (name === "plot_number") {
             setFormData({
                 ...formData,
-                contact_details: { ...formData.contact_details, [name]: value },
+                contact_details: { ...formData.contact_details, [name]: parseInt(value) },
             });
         } else if (name === "zip") {
             setFormData({
                 ...formData,
-                contact_details: { ...formData.contact_details, [name]: value },
+                contact_details: { ...formData.contact_details, [name]: parseInt(value) },
             });
         } else if (name === "city") {
             setFormData({
@@ -233,7 +237,7 @@ const BankRegistrationPage = () => {
         } else if (name === "flat_number") {
             setFormData({
                 ...formData,
-                contact_details: { ...formData.contact_details, [name]: value },
+                contact_details: { ...formData.contact_details, [name]: parseInt(value) },
             });
         } else if (name === "state") {
             SetIdOfState(value);
@@ -338,7 +342,6 @@ const BankRegistrationPage = () => {
                 validateMobileFromBackend(finalValue);
             }
         }
-
         setFormData({ ...formData, mobile_number: finalValue, });
     };
 
@@ -494,12 +497,40 @@ const BankRegistrationPage = () => {
             }
         } else if (name === "flat_number") {
             setValues(name, value);
+            setFormData({
+                ...formData,
+                contact_details: {
+                    ...formData.contact_details,
+                    [name]: parseInt(value),
+                },
+            });
         } else if (name === "building_name") {
             setValues(name, value);
+            setFormData({
+                ...formData,
+                contact_details: {
+                    ...formData.contact_details,
+                    [name]: value,
+                },
+            });
         } else if (name === "society_name") {
             setValues(name, value);
+            setFormData({
+                ...formData,
+                contact_details: {
+                    ...formData.contact_details,
+                    [name]: value,
+                },
+            });
         } else if (name === "plot_number") {
             setValues(name, value);
+            setFormData({
+                ...formData,
+                contact_details: {
+                    ...formData.contact_details,
+                    [name]: parseInt(value),
+                },
+            });
         } else if (name === "locality") {
             setValues(name, value);
         } else if (name === "landline_number") {
@@ -519,8 +550,13 @@ const BankRegistrationPage = () => {
 
         } else if (name === "landmark") {
             setValues(name, value);
-            // } else if (name === "village") {
-            //   setValues(name, value);
+            setFormData({
+                ...formData,
+                contact_details: {
+                    ...formData.contact_details,
+                    [name]: value,
+                },
+            });
         } else if (name === "zip") {
             setFormData({
                 ...formData,
@@ -542,7 +578,7 @@ const BankRegistrationPage = () => {
             if (emailUserNameRegularExp.test(value)) {
                 setValidationDetails({
                     ...validationDetails,
-                    emailValidationMessage:  "",
+                    emailValidationMessage: "",
                 });
                 style.borderColor = "";
                 setFormData({ ...formData, [name]: emailValue })
@@ -596,47 +632,6 @@ const BankRegistrationPage = () => {
                     address: cityName,
                 },
             });
-        } else if (name === "flat_number") {
-            setFormData({
-                ...formData,
-                contact_details: {
-                    ...formData.contact_details,
-                    [name]: parseInt(value),
-                },
-            });
-        } else if (name === "building_name") {
-            setFormData({
-                ...formData,
-                contact_details: {
-                    ...formData.contact_details,
-                    [name]: value,
-                },
-            });
-        } else if (name === "society_name") {
-            setFormData({
-                ...formData,
-                contact_details: {
-                    ...formData.contact_details,
-                    [name]: value,
-                },
-            });
-        } else if (name === "landmark") {
-            setFormData({
-                ...formData,
-                contact_details: {
-                    ...formData.contact_details,
-                    [name]: value,
-                },
-            });
-        } else if (name === "plot_number") {
-            console.log(formData);
-            setFormData({
-                ...formData,
-                contact_details: {
-                    ...formData.contact_details,
-                    [name]: parseInt(value),
-                },
-            });
         }
     };
     // Function to reset values.
@@ -673,32 +668,18 @@ const BankRegistrationPage = () => {
     const onBankFormSubmit = async (e) => {
 
         e.preventDefault();
-        // const fieldsToDelete = [
-        //     "bank_name",
-        //     "branch_name",
-        //     "branch_code",
-        //     "ifsc_code",
-        //     "branch_sftp",
-        //     "branch_UUID",
-        // ];
-        // fieldsToDelete.forEach((field) => {
-        //     delete formData[field];
-        // });
-       if(!formData.contact_details.flat_number){
-        delete formData.contact_details["flat_number"]
-    } 
-      if(!formData.contact_details.plot_number ){
-        delete formData.contact_details["plot_number"]
-    } 
-      if(!formData.contact_details.society_name ){
-        delete formData.contact_details["society_name"]
-    } 
-      if(!formData.contact_details.building_name ){
-        delete formData.contact_details["building_name"]
-    } 
-        
-
-        console.log(formData);
+        if (!formData.contact_details.flat_number) {
+            delete formData.contact_details["flat_number"]
+        }
+        if (!formData.contact_details.plot_number) {
+            delete formData.contact_details["plot_number"]
+        }
+        if (!formData.contact_details.society_name) {
+            delete formData.contact_details["society_name"]
+        }
+        if (!formData.contact_details.building_name) {
+            delete formData.contact_details["building_name"]
+        }
         if (addressValues.labelValue === "Add Details") {
             return setAlertDetails({
                 alertVisible: true,
@@ -706,8 +687,21 @@ const BankRegistrationPage = () => {
                 alertClr: "danger",
             });
         }
-
-        // setLoading(true);
+        // mobile number validation
+        if (!formData.mobile_number || mobileValidationMessage && mobileValidationMessage.length > 0) {
+            if (mobileValidationMessage.length > 0) {
+                return setValidationDetails({
+                    ...validationDetails,
+                    mobileValidationMessage: "Invalid Mobile Number Entered",
+                });
+            } else {
+                return setValidationDetails({
+                    ...validationDetails,
+                    mobileValidationMessage: "Please fill the mobile number",
+                });
+            }
+        }
+        setLoading(true);
         if (formData.email.length !== 0) {
             console.log(formData);
             try {
@@ -750,10 +744,8 @@ const BankRegistrationPage = () => {
                 setLoading(false);
             }
         }
+
     };
-
-
-
 
     // useEffect functions
     useEffect(() => {
@@ -775,13 +767,13 @@ const BankRegistrationPage = () => {
                         {bankRegistrationPageDisplay.display === true ? <>
                             <div className="container-fluid">
                                 <div className="row justify-content-center ">
-                                    <div className="col-lg-12 mt-4">
+                                    <div className="col-lg-12 my-4">
                                         <div className="card form-wrapper-card shadow pt-3 pb-5 ps-lg-3 ps-0">
                                             <div className="container-fluid registration-form-container">
                                                 <div className="row">
                                                     {/* Bank User Registration Form Heading */}
-                                                    <div className="col-lg-12">
-                                                        <h4 className="fw-bold">Bank User Registration Form</h4>
+                                                    <div className="col-lg-12 mb-3">
+                                                        <h4 className="fw-bold text-primary all-page-heading-color">{bankEmailFromURL.is_bank_admin === true ? "Bank" : "Branch"} User Registration Form</h4>
                                                         <hr />
                                                     </div>
                                                     {/* registration-alert */}
@@ -818,155 +810,121 @@ const BankRegistrationPage = () => {
                                                         <div className="col-lg-12">
                                                             <div className="row bank-type-row">
                                                                 {/* Bank Name */}
-                                                                <div className="col-lg-2 mb-lg-0 mb-2">
-                                                                    Bank Name
-                                                                    <span className="text-danger fw-bold">*</span>
-                                                                </div>
-                                                                <div className="col-lg-2 mb-lg-0 mb-2">
-                                                                    <input
+                                                                <div className="col-lg-3 mb-4">
+                                                                    <label htmlFor="form-label " className='fw-bold mb-1'>Bank Name</label>
+                                                                    <p>{bankEmailFromURL.bank_name}</p>
+                                                                    {/* <input
                                                                         onChange={onInputChange}
                                                                         onBlur={onInputBlur}
                                                                         name="bank_name"
                                                                         type="text"
                                                                         placeholder="Bank Name"
-                                                                        className="form-control"
+                                                                        className="form-control "
                                                                         value={bankEmailFromURL.bank_name}
                                                                         disabled
                                                                         required
-                                                                    />
-                                                                    <span
-                                                                        className={`pe-1 ${bankNameValidationMessage ? "text-danger" : "d-none"
-                                                                            }`}
-                                                                    >
-                                                                        {bankNameValidationMessage}
-                                                                    </span>
+                                                                    /> */}
                                                                 </div>
-                                                                {/* branch_name*/}
-                                                                <div className="col-lg-2 mb-lg-0 mb-2">
-                                                                    Branch Name
+
+                                                                {bankEmailFromURL.is_bank_admin === false ? (<>
+                                                                    {/* branch_name*/}
+                                                                    <div className="col-lg-3 mb-4">
+                                                                        <label htmlFor="form-label " className='fw-bold mb-1'>Branch Name</label>
+                                                                        <p>{bankEmailFromURL.branch_name}</p>
+                                                                        {/* <input
+                                                                            onChange={onInputChange}
+                                                                            onBlur={onInputBlur}
+                                                                            name="branch_name"
+                                                                            type="text"
+                                                                            placeholder="Branch Name"
+                                                                            className="form-control"
+                                                                            value={bankEmailFromURL.branch_name}
+                                                                            disabled
+                                                                            required
+                                                                        /> */}
+                                                                    </div>
+                                                                    {/* Branch Code */}
+                                                                    <div className="col-lg-3 mb-4">
+                                                                        <label htmlFor="form-label " className='fw-bold mb-1'>Branch Code</label>
+                                                                        <p>{bankEmailFromURL.branch_code}</p>
+                                                                        {/* <input
+                                                                            onChange={onInputChange}
+                                                                            onBlur={onInputBlur}
+                                                                            name="branch_code"
+                                                                            type="text"
+                                                                            placeholder="Branch Code"
+                                                                            className="form-control"
+                                                                            value={bankEmailFromURL.branch_code}
+                                                                            disabled
+                                                                            required
+                                                                        /> */}
+                                                                    </div>
+                                                                    {/* ifsc_code */}
+                                                                    <div className="col-lg-3 mb-4">
+                                                                        <label htmlFor="form-label " className='fw-bold mb-1'>IFSC code</label>
+                                                                        <p>{bankEmailFromURL.ifsc_code}</p>
+                                                                        {/* <input
+                                                                            onChange={onInputChange}
+                                                                            onBlur={onInputBlur}
+                                                                            name="ifsc_code"
+                                                                            type="text"
+                                                                            placeholder=" IFSC code"
+                                                                            className="form-control"
+                                                                            value={bankEmailFromURL.ifsc_code}
+                                                                            disabled
+                                                                            required
+                                                                        /> */}
+                                                                    </div>
+                                                                    {/* branch_sftp */}
+                                                                    <div className="col-lg-3 mb-4">
+                                                                        <label htmlFor="form-label " className='fw-bold mb-1'> Branch SFTP</label>
+                                                                        <p>{bankEmailFromURL.branch_sftp}</p>
+                                                                        {/* <input
+                                                                            onChange={onInputChange}
+                                                                            onBlur={onInputBlur}
+                                                                            name="branch_sftp"
+                                                                            type="text"
+                                                                            placeholder=" Branch SFTP"
+                                                                            className="form-control"
+                                                                            value={bankEmailFromURL.branch_sftp}
+                                                                            disabled
+                                                                            required
+                                                                        /> */}
+                                                                    </div>
+                                                                </>) : ""}
+
+                                                                {/* Email */}
+                                                                <div className="col-lg-4 mb-4">
+                                                                    <label htmlFor="form-label " className='fw-bold mb-1'>Email Address</label>
                                                                     <span className="text-danger fw-bold">*</span>
-                                                                </div>
-                                                                <div className="col-lg-2 mb-lg-0 mb-2">
-                                                                    <input
-                                                                        onChange={onInputChange}
-                                                                        onBlur={onInputBlur}
-                                                                        name="branch_name"
-                                                                        type="text"
-                                                                        placeholder="Branch Name"
-                                                                        className="form-control"
-                                                                        value={bankEmailFromURL.branch_name}
-                                                                        disabled
-                                                                        required
-                                                                    />
+                                                                    <div className="input-group ">
+                                                                        <input
+                                                                            onChange={onInputChange}
+                                                                            onBlur={onInputBlur}
+                                                                            type="text"
+                                                                            name="email"
+                                                                            className="form-control" placeholder="UserName"
+                                                                            value={splittedBankEmailId.userName}
+                                                                            required
+                                                                        />
+                                                                        <span className="input-group-text" id="basic-addon2">{splittedBankEmailId.domain}</span>
+                                                                    </div>
+                                                                    {/* </div> */}
                                                                     <span
-                                                                        className={`pe-1 ${branchNameValidationMessage ? "text-danger" : "d-none"
+                                                                        className={`pe-1 ${emailValidationMessage ? "text-danger" : "d-none"
                                                                             }`}
                                                                     >
-                                                                        {branchNameValidationMessage}
+                                                                        {emailValidationMessage}
                                                                     </span>
                                                                 </div>
-                                                                {/* Branch Code */}
-                                                                <div className="col-lg-2 mb-lg-0 mb-2">
-                                                                    Branch Code
-                                                                    <span className="text-danger fw-bold">*</span>
-                                                                </div>
-                                                                <div className="col-lg-2 mb-lg-0 mb-2">
-                                                                    <input
-                                                                        onChange={onInputChange}
-                                                                        onBlur={onInputBlur}
-                                                                        name="branch_code"
-                                                                        type="text"
-                                                                        placeholder="Branch Code"
-                                                                        className="form-control"
-                                                                        value={bankEmailFromURL.branch_code}
-                                                                        disabled
-                                                                        required
-                                                                    />
-                                                                    <span
-                                                                        className={`pe-1 ${branchCodeValidationMessage ? "text-danger" : "d-none"
-                                                                            }`}
-                                                                    >
-                                                                        {branchCodeValidationMessage}
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-                                                            <div className="row branch_sftp mt-lg-3 mt-2">
-                                                                {/* ifsc_code */}
-                                                                <div className="col-lg-2 mb-lg-0 mb-2">
-                                                                    IFSC code
-                                                                    <span className="text-danger fw-bold">*</span>
-                                                                </div>
-                                                                <div className="col-lg-2 mb-lg-0 mb-2">
-                                                                    <input
-                                                                        onChange={onInputChange}
-                                                                        onBlur={onInputBlur}
-                                                                        name="ifsc_code"
-                                                                        type="text"
-                                                                        placeholder=" IFSC code"
-                                                                        className="form-control"
-                                                                        value={bankEmailFromURL.ifsc_code}
-                                                                        disabled
-                                                                        required
-                                                                    />
-                                                                    <span
-                                                                        className={`pe-1 ${ifscCodeValidationMessage ? "text-danger" : "d-none"
-                                                                            }`}
-                                                                    >
-                                                                        {ifscCodeValidationMessage}
-                                                                    </span>
-                                                                </div>
-                                                                {/* branch_sftp */}
-                                                                <div className="col-lg-2 mb-lg-0 mb-2">
-                                                                    Branch SFTP
-                                                                    <span className="text-danger fw-bold">*</span>
-                                                                </div>
-                                                                <div className="col-lg-2 mb-lg-0 mb-2">
-                                                                    <input
-                                                                        onChange={onInputChange}
-                                                                        onBlur={onInputBlur}
-                                                                        name="branch_sftp"
-                                                                        type="text"
-                                                                        placeholder=" Branch SFTP"
-                                                                        className="form-control"
-                                                                        value={bankEmailFromURL.branch_sftp}
-                                                                        disabled
-                                                                        required
-                                                                    />
-                                                                    <span
-                                                                        className={`pe-1 ${branchSftpValidationMessage ? "text-danger" : "d-none"
-                                                                            }`}
-                                                                    >
-                                                                        {branchSftpValidationMessage}
-                                                                    </span>
-                                                                </div>
-                                                                {/* branch_UUID */}
-                                                                {/* <div className="col-lg-2 mb-lg-0 mb-2">
-                                                                    Branch UUID
-                                                                    <span className="text-danger fw-bold">*</span>
-                                                                </div>
-                                                                <div className="col-lg-2">
-                                                                    <input
-                                                                        onChange={onInputChange}
-                                                                        onBlur={onInputBlur}
-                                                                        name="branch_UUID"
-                                                                        type="text"
-                                                                        placeholder="Branch UUID"
-                                                                        className="form-control "
-                                                                        required
-                                                                    />
-                                                                    <span
-                                                                        className={`pe-1 ${branchUUIDValidationMessage ? "text-danger" : "d-none"
-                                                                            }`}
-                                                                    >
-                                                                        {branchUUIDValidationMessage}
-                                                                    </span>
-                                                                </div> */}
+
                                                             </div>
 
                                                             {/* Address Row 1 */}
-                                                            <div className="row addressRow1 mt-lg-3 mt-4">
+                                                            <div className="row addressRow1 mt-lg-1 mt-4 mb-4">
                                                                 <div className="col-lg-2 mb-lg-0 mb-2">
-                                                                    Address<span className="text-danger fw-bold">*</span>
+                                                                    <label htmlFor="form-label " className='fw-bold mb-1'>Address</label>
+                                                                    <span className="text-danger fw-bold">*</span>
                                                                 </div>
                                                                 <div className="col-lg-6 mb-lg-0 mb-2">
                                                                     <a
@@ -989,54 +947,12 @@ const BankRegistrationPage = () => {
                                                                     ></textarea>
                                                                 </div>
                                                             </div>
-                                                            {/* Email */}
-                                                            <div className="row emailRow mt-lg-3 mt-4">
-                                                                <div className="col-lg-2 mb-lg-0 mb-2">
-                                                                    Email Address<span className="text-danger fw-bold">*</span>
-                                                                </div>
-                                                                <div className="col-lg-3">
-                                                                    {/* <div className="col-lg-2 ">
-                                                                        <input
-                                                                            onChange={onInputChange}
-                                                                            onBlur={onInputBlur}
-                                                                            name="email"
-                                                                            type="email"
-                                                                            className="form-control"
-                                                                            placeholder="XXX@YYY.com"
-                                                                            value={formData.email}
-                                                                            required
-                                                                        />
-                                                                    </div>
-                                                                    <div className="col-lg-8 "> */}
-
-                                                                    <div className="input-group ">
-                                                                        <input
-                                                                            onChange={onInputChange}
-                                                                            onBlur={onInputBlur}
-                                                                            type="text"
-                                                                            name="email"
-                                                                            className="form-control" placeholder="UserName"
-                                                                            value={splittedBankEmailId.userName}
-                                                                            required
-                                                                        />
-                                                                        <span className="input-group-text" id="basic-addon2">{splittedBankEmailId.domain}</span>
-                                                                    </div>
-                                                                    {/* </div> */}
-                                                                    <span
-                                                                        className={`pe-1 ${emailValidationMessage ? "text-danger" : "d-none"
-                                                                            }`}
-                                                                    >
-                                                                        {emailValidationMessage}
-                                                                    </span>
-                                                                </div>
-                                                            </div>
                                                             {/* Contact */}
                                                             <div className="row contactRow mt-lg-3 mt-4">
-                                                                <div className="col-lg-2 mb-lg-0 mb-2">
-                                                                    Landline<span className="ps-1 text-muted">(optional)</span>
-                                                                    {/* <span className="text-danger">*</span> */}
-                                                                </div>
-                                                                <div className="col-lg-2 mb-lg-0 mb-2">
+                                                                <div className="col-lg-4 mb-lg-0 mb-2">
+                                                                    <label htmlFor="form-label " className='fw-bold mb-1'>Landline</label>
+                                                                    <span className="ps-1 text-muted">(optional)</span>
+
                                                                     <input
                                                                         onBlur={onInputBlur}
                                                                         onChange={onInputChange}
@@ -1052,25 +968,18 @@ const BankRegistrationPage = () => {
                                                                         {landlineNumberValidationMessage}
                                                                     </span>
                                                                 </div>
-                                                                <div className="col-lg-2 mb-lg-0 mb-2">
-                                                                    Mobile Number<span className="text-danger fw-bold">*</span>
-                                                                </div>
-                                                                <div className="col-lg-3 mb-lg-0 mb-2">
-                                                                    {/* <input
-            onChange={onInputChange}
-            onBlur={onInputBlur}
-            name="mobile_number"
-            type="Number"
-            placeholder="Mobile Number"
-            required
-            className="form-control"
-          /> */}
+                                                                {/* Mobile Number */}
+                                                                <div className="col-lg-4 mb-lg-0 mb-2">
+                                                                    <label htmlFor="form-label " className='fw-bold mb-1'>Mobile Number</label>
+                                                                    <span className="text-danger fw-bold">*</span>
 
                                                                     <PhoneInput
                                                                         country={"in"}
+                                                                        // name="mobile_number"
                                                                         // value={phoneNumber}
                                                                         onBlur={(e) => onMobileNumberInputBlur(e)}
                                                                         onChange={onMobileNumberInputChange}
+                                                                        required
                                                                     />
 
                                                                     <span
@@ -1084,13 +993,13 @@ const BankRegistrationPage = () => {
                                                                 </div>
                                                             </div>
                                                             {/* SAM T & C */}
-                                                            <div className="row register-links mt-3">
-                                                                <div className="offset-lg-2 col-lg-4">
+                                                            <div className="row register-links mt-4 ">
+                                                                <div className="col-lg-4">
                                                                     <NavLink to="/register">SAM Terms and Conditions</NavLink>
                                                                 </div>
                                                             </div>
                                                             {/* Agree T & C */}
-                                                            <div className="row agreeTermsConditionsRow mt-3">
+                                                            <div className="row agreeTermsConditionsRow mt-3 mb-4">
                                                                 <div className="col-lg-4">
                                                                     <input
                                                                         type="checkbox"
@@ -1107,10 +1016,10 @@ const BankRegistrationPage = () => {
                                                                 </div>
                                                             </div>
                                                             {/* Form submit or Cancel */}
-                                                            <div className="row submitCancelRow mt-4 mb-4 mb-md-0">
-                                                                <div className="offset-lg-2 col-lg-2 col-md-4 col-6">
+                                                            <div className="row submitCancelRow mt-5 mb-4 mb-md-0">
+                                                                <div className=" col-lg-2 col-md-4 col-6">
                                                                     <button
-                                                                        className="btn btn-primary text-white common-btn-font"
+                                                                        className={`btn btn-primary text-white common-btn-font  `}
                                                                         style={{ width: "100px" }}
                                                                         disabled={loading ? true : false}
                                                                     >
@@ -1131,7 +1040,7 @@ const BankRegistrationPage = () => {
                                                                 </div>
                                                                 <div className="col-lg-2 col-md-4 col-6">
                                                                     <button
-                                                                        className="btn btn-secondary text-dark"
+                                                                        className="btn btn-secondary "
                                                                         onClick={(e) => {
                                                                             e.preventDefault();
                                                                             e.target.closest("form").reset();
@@ -1143,11 +1052,6 @@ const BankRegistrationPage = () => {
                                                                     </button>
                                                                 </div>
                                                             </div>
-
-
-
-
-
                                                         </div>
                                                     </form>
                                                 </div>
@@ -1180,6 +1084,7 @@ const BankRegistrationPage = () => {
                                         </div>
                                         <div className="modal-body">
                                             <div className="row">
+                                                {/* Flat Number */}
                                                 <div className="col-md-4">
                                                     <div className="form-group mb-3">
                                                         <label
@@ -1200,6 +1105,7 @@ const BankRegistrationPage = () => {
                                                         />
                                                     </div>
                                                 </div>
+                                                {/* Building Name */}
                                                 <div className="col-md-4">
                                                     <div className="form-group mb-3">
                                                         <label
@@ -1220,6 +1126,7 @@ const BankRegistrationPage = () => {
                                                         />
                                                     </div>
                                                 </div>
+                                                {/* Society Name */}
                                                 <div className="col-md-4">
                                                     <div className="form-group mb-3">
                                                         <label
@@ -1240,7 +1147,7 @@ const BankRegistrationPage = () => {
                                                         />
                                                     </div>
                                                 </div>
-
+                                                {/*  Plot Number */}
                                                 <div className="col-md-4">
                                                     <div className="form-group mb-3">
                                                         <label
@@ -1261,7 +1168,7 @@ const BankRegistrationPage = () => {
                                                         />
                                                     </div>
                                                 </div>
-
+                                                {/* Locality */}
                                                 <div className="col-md-4">
                                                     <div className="form-group mb-3">
                                                         <label
@@ -1282,7 +1189,7 @@ const BankRegistrationPage = () => {
                                                         />
                                                     </div>
                                                 </div>
-
+                                                {/* Landmark */}
                                                 <div className="col-md-4">
                                                     <div className="form-group mb-3">
                                                         <label
@@ -1303,27 +1210,8 @@ const BankRegistrationPage = () => {
                                                         />
                                                     </div>
                                                 </div>
-
-                                                {/* <div className="col-md-4">
-                    <div className="form-group mb-3">
-                      <label
-                        htmlFor="village"
-                        className="form-label common-btn-font"
-                      >
-                        Village
-                        <span className="text-danger fw-bold">*</span>
-                      </label>
-                      <input
-                        id="village"
-                        name="village"
-                        type="text"
-                        className="form-control "
-                        onChange={onInputChange}
-                        placeholder="Village"
-                      />
-                    </div>
-                  </div> */}
                                                 <hr />
+                                                {/* State */}
                                                 <div className="col-md-4">
                                                     <div className="form-group mb-3">
                                                         <label
@@ -1365,6 +1253,7 @@ const BankRegistrationPage = () => {
                                                         </select>
                                                     </div>
                                                 </div>
+                                                {/* city */}
                                                 <div className={`col-md-4 ${cityVisibilityClass}`}>
                                                     <div className="form-group mb-3">
                                                         <label
@@ -1406,6 +1295,7 @@ const BankRegistrationPage = () => {
                                                         </select>
                                                     </div>
                                                 </div>
+                                                {/* ZIP Code */}
                                                 <div className="col-md-4">
                                                     <div className="form-group mb-3">
                                                         <label
@@ -1432,6 +1322,7 @@ const BankRegistrationPage = () => {
                                                         </span>
                                                     </div>
                                                 </div>
+                                                {/* save button */}
                                                 <div className="modal-footer justify-content-between">
                                                     <p className='text-secondary'>All fields marked with an asterisk (<span className="text-danger fw-bold">*</span>) are mandatory.</p>
                                                     <button

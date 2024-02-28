@@ -93,7 +93,7 @@ function Home() {
 
   const data = JSON.parse(localStorage.getItem("data"));
   const updatedSubscriptionStatus = localStorage.getItem("updatedSubscriptionStatus");
-  console.log(updatedSubscriptionStatus);
+  // console.log(updatedSubscriptionStatus);
   if (data) {
     authHeader = { Authorization: data.loginToken };
     isLogin = data.isLoggedIn;
@@ -122,7 +122,6 @@ function Home() {
   const [searchHistory, setSearchHistory] = useState([]);
   const [historyBtn, setHistoryBtn] = useState(false);
 
-  // console.log(searchHistory.SearchName);
 
   // date and time convert into local time function
   const dateTimeConvertor = (dateAndTime) => {
@@ -147,8 +146,6 @@ function Home() {
 
 
   }
-
-
 
   // It will fetch all states, banks, assets from api and will map those values to respective select fields.
   const getSearchDetails = async () => {
@@ -175,29 +172,60 @@ function Home() {
     } catch (error) { }
   };
 
+  // history sentence creation 
+  const createSentence = (SearchName) => {
+    const criteria = SearchName.split(', ');
+    // console.log(criteria);
+    let sentence = "All properties";
+
+    criteria.forEach(criteriaItem => {
+      const [key, value] = criteriaItem.split('=');
+
+      if (key === "state_name") {
+        sentence += ` from the state of ${value},`;
+      } else if (key === "city_name") {
+        sentence += ` specifically from ${value} city`;
+      } else if (key === "bank_name") {
+        sentence += ` from ${value}`;
+      } else if (key === "property_type") {
+        sentence += ` with a focus on ${value.toLowerCase()}`;
+      } else if (key === "min_price" && criteria.find(item => item.includes('max_price'))) {
+        sentence += ` with a price range between ₹${value}`;
+      } else if (key === "max_price" && criteria.find(item => item.includes('min_price'))) {
+        sentence += ` and ₹${value}`;
+      } else if (key === "min_area" && criteria.find(item => item.includes('max_area'))) {
+        sentence += ` and an area between ${value} sq.ft`;
+      } else if (key === "max_area" && criteria.find(item => item.includes('min_area'))) {
+        sentence += ` and ${value} sq.ft`;
+      } else if (key === "title_clear_property" && value === "yes") {
+        sentence += ` with clear title properties`;
+      } else if (key === "territory") {
+        sentence += `, within the ${value}`;
+      } else if (key === "age") {
+        sentence += `, aged ${value} year${parseInt(value) > 1 ? 's' : ''}`;
+      } else if (key === "latest_added_properties") {
+        sentence += `, The latest added properties in  ${value} days.`;
+      }
+    });
+    return sentence;
+  }
 
   // fetch history data from api
   const getSearchHistory = async () => {
     try {
       const { data } = await axios.get("/sam/v1/property/auth/user-history", { headers: authHeader });
-      // console.log(data);
       if (data !== null) {
         const filteredData = data.map(item => ({
           search_json: JSON.parse(item.search_json),
           updated_date: item.updated_date,
-          SearchName: item.SearchName,
+          SearchName: createSentence(item.SearchName),
           added_date: item.added_date,
           search_id: item.search_id,
         }));
-
         dateTimeConvertor(data[0].updated_date);
         setSearchHistory(filteredData);
         searchHistoryJsonDataConvertor(filteredData);
-
-      } else {
-
       }
-
     } catch (error) {
       console.log("error from search history api");
     }
@@ -375,7 +403,7 @@ function Home() {
     rootTitle.textContent = "SAM TOOL - HOME";
     getSearchDetails();
     changeNavBarColor();
-    if (isLogin && subscription_status) {
+    if (isLogin) {
       getSearchHistory();
     }
   }, [isLogin, subscription_status]);
@@ -399,7 +427,7 @@ function Home() {
                   <div className="dropdown-menu historyDropdownMenu p-3 " aria-labelledby="dropdownMenu2">
                     <h5 className="modal-title fs-5" id="recentSearchHistoryTitle">History</h5>
                     <hr className="my-2" />
-                    {searchHistory.length > 0 && subscription_status ? (searchHistory.map((data, index) => {
+                    {searchHistory.length > 0 ? (searchHistory.map((data, index) => {
 
                       const isEvenRow = index % 2 === 0;
                       const rowClasses = `row border-bottom my-1 ${isEvenRow ? 'even-row' : 'odd-row'}`;
@@ -410,17 +438,10 @@ function Home() {
                               {data.SearchName}
                             </p>
                           </div>
-
-
                         </div>
                       )
                     })) : (<>
                       <p className="text-center fw-bold">No History Found !</p>
-                      {/* <div>{subscription_status ?  */}
-                      {/*  
-                       {/* :<p className="text-center d-flex align-items-center">To view your history, please upgrade your subscription. To choose your subscription, <button type="button" className="btn btn-link p-0" onClick={()=>navigate("/subscription")}>click here</button></p>  */}
-                      {/* } */}
-                      {/* </div>  */}
                     </>)
                     }
                   </div>

@@ -2,10 +2,13 @@ import React, { useEffect } from "react";
 import OffcanvasBody from "./OffcanvasBody";
 
 let isBank = false;
+let roleId = "";
+
 const AdminSideBar = (propertiesLinkDisabled, backToAllPropertiesPage) => {
   const data = JSON.parse(localStorage.getItem("data"));
   if (data) {
     isBank = data.isBank;
+    roleId = data.roleId;
   }
 
   const adminSidebarFunctionalities = () => {
@@ -27,14 +30,14 @@ const AdminSideBar = (propertiesLinkDisabled, backToAllPropertiesPage) => {
 
     const path = window.location.pathname;
     // Remove active class of link 'Dashboard' if we switch to other link.
-    if (path !== (isBank ? "/bank" : "/admin")) {
+    if (path !== (isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin")) {
       adminDashboardLink.forEach((link) => {
         link.classList.remove("active");
       });
     }
 
     // collapse of property and users section on sidebar will remain open until we are on 'admin/property' or 'admin/users' path.
-    if (path.includes(`${isBank ? "/bank" : "/admin"}/property`)) {
+    if (path.includes(`${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"}/property`)) {
       sideBarPropertyCollapse.forEach((collapse) => {
         collapse.classList.add("show");
       });
@@ -54,13 +57,14 @@ const AdminSideBar = (propertiesLinkDisabled, backToAllPropertiesPage) => {
         <div className="py-3">
           <span className="offcanvas-header text-white">
             <h4 className="offcanvas-title ps-md-2" id="offcanvasExampleLabel">
-              {isBank ? "Bank" : "Administration"}
+              {isBank ?  `${roleId === 6 ? "Bank" : "Branch"}` : "Administration"}
             </h4>
           </span>
           <OffcanvasBody
             propertiesLinkDisabled={propertiesLinkDisabled}
             backToAllPropertiesPage={backToAllPropertiesPage}
             isBank={isBank}
+            roleId={roleId}
           />
         </div>
       </div>
@@ -87,6 +91,7 @@ const AdminSideBar = (propertiesLinkDisabled, backToAllPropertiesPage) => {
           backToAllPropertiesPage={backToAllPropertiesPage}
           isBank={isBank}
           canvasNumber="2"
+          roleId={roleId}
         />
       </div>
     </>

@@ -344,6 +344,11 @@ const Registration = () => {
         ...formData,
         contact_details: { ...formData.contact_details, [name]: value },
       });
+    } else if (name === "landmark") {
+      setFormData({
+        ...formData,
+        contact_details: { ...formData.contact_details, [name]: value },
+      });
     } else if (name === "locality") {
       setFormData({
         ...formData,
@@ -510,16 +515,51 @@ const Registration = () => {
       style.borderColor = "";
     } else if (name === "flat_number") {
       setValues(name, value);
+       setFormData({
+        ...formData,
+        contact_details: {
+          ...formData.contact_details,
+          [name]: parseInt(value),
+        },
+      });
     } else if (name === "building_name") {
       setValues(name, value);
+      setFormData({
+        ...formData,
+        contact_details: {
+          ...formData.contact_details,
+          [name]:value,
+        },
+      });
     } else if (name === "society_name") {
       setValues(name, value);
+      setFormData({
+        ...formData,
+        contact_details: {
+          ...formData.contact_details,
+          [name]: value,
+        },
+      });
     } else if (name === "plot_number") {
       setValues(name, value);
+      setFormData({
+        ...formData,
+        contact_details: {
+          ...formData.contact_details,
+          [name]: parseInt(value),
+        },
+      });
     } else if (name === "locality") {
       setValues(name, value);
     } else if (name === "landmark") {
       setValues(name, value);
+      setFormData({
+        ...formData,
+        contact_details: {
+          ...formData.contact_details,
+          [name]: value,
+        },
+      });
       // } else if (name === "village") {
       //   setValues(name, value);
     } else if (name === "zip") {
@@ -581,51 +621,10 @@ const Registration = () => {
         contact_details: {
           ...formData.contact_details,
           [name]: parseInt(value),
-          address: cityName,
+          // address: cityName,
         },
       });
-    } else if (name === "flat_number") {
-      setFormData({
-        ...formData,
-        contact_details: {
-          ...formData.contact_details,
-          [name]: parseInt(value),
-        },
-      });
-    } else if (name === "building_name") {
-      setFormData({
-        ...formData,
-        contact_details: {
-          ...formData.contact_details,
-          [name]: value,
-        },
-      });
-    } else if (name === "society_name") {
-      setFormData({
-        ...formData,
-        contact_details: {
-          ...formData.contact_details,
-          [name]: value,
-        },
-      });
-    } else if (name === "landmark") {
-      setFormData({
-        ...formData,
-        contact_details: {
-          ...formData.contact_details,
-          [name]: value,
-        },
-      });
-    } else if (name === "plot_number") {
-      console.log(formData);
-      setFormData({
-        ...formData,
-        contact_details: {
-          ...formData.contact_details,
-          [name]: parseInt(value),
-        },
-      });
-    } else if (name === "landline_number") {
+    }else if (name === "landline_number") {
       if (landlineNumberRegularExp.test(value) || value.length === 0) {
         setValidationDetails({
           ...validationDetails,
@@ -668,7 +667,6 @@ const Registration = () => {
     } else {
       setLoading(true);
       try {
-        console.log(formData);
         await axios
           .post(`/sam/v1/customer-registration/individual-customer`, formData)
           .then(async (res) => {
@@ -724,6 +722,8 @@ const Registration = () => {
         alertClr: "danger",
       });
     } else {
+      
+      console.log(formData);
       setLoading(true);
       try {
         await axios
@@ -1083,12 +1083,7 @@ const Registration = () => {
                 <div> Already registered?
                   <NavLink to="/register/verify" className="fw-bold ps-1">
                     click here to verify
-                  </NavLink></div>
-                <div className="mt-2"> Already have an inactive account? 
-                  <NavLink to="/inactive-account" className="fw-bold ps-1">
-                    click here for activate 
-                  </NavLink></div>
-                 
+                  </NavLink></div>                 
                 </small>
 
 

@@ -465,7 +465,7 @@ const Subscription = () => {
                       Please Login or Register{" "}
                     </div> */}
 
-                  <div className="mt-5 row justify-content-center align-items-center subscription-access-denied-page-btn">
+                  <div className="mt-5 row justify-content-center align-items-center subscription-access-denied-page-btn m-auto">
                     <NavLink
                       to="/login"
                       className="btn btn-primary col-md-4"
@@ -473,8 +473,8 @@ const Subscription = () => {
                       {" "}
                       Login{" "}
                     </NavLink>
-                    <div className="col-2 text-center">
-                      <h5>OR</h5>
+                    <div className="col-2 text-center my-3">
+                      <h5 className="m-0">OR</h5>
                     </div>
                     <NavLink
                       to="/register"

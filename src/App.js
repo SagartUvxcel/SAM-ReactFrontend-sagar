@@ -1,34 +1,43 @@
 import { Routes, Route, useNavigate } from "react-router-dom";
+import axios from "axios";
 import Home from "./components/2.HomePage/Home";
+import ViewSearchResults from "./components/3.Properties with filters/ViewSearchResults";
+import ListOfProperties from "./components/3.Properties with filters/ListOfProperties";
+import AboutUs from "./components/4.About/AboutUs";
+import Contact from "./components/5.Contact/Contact";
 import LoginMainPage from "./components/6.Login/LoginMainPage";
+import InactiveUserDetails from "./components/6.Login/InactiveUserDetails";
+import InactiveUserEmailVerification from "./components/6.Login/InactiveUserEmailVerification";
+import ChangePassword from "./components/6.Login/ChangePassword";
+import ForgotPassword from "./components/6.Login/ForgotPassword";
 import SetPassword from "./components/7.Registration/SetPassword";
 import Registration from "./components/7.Registration/RegistrationMainPage";
 import ScrollToTop from "./components/ScrollToTop";
 import VerifyToken from "./components/7.Registration/VerifyToken";
-import InactiveAccount from "./components/7.Registration/InactiveAccount";
 import Profile from "./components/8.Profile/Profile";
+import SecurityQuestion from "./components/8.Profile/SecurityQuestion";
+import EditUserDetails from "./components/8.Profile/EditUserDetails";
+import SecurityQuestionAndEmailLinkPasswordReset from "./components/9.ForgotAndResetPassword/SecurityQuestionAndEmailLinkPasswordReset";
+import ForgotAndResetPassword from "./components/9.ForgotAndResetPassword/ForgotAndResetPassword";
+import ViewEnquiryLists from "./components/10.User Enquiries/ViewEnquiryLists";
+import Subscription from "./components/11.Subscription/Subscription";
+import UpgradeSubscriptionPage from "./components/11.Subscription/UpgradeSubscriptionPage";
+import PaymentInformation from "./components/11.Subscription/PaymentInformation";
+import CommonSubscriptionNotificationMsg from "./components/11.Subscription/CommonSubscriptionNotificationMsg";
 import ProtectedForLoggedInUser from "./components/ProtectedForLoggedInUser";
 import EnquiryProtected from "./components/EnquiryProtected";
-import EditUserDetails from "./components/8.Profile/EditUserDetails";
 import ScrollButton from "./components/ScrollButton";
-import Contact from "./components/5.Contact/Contact";
 import PageNotFound from "./components/PageNotFound";
 import AdminHomePage from "./Admin/AdminHomePage";
-import BankRegistrationLinkPage from "./Admin/BankRegistrationLinkPage";
-import BankRegistrationPage from "./Admin/BankRegistrationPage";
+import BankRegistrationLinkPage from "./Admin/Bank/BankRegistrationLinkPage";
+import BankRegistrationPage from "./Admin/Bank/BankRegistrationPage";
 import ViewEditDeleteProperties from "./Admin/Property/ViewEditDeleteProperties";
 import ViewProperty from "./Admin/Property/ViewProperty";
 import UploadProperties from "./Admin/Property/UploadProperties";
-import ChangePassword from "./components/6.Login/ChangePassword";
-import SecurityQuestion from "./components/8.Profile/SecurityQuestion";
-import AboutUs from "./components/4.About/AboutUs";
 import AddProperty from "./Admin/Property/AddProperty";
-import ForgotPassword from "./components/6.Login/ForgotPassword";
-import SecurityQuestionAndEmailLinkPasswordReset from "./components/9.ForgotAndResetPassword/SecurityQuestionAndEmailLinkPasswordReset";
 import AdminProtected from "./components/AdminProtected";
 import UserProtected from "./components/UserProtected";
 import AccessDeniedPage from "./components/AccessDeniedPage";
-import ForgotAndResetPassword from "./components/9.ForgotAndResetPassword/ForgotAndResetPassword";
 import SinglePropertyDocumentsUpload from "./Admin/Property/SinglePropertyDocumentsUpload";
 import ProtectedPages from "./components/ProtectedPages";
 import ProtectSetPasswordPage from "./components/ProtectSetPasswordPage";
@@ -36,14 +45,6 @@ import ProtectSetPasswordPage from "./components/ProtectSetPasswordPage";
 import { ToastContainer, toast } from "react-toastify";
 import ManageUsers from "./Admin/User/ManageUsers";
 import { useEffect } from "react";
-import axios from "axios";
-import ViewSearchResults from "./components/3.Properties with filters/ViewSearchResults";
-import ListOfProperties from "./components/3.Properties with filters/ListOfProperties";
-import ViewEnquiryLists from "./components/10.User Enquiries/ViewEnquiryLists";
-import Subscription from "./components/11.Subscription/Subscription";
-import UpgradeSubscriptionPage from "./components/11.Subscription/UpgradeSubscriptionPage";
-import PaymentInformation from "./components/11.Subscription/PaymentInformation";
-import CommonSubscriptionNotificationMsg from "./components/11.Subscription/CommonSubscriptionNotificationMsg";
 
 
 
@@ -55,54 +56,56 @@ import CommonSubscriptionNotificationMsg from "./components/11.Subscription/Comm
 
 
 let isBank = false;
+let roleId = "";
 function App() {
   const MINUTE_MS = 1000;
   const goTo = useNavigate();
   const data = JSON.parse(localStorage.getItem("data"));
   if (data) {
     isBank = data.isBank;
+    roleId = data.roleId;
   }
-  // useEffect(() => {
-  //   const interval = setInterval(async () => {
-  //     const data = JSON.parse(localStorage.getItem("data"));
-  //     if (data) {
-  //       try {
-  //         let res = await axios.get(`/sam/v1/user-registration/logout`, {
-  //           headers: { Authorization: data.loginToken },
-  //         });
-  //         // console.log(res.data);
-  //         if (res.data !== "Session expired or invalid user") {
-  //           let remainingTime = parseInt(res.data.TimeRemaining);
-  //           // console.log("Time Remaining = ", remainingTime);
-  //           if (remainingTime > 5) {
-  //             localStorage.removeItem("remainingTime");
-  //           }
-  //           if (remainingTime === 4) {
-  //             const sessionTimeRemaining =
-  //               localStorage.getItem("remainingTime");
-  //             if (sessionTimeRemaining === null) {
-  //               toast.warn("Your session will expire in 5 minutes");
-  //               localStorage.setItem("remainingTime", 5);
-  //             }
-  //           }
-  //         } else {
-  //           localStorage.setItem("userSession", "invalid");
-  //           goTo("/login");
-  //         }
-  //       } catch (error) {
-  //         console.log("error");
-  //         localStorage.removeItem("data");
-  //         localStorage.removeItem("remainingTime");
-  //         localStorage.removeItem("notificationRefresh");
-  //         localStorage.removeItem("updatedSubscriptionStatus");
-  //         goTo("/login");
-  //       }
-  //     }
-  //   }, MINUTE_MS);
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      const data = JSON.parse(localStorage.getItem("data"));
+      if (data) {
+        try {
+          let res = await axios.get(`/sam/v1/user-registration/logout`, {
+            headers: { Authorization: data.loginToken },
+          });
+          // console.log(res.data);
+          if (res.data !== "Session expired or invalid user") {
+            let remainingTime = parseInt(res.data.TimeRemaining);
+            // console.log("Time Remaining = ", remainingTime);
+            if (remainingTime > 5) {
+              localStorage.removeItem("remainingTime");
+            }
+            if (remainingTime === 4) {
+              const sessionTimeRemaining =
+                localStorage.getItem("remainingTime");
+              if (sessionTimeRemaining === null) {
+                toast.warn("Your session will expire in 5 minutes");
+                localStorage.setItem("remainingTime", 5);
+              }
+            }
+          } else {
+            localStorage.setItem("userSession", "invalid");
+            goTo("/login");
+          }
+        } catch (error) {
+          console.log("error");
+          localStorage.removeItem("data");
+          localStorage.removeItem("remainingTime");
+          localStorage.removeItem("notificationRefresh");
+          localStorage.removeItem("updatedSubscriptionStatus");
+          goTo("/login");
+        }
+      }
+    }, MINUTE_MS);
 
-  //   return () => clearInterval(interval);
-  //   // eslint-disable-next-line
-  // }, []);
+    return () => clearInterval(interval);
+    // eslint-disable-next-line
+  }, []);
 
   return (
     <>
@@ -189,9 +192,15 @@ function App() {
               </ProtectedForLoggedInUser>
             }
           />
+          <Route
+            path="/inactive-user-details"
+            element={
+              <InactiveUserDetails />
+            }
+          />
 
           <Route path="/forgot-password/*" element={<ForgotPassword />} />
-          <Route path="/inactive-account/*" element={< InactiveAccount />} />
+          <Route path="/inactive-account/*" element={< InactiveUserEmailVerification />} />
 
           <Route path="/forgot-password/password-reset/*" element={<SecurityQuestionAndEmailLinkPasswordReset />} />
 
@@ -206,7 +215,7 @@ function App() {
 
           {/* Admin */}
           <Route
-            path={`${isBank ? "/bank" : "/admin"}`}
+            path={`${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"}`}
             element={
               <AdminProtected>
                 <AdminHomePage />
@@ -214,7 +223,7 @@ function App() {
             }
           />
           <Route
-            path={`${isBank ? "/bank" : "/admin"}/property/properties/*`}
+            path={`${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"}/property/properties/*`}
             element={
               <AdminProtected>
                 <ViewEditDeleteProperties />
@@ -222,14 +231,13 @@ function App() {
             }
           />
           <Route
-            path={`${isBank ? "/bank" : "/admin"}/property/add-property`}
+            path={`${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"}/property/add-property`}
             element={
               <AdminProtected>
                 <AddProperty />
               </AdminProtected>
             }
           />
-          {/* <Route path="/bank-registration" element={<BankRegistrationPage />} /> */}
           <Route
             path={`/bank-registration-link`}
             element={
@@ -262,7 +270,17 @@ function App() {
           />
 
           <Route
-            path={`${isBank ? "/bank" : "/admin"
+            path={`${roleId === 6 ? "/bank" : "/admin"
+              }/users/bank-users`}
+            element={
+              <AdminProtected>
+                <ManageUsers key={"Bank User"} userType={2} />
+              </AdminProtected>
+            }
+          />
+
+          <Route
+            path={`${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"
               }/property/single-property-documents-upload`}
             element={
               <AdminProtected>
@@ -271,7 +289,7 @@ function App() {
             }
           />
           <Route
-            path={`${isBank ? "/bank" : "/admin"
+            path={`${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"
               }/property/properties/view-property/:id`}
             element={
               <AdminProtected>
@@ -280,7 +298,7 @@ function App() {
             }
           />
           <Route
-            path={`${isBank ? "/bank" : "/admin"}/property/upload-properties`}
+            path={`${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"}/property/upload-properties`}
             element={
               <AdminProtected>
                 <UploadProperties />

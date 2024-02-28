@@ -32,6 +32,9 @@ code {
   --secondary-color: orange;
   --primary-color-hover: #0a58ca;
 }
+.all-page-heading-color {
+color: var(--primary-color) !important;
+}
 
 .rotate-180deg {
   transform: rotate(180deg);
@@ -505,7 +508,8 @@ input:-webkit-autofill:active {
   padding: 13px;
 }
 
-.forgot-password-form-control, .inactive-account-form-control {
+.forgot-password-form-control,
+.inactive-account-form-control {
   border-radius: 0;
   border-color: var(--primary-color) !important;
   font-size: 12px;
@@ -571,10 +575,35 @@ input:-webkit-autofill:active {
 .bank-registration-link-form .form-bank-select {
   font-size: 0.9rem !important;
 }
-/* .bank-registration-link-form label{
-  width: 150px !important;
-  
-} */
+
+.bank-registration-link-page .showBankForm {
+  /* border-top: unset !important;
+  border-left: unset !important;
+  border-right: unset !important;
+  border-radius: none ; */
+  border: 2px solid var(--primary-color-hover) !important;
+}
+.bank-registration-link-page .otherBankName {
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: 2px solid var(--primary-color);
+}
+.bank-registration-link-page .otherBankNameDiv  {
+  font-size: 0.9rem !important;
+}
+
+.bank-registration-link-page .form-check input {
+  border: 2px solid var(--primary-color);
+}
+
+.bank-registration-link-page .otherBankNameDiv input:focus-visible {
+  outline: none;
+  border: none;
+  border-bottom: 2px solid var(--primary-color);
+  outline-offset: 0px;
+}
+
 .registration-wrapper .form-wrapper-card {
   border: none !important;
   position: relative;
@@ -656,6 +685,7 @@ input:-webkit-autofill:active {
 /* Set Password */
 
 .set-password-wrapper .form-control,
+.admin-users-filter select,
 .security-question-wrapper .form-control {
   border-top: none;
   border-left: none;
@@ -842,9 +872,6 @@ input:-webkit-autofill:active {
   border-bottom: 1px solid lightgray;
 }
 
-.enquiry-filter-row .search_input {
-  /* width:200px !important */
-}
 
 .chatBox-modal-header {
   background: linear-gradient(0deg, rgba(2, 48, 251) 0%, rgb(0, 191, 255) 100%);
@@ -872,6 +899,11 @@ input:-webkit-autofill:active {
   background: linear-gradient(0deg, rgb(251, 97, 2) 0%, rgb(255, 174, 0) 100%);
   color: white;
   align-self: flex-end;
+}
+
+.chatBox-msg-send-btn {
+  background: linear-gradient(0deg, rgb(251, 97, 2) 0%, rgb(255, 174, 0) 100%);
+  color: white !important;
 }
 
 .chatBox-received {
@@ -1545,7 +1577,7 @@ input:-webkit-autofill:active {
     bottom: 10px;
     right: 15px;
   }
-  
+
   .need-help-link {
     bottom: 10px;
     right: 15px;
@@ -1570,10 +1602,10 @@ input:-webkit-autofill:active {
 
 @media screen and (max-width: 767px) {
   small {
-    font-size: .875em !important;
+    font-size: 0.875em !important;
   }
 
-  .admin-edit-property .property-details h5{
+  .admin-edit-property .property-details h5 {
     font-size: initial !important;
   }
 
@@ -1692,9 +1724,9 @@ input:-webkit-autofill:active {
     width: auto !important;
   }
   .need-help-link {
-    position: initial ;
+    position: initial;
     text-align: end;
     bottom: 11px;
     right: 30px;
-}
+  }
 }

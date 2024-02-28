@@ -1,7 +1,7 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 
-const OffcanvasBody = ({ canvasNumber, propertiesLinkDisabled, isBank }) => {
+const OffcanvasBody = ({ canvasNumber, propertiesLinkDisabled, isBank, roleId }) => {
   return (
     <div className={`offcanvas-body ${canvasNumber ? "pt-0" : ""}`}>
       <ul className="navbar-nav">
@@ -9,7 +9,7 @@ const OffcanvasBody = ({ canvasNumber, propertiesLinkDisabled, isBank }) => {
         <li className="nav-item">
           <NavLink
             className="nav-link admin-home-link sidebar-link"
-            to={`${isBank ? "/bank" : "/admin"}`}
+            to={`${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"}`}
           >
             <span className="mx-2">
               <i className="bi bi-house-fill text-light"></i>
@@ -22,9 +22,8 @@ const OffcanvasBody = ({ canvasNumber, propertiesLinkDisabled, isBank }) => {
           <span
             className="nav-link"
             data-bs-toggle="collapse"
-            data-bs-target={`${
-              canvasNumber ? "#propertyCollapse2" : "#propertyCollapse"
-            }`}
+            data-bs-target={`${canvasNumber ? "#propertyCollapse2" : "#propertyCollapse"
+              }`}
           >
             <span className="mx-2">
               <i className="bi bi-building-fill text-light"></i>
@@ -52,7 +51,7 @@ const OffcanvasBody = ({ canvasNumber, propertiesLinkDisabled, isBank }) => {
                   ) : (
                     <NavLink
                       className="nav-link sidebar-link"
-                      to={`${isBank ? "/bank" : "/admin"}/property/properties`}
+                      to={`${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"}/property/properties`}
                     >
                       <i className="bi bi-buildings text-light me-2"></i>
                       Properties
@@ -63,7 +62,7 @@ const OffcanvasBody = ({ canvasNumber, propertiesLinkDisabled, isBank }) => {
                 <li className="nav-item">
                   <NavLink
                     className="nav-link sidebar-link"
-                    to={`${isBank ? "/bank" : "/admin"}/property/add-property`}
+                    to={`${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"}/property/add-property`}
                   >
                     <i className="bi bi-plus-circle text-light me-2"></i>
                     Add
@@ -72,9 +71,8 @@ const OffcanvasBody = ({ canvasNumber, propertiesLinkDisabled, isBank }) => {
                 <li className="nav-item">
                   <NavLink
                     className="nav-link sidebar-link"
-                    to={`${
-                      isBank ? "/bank" : "/admin"
-                    }/property/upload-properties`}
+                    to={`${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"
+                      }/property/upload-properties`}
                   >
                     <i className="bi bi-upload me-2 text-light"></i>Bulk Upload
                   </NavLink>
@@ -83,54 +81,78 @@ const OffcanvasBody = ({ canvasNumber, propertiesLinkDisabled, isBank }) => {
             </div>
           </div>
         </li>
-        {!isBank ? (
-          <li className="nav-item">
-            <span
-              className="nav-link"
-              data-bs-toggle="collapse"
-              data-bs-target={`${
-                canvasNumber ? "#usersCollapse2" : "#usersCollapse"
+
+        {roleId !== 2 ? <li className="nav-item">
+          <span
+            className="nav-link"
+            data-bs-toggle="collapse"
+            data-bs-target={`${canvasNumber ? "#usersCollapse2" : "#usersCollapse"
               }`}
-            >
-              <span className="mx-2">
-                <i className="bi bi-person-fill text-light"></i>
-              </span>
-              Users
-              <i className="bi bi-chevron-down ms-1"></i>
+          >
+            <span className="mx-2">
+              <i className="bi bi-person-fill text-light"></i>
             </span>
+            Users
+            <i className="bi bi-chevron-down ms-1"></i>
+          </span>
 
-            <div
-              className="collapse usersCollapse"
-              id={`${canvasNumber ? "usersCollapse2" : "usersCollapse"}`}
-            >
-              <div className="card card-body bg-primary">
-                <ul className="list-unstyled">
-                  <li className="nav-item">
-                    <NavLink
-                      className="nav-link sidebar-link"
-                      to="/admin/users/individual-users"
-                    >
-                      <i className="bi bi-person-circle text-light me-2"></i>
-                      Individual
-                    </NavLink>
-                  </li>
-
-                  <li className="nav-item">
-                    <NavLink
-                      className="nav-link sidebar-link"
-                      to="/admin/users/organizational-users"
-                    >
-                      <i className="bi bi-laptop me-2 text-light"></i>
-                      Organizational
-                    </NavLink>
-                  </li>
-                </ul>
-              </div>
+          <div
+            className="collapse usersCollapse"
+            id={`${canvasNumber ? "usersCollapse2" : "usersCollapse"}`}
+          >
+            <div className="card card-body bg-primary">
+              <ul className="list-unstyled">
+                {!isBank ? (
+                  <>
+                    {/* Individual user */}
+                    <li className="nav-item">
+                      <NavLink
+                        className="nav-link sidebar-link"
+                        to="/admin/users/individual-users"
+                      >
+                        <i className="bi bi-person-circle text-light me-2"></i>
+                        Individual
+                      </NavLink>
+                    </li>
+                    {/* Organizational user */}
+                    <li className="nav-item">
+                      <NavLink
+                        className="nav-link sidebar-link"
+                        to="/admin/users/organizational-users"
+                      >
+                        <i className="bi bi-laptop me-2 text-light"></i>
+                        Organizational
+                      </NavLink>
+                    </li>
+                    {/* bank */}
+                    <li className="nav-item">
+                      <NavLink
+                        className="nav-link sidebar-link"
+                        to="/admin/users/bank-users"
+                      >
+                        <i className="bi bi-bank me-2 text-light"></i>
+                        Bank
+                      </NavLink>
+                    </li>
+                  </>
+                ) : (<>
+                  {roleId === 6 ?
+                    <li className="nav-item">
+                      <NavLink
+                        className="nav-link sidebar-link"
+                        to={`/bank/users/bank-users`}
+                      >
+                        <i className="bi bi-bank me-2 text-light"></i>
+                        Bank
+                      </NavLink>
+                    </li>
+                    : ""}</>
+                )}
+              </ul>
             </div>
-          </li>
-        ) : (
-          <></>
-        )}
+          </div>
+        </li> : ""}
+
         <hr className="text-white" />
       </ul>
     </div>

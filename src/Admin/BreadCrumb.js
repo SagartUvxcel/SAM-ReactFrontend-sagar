@@ -3,6 +3,7 @@ import { useState } from "react";
 import { NavLink } from "react-router-dom";
 
 let isBank = false;
+let roleId = "";
 const BreadCrumb = ({
   userType,
   emailOfCurrentUser,
@@ -20,6 +21,7 @@ const BreadCrumb = ({
   const data = JSON.parse(localStorage.getItem("data"));
   if (data) {
     isBank = data.isBank;
+    roleId = data.roleId;
   }
 
   const [isBulkUploadPropertyPageActive, setIsBulkUploadPropertyPageActive] =
@@ -29,23 +31,23 @@ const BreadCrumb = ({
   const checkActivePages = () => {
     setIsUserPageActive(window.location.href.includes("/admin/users"));
     setIsPropertyPageActive(
-      window.location.href.includes(`${isBank ? "/bank" : "/admin"}/property`)
+      window.location.href.includes(`${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"}/property`)
     );
     setIsAddPropertyPageActive(
       window.location.href.includes(
-        `${isBank ? "/bank" : "/admin"}/property/add-property`
+        `${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"}/property/add-property`
       )
     );
     setIsBulkUploadPropertyPageActive(
       window.location.href.includes(
-        `${isBank ? "/bank" : "/admin"}/property/upload-properties`
+        `${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"}/property/upload-properties`
       )
     );
   };
 
   let sampleLink = (
     <NavLink
-      to={`${isBank ? "/bank" : "/admin"}/property/properties`}
+      to={`${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"}/property/properties`}
       className="breadcrumb-item"
     >
       Properties
@@ -64,7 +66,7 @@ const BreadCrumb = ({
           <li className="breadcrumb-item">
             <NavLink
               className="text-decoration-none"
-              to={`${isBank ? "/bank" : "/admin"}`}
+              to={`${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"}`}
             >
               Dashboard
             </NavLink>
@@ -72,17 +74,16 @@ const BreadCrumb = ({
           {isUserPageActive ? (
             <>
               <li
-                className={`breadcrumb-item text-secondary ${
-                  userType === undefined ? "d-none" : ""
-                }`}
+                className={`breadcrumb-item text-secondary ${userType === undefined ? "d-none" : ""
+                  }`}
               >
                 {userType === 0
                   ? "Individual User"
                   : userType === 1
-                  ? "Organizational User"
-                  : userType === 2
-                  ? "Bank User"
-                  : ""}
+                    ? "Organizational User"
+                    : userType === 2
+                      ? "Bank User"
+                      : ""}
               </li>
 
               {emailOfCurrentUser ? (
@@ -101,7 +102,7 @@ const BreadCrumb = ({
                     >
                       Individual Users
                     </li>
-                  ) : (
+                  ) : typeOfUser === 1 ? (
                     <li
                       style={{ cursor: "pointer" }}
                       onClick={() => {
@@ -114,6 +115,20 @@ const BreadCrumb = ({
                       className="breadcrumb-item"
                     >
                       Organizational Users
+                    </li>
+                  ) : (
+                    <li
+                      style={{ cursor: "pointer" }}
+                      onClick={() => {
+                        handlePageClick({ selected: currentPageNumber });
+                        setDisplayClassesOfMainSections({
+                          showAllUsersSectionClass: "",
+                          viewCurrentUserSectionClass: "d-none",
+                        });
+                      }}
+                      className="breadcrumb-item"
+                    >
+                      Bank Users
                     </li>
                   )}
                   <li className="breadcrumb-item text-secondary">

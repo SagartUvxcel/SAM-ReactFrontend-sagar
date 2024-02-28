@@ -10,7 +10,7 @@ import {
     validateCaptcha,
 } from "react-simple-captcha";
 
-const InactiveAccount = () => {
+const InactiveUserEmailVerification = () => {
     const goTo = useNavigate();
 
     const [emailValue, setEmailValue] = useState("");
@@ -50,6 +50,28 @@ const InactiveAccount = () => {
         }
     };
 
+    // on change function
+    const emailOnChange = (e) => {
+        const { name, value } = e.target;
+        console.log(name, value);
+        var emailFormat = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
+        if (!emailFormat.test(value)) {
+            setAlertDetails({
+                alertVisible: true,
+                alertMsg: "Invalid email Id",
+                alertClr: "danger",
+            });
+        } else {
+            setEmailValue(value);
+            setAlertDetails({
+                alertVisible: false,
+                alertMsg: "",
+                alertClr: "",
+            });
+        }
+
+    }
+
     // if email valiate
     const verifySecurityQuestionForonClickActivateAccountBtn = async () => {
         try {
@@ -86,14 +108,15 @@ const InactiveAccount = () => {
         e.preventDefault();
         setLoading(true);
         if (captchaVerified) {
+            console.log(emailValue);
             try {
                 await axios
-                    .post(
-                        `/sam/v1/customer-registration/email-validation`,
-                        JSON.stringify({ email: emailValue })
+                    .put(
+                        `/sam/v1/customer-registration/activate-account/token`,
+                        JSON.stringify({ username: emailValue })
                     )
                     .then((res) => {
-                        if (res.data.status === 1) {
+                        if (res.data.status === 0) {
                             e.target.reset();
                             toast.success(
                                 `Success: Please check your email for account activation link.`
@@ -116,7 +139,7 @@ const InactiveAccount = () => {
                 setAlertDetails({
                     alertVisible: true,
                     alertClr: "warning",
-                    alertMsg: "Internal server error",
+                    alertMsg: "Email address is either invalid or not a verified email address",
                 });
             }
         } else {
@@ -189,9 +212,7 @@ const InactiveAccount = () => {
                                         className="form-control inactive-account-form-control"
                                         placeholder="Enter your email address"
                                         required
-                                        onChange={(e) => {
-                                            setEmailValue(e.target.value);
-                                        }}
+                                        onChange={emailOnChange}
                                     />
                                 </div>
 
@@ -295,4 +316,4 @@ const InactiveAccount = () => {
     );
 }
 
-export default InactiveAccount
+export default InactiveUserEmailVerification

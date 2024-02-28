@@ -21,6 +21,7 @@ import { v4 as uuid } from "uuid";
 let authHeader = "";
 let bank_Id = "";
 let userId = "";
+let roleId = "";
 let branch_Id = "";
 let propertiesPerPage = 4;
 let isBank = false;
@@ -32,6 +33,7 @@ const ViewEditDeleteProperties = () => {
     authHeader = { Authorization: data.loginToken };
     isBank = data.isBank;
     userId = data.userId;
+    roleId = data.roleId;
     bank_Id = data.bank_id;
     branch_Id = data.branch_Id;
   }
@@ -746,8 +748,6 @@ const ViewEditDeleteProperties = () => {
     }
   };
 
-
-
   //connect To WebSocket
   const connectToWebSocket = () => {
     const newSocket = new WebSocket("ws://localhost:3000/ws");
@@ -965,7 +965,7 @@ const ViewEditDeleteProperties = () => {
                                           })
                                         );
                                       }}
-                                      to={`${isBank ? "/bank" : "/admin"
+                                      to={`${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"
                                         }/property/single-property-documents-upload`}
                                       className="btn btn-sm btn-outline-dark property-button-wrapper ms-2"
                                     >

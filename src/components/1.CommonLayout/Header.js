@@ -72,7 +72,7 @@ function Header() {
       <nav className="navbar navbar-expand-md fixed-top">
         <div className="container-fluid">
           <button
-            className={`navbar-toggler ${window.location.href.includes(`${isBank ? "/bank" : "/admin"}`)
+            className={`navbar-toggler ${window.location.href.includes(`${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"}`)
               ? ""
               : "d-none"
               }`}
@@ -127,7 +127,7 @@ function Header() {
                 </NavLink>
               </li>
 
-              <li className={`nav-item ps-md-2 ${loginStatus && roleId !== 1 ? "" : "d-none"}`}>
+              <li className={`nav-item ps-md-2 ${loginStatus && roleId !== 1 && roleId !== 6 ? "" : "d-none"}`}>
                 <NavLink to="/user-enquiries" className="nav-link">
                   <i className="bi bi-chat-text me-2 text-light"></i>
                   Enquiries
