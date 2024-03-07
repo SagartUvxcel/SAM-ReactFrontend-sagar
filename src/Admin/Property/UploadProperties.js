@@ -145,53 +145,57 @@ const UploadProperties = () => {
       file_name: file.name,
       data: data,
     };
+    console.log(detailsToPost);
     const chunks = Math.ceil(file.size / chunkSize) - 1;
     const isLastChunk = currentChunkIndex === chunks;
-    try {
-      await axios
-        .post(`/sam/v1/property/auth/upload-chunk`, detailsToPost, {
-          headers: authHeaders,
-        })
-        .then((res) => {
-          if (isLastChunk) {
-            if (res.data.msg === 0) {
-              toast.success("File uploaded successfully");
-              reloadPage();
-            } else {
-              let arr = [];
-              res.data.forEach((data) => {
-                arr.push(data.property_number);
-              });
-              let duplicateProperties = arr.join(", ");
-              let customErrorMessage = "";
-              if (arr.length > 1) {
-                customErrorMessage = `Failed to upload properties with property numbers ${duplicateProperties}`;
-              } else {
-                customErrorMessage = `Failed to upload property with property number ${duplicateProperties}`;
-              }
-              setErrorModalDetails({
-                errorModalOpen: true,
-                errorHeading: "Duplicate Records Error",
-                errorMessage: customErrorMessage,
-              });
-              window.scrollTo(0, 0);
-            }
-          }
-        });
-    } catch (error) {
-      if (isLastChunk) {
-        toast.error("Internal server error");
-        reloadPage();
-      }
-    }
+    console.log(chunks, isLastChunk);
+    // try {
+    //   await axios
+    //     .post(`/sam/v1/property/auth/upload-chunk`, detailsToPost, {
+    //       headers: authHeaders,
+    //     })
+    //     .then((res) => {
+    //       console.log(res.data);
+    //       if (isLastChunk) {
+    //         if (res.data.msg === 0) {
+    //           toast.success("File uploaded successfully");
+    //           reloadPage();
+    //         } else {
+    //           let arr = [];
+    //           res.data.forEach((data) => {
+    //             arr.push(data.property_number);
+    //           });
+    //           let duplicateProperties = arr.join(", ");
+    //           let customErrorMessage = "";
+    //           if (arr.length > 1) {
+    //             customErrorMessage = `Failed to upload properties with property numbers ${duplicateProperties}`;
+    //           } else {
+    //             customErrorMessage = `Failed to upload property with property number ${duplicateProperties}`;
+    //           }
+    //           setErrorModalDetails({
+    //             errorModalOpen: true,
+    //             errorHeading: "Duplicate Records Error",
+    //             errorMessage: customErrorMessage,
+    //           });
+    //           window.scrollTo(0, 0);
+    //         }
+    //       }
+    //     });
+    // } catch (error) {
+    //   console.log(error);
+    //   if (isLastChunk) {
+    //     toast.error("Internal server error");
+    //     reloadPage();
+    //   }
+    // }
 
-    if (isLastChunk) {
-      setUniqueUploadId(uuid());
-      setLastUploadedFileIndex(currentFileIndex);
-      setCurrentChunkIndex(null);
-    } else {
-      setCurrentChunkIndex(currentChunkIndex + 1);
-    }
+    // if (isLastChunk) {
+    //   setUniqueUploadId(uuid());
+    //   setLastUploadedFileIndex(currentFileIndex);
+    //   setCurrentChunkIndex(null);
+    // } else {
+    //   setCurrentChunkIndex(currentChunkIndex + 1);
+    // }
   };
 
   useEffect(() => {

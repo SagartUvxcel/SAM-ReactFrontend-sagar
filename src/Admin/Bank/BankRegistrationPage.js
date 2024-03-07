@@ -138,7 +138,7 @@ const BankRegistrationPage = () => {
                                 const emailDomainPart = "@" + splitedEmail[1];
                                 setSplittedBankEmailId({ userName: splitedEmail[0], domain: emailDomainPart });
                                 setBankEmailFromURL({ bank_name, email, branch_code, branch_name, branch_sftp, ifsc_code, is_bank_admin });
-                                setFormData({ ...formData, bank_name, email, branch_code, branch_name, branch_sftp, ifsc_code,is_bank_admin });
+                                setFormData({ ...formData, bank_name, email, branch_code, branch_name, branch_sftp, ifsc_code, is_bank_admin });
                                 setBankRegistrationPageDisplay({
                                     display: true,
                                 });
@@ -688,8 +688,8 @@ const BankRegistrationPage = () => {
             });
         }
         // mobile number validation
-        if (!formData.mobile_number || mobileValidationMessage && mobileValidationMessage.length > 0) {
-            if (mobileValidationMessage.length > 0) {
+        if (!formData.mobile_number || mobileValidationMessage !== "") {
+            if (mobileValidationMessage !== "") {
                 return setValidationDetails({
                     ...validationDetails,
                     mobileValidationMessage: "Invalid Mobile Number Entered",

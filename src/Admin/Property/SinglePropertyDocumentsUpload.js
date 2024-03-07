@@ -671,6 +671,7 @@ const SinglePropertyDocumentsUpload = () => {
               </div>
               <hr />
               <div className="row">
+              {/* Category */}
                 <div className="col-xl-3 col-md-6">
                   <div className="form-group">
                     <label
@@ -685,6 +686,7 @@ const SinglePropertyDocumentsUpload = () => {
                     </div>
                   </div>
                 </div>
+                {/* File */}
                 <div className="col-xl-3 col-md-6 mt-md-0 mt-3">
                   <div className="form-group">
                     <label
@@ -725,6 +727,7 @@ const SinglePropertyDocumentsUpload = () => {
                     </OverlayTrigger>
                   </div>
                 </div>
+                {/* Document Description */}
                 <div className="col-xl-3 col-md-6 mt-xl-0 mt-3">
                   <div className="form-group">
                     <label
@@ -745,6 +748,7 @@ const SinglePropertyDocumentsUpload = () => {
                     ></input>
                   </div>
                 </div>
+                {/* Action */}
                 <div className="col-xl-3 col-md-6 mt-xl-0 mt-3">
                   <div className="form-group">
                     <label

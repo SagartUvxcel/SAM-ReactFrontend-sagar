@@ -65,7 +65,7 @@ const ForgotPassword = () => {
             const sensitiveData = { email: res.data.username, question: res.data.question }
             goTo("/forgot-password/password-reset", { state: { sensitiveData } });
             setLoading(false);
-          } else if(res.data.EmailSent === true){
+          } else if (res.data.EmailSent === true) {
             toast.success(
               `Success: Please check your email for password-reset link.`
             );
@@ -86,41 +86,41 @@ const ForgotPassword = () => {
   const resetPassword = async (e) => {
     e.preventDefault();
     setLoading(true);
-    if(captchaVerified){
+    if (captchaVerified) {
       try {
-      await axios
-        .post(
-          `/sam/v1/customer-registration/email-validation`,
-          JSON.stringify({ email: emailValue })
-        )
-        .then((res) => {
-          if (res.data.status === 1) {
-            e.target.reset();
-            verifySecurityQuestionForResetPassword();
-          } else {
-            setLoading(false);
-            setAlertDetails({
-              alertVisible: true,
-              alertClr: "danger",
-              alertMsg:
-                "Email address is either invalid or not a verified email address",
-            });
-          }
-        });
-    } catch (error) {
-      setLoading(false);
-      setAlertDetails({
-        alertVisible: true,
-        alertClr: "warning",
-        alertMsg: "Internal server error",
-      });
-    }
-  }else{
-    setCaptchaVerified(false);
-        setCaptchaErr(true);
-        captchaRef.current.value = "";
+        await axios
+          .post(
+            `/sam/v1/customer-registration/email-validation`,
+            JSON.stringify({ email: emailValue })
+          )
+          .then((res) => {
+            if (res.data.status === 1) {
+              e.target.reset();
+              verifySecurityQuestionForResetPassword();
+            } else {
+              setLoading(false);
+              setAlertDetails({
+                alertVisible: true,
+                alertClr: "danger",
+                alertMsg:
+                  "Email address is either invalid or not a verified email address",
+              });
+            }
+          });
+      } catch (error) {
         setLoading(false);
-  }
+        setAlertDetails({
+          alertVisible: true,
+          alertClr: "warning",
+          alertMsg: "Internal server error",
+        });
+      }
+    } else {
+      setCaptchaVerified(false);
+      setCaptchaErr(true);
+      captchaRef.current.value = "";
+      setLoading(false);
+    }
   };
 
   // load captcha button function
@@ -218,7 +218,7 @@ const ForgotPassword = () => {
                           }`}
                         ref={captchaRef}
                         placeholder="Enter captcha"
-                        
+
                       />
                     </div>
                     <div

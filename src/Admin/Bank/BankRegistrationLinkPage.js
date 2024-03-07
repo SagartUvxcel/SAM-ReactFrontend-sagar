@@ -282,7 +282,7 @@ const BankRegistrationLinkPage = () => {
                                                         ) : (
                                                             <> </>
                                                         )}
-                                                        <option value="other">Other</option>
+                                                        {/* <option value="other">Other</option> */}
 
                                                     </select>
                                                     {bankNameSelectedOption === 'other' && (

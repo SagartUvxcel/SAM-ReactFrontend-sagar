@@ -65,47 +65,47 @@ function App() {
     isBank = data.isBank;
     roleId = data.roleId;
   }
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      const data = JSON.parse(localStorage.getItem("data"));
-      if (data) {
-        try {
-          let res = await axios.get(`/sam/v1/user-registration/logout`, {
-            headers: { Authorization: data.loginToken },
-          });
-          // console.log(res.data);
-          if (res.data !== "Session expired or invalid user") {
-            let remainingTime = parseInt(res.data.TimeRemaining);
-            // console.log("Time Remaining = ", remainingTime);
-            if (remainingTime > 5) {
-              localStorage.removeItem("remainingTime");
-            }
-            if (remainingTime === 4) {
-              const sessionTimeRemaining =
-                localStorage.getItem("remainingTime");
-              if (sessionTimeRemaining === null) {
-                toast.warn("Your session will expire in 5 minutes");
-                localStorage.setItem("remainingTime", 5);
-              }
-            }
-          } else {
-            localStorage.setItem("userSession", "invalid");
-            goTo("/login");
-          }
-        } catch (error) {
-          console.log("error");
-          localStorage.removeItem("data");
-          localStorage.removeItem("remainingTime");
-          localStorage.removeItem("notificationRefresh");
-          localStorage.removeItem("updatedSubscriptionStatus");
-          goTo("/login");
-        }
-      }
-    }, MINUTE_MS);
+  // useEffect(() => {
+  //   const interval = setInterval(async () => {
+  //     const data = JSON.parse(localStorage.getItem("data"));
+  //     if (data) {
+  //       try {
+  //         let res = await axios.get(`/sam/v1/user-registration/logout`, {
+  //           headers: { Authorization: data.loginToken },
+  //         });
+  //         // console.log(res.data);
+  //         if (res.data !== "Session expired or invalid user") {
+  //           let remainingTime = parseInt(res.data.TimeRemaining);
+  //           // console.log("Time Remaining = ", remainingTime);
+  //           if (remainingTime > 5) {
+  //             localStorage.removeItem("remainingTime");
+  //           }
+  //           if (remainingTime === 4) {
+  //             const sessionTimeRemaining =
+  //               localStorage.getItem("remainingTime");
+  //             if (sessionTimeRemaining === null) {
+  //               toast.warn("Your session will expire in 5 minutes");
+  //               localStorage.setItem("remainingTime", 5);
+  //             }
+  //           }
+  //         } else {
+  //           localStorage.setItem("userSession", "invalid");
+  //           goTo("/login");
+  //         }
+  //       } catch (error) {
+  //         console.log("error");
+  //         localStorage.removeItem("data");
+  //         localStorage.removeItem("remainingTime");
+  //         localStorage.removeItem("notificationRefresh");
+  //         localStorage.removeItem("updatedSubscriptionStatus");
+  //         goTo("/login");
+  //       }
+  //     }
+  //   }, MINUTE_MS);
 
-    return () => clearInterval(interval);
-    // eslint-disable-next-line
-  }, []);
+  //   return () => clearInterval(interval);
+  //   // eslint-disable-next-line
+  // }, []);
 
   return (
     <>

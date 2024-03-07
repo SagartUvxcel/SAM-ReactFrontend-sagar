@@ -143,7 +143,7 @@ const OffcanvasBody = ({ canvasNumber, propertiesLinkDisabled, isBank, roleId })
                         to={`/bank/users/bank-users`}
                       >
                         <i className="bi bi-bank me-2 text-light"></i>
-                        Bank
+                        Branch 
                       </NavLink>
                     </li>
                     : ""}</>

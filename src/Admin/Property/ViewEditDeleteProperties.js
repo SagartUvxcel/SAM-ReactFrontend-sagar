@@ -52,7 +52,6 @@ const ViewEditDeleteProperties = () => {
   const paginationRef = useRef();
   const [messages, setMessages] = useState(null);
 
-  console.log(properties);
 
   // useStates for delete functionalities
   const [selectedPropertyId, setSelectedPropertyId] = useState("");
@@ -68,7 +67,7 @@ const ViewEditDeleteProperties = () => {
   // get Properties From Api
   const getPropertiesFromApi = async () => {
     // Hide pagination while loading.
-    if (paginationRef) {
+    if (paginationRef.current) {
       paginationRef.current.classList.add("d-none");
     }
     let dataToPost = {
@@ -84,12 +83,18 @@ const ViewEditDeleteProperties = () => {
         dataToPost,
         { headers: authHeader }
       );
-
+      console.log(propertiesRes.data);
+      if (propertiesRes.data !== null && propertiesRes.data.length > 0) {
+        paginationRef.current.classList.remove("d-none");
+        setProperties(propertiesRes.data);
+      } else {
+        paginationRef.current.classList.add("d-none");
+      }
       const propertyCountRes = await axios.get(
         `/sam/v1/property/auth/property-count`,
         { headers: authHeader }
       );
-      console.log(propertiesRes);
+      console.log(propertiesRes.data);
       console.log(propertyCountRes);
       let arr = propertyCountRes.data;
       let totalCount = 0;
@@ -104,12 +109,7 @@ const ViewEditDeleteProperties = () => {
         setPageCount(totalPages);
       }
 
-      if (propertiesRes.data !== null && propertiesRes.data.length > 0) {
-        paginationRef.current.classList.remove("d-none");
-        setProperties(propertiesRes.data);
-      } else {
-        paginationRef.current.classList.add("d-none");
-      }
+
       setLoading(false);
 
     } catch (error) {
@@ -215,7 +215,6 @@ const ViewEditDeleteProperties = () => {
 
   // get ListOfProperty Documents from API
   const getListOfPropertyDocuments = async (id) => {
-    console.log(id);
     const propertyDocsListRes = await axios.get(
       `/sam/v1/property/auth/property_document_list/${id}`,
       { headers: authHeader }
@@ -248,6 +247,7 @@ const ViewEditDeleteProperties = () => {
   const [formData, setFormData] = useState({
     address_details: {},
   });
+
   const {
     completion_date,
     purchase_date,
@@ -265,6 +265,8 @@ const ViewEditDeleteProperties = () => {
     is_stressed,
     // is_available_for_sale,
   } = formData;
+
+
   const {
     locality,
     flat_number,
@@ -300,7 +302,8 @@ const ViewEditDeleteProperties = () => {
     useState(false);
 
   const commonFnToSaveFormData = (name, value) => {
-    setFormData({ ...formData, [name]: value });
+    console.log("common function===>", formData);
+    setFormData((oldData) => ({ ...oldData, [name]: value }));
   };
 
   const onInputChange = async (e) => {
@@ -376,14 +379,13 @@ const ViewEditDeleteProperties = () => {
   const onFormSubmit = async (e) => {
     e.preventDefault();
     setUpdateBtnLoading(true);
-    try {
-      console.log(JSON.stringify(formData));
-      await axios
-        .post(`/sam/v1/property/auth/update-property`, formData, {
-          headers: authHeader,
-        })
-        .then((res) => {
-          if (res.data.status === 0) {
+      console.log(formData);
+try {
+  const {data}=await axios.post(`/sam/v1/property/auth/update-property`, formData, {
+        headers: authHeader,
+      })
+      console.log(data);
+          if (data.status === 0) {
             toast.success("Property updated successfully");
             setUpdateBtnLoading(false);
             window.scrollTo(0, 0);
@@ -391,11 +393,12 @@ const ViewEditDeleteProperties = () => {
             toast.error("Internal server error");
             setUpdateBtnLoading(false);
           }
-        });
-    } catch (error) {
+} catch (error) {
+  console.log(error);  
       toast.error("Internal server error");
       setUpdateBtnLoading(false);
-    }
+}
+
   };
 
   const [otherValuesToShow, setOtherValuesToShow] = useState({});
@@ -405,23 +408,15 @@ const ViewEditDeleteProperties = () => {
   const getCurrentPropertyDataToUpdate = async (propertyId) => {
     setMainPageLoading(true);
     // let propertyId = localStorage.getItem("propertyId");
+    console.log("pId==>", propertyId);
+    console.log(formData);
     if (propertyId) {
-      allPropertiesPageRef.current.classList.add("d-none");
-      editPropertyRef.current.classList.remove("d-none");
-      setPropertiesLinkDisabled(true);
-      // Get details from api.
-      const bankRes = await axios.get(`/sam/v1/property/by-bank`);
-      setBanks(bankRes.data);
-
-      if (isBank) {
-        getBankDetails(bankRes.data);
-      }
       // Get current property values
       const currentPropertyRes = await axios.get(
         `/sam/v1/property/single-property/${propertyId}`,
         { headers: authHeader }
       );
-      console.log(currentPropertyRes.data);
+      const currentPropertyData = currentPropertyRes.data
       const {
         type_id,
         completion_date,
@@ -453,32 +448,26 @@ const ViewEditDeleteProperties = () => {
         title_clear_property,
         distress_value,
         bank_branch_id,
-      } = currentPropertyRes.data;
+      } = currentPropertyData;
       setOtherValuesToShow(currentPropertyRes.data);
+      console.log("data from currentPropertyData==>", currentPropertyData);
 
-      setAllDefaultValues(
-        bank_id,
-        is_sold,
-        is_available_for_sale,
-        title_clear_property,
-        bank_branch_id
-      );
 
-      if (currentPropertyRes.data) {
+      if (currentPropertyData) {
         setFormData({
           ...formData,
-          property_id: property_id,
+          property_id: currentPropertyData.property_id,
           type_id: parseInt(type_id),
           bank_branch_id: parseInt(bank_branch_id),
           property_number: property_number,
           is_stressed: parseInt(is_stressed),
           is_available_for_sale: parseInt(is_available_for_sale),
           sale_availability_date: "2005-12-26 23:50:30",
-          saleable_area: saleable_area,
+          saleable_area: currentPropertyData.saleable_area,
           carpet_area: carpet_area,
           ready_reckoner_price: parseInt(ready_reckoner_price),
           expected_price: parseInt(expected_price),
-          market_price: parseInt(market_price),
+          market_price: parseInt(currentPropertyData.market_price),
           completion_date: transformDateFormat(completion_date),
           purchase_date: transformDateFormat(purchase_date),
           mortgage_date: transformDateFormat(mortgage_date),
@@ -502,8 +491,56 @@ const ViewEditDeleteProperties = () => {
           },
         });
       }
+      console.log("after set==>", formData);
+
+      // Get details from api.
+      const bankRes = await axios.get(`/sam/v1/property/by-bank`);
+      setBanks(bankRes.data);
+      let bankData = bankRes.data
+      const activeBankDetails = bankData.filter(bank => bank.bank_id === bank_Id)[0]
+      let branchIDFromProperty = parseInt(bank_branch_id);
+      const branchRes = await axios.get(`/sam/v1/property/auth/bank-branches/${bank_id}`, {
+        headers: authHeader,
+      });
+      if (isBank) {
+        const branchResData = branchRes.data;
+        const activeBranchDetails = branchResData.filter(branch => branch.branch_id === branchIDFromProperty)[0]
+        setActiveBranch(activeBranchDetails);
+      }
+
+      setActiveBank(activeBankDetails);
+
+      allPropertiesPageRef.current.classList.add("d-none");
+      editPropertyRef.current.classList.remove("d-none");
+      setPropertiesLinkDisabled(true);
+
+
+
+
+      setAllDefaultValues(
+        bank_id,
+        is_sold,
+        is_available_for_sale,
+        title_clear_property,
+        bank_branch_id
+      );
+      if (branch_Id === 0) {
+        branch_Id = parseInt(bank_branch_id);
+
+
+      }
+
+      if (isBank) {
+        getBankDetails(bankRes.data);
+      }
+
+      console.log("after get bank==>", formData);
+
     }
   };
+
+ 
+
 
   // change Sort Type function
   const changeSortType = () => {
@@ -536,7 +573,6 @@ const ViewEditDeleteProperties = () => {
           headers: authHeader,
         })
         const dataValue = EnquiryRes.data
-        console.log(dataValue);
         if (dataValue) {
           setEnquiryList(dataValue);
           setTempEnquiryList(dataValue);
@@ -557,21 +593,14 @@ const ViewEditDeleteProperties = () => {
 
   // get Bank Details form API
   const getBankDetails = async (bankData) => {
+    console.log("get bank function===>", formData);
     const activeBankDetails = bankData.filter(bank => bank.bank_id === bank_Id)[0]
     setActiveBank(activeBankDetails);
-    const branchRes = await axios.get(`/sam/v1/property/auth/bank-branches/${bank_Id}`, {
-      headers: authHeader,
-    });
-    const branchResData = branchRes.data;
-    console.log(branchResData, bank_Id, branch_Id);
-    const activeBranchDetails = branchResData.filter(branch => branch.branch_id === branch_Id)[0]
-    setActiveBranch(activeBranchDetails);
-
-    // branchSelectBoxRef.current.classList.remove("d-none");
     commonFnToSaveFormData("bank", bank_Id);
     commonFnToSaveFormData("bank_branch_id", branch_Id);
-  }
 
+    console.log("after common fun==>", formData);
+  }
   // set All Default Values
   const setAllDefaultValues = async (
     bank_id,
@@ -930,9 +959,9 @@ const ViewEditDeleteProperties = () => {
                                     {/* Current property DataToUpdate button */}
                                     <button
                                       onClick={() => {
-                                        getCurrentPropertyDataToUpdate(
+                                        {/* getCurrentPropertyDataToUpdate(
                                           property_id
-                                        );
+                                        );*/}
                                         getCurrentPropertyDataToUpdate(
                                           property_id
                                         );
@@ -1089,6 +1118,7 @@ const ViewEditDeleteProperties = () => {
                           <hr />
                           <div className="row mb-3">
                             <div className="col-12 d-md-flex justify-content-md-start">
+                              {/* Property ID */}
                               <div>
                                 <button
                                   type="button"
@@ -1102,7 +1132,7 @@ const ViewEditDeleteProperties = () => {
                                   </span>
                                 </button>
                               </div>
-
+                              {/* Property Number */}
                               <div>
                                 <button
                                   type="button"
@@ -1200,37 +1230,38 @@ const ViewEditDeleteProperties = () => {
                                 >
                                   Branch
                                 </label>
-                                {pathLocation === 'admin' ? <select
-                                  id="bank_branch_id"
-                                  name="bank_branch_id"
-                                  className="form-select"
-                                  onChange={onInputChange}
-                                  disabled
-                                >
-                                  <option value=""></option>
-                                  {bankBranches ? (
-                                    bankBranches.map((data) => {
-                                      return (
-                                        <option
-                                          key={data.branch_id}
-                                          value={data.branch_id}
-                                          id={`branch-${data.branch_id}`}
-                                        >
-                                          {data.branch_name}
-                                        </option>
-                                      );
-                                    })
-                                  ) : (
-                                    <></>
-                                  )}
-                                </select> :
+                                {pathLocation === 'admin' ?
+                                  <select
+                                    id="bank_branch_id"
+                                    name="bank_branch_id"
+                                    className="form-select"
+                                    onChange={onInputChange}
+                                    disabled
+                                  >
+                                    <option value=""></option>
+                                    {bankBranches ? (
+                                      bankBranches.map((data) => {
+                                        return (
+                                          <option
+                                            key={data.branch_id}
+                                            value={data.branch_id}
+                                            id={`branch-${data.branch_id}`}
+                                          >
+                                            {data.branch_name}
+                                          </option>
+                                        );
+                                      })
+                                    ) : (
+                                      <></>
+                                    )}
+                                  </select> :
                                   <input
                                     type="text"
                                     id="bank_branch_id"
                                     name="bank_branch_id"
                                     className="form-control"
                                     // onChange={onInputChange}
-                                    value={activeBranch.branch_name}
+                                    value={activeBranch && activeBranch.branch_name}
                                     required
                                     disabled
                                   />}

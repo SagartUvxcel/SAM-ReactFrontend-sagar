@@ -13,6 +13,7 @@ import {
 
 const records_per_page = 4;
 let authHeader = "";
+let roleId = "";
 let defaultRoleText = "";
 let defaultRoleIds = [];
 let rolesToRemove = [];
@@ -22,6 +23,7 @@ const ManageUsers = ({ userType }) => {
   const data = JSON.parse(localStorage.getItem("data"));
   if (data) {
     authHeader = { Authorization: data.loginToken };
+    roleId = data.roleId;
   }
   const [otherDetailsOfUser, setOtherDetailsOfUser] = useState({});
   const [categoryWiseUserDetails, setCategoryWiseUserDetails] = useState({});
@@ -61,7 +63,6 @@ const ManageUsers = ({ userType }) => {
       status: accountStatus,
       number_of_records: records_per_page,
     };
-    console.log(dataToPost);
 
     try {
       await axios
@@ -75,13 +76,13 @@ const ManageUsers = ({ userType }) => {
         .get(`${url}/type-count`, { headers: authHeader })
         .then((res) => {
           let usersCount = null;
-          // console.log(res.data);
+          console.log(res.data);
           if (userType === 0) {
             usersCount = parseInt(res.data.individual_count);
           } else if (userType === 1) {
             usersCount = parseInt(res.data.org_count);
           } else {
-            usersCount = parseInt(res.data.bank_count);
+            usersCount = parseInt(res.data.bank_admin_count);
           }
           setTotalUsersCount(usersCount);
           setPageCount(Math.ceil(usersCount / records_per_page));
@@ -422,6 +423,7 @@ const ManageUsers = ({ userType }) => {
                         <tr>
                           <th>User ID</th>
                           <th>{userType === 0 ? "Name" : userType === 1 ? "Company Name" : "Bank Name"}</th>
+                          {/* {userType === 2 ? <th>Branch ID</th> : ""} */}
                           <th>Email</th>
                           <th>Role</th>
                           <th>Action</th>
@@ -444,10 +446,9 @@ const ManageUsers = ({ userType }) => {
                               arrayOfRoles.push("Editor");
                             } else if (i === 3) {
                               arrayOfRoles.push("Viewer");
-                            }
-                            {/* else if (i === 6) {
+                            } else if (i === 6) {
                               arrayOfRoles.push("Bank Admin");
-                            } */}
+                            }
                           }
                           return (
                             <tr key={Index}>
@@ -457,10 +458,11 @@ const ManageUsers = ({ userType }) => {
                                   ? user.individual_user.first_name
                                   : user.org_user
                                     ? user.org_user.company_name
-                                    : user.bank_user
-                                      ? user.bank_user.branch_name
+                                    : user.bank_name
+                                      ? user.bank_name
                                       : ""}
                               </td>
+                              {/* {userType === 2 ? <td>{user.bank_user.BranchId}</td> : ""} */}
                               <td>{email_address}</td>
                               <td>{arrayOfRoles.join(", ")}</td>
                               <td>

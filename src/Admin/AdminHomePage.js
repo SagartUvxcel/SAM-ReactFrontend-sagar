@@ -15,7 +15,6 @@ let roleId = "";
 const AdminHomePage = () => {
   CharJs.register(...registerables);
   const data = JSON.parse(localStorage.getItem("data"));
-  console.log(data);
   if (data) {
     isBank = data.isBank;
     roleId = data.roleId;
@@ -42,10 +41,10 @@ const AdminHomePage = () => {
           headers: { Authorization: authHeaders },
         })
         .then((res) => {
-          // console.log(res);
+          console.log(res.data);
           individualUsersCount = res.data.individual_count;
           organizationalUsersCount = res.data.org_count;
-          bankUsersCount = res.data.bank_count;
+          bankUsersCount = res.data.bank_admin_count;
         });
       setCountOfUsers({
         countOfIndividualUsers: individualUsersCount,
@@ -325,7 +324,7 @@ const AdminHomePage = () => {
                                   </span>
                                 )}
                               </div>
-                              <span>Bank Users</span>
+                              <span>Bank Admin Users</span>
                             </div>
                           </div>
                         </div>

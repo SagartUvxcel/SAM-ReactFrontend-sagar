@@ -13,7 +13,11 @@ let roleId = "";
 let zipError = false;
 let areaError = false;
 let isBank = false;
+
+// main component function
 const AddProperty = () => {
+
+  // login credentials
   const data = JSON.parse(localStorage.getItem("data"));
   if (data) {
     authHeader = { Authorization: data.loginToken };
@@ -60,6 +64,8 @@ const AddProperty = () => {
   const defaultIsStressedRef = useRef();
   const [pathLocation, setPathLocation] = useState("");
 
+
+  // get category,bank, state details
   const getDataFromApi = async () => {
     const propertyCategoryRes = await axios.get(`/sam/v1/property/by-category`);
     setPropertyCategories(propertyCategoryRes.data);
@@ -69,32 +75,44 @@ const AddProperty = () => {
     const statesRes = await axios.get(`/sam/v1/property/by-state`);
     setAllStates(statesRes.data);
 
-    if (isBank && roleId !== 6) {
+    if (isBank) {
       getBankDetails(bankRes.data);
     }
-
-
   };
 
+// get bank Details
   const getBankDetails = async (bankData) => {
+    console.log(bankData);
     const activeBankDetails = bankData.filter(bank => bank.bank_id === bank_Id)[0]
     setActiveBank(activeBankDetails);
     const branchRes = await axios.get(`/sam/v1/property/auth/bank-branches/${bank_Id}`, {
       headers: authHeader,
     });
-    const branchResData = branchRes.data;
-    const activeBranchDetails = branchResData.filter(branch => branch.branch_id === branch_Id)[0]
-    setActiveBranch(activeBranchDetails);
-    branchSelectBoxRef.current.classList.remove("d-none");
+
+    console.log(branchRes.data);
+    if (roleId !== 6) {
+      const branchResData = branchRes.data;
+      const activeBranchDetails = branchResData.filter(branch => branch.branch_id === branch_Id)[0]
+      setActiveBranch(activeBranchDetails);
+      // commonFnToSaveFormData("bank_branch_id", branch_Id);
+      commonFnToSaveFormData("bank_branch_id", parseInt(activeBranchDetails.branch_id));
+    } else {
+      setBankBranches(branchRes.data);
+    }
+
     commonFnToSaveFormData("bank", bank_Id);
-    commonFnToSaveFormData("bank_branch_id", branch_Id);
+    branchSelectBoxRef && branchSelectBoxRef.current.classList.remove("d-none");
   }
 
-
+// commonFnToSaveFormData
   const commonFnToSaveFormData = (name, value) => {
-    setFormData({ ...formData, [name]: value });
+    
+    console.log(name, value);
+    // setFormData({ ...formData, [name]: value });
+    setFormData((old)=>({...old, [name]: value }))
   };
-
+console.log(formData);
+// commonFnToSaveAddressDetails
   const commonFnToSaveAddressDetails = (name, value) => {
     setFormData({
       ...formData,
@@ -106,10 +124,11 @@ const AddProperty = () => {
     });
   };
 
+  // onInputChange
   const onInputChange = async (e) => {
     const { name, value } = e.target;
     if (name === "type_id") {
-      console.log(name,value);
+      console.log(name, value);
       if (value) {
         commonFnToSaveFormData(name, parseInt(value));
       }
@@ -207,6 +226,8 @@ const AddProperty = () => {
       } else {
         citySelectBoxRef.current.classList.add("d-none");
       }
+
+
     } else if (name === "city") {
       commonFnToSaveAddressDetails(name, parseInt(value));
     } else if (name === "zip") {
@@ -234,14 +255,16 @@ const AddProperty = () => {
     }
   };
 
+// reset Validations OnSubmit
   const resetValidationsOnSubmit = () => {
     setAreaValidationMessage("");
     setZipCodeValidationMessage("");
   };
 
+  // on Form Submit
   const onFormSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
+    console.log(activeBranch);
 
     await axios
       .post(`/sam/v1/customer-registration/zipcode-validation`, {
@@ -414,27 +437,28 @@ const AddProperty = () => {
                                 <span className="fw-bold text-danger">*</span>
                               </label>
 
-                              {pathLocation === 'admin' ? <select
-                                id="bank"
-                                name="bank"
-                                className="form-select"
-                                onChange={onInputChange}
-                                required
-                              >
-                                <option value=""></option>
-                                {banks ? (
-                                  banks.map((data) => {
-                                    if (pathLocation === 'admin') {
-                                      return (
-                                        <option
-                                          key={data.bank_id}
-                                          value={data.bank_id}
-                                        >
-                                          {data.bank_name}
-                                        </option>
-                                      );
-                                    }
-                                    {/* else if (pathLocation === 'bank') {
+                              {pathLocation === 'admin' ?
+                                <select
+                                  id="bank"
+                                  name="bank"
+                                  className="form-select"
+                                  onChange={onInputChange}
+                                  required
+                                >
+                                  <option value=""></option>
+                                  {banks ? (
+                                    banks.map((data) => {
+                                      if (pathLocation === 'admin') {
+                                        return (
+                                          <option
+                                            key={data.bank_id}
+                                            value={data.bank_id}
+                                          >
+                                            {data.bank_name}
+                                          </option>
+                                        );
+                                      }
+                                      {/* else if (pathLocation === 'bank') {
                                       return (
                                         <option
                                           key={data.bank_id}
@@ -445,11 +469,11 @@ const AddProperty = () => {
                                       );
                                     } */}
 
-                                  })
-                                ) : (
-                                  <> </>
-                                )}
-                              </select> :
+                                    })
+                                  ) : (
+                                    <> </>
+                                  )}
+                                </select> :
                                 <input
                                   type="text"
                                   id="bank"
@@ -476,7 +500,7 @@ const AddProperty = () => {
                                 <span className="fw-bold text-danger">*</span>
                               </label>
 
-                              {pathLocation === 'admin' ?
+                              {pathLocation === 'admin' || pathLocation === 'bank' ?
                                 <select
                                   id="bank_branch_id"
                                   name="bank_branch_id"
