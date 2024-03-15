@@ -23,13 +23,12 @@ const BreadCrumb = ({
     isBank = data.isBank;
     roleId = data.roleId;
   }
-
   const [isBulkUploadPropertyPageActive, setIsBulkUploadPropertyPageActive] =
     useState(false);
 
   // If we are on Users section in admin then isUserPageActive will be true.
   const checkActivePages = () => {
-    setIsUserPageActive(window.location.href.includes("/admin/users"));
+    setIsUserPageActive(window.location.href.includes(`${isBank ? "/bank" : "/admin"}/users`));
     setIsPropertyPageActive(
       window.location.href.includes(`${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"}/property`)
     );
@@ -83,7 +82,9 @@ const BreadCrumb = ({
                     ? "Organizational User"
                     : userType === 2
                       ? "Bank User"
-                      : ""}
+                      : userType === 3
+                        ? "Branch User"
+                        : ""}
               </li>
 
               {emailOfCurrentUser ? (
@@ -128,7 +129,7 @@ const BreadCrumb = ({
                       }}
                       className="breadcrumb-item"
                     >
-                      Bank Users
+                      Branch Users
                     </li>
                   )}
                   <li className="breadcrumb-item text-secondary">

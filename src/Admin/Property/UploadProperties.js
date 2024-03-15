@@ -41,6 +41,8 @@ const UploadProperties = () => {
   const fileRef = useRef();
   const { data, tableHeadings, tableDisplayClass } = allUseStates;
 
+
+  // onCancelClick
   const onCancelClick = () => {
     setAllUseStates({
       ...allUseStates,
@@ -62,12 +64,17 @@ const UploadProperties = () => {
     };
   }
 
+  // readFileFunction
   const readFileFunction = (inputFile) => {
     setFileName(inputFile.name);
     const reader = new FileReader();
+    console.log("reader==>",reader);
+
     reader.onload = async ({ target }) => {
       const csv = Papa.parse(target.result, { header: true });
+      console.log("csv==>",csv);
       const parsedData = csv.data;
+      console.log("parsedData==>",parsedData);
       setAllUseStates({
         ...allUseStates,
         tableHeadings: Object.keys(parsedData[0]),
@@ -85,6 +92,8 @@ const UploadProperties = () => {
     if (e.target.files.length) {
       const inputFile = e.target.files[0];
       const fileExtension = inputFile.type.split("/")[1];
+      console.log("inputFile==>",inputFile);
+      console.log("fileExtension==>",fileExtension);
       if (!allowedExtensions.includes(fileExtension)) {
         alert("Please upload a csv file");
         fileRef.current.value = "";
@@ -96,6 +105,7 @@ const UploadProperties = () => {
     }
   };
 
+  // fileUpload
   const handleDrop = (e) => {
     e.preventDefault();
     setSavedFile([...files, ...e.dataTransfer.files]);
@@ -112,6 +122,7 @@ const UploadProperties = () => {
     }
   };
 
+  // read And Upload Current Chunk
   const readAndUploadCurrentChunk = () => {
     const reader = new FileReader();
     const file = files[currentFileIndex];
@@ -149,53 +160,53 @@ const UploadProperties = () => {
     const chunks = Math.ceil(file.size / chunkSize) - 1;
     const isLastChunk = currentChunkIndex === chunks;
     console.log(chunks, isLastChunk);
-    // try {
-    //   await axios
-    //     .post(`/sam/v1/property/auth/upload-chunk`, detailsToPost, {
-    //       headers: authHeaders,
-    //     })
-    //     .then((res) => {
-    //       console.log(res.data);
-    //       if (isLastChunk) {
-    //         if (res.data.msg === 0) {
-    //           toast.success("File uploaded successfully");
-    //           reloadPage();
-    //         } else {
-    //           let arr = [];
-    //           res.data.forEach((data) => {
-    //             arr.push(data.property_number);
-    //           });
-    //           let duplicateProperties = arr.join(", ");
-    //           let customErrorMessage = "";
-    //           if (arr.length > 1) {
-    //             customErrorMessage = `Failed to upload properties with property numbers ${duplicateProperties}`;
-    //           } else {
-    //             customErrorMessage = `Failed to upload property with property number ${duplicateProperties}`;
-    //           }
-    //           setErrorModalDetails({
-    //             errorModalOpen: true,
-    //             errorHeading: "Duplicate Records Error",
-    //             errorMessage: customErrorMessage,
-    //           });
-    //           window.scrollTo(0, 0);
-    //         }
-    //       }
-    //     });
-    // } catch (error) {
-    //   console.log(error);
-    //   if (isLastChunk) {
-    //     toast.error("Internal server error");
-    //     reloadPage();
-    //   }
-    // }
+    try {
+      await axios
+        .post(`/sam/v1/property/auth/upload-chunk`, detailsToPost, {
+          headers: authHeaders,
+        })
+        .then((res) => {
+          console.log(res.data);
+          if (isLastChunk) {
+            if (res.data.msg === 0) {
+              toast.success("File uploaded successfully");
+              reloadPage();
+            } else {
+              let arr = [];
+              res.data.forEach((data) => {
+                arr.push(data.property_number);
+              });
+              let duplicateProperties = arr.join(", ");
+              let customErrorMessage = "";
+              if (arr.length > 1) {
+                customErrorMessage = `Failed to upload properties with property numbers ${duplicateProperties}`;
+              } else {
+                customErrorMessage = `Failed to upload property with property number ${duplicateProperties}`;
+              }
+              setErrorModalDetails({
+                errorModalOpen: true,
+                errorHeading:  res.data[0].error,
+                errorMessage: customErrorMessage,
+              });
+              window.scrollTo(0, 0);
+            }
+          }
+        });
+    } catch (error) {
+      console.log(error);
+      if (isLastChunk) {
+        toast.error("Internal server error");
+        reloadPage();
+      }
+    }
 
-    // if (isLastChunk) {
-    //   setUniqueUploadId(uuid());
-    //   setLastUploadedFileIndex(currentFileIndex);
-    //   setCurrentChunkIndex(null);
-    // } else {
-    //   setCurrentChunkIndex(currentChunkIndex + 1);
-    // }
+    if (isLastChunk) {
+      setUniqueUploadId(uuid());
+      setLastUploadedFileIndex(currentFileIndex);
+      setCurrentChunkIndex(null);
+    } else {
+      setCurrentChunkIndex(currentChunkIndex + 1);
+    }
   };
 
   useEffect(() => {

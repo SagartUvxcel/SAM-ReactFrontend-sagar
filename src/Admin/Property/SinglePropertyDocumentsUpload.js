@@ -406,18 +406,19 @@ const SinglePropertyDocumentsUpload = () => {
           headers: authHeader,
         })
         .then((res) => {
+          console.log(res.data);
           if (isLastChunk) {
-            if (res.data.msg !== 0) {
-              console.log(res.data);
-              setImageLoading(false);
-              toast.error("Error while uploading files");
-              // reloadPage();
-            } else {
+            console.log(res.data);
+            if (res.data.msg === 0) {
               if (currentImageFileIndex === savedImageFiles.length - 1) {
                 setImageLoading(false);
                 toast.success("File uploaded successfully");
                 reloadPage();
               }
+            } else {
+              setImageLoading(false);
+              toast.error("Error while uploading files");
+              // reloadPage();
             }
           }
         });
@@ -671,7 +672,7 @@ const SinglePropertyDocumentsUpload = () => {
               </div>
               <hr />
               <div className="row">
-              {/* Category */}
+                {/* Category */}
                 <div className="col-xl-3 col-md-6">
                   <div className="form-group">
                     <label

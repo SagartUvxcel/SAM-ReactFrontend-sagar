@@ -335,6 +335,10 @@ input:-webkit-autofill:active {
   background-color: #e0e0e0 !important; /* Bootstrap's table-striped even row color */
 }
 
+.table-heading-class th{
+  font-size: smaller !important;
+}
+
 .odd-row {
   background-color: #ffffff !important; /* Bootstrap's table-striped odd row color */
 }

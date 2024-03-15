@@ -54,10 +54,23 @@ const BankRegistrationLinkPage = () => {
         // console.log(bankRes.data);
     };
 
+    // clear Error Msg Function after change bank or branch form 
+    const clearErrorMsgFunction = () => {
+        setValidationDetails({
+            ...validationDetails,
+            emailValidationMessage: "",
+            bankNameValidationMessage: "",
+            branchNameValidationMessage: "",
+            branchCodeValidationMessage: "",
+            ifscCodeValidationMessage: "",
+            branchSftpValidationMessage: "",
+        });
+    }
+
+
     // on Input Change Function
-    const onInputChange = (e) => {
+    const onInputChange = async (e) => {
         const { name, value, style } = e.target;
-        console.log(name, value);
         if (name === "bank_name") {
             setFormData({ ...formData, [name]: value });
             setBankNameSelectedOption(value)
@@ -70,8 +83,40 @@ const BankRegistrationLinkPage = () => {
                     ...validationDetails,
                     emailValidationMessage: "",
                 });
-                style.borderColor = "";
+                // style.borderColor = "";
                 setFormData({ ...formData, [name]: value });
+                // If input field is email then post its value to api for validating.
+                try {
+                    await axios
+                        .post(
+                            `/sam/v1/customer-registration/email-validation`,
+                            JSON.stringify({ email: value })
+                        )
+                        .then((res) => {
+                            var emailFormat = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
+                            if (res.data.status === 1) {
+                                setValidationDetails({
+                                    ...validationDetails,
+                                    emailValidationMessage: "Email id already exists.",
+                                });
+                                style.borderColor = "red";
+                            } else if (!emailFormat.test(value)) {
+                                setValidationDetails({
+                                    ...validationDetails,
+                                    emailValidationMessage: "Invalid email Id.",
+                                });
+                                style.borderColor = "red";
+                            } else {
+                                setValidationDetails({
+                                    ...validationDetails,
+                                    emailValidationMessage: "",
+                                });
+                                style.borderColor = "";
+                            }
+                        });
+                } catch (error) {
+                    toast.error("Server error while validating email");
+                }
             } else {
                 setValidationDetails({
                     ...validationDetails,
@@ -149,7 +194,7 @@ const BankRegistrationLinkPage = () => {
         console.log(name, value);
         setOtherBankName(value);
     }
-    
+
     // onFormSubmit function 
     const onFormSubmit = async (e) => {
         e.preventDefault();
@@ -176,6 +221,7 @@ const BankRegistrationLinkPage = () => {
         } catch (error) {
             console.log(error);
             setLoading(false);
+            toast.error(error.response.data.error);
         }
     }
 
@@ -215,6 +261,7 @@ const BankRegistrationLinkPage = () => {
                                         onChange={() => {
                                             setBankSelected(0);
                                             setFormData({ is_bank_admin: true });
+                                            clearErrorMsgFunction();
                                         }}
                                         checked={bankSelected === 0}
                                     />
@@ -232,7 +279,8 @@ const BankRegistrationLinkPage = () => {
                                         value={1}
                                         onChange={() => {
                                             setBankSelected(1);
-                                            setFormData({ is_bank_admin: false })
+                                            setFormData({ is_bank_admin: false });
+                                            clearErrorMsgFunction();
                                         }}
                                         checked={bankSelected === 1}
 
@@ -244,7 +292,8 @@ const BankRegistrationLinkPage = () => {
                             </div>
                             {/* form for bank*/}
                             {bankSelected === 0 && (
-                                <form onSubmit={onFormSubmit} className={`bank-registration-link-form  position-relative mt-2`}>
+                                <form onSubmit={onFormSubmit}
+                                    className={`bank-registration-link-form  position-relative mt-2`}>
                                     <div className="col-lg-12">
                                         <div className="row bank-type-row flex-wrap">
                                             {/* Bank Name */}
@@ -335,7 +384,10 @@ const BankRegistrationLinkPage = () => {
                                                 <div className=" col-xl-12 col-md-10 text-lg-start pt-2 d-flex justify-content-center  ">
                                                     <button
                                                         disabled={loading ? true : false}
-                                                        type="submit" className="btn btn-primary text-center  md-w-50 common-btn-font "
+                                                        type="submit"
+                                                        className={`btn btn-primary text-center  md-w-50 common-btn-font ${emailValidationMessage && emailValidationMessage.length > 0 ||
+                                                            bankNameValidationMessage
+                                                            && bankNameValidationMessage.length > 0 ? "disabled" : ""} `}
                                                     >{loading ? (
                                                         <>
                                                             <span
@@ -545,7 +597,15 @@ const BankRegistrationLinkPage = () => {
                                                 <div className=" col-xl-12 col-md-10 text-lg-start pt-2 d-flex justify-content-center  ">
                                                     <button
                                                         disabled={loading ? true : false}
-                                                        type="submit" className="btn btn-primary text-center  md-w-50 common-btn-font "
+                                                        type="submit" className={`btn btn-primary text-center  md-w-50 common-btn-font
+                                                        ${emailValidationMessage && emailValidationMessage.length > 0 ||
+                                                            branchNameValidationMessage
+                                                            && branchNameValidationMessage.length > 0||
+                                                            bankNameValidationMessage
+                                                            && bankNameValidationMessage.length > 0 || branchCodeValidationMessage &&
+                                                            branchCodeValidationMessage.length > 0 || ifscCodeValidationMessage &&
+                                                            ifscCodeValidationMessage.length > 0 || branchSftpValidationMessage &&
+                                                            branchSftpValidationMessage.length > 0 ? "disabled" : ""}  `}
                                                     >{loading ? (
                                                         <>
                                                             <span

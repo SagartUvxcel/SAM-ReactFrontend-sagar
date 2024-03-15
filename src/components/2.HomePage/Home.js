@@ -227,7 +227,7 @@ function Home() {
         searchHistoryJsonDataConvertor(filteredData);
       }
     } catch (error) {
-      console.log("error from search history api");
+      console.log(error);
     }
   }
 

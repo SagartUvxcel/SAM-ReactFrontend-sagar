@@ -10,9 +10,11 @@ const AdminSideBar = (propertiesLinkDisabled, backToAllPropertiesPage) => {
     isBank = data.isBank;
     roleId = data.roleId;
   }
+  // console.log(data);
 
   const [sideBarBankBranchName, setSideBarBankBranchName] = useState("")
 
+  // admin Side bar Functionalities
   const adminSidebarFunctionalities = () => {
     let body = document.getElementById("body");
     let adminSideBarLinks = document.querySelectorAll(

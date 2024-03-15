@@ -140,7 +140,7 @@ const OffcanvasBody = ({ canvasNumber, propertiesLinkDisabled, isBank, roleId })
                     <li className="nav-item">
                       <NavLink
                         className="nav-link sidebar-link"
-                        to={`/bank/users/bank-users`}
+                        to={`/bank/users/branch-users`}
                       >
                         <i className="bi bi-bank me-2 text-light"></i>
                         Branch 

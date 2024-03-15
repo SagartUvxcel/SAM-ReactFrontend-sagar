@@ -5,27 +5,38 @@ import AdminSideBar from "../AdminSideBar";
 import CommonSpinner from "../../CommonSpinner";
 import Pagination from "../../Pagination";
 import { toast } from "react-toastify";
+import { NavLink, useNavigate, useLocation } from "react-router-dom"
 import BreadCrumb from "../BreadCrumb";
 import {
   checkLoginSession,
   toggleClassOfNextPrevPageItems,
 } from "../../CommonFunctions";
 
-const records_per_page = 4;
+const records_per_page = 5;
 let authHeader = "";
 let roleId = "";
+let bank_id = 0;
 let defaultRoleText = "";
 let defaultRoleIds = [];
 let rolesToRemove = [];
 
 const ManageUsers = ({ userType }) => {
+
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const [users, setUsers] = useState([]);
+  const dataFromBankAdminPage = location.state ? location.state.sensitiveData : bank_id > 0 ? bank_id : null;
+
   const data = JSON.parse(localStorage.getItem("data"));
   if (data) {
     authHeader = { Authorization: data.loginToken };
     roleId = data.roleId;
+    bank_id = data.bank_id;
   }
   const [otherDetailsOfUser, setOtherDetailsOfUser] = useState({});
+  const { user_id, email_address, mobile_number, user_type } =
+    otherDetailsOfUser;
   const [categoryWiseUserDetails, setCategoryWiseUserDetails] = useState({});
   const [roles, setRoles] = useState([]);
   const [accountStatus, setAccountStatus] = useState(0);
@@ -55,40 +66,72 @@ const ManageUsers = ({ userType }) => {
   const confirmDeleteInputRef = useRef();
   const [currentPageNumber, setCurrentPageNumber] = useState(1);
 
-  const getAllUsers = async () => {
-    setLoading(true)
-    const dataToPost = {
-      type: userType,
-      page_number: 1,
-      status: accountStatus,
-      number_of_records: records_per_page,
-    };
 
-    try {
-      await axios
-        .post(`${url}/get-users`, dataToPost, { headers: authHeader })
-        .then((res) => {
-          setUsers(res.data);
-          console.log(res.data);
-          setLoading(false);
-        });
-      await axios
-        .get(`${url}/type-count`, { headers: authHeader })
-        .then((res) => {
-          let usersCount = null;
-          console.log(res.data);
-          if (userType === 0) {
-            usersCount = parseInt(res.data.individual_count);
-          } else if (userType === 1) {
-            usersCount = parseInt(res.data.org_count);
-          } else {
-            usersCount = parseInt(res.data.bank_admin_count);
-          }
-          setTotalUsersCount(usersCount);
-          setPageCount(Math.ceil(usersCount / records_per_page));
-        });
-    } catch (error) {
-      setLoading(false);
+  // get All Users data
+  const getAllUsers = async () => {
+    setLoading(true);
+
+    if (dataFromBankAdminPage === null) {
+      const dataToPost = {
+        type: userType,
+        page_number: 1,
+        status: accountStatus,
+        number_of_records: records_per_page,
+      };
+      try {
+        await axios
+          .post(`${url}/get-users`, dataToPost, { headers: authHeader })
+          .then((res) => {
+            setUsers(res.data);
+            setLoading(false);
+          });
+        await axios
+          .get(`${url}/type-count`, { headers: authHeader })
+          .then((res) => {
+            let usersCount = null;
+            if (userType === 0) {
+              usersCount = parseInt(res.data.individual_count);
+            } else if (userType === 1) {
+              usersCount = parseInt(res.data.org_count);
+            } else {
+              usersCount = parseInt(res.data.bank_admin_count);
+            }
+            setTotalUsersCount(usersCount);
+            setPageCount(Math.ceil(usersCount / records_per_page));
+          });
+      } catch (error) {
+        setLoading(false);
+      }
+    } else {
+      const dataToPost = {
+        status: accountStatus,
+        page_number: 1,
+        number_of_records: records_per_page,
+        bank_id: dataFromBankAdminPage
+      }
+      try {
+        await axios.post(`/sam/v1/bank-registration/auth/bank/user-list`, dataToPost, { headers: authHeader })
+          .then((res) => {
+            setUsers(res.data.bank_users);
+            console.log(res.data.bank_users);
+            setLoading(false);
+          });
+        await axios.get(`${url}/type-count`, { headers: authHeader })
+          .then((res) => {
+            let usersCount = null;
+            if (userType === 0) {
+              usersCount = parseInt(res.data.individual_count);
+            } else if (userType === 1) {
+              usersCount = parseInt(res.data.org_count);
+            } else {
+              usersCount = parseInt(res.data.bank_admin_count);
+            }
+            setTotalUsersCount(usersCount);
+            setPageCount(Math.ceil(usersCount / records_per_page));
+          });
+      } catch (error) {
+        setLoading(false);
+      }
     }
   };
 
@@ -105,17 +148,34 @@ const ManageUsers = ({ userType }) => {
 
   // Fetch more users on page click.
   const fetchMoreUsers = async (currentPage) => {
-    const dataToPost = {
-      type: userType,
-      page_number: currentPage,
-      number_of_records: records_per_page,
-    };
-    const usersRes = await axios.post(`${url}/get-users`, dataToPost, {
-      headers: authHeader,
-    });
-    return usersRes.data;
+
+    if (dataFromBankAdminPage === null) {
+      const dataToPost = {
+        type: userType,
+        page_number: currentPage,
+        number_of_records: records_per_page,
+      };
+      const usersRes = await axios.post(`${url}/get-users`, dataToPost, {
+        headers: authHeader,
+      });
+      return usersRes.data;
+    } else {
+
+      const dataToPost = {
+        status: accountStatus,
+        page_number: currentPage,
+        number_of_records: records_per_page,
+        bank_id: dataFromBankAdminPage
+      }
+
+      const usersRes = await axios.post(`/sam/v1/bank-registration/auth/bank/user-list`, dataToPost, {
+        headers: authHeader,
+      });
+      return usersRes.data.bank_users;
+    }
   };
 
+  // onDeleteBtnClick
   const onDeleteBtnClick = (userId, userName) => {
     setSelectedUserId(userId);
     setSelectedUserEmail(userName);
@@ -123,6 +183,7 @@ const ManageUsers = ({ userType }) => {
     setConfirmDeleteUserBtnDisabled(true);
   };
 
+  // toggle Active Page Class
   const toggleActivePageClass = (activePage) => {
     let arr = document.querySelectorAll(".page-item");
     arr && arr.forEach((pageItem) => {
@@ -134,6 +195,7 @@ const ManageUsers = ({ userType }) => {
     });
   };
 
+  // delete User
   const deleteUser = async (userId, userName) => {
     try {
       await axios
@@ -168,6 +230,7 @@ const ManageUsers = ({ userType }) => {
     }
   };
 
+  // save Current User Data
   const saveCurrentUserData = async (id) => {
     setSelectedUserId(id);
     if (data) {
@@ -177,7 +240,7 @@ const ManageUsers = ({ userType }) => {
         `/sam/v1/user-registration/auth/${id}`,
         { headers: authHeader }
       );
-
+      console.log(currentUser.data);
       const typeOfUser = Object.keys(currentUser.data)[2];
       setCategoryWiseUserDetails(currentUser.data[typeOfUser]);
       setOtherDetailsOfUser(currentUser.data.user_details);
@@ -209,12 +272,12 @@ const ManageUsers = ({ userType }) => {
             headers: authHeader,
           }
         );
-        console.log(allRoles.data);
         setRoles(allRoles.data);
       } catch (error) { }
     }
   };
 
+  // edit Details function
   const editDetails = () => {
     setViewUserDetails({
       classOnEditClick: "",
@@ -232,6 +295,7 @@ const ManageUsers = ({ userType }) => {
     });
   };
 
+  // commonFunction For Save And Cancel Click for form data
   const commonFnForSaveAndCancelClick = () => {
     rolesToRemove = [];
     setViewUserDetails({
@@ -241,14 +305,15 @@ const ManageUsers = ({ userType }) => {
     saveCurrentUserData(selectedUserId);
   };
 
+  // cancelEditing
   const cancelEditing = () => {
     commonFnForSaveAndCancelClick();
   };
 
-  const { user_id, email_address, mobile_number, user_type } =
-    otherDetailsOfUser;
+
   const { classOnEditClick, classOnPageLoad } = viewUserDetails;
 
+  // delete Role
   const deleteRole = async (data) => {
     let url = "/sam/v1/user-registration/auth/remove-role";
     try {
@@ -263,6 +328,7 @@ const ManageUsers = ({ userType }) => {
 
   let array = [];
 
+  // onRoleSelect
   const onRoleSelect = (e) => {
     const { value, id } = e.target;
     let allChecks = document.querySelectorAll(".roles-checkbox");
@@ -333,6 +399,8 @@ const ManageUsers = ({ userType }) => {
     }
   };
 
+  // const showBranchList=()=>
+
   useEffect(() => {
     if (accountStatus !== null) {
       getAllUsers();
@@ -361,18 +429,9 @@ const ManageUsers = ({ userType }) => {
             className={`col-xl-10 col-lg-9 col-md-8 users-admin ${showAllUsersSectionClass}`}
           >
             <BreadCrumb userType={userType} />
-            {/* <h2 className="text-center text-primary fw-bold">{userType === 0
-                  ? "Individual User"
-                  : userType === 1
-                    ? "Organizational User"
-                    : userType === 2
-                      ? "Bank User"
-                      : ""}</h2>
-              <hr /> */}
 
             {/* search filter */}
             <div className="row px-md-4 mt-4 admin-users-filter d-flex justify-content-between flex-wrap">
-              {/* <div className="col-md-12 p-0 "> */}
               <div className=" col-md-5 px-4 px-md-0 ">
                 <div className="inner-box d-flex align-items-center col-12">
                   <label htmlFor="state " className="px-3 py-1">User Status:</label>
@@ -400,10 +459,9 @@ const ManageUsers = ({ userType }) => {
                 // onChange={onEnquirySearchInputChange}
                 />
               </div>
-              {/* </div> */}
             </div>
             <hr />
-
+            {/* user table */}
             <div className="mt-4">
               {loading ? (
                 <>
@@ -417,13 +475,13 @@ const ManageUsers = ({ userType }) => {
                 </div>
               ) : (
                 <>
-                  <div className="table-wrapper">
-                    <table className="table table-bordered table-primary admin-users-table table-striped text-center">
-                      <thead>
-                        <tr>
-                          <th>User ID</th>
-                          <th>{userType === 0 ? "Name" : userType === 1 ? "Company Name" : "Bank Name"}</th>
-                          {/* {userType === 2 ? <th>Branch ID</th> : ""} */}
+                  <div className="table-wrapper table-bordered">
+                    {/* <table className="table table-bordered table-primary admin-users-table table-striped text-center "> */}
+                    <table className="table align-middle table-striped table-bordered mb-0 bg-white admin-users-table  text-center ">
+                      <thead className="bg-light">
+                        <tr className="table-heading-class">
+                          <th scope="col" className="">User ID</th>
+                          <th>{userType === 0 ? "Name" : userType === 1 ? "Company Name" : userType === 2 ? "Bank Name" : "Branch Name"}</th>
                           <th>Email</th>
                           <th>Role</th>
                           <th>Action</th>
@@ -431,7 +489,11 @@ const ManageUsers = ({ userType }) => {
                       </thead>
                       <tbody>
                         {users.map((user, Index) => {
-                          const { email_address, user_id } = user.user_details;
+                          const { email_address, user_id, } = user.user_details;
+                          const { bank_id, bank_name } = user;
+                          if (user.bank_user) {
+                            const { BranchId, branch_name } = user.bank_user;
+                          }
                           let currentRolesArray = user.role;
                           let roleIdArray = [];
                           let arrayOfRoles = [];
@@ -452,7 +514,7 @@ const ManageUsers = ({ userType }) => {
                           }
                           return (
                             <tr key={Index}>
-                              <td>{user_id}</td>
+                              <td className="text-align-center">{user_id}</td>
                               <td>
                                 {user.individual_user
                                   ? user.individual_user.first_name
@@ -460,9 +522,10 @@ const ManageUsers = ({ userType }) => {
                                     ? user.org_user.company_name
                                     : user.bank_name
                                       ? user.bank_name
-                                      : ""}
+                                      : user.bank_user.branch_name
+                                        ? user.bank_user.branch_name
+                                        : ""}
                               </td>
-                              {/* {userType === 2 ? <td>{user.bank_user.BranchId}</td> : ""} */}
                               <td>{email_address}</td>
                               <td>{arrayOfRoles.join(", ")}</td>
                               <td>
@@ -480,7 +543,7 @@ const ManageUsers = ({ userType }) => {
                                     className="dropdown-menu"
                                     aria-labelledby="navbarDropdown"
                                   >
-                                    <div
+                                    {arrayOfRoles.join(", ") !== "Bank Admin" ? <div
                                       className="dropdown-item"
                                       onClick={() => {
                                         saveCurrentUserData(user_id);
@@ -491,7 +554,16 @@ const ManageUsers = ({ userType }) => {
                                       }}
                                     >
                                       <i className="bi bi-eye pe-1"></i> View
-                                    </div>
+                                    </div> : <div
+                                      className="dropdown-item"
+                                      onClick={() => {
+                                        const sensitiveData = bank_id;
+                                        navigate(`${roleId === 6 ? "/bank" : "/admin"
+                                          }/users/branch-users`, { state: { sensitiveData } })
+                                      }}
+                                    >
+                                      <i className="bi bi-eye pe-1"></i> View Branch List
+                                    </div>}
 
                                     <div
                                       data-bs-toggle="modal"
@@ -531,6 +603,8 @@ const ManageUsers = ({ userType }) => {
               )}
             </div>
           </div>
+
+          {/* viewCurrentUserSectionClass */}
           <div
             className={`col-xl-10 col-lg-9 col-md-8 users-admin ${viewCurrentUserSectionClass}`}
           >
@@ -579,12 +653,13 @@ const ManageUsers = ({ userType }) => {
                               className="form-label fw-bold"
                             >
                               Role
-                              <span className={`ms-4 ${classOnPageLoad}`}>
+                              {/* editDetails */}
+                              {roleId !== 6 ? <span className={`ms-4 ${classOnPageLoad}`}>
                                 {!defaultRoleIds.includes(1) && <i
                                   onClick={editDetails}
                                   className="bi bi-pencil-square"
                                 ></i>}
-                              </span>
+                              </span> : ""}
                               <span
                                 onClick={cancelEditing}
                                 className={`ms-4 ${classOnEditClick}`}
@@ -604,7 +679,7 @@ const ManageUsers = ({ userType }) => {
                             </span>
 
                             <div className={`form-group ${classOnEditClick}`}>
-                              {roles.map((data, Index) => {
+                              {roles && roles.map((data, Index) => {
                                 defaultRoleIds.forEach((id) => {
                                   if (id === data.id) {
                                     const defaultRole = document.getElementById(

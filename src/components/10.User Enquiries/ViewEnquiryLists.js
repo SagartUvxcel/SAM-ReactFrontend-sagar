@@ -365,7 +365,6 @@ const ViewEnquiryLists = () => {
 
   // Scroll to the latest message
   useEffect(() => {
-    // Scroll to the latest message whenever messages are updated
     if (messages && (newComingMessage || messages.length === currentChatMassageSize) && modalBodyRef.current) {
       modalBodyRef.current.scrollTop = modalBodyRef.current.scrollHeight;
     }
@@ -471,7 +470,7 @@ const ViewEnquiryLists = () => {
           const { User_id, msg, message_type, enquiry_id } = receivedMessage;
           // console.log("from en 1")
           if (message_type === "sam-user") {
-            // console.log("newMessage")
+            console.log("newMessage", receivedMessage)
             setNewComingMessage({ ...receivedMessage })
           }
         } catch (error) {
@@ -481,8 +480,10 @@ const ViewEnquiryLists = () => {
     }
   }, [socket]);
 
+  // WebSocket connection for new coming message
   useEffect(() => {
     if (newComingMessage) {
+      console.log(newComingMessage);
       if (enquiryId === newComingMessage.enquiry_id) {
         let msgObj = {
           enquiry_comments: newComingMessage.msg,
@@ -890,14 +891,14 @@ const ViewEnquiryLists = () => {
                   onClick={() => {
                     // setConditionShouldCloseWebSocket(true);
                     // console.log("enquiryid==>", enquiryId)
+                    setCurrentMassageBatch(1);
                     setNewComingMessage(null);
                     setPropertyId(null);
                     setEnquiryId(null);
                     setMessages([]);
-                    setCurrentMassageBatch(1);
                     if (socket) {
                       socket.close();
-                      setSocket(null)
+                      setSocket(null);
                     }
                   }}
                 ></button>

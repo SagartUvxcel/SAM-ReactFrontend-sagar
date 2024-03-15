@@ -219,6 +219,7 @@ const ViewEditDeleteProperties = () => {
       `/sam/v1/property/auth/property_document_list/${id}`,
       { headers: authHeader }
     );
+    console.log(propertyDocsListRes.data);
     setPropertyDocumentsList(propertyDocsListRes.data);
     setViewSinglePropertyPageLoading(false);
   };
@@ -289,11 +290,16 @@ const ViewEditDeleteProperties = () => {
   const [selectedPropertyTypeForEnquiry, setSelectedPropertyTypeForEnquiry] = useState(null);
   const [sortOptionText, setSortOptionText] = useState("up");
   const [socket, setSocket] = useState(null);
+  const [chatPageLoading, setChatPageLoading] = useState(false);
   const [newMessage, setNewMessage] = useState("");
   const [propertyId, setPropertyId] = useState(null);
   const [enquiryId, setEnquiryId] = useState(null);
   const [chatWith, setChatWith] = useState("");
   const [tempEnquiryList, setTempEnquiryList] = useState([]);
+  const [newComingMessage, setNewComingMessage] = useState(null);
+  const [isMoreMassage, setIsMoreMassage] = useState(false);
+  const [currentChatMassageSize, setCurrentChatMassageSize] = useState(25);
+  const [currentMassageBatch, setCurrentMassageBatch] = useState(1);
 
   const [sendReplyBtnLoading, setSendReplyBtnLoading] = useState(false);
 
@@ -379,25 +385,25 @@ const ViewEditDeleteProperties = () => {
   const onFormSubmit = async (e) => {
     e.preventDefault();
     setUpdateBtnLoading(true);
-      console.log(formData);
-try {
-  const {data}=await axios.post(`/sam/v1/property/auth/update-property`, formData, {
+    console.log(formData);
+    try {
+      const { data } = await axios.post(`/sam/v1/property/auth/update-property`, formData, {
         headers: authHeader,
       })
       console.log(data);
-          if (data.status === 0) {
-            toast.success("Property updated successfully");
-            setUpdateBtnLoading(false);
-            window.scrollTo(0, 0);
-          } else {
-            toast.error("Internal server error");
-            setUpdateBtnLoading(false);
-          }
-} catch (error) {
-  console.log(error);  
+      if (data.status === 0) {
+        toast.success("Property updated successfully");
+        setUpdateBtnLoading(false);
+        window.scrollTo(0, 0);
+      } else {
+        toast.error("Internal server error");
+        setUpdateBtnLoading(false);
+      }
+    } catch (error) {
+      console.log(error);
       toast.error("Internal server error");
       setUpdateBtnLoading(false);
-}
+    }
 
   };
 
@@ -539,9 +545,6 @@ try {
     }
   };
 
- 
-
-
   // change Sort Type function
   const changeSortType = () => {
     if (sortOptionText === "up") {
@@ -662,16 +665,22 @@ try {
     if (socket === null) {
       connectToWebSocket();
     }
+    const dataToPost = {
+      "batch_size": currentChatMassageSize,
+      "batch_number": currentMassageBatch,
+      "enquiry_id": id
+    }
     try {
-      let res = await axios.get(
-        `/sam/v1/property/auth/user/enquiry/property/${id}`,
+      let res = await axios.post(
+        `/sam/v1/property/auth/user/enquiry/property/`, dataToPost,
         { headers: authHeader }
       );
+      console.log(res.data);
       if (res.data) {
-        setMessages(res.data);
-        setPropertyId(res.data[0].property_id);
+        setMessages(res.data.EnquiryLogDetails);
+        setPropertyId(res.data.EnquiryLogDetails[0].property_id);
         setEnquiryId(id);
-        // console.log(res.data, res.data[0].property_id);
+        setIsMoreMassage(res.data.IsMoreEnquiryLog);
       }
     } catch (error) { }
   };
@@ -734,16 +743,20 @@ try {
           }
         );
         if (res.data.msg === 0) {
-          onViewEnquiryClick(enquiryId);
+          // onViewEnquiryClick(enquiryId);
           setNewMessage("");
           setSendReplyBtnLoading(false);
 
           if (socket && socket.readyState === WebSocket.OPEN) {
             const messageToSend = {
-              User_id: String(userId),
-              msg: newMessage,
+              // User_id: String(userId),
+              messages_id: String(uuid()),
               message_type: "sam-user",
-              messages_id: uuid(),
+              msg: newMessage,
+              reply_from: isBank ? 1 : 0,
+              enquiry_log_date: new Date().toISOString(),
+              // property_id: propertyId,
+              enquiry_id: enquiryId,
             };
             try {
               socket.send(JSON.stringify(messageToSend));
@@ -762,6 +775,38 @@ try {
       setSendReplyBtnLoading(false);
     }
   };
+
+  //on click view more button in modal fetch More Chat Message
+  const fetchMoreChatMessage = async () => {
+
+    setChatPageLoading(true);
+    try {
+      const dataToPost = {
+        "batch_size": currentChatMassageSize,
+        "batch_number": currentMassageBatch,
+        "enquiry_id": enquiryId
+      }
+      let res = await axios.post(
+        `/sam/v1/property/auth/user/enquiry/property/`, dataToPost,
+        { headers: authHeader }
+      );
+      // console.log(res);
+      if (res.data) {
+        let currentChatArray = res.data.EnquiryLogDetails;
+        setMessages((msg) => [...currentChatArray, ...msg]);
+        // setPropertyId(res.data.EnquiryLogDetails[0].property_id);
+        setIsMoreMassage(res.data.IsMoreEnquiryLog)
+        setChatPageLoading(false);
+        if (modalBodyRef.current) {
+          modalBodyRef.current.scrollTop = modalBodyRef.current.offsetTop;
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      setChatPageLoading(false);
+    }
+
+  }
 
   // on Enquiry Search Input Change
   const onEnquirySearchInputChange = (event) => {
@@ -805,6 +850,20 @@ try {
 
   }, []);
 
+  // on click view more chat if currentMassage batch change
+  useEffect(() => {
+    if (currentMassageBatch) {
+      fetchMoreChatMessage();
+    }
+  }, [currentMassageBatch])
+
+  // Scroll to the latest message whenever messages are updated
+  useEffect(() => {
+    if (messages && (newComingMessage || messages.length === currentChatMassageSize) && modalBodyRef.current) {
+      modalBodyRef.current.scrollTop = modalBodyRef.current.scrollHeight;
+    }
+    return (() => setNewComingMessage(null))
+  }, [messages]);
 
   // WebSocket connection
   useEffect(() => {
@@ -820,18 +879,24 @@ try {
       socket.onmessage = (event) => {
         try {
           const receivedMessage = JSON.parse(event.data);
+          console.log("newMessage", receivedMessage);
           const { User_id, msg, message_type } = receivedMessage;
-          if (message_type === "sam_user") {
-            if (User_id !== String(userId)) {
-              const currentDate = new Date();
-              let msgObj = {
-                enquiry_comments: msg,
-                enquiry_log_date: currentDate.toISOString(),
-                reply_from: isBank ? 0 : 1,
-              };
-              console.log("Received Message: ", receivedMessage);
-              setMessages((messages) => [...messages, msgObj]);
-            }
+          console.log("message_type", typeof (message_type));
+
+          if (message_type === "sam-user") {
+            console.log("newMessage", receivedMessage);
+            setNewComingMessage({ ...receivedMessage });
+
+            // if (User_id !== String(userId)) {
+            //   const currentDate = new Date();
+            //   let msgObj = {
+            //     enquiry_comments: msg,
+            //     enquiry_log_date: currentDate.toISOString(),
+            //     reply_from: isBank ? 0 : 1,
+            //   };
+            //   console.log("Received Message: ", receivedMessage);
+            //   setMessages((messages) => [...messages, msgObj]);
+            // }
           }
         } catch (error) {
           console.error("Error handling received message:", error);
@@ -839,6 +904,23 @@ try {
       };
     }
   }, [socket]);
+
+  // WebSocket connection for new coming message
+  useEffect(() => {
+    if (newComingMessage) {
+      console.log(newComingMessage);
+      if (enquiryId === newComingMessage.enquiry_id) {
+        let msgObj = {
+          enquiry_comments: newComingMessage.msg,
+          enquiry_log_date: newComingMessage.enquiry_log_date,
+          reply_from: newComingMessage.reply_from,
+        };
+        console.log(msgObj)
+        setMessages((messages) => [...messages, msgObj]);
+      }
+
+    }
+  }, [newComingMessage, enquiryId])
 
   return (
     <Layout>
@@ -2110,8 +2192,14 @@ try {
                 aria-label="Close"
                 onClick={() => {
                   // setConditionShouldCloseWebSocket(true);
+                  setCurrentMassageBatch(1);
+                  setNewComingMessage(null);
+                  setPropertyId(null);
+                  setEnquiryId(null);
+                  setMessages([]);
                   if (socket) {
                     socket.close();
+                    setSocket(null);
                   }
                 }}
               ></button>
@@ -2124,7 +2212,17 @@ try {
                 overflowY: "auto",
               }}
               ref={modalBodyRef}
-            >
+            >{chatPageLoading ? <>
+              <CommonSpinner
+                spinnerColor="primary"
+                height="2rem"
+                width="2rem"
+                spinnerType="grow"
+              />
+            </> : (<>
+              {isMoreMassage ? <button type="button" onClick={() => setCurrentMassageBatch(currentMassageBatch + 1)} className="btn btn-link text-center mx-auto text-white underline">View more</button> : ""}
+            </>)}
+              {/* massage mapping div */}
               {messages &&
                 messages.map((msg, index) => {
                   let classToAdd = "";
@@ -2176,7 +2274,7 @@ try {
                   <button
                     disabled={sendReplyBtnLoading ? true : false}
                     type="submit"
-                    className="btn btn-light w-100"
+                    className="btn btn-light w-100 chatBox-msg-send-btn"
                   >
                     {sendReplyBtnLoading ? (
                       <>

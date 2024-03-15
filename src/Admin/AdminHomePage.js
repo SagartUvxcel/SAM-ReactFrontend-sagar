@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import AdminSideBar from "./AdminSideBar";
 import Layout from "../components/1.CommonLayout/Layout";
 import axios from "axios";
@@ -12,11 +12,15 @@ let individualUsersCount = 0; // Default count of individual users.
 let bankUsersCount = 0; // Default count of individual users.
 let isBank = false;
 let roleId = "";
+let bank_id = "";
 const AdminHomePage = () => {
+  const navigate = useNavigate();
+
   CharJs.register(...registerables);
   const data = JSON.parse(localStorage.getItem("data"));
   if (data) {
     isBank = data.isBank;
+    bank_id = data.bank_id;
     roleId = data.roleId;
 
   }
@@ -24,8 +28,9 @@ const AdminHomePage = () => {
     countOfIndividualUsers: 0,
     countOfOrgUsers: 0,
     countOfBankUsers: 0,
+    bankBranchUsersCount: 0,
   });
-  const { countOfIndividualUsers, countOfOrgUsers, countOfBankUsers } = countOfUsers;
+  const { countOfIndividualUsers, countOfOrgUsers, countOfBankUsers, bankBranchUsersCount } = countOfUsers;
   const [typeWisePropertyDetails, setTypeWisePropertyDetails] = useState({});
   const [totalPropertiesCount, setTotalPropertiesCount] = useState(0);
   const [propertyCountLoading, setPropertyCountLoading] = useState(false);
@@ -41,7 +46,6 @@ const AdminHomePage = () => {
           headers: { Authorization: authHeaders },
         })
         .then((res) => {
-          console.log(res.data);
           individualUsersCount = res.data.individual_count;
           organizationalUsersCount = res.data.org_count;
           bankUsersCount = res.data.bank_admin_count;
@@ -51,7 +55,30 @@ const AdminHomePage = () => {
         countOfOrgUsers: organizationalUsersCount,
         countOfBankUsers: bankUsersCount,
       });
-    } catch (error) { }
+    } catch (error) {
+      console.log(error);
+    }
+    if (roleId === 6) {
+      const dataToPost = {
+        status: 0,
+        page_number: 1,
+        number_of_records: 5,
+        bank_id: bank_id
+      }
+      try {
+        await axios
+          .post(`/sam/v1/bank-registration/auth/bank/user-list`, dataToPost, {
+            headers: { Authorization: authHeaders },
+          })
+          .then((res) => {
+            setCountOfUsers({ ...setCountOfUsers, bankBranchUsersCount: res.data.count })
+
+          });
+
+      } catch (error) {
+        console.log(error);
+      }
+    }
     setUsersCountLoading(false);
   };
 
@@ -87,12 +114,12 @@ const AdminHomePage = () => {
   };
   // chart data 1
   const chart1Data = {
-    labels: ["Individual", "Organizational"],
+    labels: ["Individual", "Organizational", "Bank Admin"],
     datasets: [
       {
         label: "Count",
-        data: [countOfIndividualUsers, countOfOrgUsers],
-        backgroundColor: ["rgb(13, 110, 253)", "orange"],
+        data: [countOfIndividualUsers, countOfOrgUsers, countOfBankUsers],
+        backgroundColor: ["rgb(13, 110, 253)", "orange", "green"],
         borderColor: ["black"],
         borderWidth: 1,
       },
@@ -192,7 +219,6 @@ const AdminHomePage = () => {
         }
       });
     }
-    // eslint-disable-next-line
   }, []);
 
   return (
@@ -303,7 +329,7 @@ const AdminHomePage = () => {
                       </NavLink>
                     </div>
                     {/* bankUsersCount */}
-                     <div className="col-xl-2 col-md-4 mt-4 mt-xl-0">
+                    <div className="col-xl-2 col-md-4 mt-4 mt-xl-0">
                       <NavLink
                         to="/admin/users/bank-users"
                         className="card admin-top-card text-decoration-none"
@@ -329,16 +355,20 @@ const AdminHomePage = () => {
                           </div>
                         </div>
                       </NavLink>
-                    </div> 
-
+                    </div>
                   </>) : (
-
                   <>
                     {/* bank branch Users Count */}
                     {roleId === 6 ? <div className="col-xl-3 col-md-6 mt-4 mt-xl-0">
-                      <NavLink
-                        to={`/bank/users/bank-users`}
-                        className="card admin-top-card text-decoration-none"
+                      <div
+
+                        onClick={() => {
+                          const sensitiveData = bank_id;
+                          navigate(`${roleId === 6 ? "/bank" : "/admin"
+                            }/users/branch-users`, { state: { sensitiveData } })
+                        }
+                        }
+                        className="card admin-top-card cursor-pointer"
                       >
                         <div className="container-fluid">
                           <div className="row justify-content-center">
@@ -352,7 +382,7 @@ const AdminHomePage = () => {
                                     className="fs-1"
                                     id="bankCount"
                                   >
-                                    {bankUsersCount}
+                                    {bankBranchUsersCount}
                                   </span>
                                 )}
                               </div>
@@ -360,7 +390,7 @@ const AdminHomePage = () => {
                             </div>
                           </div>
                         </div>
-                      </NavLink>
+                      </div>
                     </div> : ""}
                   </>
                 )}

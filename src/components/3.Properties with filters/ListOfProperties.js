@@ -92,7 +92,7 @@ const ListOfProperties = () => {
         })
         .then((res) => {
           setSelectedPropertyResults(res.data);
-          console.log(res);
+          console.log(res.data);
           localStorage.setItem(
             "defaultResultsOfProperties",
             JSON.stringify(res.data)
@@ -385,6 +385,7 @@ const ListOfProperties = () => {
                               <div className="col-lg-8 col-md-7 pe-0">
                                 <div className="container-fluid">
                                   <div className="row">
+                                  {/* Property Type */}
                                     <div
                                       className={`col-xl-3 col-lg-4 col-6 mt-3 mt-md-0 ${type_name ? "" : "d-none"
                                         }`}
@@ -396,6 +397,7 @@ const ListOfProperties = () => {
                                         {type_name}
                                       </div>
                                     </div>
+                                    {/* Market Price */}
                                     <div
                                       className={`col-xl-3 col-lg-4 col-6 mt-3 mt-md-0 ${market_price ? "" : "d-none"
                                         }`}
@@ -411,6 +413,7 @@ const ListOfProperties = () => {
                                         Cr.
                                       </div>
                                     </div>
+                                    {/* Ready Reckoner Price */}
                                     <div
                                       className={`col-xl-3 col-lg-4 col-6 mt-lg-0 mt-3 ${ready_reckoner_price ? "" : "d-none"
                                         }`}
@@ -427,6 +430,7 @@ const ListOfProperties = () => {
                                         Cr.
                                       </div>
                                     </div>
+                                    {/* Reserved Price */}
                                     <div
                                       className={`col-xl-3 col-lg-4 col-6 mt-xl-0 mt-3 ${expected_price ? "" : "d-none"
                                         }`}
@@ -442,25 +446,7 @@ const ListOfProperties = () => {
                                         Cr.
                                       </div>
                                     </div>
-                                    {/* <div
-                                        className={`col-xl-3 col-lg-4 col-6 mt-xl-4 mt-3 ${distress_value ? "" : "d-none"
-                                          }`}
-                                      >
-                                        <small className="text-muted">
-                                          Distress value
-                                        </small>
-                                        <div className="common-btn-font">
-                                          <i className="bi bi-currency-rupee"></i>
-                                          {(
-                                            parseInt(distress_value) / 10000000
-                                          ).toFixed(2)}{" "}
-                                          Cr.
-                                        </div>
-                                      </div> */}
-                                    {/* <div className="col-xl-3 col-lg-4 col-6 mt-xl-4 mt-3">
-                              <small className="text-muted">Status</small>
-                              <div className="common-btn-font">{status}</div>
-                            </div> */}
+                                    {/* Saleable Area */}
                                     <div
                                       className={`col-xl-3 col-lg-4 col-6 mt-xl-4 mt-3 ${saleable_area ? "" : "d-none"
                                         }`}
@@ -472,6 +458,7 @@ const ListOfProperties = () => {
                                         {saleable_area}
                                       </div>
                                     </div>
+                                    {/* Carpet Area */}
                                     <div
                                       className={`col-xl-3 col-lg-4 col-6 mt-xl-4 mt-3 ${carpet_area ? "" : "d-none"
                                         }`}
@@ -483,28 +470,7 @@ const ListOfProperties = () => {
                                         {carpet_area}
                                       </div>
                                     </div>
-                                    {/* <div
-                                        className={`col-xl-3 col-lg-4 col-6 mt-xl-4 mt-3 ${is_stressed ? "" : "d-none"
-                                          }`}
-                                      >
-                                        <small className="text-muted">
-                                          Is Stressed?
-                                        </small>
-                                        <div className="common-btn-font text-capitalize">
-                                          {is_stressed === "1" ? "Yes" : "No"}
-                                        </div>
-                                      </div> */}
-                                    {/* <div
-                                        className={`col-xl-3 col-lg-4 col-6 mt-xl-4 mt-3 ${is_sold ? "" : "d-none"
-                                          }`}
-                                      >
-                                        <small className="text-muted">
-                                          Is Sold?
-                                        </small>
-                                        <div className="common-btn-font text-capitalize">
-                                          {is_sold === "1" ? "Yes" : "No"}
-                                        </div>
-                                      </div> */}
+                                    {/* Is Available For Sale? */}
                                     <div
                                       className={`${is_available_for_sale &&
                                         is_sold === "0"
@@ -521,6 +487,7 @@ const ListOfProperties = () => {
                                           : "No"}
                                       </div>
                                     </div>
+                                    {/* Completion Date */}
                                     <div
                                       className={`col-xl-3 col-lg-4 col-6 mt-xl-4 mt-3 ${completion_date ? "" : "d-none"
                                         }`}
@@ -539,6 +506,7 @@ const ListOfProperties = () => {
                                           : "Not Available"}
                                       </div>
                                     </div>
+                                    {/* Purchase Date */}
                                     <div
                                       className={`col-xl-3 col-lg-4 col-6 mt-xl-4 mt-3 ${purchase_date ? "" : "d-none"
                                         }`}
@@ -555,6 +523,7 @@ const ListOfProperties = () => {
                                           : "Not Available"}
                                       </div>
                                     </div>
+                                    {/* Mortgage Date */}
                                     <div
                                       className={`col-xl-3 col-lg-4 col-6 mt-xl-4 mt-3 ${mortgage_date ? "" : "d-none"
                                         }`}
@@ -571,7 +540,7 @@ const ListOfProperties = () => {
                                           : "Not Available"}
                                       </div>
                                     </div>
-
+                                    {/* Title clear property */}
                                     <div
                                       className={`col-xl-3 col-lg-4 col-6 mt-xl-4 mt-3 ${title_clear_property ? "" : "d-none"
                                         }`}
@@ -585,19 +554,7 @@ const ListOfProperties = () => {
                                           : "No"}
                                       </div>
                                     </div>
-                                    {/* <div
-                                        className={`col-xl-3 col-lg-4 col-6 mt-xl-4 mt-3 ${possession_of_the_property
-                                          ? ""
-                                          : "d-none"
-                                          }`}
-                                      >
-                                        <small className="text-muted">
-                                          Possession of the property
-                                        </small>
-                                        <div className="common-btn-font text-capitalize">
-                                          {possession_of_the_property}
-                                        </div>
-                                      </div> */}
+                                    {/* Territory */}
                                     <div
                                       className={`col-xl-3 col-lg-4 col-6 mt-xl-4 mt-3 ${territory ? "" : "d-none"
                                         }`}
@@ -609,6 +566,7 @@ const ListOfProperties = () => {
                                         {territory}
                                       </div>
                                     </div>
+                                    {/* Sale certificate */}
                                     <div className="col-xl-3 col-lg-4 col-6 mt-xl-4 mt-3">
                                       <small className="text-muted">
                                         Sale certificate
@@ -619,6 +577,7 @@ const ListOfProperties = () => {
                                         </button>
                                       </div>
                                     </div>
+                                    {/* contact title */}
                                     <div
                                       className={`col-xl-3 col-lg-4 col-6 mt-xl-4 mt-3 ${isBank === true ? "d-none" : ""
                                         }`}
@@ -650,6 +609,7 @@ const ListOfProperties = () => {
                                     <div className="col-12">
                                       <hr />
                                     </div>
+                                    {/* Address */}
                                     <div className="col-xl-12 col-lg-10 pb-xl-3">
                                       <small className="text-muted">
                                         Address
