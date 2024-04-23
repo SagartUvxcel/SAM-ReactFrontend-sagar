@@ -39,11 +39,24 @@ const SetPassword = () => {
     passwordType2,
   } = details;
 
+ // on input focus
+ const handleFocus = (e) => { 
+  e.target.nextSibling.classList.add('active');
+};
+
+// on click on label
+const handleClick = (inputId) => { 
+  const input = document.getElementById(inputId);
+  input.focus();
+};
 
 
   // Function to check if the password satisfies the given password condition.
   const onPasswordsBlur = (e) => {
     const { name, value } = e.target;
+    if (!value) {
+      e.target.nextSibling.classList.remove('active');
+    }
     if (name === "setPassword") {
       const regexForPassword =
         /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/;
@@ -221,25 +234,25 @@ const SetPassword = () => {
                 <div className="row mt-1">
                   {/* password */}
                   <div className="col-lg-12 mb-3">
-                    <div className="form-group position-relative">
-                      <label className="text-muted" htmlFor="set-password">
-                        Password<span className="text-danger ps-1">*</span>
-                      </label>
+                    <div className="form-group position-relative custom-class-form-div"> 
                       <input
-                        id="set-password"
+                        id="setPassword"
                         name="setPassword"
                         type={passwordType1}
-                        className="form-control"
+                        className="form-control login-password-input custom-input"
                         onBlur={onPasswordsBlur}
                         onChange={onPasswordsChange}
+                        onFocus={handleFocus}
                         required
                       />
-
+                      <label className="ps-0 set-password-label " htmlFor="setPassword" onClick={() => handleClick('setPassword')} >Password <span className="text-danger ps-1">*</span> </label>  
                       <i
                         placeholder={eyeIcon}
                         onClick={changeEyeIcon1}
                         className={`icon-eye-setpass bi bi-${eyeIcon}`}
                       ></i>
+                      
+
                     </div>
                     {invalidMessage1 ? (
                       <span className="pe-1 text-danger">
@@ -255,20 +268,19 @@ const SetPassword = () => {
                     </p>
                   </div>
                   {/* confirm password */}
-                  <div className="col-lg-12 mb-3">
-                    <label className="text-muted" htmlFor="confirm-password">
-                      Confirm Password
-                      <span className="text-danger ps-1">*</span>
-                    </label>
-                    <div className="form-group position-relative">
+                  <div className="col-lg-12 mb-3"> 
+                    <div className="form-group position-relative custom-class-form-div">
                       <input
-                        id="confirm-password"
+                        id="confirmPassword"
                         name="confirmPassword"
                         type={passwordType2}
-                        className="form-control"
+                        className="form-control custom-input"
+                        onBlur={onPasswordsBlur}
                         onChange={onPasswordsChange}
+                        onFocus={handleFocus}
                         required
                       />
+                       <label className="ps-0 set-password-label " htmlFor="confirmPassword" onClick={() => handleClick('confirmPassword')} >Confirm Password <span className="text-danger ps-1">*</span> </label>  
                       <i
                         placeholder={eyeIcon}
                         onClick={changeEyeIcon2}

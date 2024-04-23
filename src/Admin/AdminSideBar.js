@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import OffcanvasBody from "./OffcanvasBody";
 
 let isBank = false;
@@ -9,10 +9,7 @@ const AdminSideBar = (propertiesLinkDisabled, backToAllPropertiesPage) => {
   if (data) {
     isBank = data.isBank;
     roleId = data.roleId;
-  }
-  // console.log(data);
-
-  const [sideBarBankBranchName, setSideBarBankBranchName] = useState("")
+  }  
 
   // admin Side bar Functionalities
   const adminSidebarFunctionalities = () => {
@@ -54,7 +51,7 @@ const AdminSideBar = (propertiesLinkDisabled, backToAllPropertiesPage) => {
   useEffect(() => {
     adminSidebarFunctionalities();
   }, []);
-
+  
   return (
     <>
       <div className="col-xl-2 col-lg-3 col-md-4 admin-sidebar d-none d-md-block">

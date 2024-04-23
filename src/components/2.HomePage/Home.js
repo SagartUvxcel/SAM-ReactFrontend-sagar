@@ -2,102 +2,25 @@ import React, { useEffect, useRef, useState } from "react";
 import HomeAboutUs from "./HomeAboutUs";
 import Layout from "../1.CommonLayout/Layout";
 import axios from "axios";
-import { checkLoginSession, rootTitle } from "../../CommonFunctions";
+import { rootTitle } from "../../CommonFunctions";
 import { useNavigate } from "react-router-dom";
 
-
-const historyData = [
-  {
-    "state_name": "maharashtra",
-    "city": "Pune", "type": "plots", "bank_id": "SBI",
-    "min_price": "100000",
-    "max_price": "40000000",
-    "title_clear_property": "yes",
-    "territory": "gram panchayat limit",
-    "min_area": "300",
-    "max_area": "25000",
-    "age": 10,
-    "latest_added_properties": 20
-  },
-  {
-    "state": "Goa", "city": "Panaji", "type": "plots", "bank_id": "SBI",
-    "min_price": "100000",
-    "max_price": "40000000",
-    "title_clear_property": "yes",
-    "territory": "gram panchayat limit",
-    "min_area": "300",
-  }, {
-    "state": "maharashtra", "city": "Pune", "type": "plots", "bank_id": "SBI",
-    "min_price": "100000",
-    "max_price": "40000000",
-    "title_clear_property": "yes",
-    "territory": "gram panchayat limit",
-    "min_area": "300",
-    "max_area": "25000",
-    "age": 10,
-    "latest_added_properties": 20
-  },
-  {
-    "state": "Goa", "city": "Panaji", "type": "plots", "bank_id": "SBI",
-    "min_price": "100000",
-    "max_price": "40000000",
-    "title_clear_property": "yes",
-    "territory": "gram panchayat limit",
-    "min_area": "300",
-  }, {
-    "state": "maharashtra", "city": "Pune", "type": "plots", "bank_id": "SBI",
-    "min_price": "100000",
-    "max_price": "40000000",
-    "title_clear_property": "yes",
-    "territory": "gram panchayat limit",
-    "min_area": "300",
-    "max_area": "25000",
-    "age": 10,
-    "latest_added_properties": 20
-  },
-  {
-    "state": "Goa", "city": "Panaji", "type": "plots", "bank_id": "SBI",
-    "min_price": "100000",
-    "max_price": "40000000",
-    "title_clear_property": "yes",
-    "territory": "gram panchayat limit",
-    "min_area": "300",
-  }, {
-    "state": "maharashtra", "city": "Pune", "type": "plots", "bank_id": "SBI",
-    "min_price": "100000",
-    "max_price": "40000000",
-    "title_clear_property": "yes",
-    "territory": "gram panchayat limit",
-    "min_area": "300",
-    "max_area": "25000",
-    "age": 10,
-    "latest_added_properties": 20
-  },
-  {
-    "state": "1",
-  },
-
-]
 let authHeader = "";
 let isLogin = false;
 let subscription_status = false;
-let userId = "";
 let roleId = "";
 
 
 function Home() {
-
 
   const homePageRef = useRef();
   const historyBtnRef = useRef();
 
   const data = JSON.parse(localStorage.getItem("data"));
   const updatedSubscriptionStatus = localStorage.getItem("updatedSubscriptionStatus");
-  // console.log(updatedSubscriptionStatus);
   if (data) {
     authHeader = { Authorization: data.loginToken };
     isLogin = data.isLoggedIn;
-    userId = data.userId;
     roleId = data.roleId;
     subscription_status = updatedSubscriptionStatus ? updatedSubscriptionStatus : data.subscription_status;
   }
@@ -120,32 +43,6 @@ function Home() {
   const { states, assetCategory, cities } = searchFields;
 
   const [searchHistory, setSearchHistory] = useState([]);
-  const [historyBtn, setHistoryBtn] = useState(false);
-
-
-  // date and time convert into local time function
-  const dateTimeConvertor = (dateAndTime) => {
-    // Parse the date string into a JavaScript Date object
-    const dateTime = new Date(dateAndTime);
-
-    // Format the date
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    const formattedDate = dateTime.toLocaleDateString(undefined, options);
-
-    // Format the date in "21-12-2023" format
-    const optionsShort = { day: '2-digit', month: '2-digit', year: 'numeric' };
-    const formattedDateShort = dateTime.toLocaleDateString(undefined, optionsShort).replace(/\//g, '-');
-    // Format the time in local time zone
-    const formattedTime = dateTime.toLocaleTimeString();
-
-    // Update state
-    // console.log(formattedDate);
-    // console.log(formattedDateShort);
-    // console.log(formattedTime);
-
-
-
-  }
 
   // It will fetch all states, banks, assets from api and will map those values to respective select fields.
   const getSearchDetails = async () => {
@@ -175,7 +72,6 @@ function Home() {
   // history sentence creation 
   const createSentence = (SearchName) => {
     const criteria = SearchName.split(', ');
-    // console.log(criteria);
     let sentence = "All properties";
 
     criteria.forEach(criteriaItem => {
@@ -192,11 +88,11 @@ function Home() {
       } else if (key === "min_price" && criteria.find(item => item.includes('max_price'))) {
         sentence += ` with a price range between ₹${value}`;
       } else if (key === "max_price" && criteria.find(item => item.includes('min_price'))) {
-        sentence += ` and ₹${value}`;
+        sentence += ` to ₹${value}`;
       } else if (key === "min_area" && criteria.find(item => item.includes('max_area'))) {
         sentence += ` and an area between ${value} sq.ft`;
       } else if (key === "max_area" && criteria.find(item => item.includes('min_area'))) {
-        sentence += ` and ${value} sq.ft`;
+        sentence += ` to ${value} sq.ft`;
       } else if (key === "title_clear_property" && value === "yes") {
         sentence += ` with clear title properties`;
       } else if (key === "territory") {
@@ -222,78 +118,14 @@ function Home() {
           added_date: item.added_date,
           search_id: item.search_id,
         }));
-        dateTimeConvertor(data[0].updated_date);
         setSearchHistory(filteredData);
-        searchHistoryJsonDataConvertor(filteredData);
       }
     } catch (error) {
       console.log(error);
     }
   }
 
-  // json converted using parse and state and city converted
-  const searchHistoryJsonDataConvertor = async (data) => {
-
-    let apis = {
-      stateAPI: `/sam/v1/property/by-state`,
-      bankAPI: `/sam/v1/property/by-bank`,
-      categoryAPI: `/sam/v1/property/by-category`,
-      cityAPI: `/sam/v1/property/by-city`,
-
-    };
-    try {
-      // Get all states from api.
-      const allStates = await axios.get(apis.stateAPI);
-      // const searchJson=data.fileter((data,i)=>data.search_json[i])
-      // console.log(data);
-      let states = allStates.data;
-
-      // const cityValue = async (state_id) => {
-      //   try {
-      //     const { data } = await axios.post(apis.cityAPI, {
-      //       state_id: parseInt(state_id),
-      //     });
-
-      //     return data; // Simplified return statement
-      //   } catch (error) {
-      //     // Handle errors here if needed
-      //     console.error("Error fetching city data:", error);
-      //     throw error; // Re-throw the error to propagate it
-      //   }
-      // };
-
-      const result = data.map((searchItem) => {
-        const { city_id, state_id } = searchItem.search_json;
-        // let cities = cityValue(state_id);
-        // console.log(cities);
-        // Find the city and state based on the search_json
-        // const cityName = cities.find((city) => city.city_id === city_id)?.city_name || '';
-        const stateName = states.find((state) => state.state_id === state_id)?.state_name || '';
-
-        return {
-          // city_name: cityName,
-          state_name: stateName,
-          updated_date: searchItem.updated_date,
-        };
-      });
-
-      // console.log(result);
-
-
-
-    } catch (error) { }
-
-
-
-    // const cityByState = await axios.post("/sam/v1/property/by-city", {
-    //   state_id: parseInt(1),
-    // });
-
-    // console.log(cityByState.data);
-
-  }
-  const [searchBtnDisabled, setSearchBtnDisabled] = useState(true);
-  const [modalStatus, setModalStatus] = useState(false);
+  const [searchBtnDisabled, setSearchBtnDisabled] = useState(true); 
 
   useEffect(() => {
     if (Object.keys(dataToPost).length > 2) {
@@ -364,39 +196,18 @@ function Home() {
     };
   };
 
-
   // on click history button
   const onClickHistory = (e) => {
     const data = e.search_json;
-    // setDataToPost({ ...dataToPost, data });
-
-    console.log(data);
     const sensitiveData = { ...dataToPost, ...data };
-    console.log(sensitiveData);
     navigate("/property-search-results", { state: { sensitiveData } });
   }
   // navigate to properties list page
   const navigate = useNavigate();
-
   const navigateToDestination = () => {
     const sensitiveData = dataToPost;
-    console.log(sensitiveData);
     navigate("/property-search-results", { state: { sensitiveData } });
   };
-
-
-  useEffect(() => {
-    if (modalStatus) {
-      let body = document.getElementById("body");
-      let navbar = document.getElementsByClassName("navbar");
-      if (body.classList[0] === "modal-open") {
-        console.log("hi");
-        body.style.removeProperty("overflow");
-        body.style.removeProperty("padding");
-        // navbar.style.remove("padding");
-      }
-    }
-  }, [modalStatus])
 
   // This will run every time we refresh page or if some state change occurs.
   useEffect(() => {
@@ -406,6 +217,7 @@ function Home() {
     if (isLogin) {
       getSearchHistory();
     }
+    // eslint-disable-next-line
   }, [isLogin, subscription_status]);
 
   return (
@@ -413,6 +225,7 @@ function Home() {
       <section className="full-home-page-section skyblue-bg " ref={homePageRef} >
         <section className="home-wrapper min-100vh">
           <div className="container-fluid">
+          {/* History */}
             <div className="d-flex justify-content-end mb-5  dropdown" >
               {isLogin && roleId === 3 ?
                 <div ref={historyBtnRef} className="col-md-2 searchHistoryDiv d-flex justify-content-center mt-2 " >
@@ -434,7 +247,7 @@ function Home() {
                       return (
                         <div key={index + 1} className={rowClasses}>
                           <div className="col-12 d-flex ">
-                            <p className="searchHistoryList historyLink" onClick={() => onClickHistory(data)}><span><i className="bi bi-clock-history text-primary"></i> </span>
+                            <p className="searchHistoryList historyLink" onClick={() => onClickHistory(data)}><span><i className="bi bi-clock-history heading-text-primary"></i> </span>
                               {data.SearchName}
                             </p>
                           </div>
@@ -445,15 +258,13 @@ function Home() {
                     </>)
                     }
                   </div>
-
                 </div> : ""}
-
-
-
             </div>
+
             {/* 5 select boxes */}
             <div className="d-flex justify-content-center ">
               <div className="row five-box-row mt-lg-5 mt-md-0">
+              {/* states */}
                 <div className="col-lg-3 col-md-4 col-12">
                   <div className="inner-box">
                     <label htmlFor="state">State</label>
@@ -479,6 +290,7 @@ function Home() {
                     </div>
                   </div>
                 </div>
+                {/* city */}
                 <div
                   className="col-lg-3 col-md-4 col-12  mt-3 mt-md-0"
                   id="city-col"
@@ -507,6 +319,7 @@ function Home() {
                     </div>
                   </div>
                 </div>
+                {/* assetCategory */}
                 <div className=" col-lg-3 col-md-4 col-12 mt-3 mt-md-0">
                   <div className="inner-box">
                     <label htmlFor="asset">Asset Category</label>
@@ -534,12 +347,11 @@ function Home() {
                 </div>
               </div>
             </div>
-
             {/* Search button*/}
             <div className="row justify-content-center py-4 search-btn-wrapper">
               <div className="text-center">
                 <button
-                  className={`btn btn-primary common-btn-font ${searchBtnDisabled ? "disabled" : ""
+                  className={`btn btn-primary border-white common-btn-font ${searchBtnDisabled ? "disabled" : ""
                     }`}
                   onClick={navigateToDestination}
                 >

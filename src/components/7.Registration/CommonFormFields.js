@@ -12,18 +12,78 @@ const CommonFormFields = ({
   loading,
   onMobileNumberInputBlur,
   onMobileNumberInputChange,
+  handleFocus,
+  handleClick,
 }) => {
-  const { emailValidationMessage, mobileValidationMessage,landlineNumberValidationMessage, landlineNumberValidationColor } = validationDetails;
+  const { emailValidationMessage, mobileValidationMessage, landlineNumberValidationMessage, landlineNumberValidationColor } = validationDetails;
   const { addressValue, labelValue, textAreaVisibility } = addressValues;
 
   return (
     <>
+
+
+      {/* Email */}
+      <div className="row emailRow mt-2 mb-2 align-items-center"> 
+        <div className="col-lg-4 mb-lg-0 my-md-2 my-4 custom-class-form-div">
+          <input
+            onChange={onInputChange}
+            onBlur={onInputBlur}
+            name="email"
+            id="email"
+            onFocus={handleFocus}
+            type="email"
+            className="form-control custom-input" 
+            required
+          />
+          <label className="px-2" htmlFor="email" onClick={() => handleClick('email')} >Email <span className="text-danger">*</span> </label>
+          <span
+            className={`pe-1 ${emailValidationMessage ? "text-danger" : "d-none"
+              }`}
+          >
+            {emailValidationMessage}
+          </span>
+        </div> 
+        <div className="col-lg-4 mb-lg-0 my-md-2 my-4 "> 
+          <PhoneInput
+            country={"in"} 
+            onBlur={(e) => onMobileNumberInputBlur(e)}
+            onChange={onMobileNumberInputChange}
+            onFocus={handleFocus}
+          /> 
+          <span
+            className={`pe-1 ${mobileValidationMessage ? "text-danger" : "d-none"
+              }`}
+          >
+            {mobileValidationMessage}
+          </span>
+
+          <span className="form-text d-none"></span>
+        </div>   
+        <div className="col-lg-4 mb-lg-0 my-md-2 my-4 custom-class-form-div">
+          <input
+            onChange={onInputChange}
+            onBlur={onInputBlur}
+            name="landline_number"
+            id="landline_number"
+            type="Number"
+            onFocus={handleFocus} 
+            className={`form-control custom-input border-${landlineNumberValidationColor}`}
+          />
+          <label className="px-2" htmlFor="landline_number" onClick={() => handleClick('landline_number')} >Landline (optional)</label>
+          <span
+            className={`pe-1 ${landlineNumberValidationMessage ? "text-danger" : "d-none"
+              }`}
+          >
+            {landlineNumberValidationMessage}
+          </span>
+        </div>
+      </div>
       {/* Address Row 1 */}
-      <div className="row addressRow1 mt-lg-3 mt-4">
-        <div className="col-lg-2 mb-lg-0 mb-2">
+      <div className="row addressRow1 mt-4 align-items-center">
+        <div className="col-lg-1 col-md-2 pe-md-0 mb-lg-0 mb-2">
           Address<span className="text-danger fw-bold">*</span>
         </div>
-        <div className="col-lg-6 mb-lg-0 mb-2">
+        <div className="col-lg-6 mb-lg-0 my-md-2 my-4 custom-class-form-div">
           <a
             href="/anyValue"
             id="address-modal-label"
@@ -45,91 +105,15 @@ const CommonFormFields = ({
         </div>
       </div>
 
-      {/* Email */}
-      <div className="row emailRow mt-lg-3 mt-4">
-        <div className="col-lg-2 mb-lg-0 mb-2">
-          Email Address<span className="text-danger fw-bold">*</span>
-        </div>
-        <div className="col-lg-2">
-          <input
-            onChange={onInputChange}
-            onBlur={onInputBlur}
-            name="email"
-            type="email"
-            className="form-control"
-            placeholder="XXX@YYY.com"
-            required
-          />
-          <span
-            className={`pe-1 ${emailValidationMessage ? "text-danger" : "d-none"
-              }`}
-          >
-            {emailValidationMessage}
-          </span>
-        </div>
-      </div>
-      {/* Contact */}
-      <div className="row contactRow mt-lg-3 mt-4">
-        <div className="col-lg-2 mb-lg-0 mb-2">
-          Landline<span className="ps-1 text-muted">(optional)</span>
-          {/* <span className="text-danger">*</span> */}
-        </div>
-        <div className="col-lg-2 mb-lg-0 mb-2">
-          <input
-            onChange={onInputChange}
-            onBlur={onInputBlur}
-            name="landline_number"
-            type="Number"
-            placeholder="Landline"
-            className={`form-control border-${landlineNumberValidationColor}`}
-          />
-           <span
-            className={`pe-1 ${landlineNumberValidationMessage ? "text-danger" : "d-none"
-              }`}
-          >
-            {landlineNumberValidationMessage}
-          </span>
-        </div>
-        <div className="col-lg-2 mb-lg-0 mb-2">
-          Mobile Number<span className="text-danger fw-bold">*</span>
-        </div>
-        <div className="col-lg-3 mb-lg-0 mb-2">
-          {/* <input
-            onChange={onInputChange}
-            onBlur={onInputBlur}
-            name="mobile_number"
-            type="Number"
-            placeholder="Mobile Number"
-            required
-            className="form-control"
-          /> */}
-
-          <PhoneInput
-            country={"in"}
-            // value={phoneNumber}
-            onBlur={(e) => onMobileNumberInputBlur(e)}
-            onChange={onMobileNumberInputChange}
-          />
-
-          <span
-            className={`pe-1 ${mobileValidationMessage ? "text-danger" : "d-none"
-              }`}
-          >
-            {mobileValidationMessage}
-          </span>
-
-          <span className="form-text d-none"></span>
-        </div>
-      </div>
       {/* SAM T & C */}
-      <div className="row register-links mt-3">
-        <div className="offset-lg-2 col-lg-4">
+      <div className="row register-links mt-5 align-items-center">
+        <div className=" col-lg-4">
           <NavLink to="/register">SAM Terms and Conditions</NavLink>
         </div>
       </div>
       {/* Agree T & C */}
-      <div className="row agreeTermsConditionsRow mt-3">
-        <div className="col-lg-4">
+      <div className="row agreeTermsConditionsRow mt-3 align-items-center">
+        <div className="col-lg-8">
           <input
             type="checkbox"
             className="form-check-input"
@@ -145,8 +129,8 @@ const CommonFormFields = ({
         </div>
       </div>
       {/* Form submit or Cancel */}
-      <div className="row submitCancelRow mt-4 mb-4 mb-md-0">
-        <div className="offset-lg-2 col-lg-2 col-md-4 col-6">
+      <div className="row submitCancelRow mt-5 mb-4 mb-md-0 align-items-center">
+        <div className=" col-lg-2 col-md-4 col-6 ">
           <button
             className="btn btn-primary text-white common-btn-font"
             style={{ width: "100px" }}

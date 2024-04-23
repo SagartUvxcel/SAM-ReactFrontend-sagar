@@ -8,6 +8,10 @@ import { useRef } from "react";
 import { rootTitle } from "../../CommonFunctions";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
 
+// regular expression 
+const landlineNumberRegularExp = /^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/
+
+
 const Registration = () => {
   const goTo = useNavigate();
   const deselectStateInput = useRef();
@@ -37,20 +41,6 @@ const Registration = () => {
 
   // useState to store address Details.
   const [addressDetails, setAddressDetails] = useState({ zip: "" });
-
-  // useState to store/remove and hide/show cities data.
-  const [cityUseState, setCityUseState] = useState({
-    citiesByState: [],
-    cityVisibilityClass: "d-none",
-  });
-
-  // useState to store/remove and hide/show address details.
-  const [addressValues, setAddressValues] = useState({
-    addressValue: "",
-    labelValue: "Add Details",
-    textAreaVisibility: "d-none",
-  });
-
   // Object destructuring.
   const {
     flat_number,
@@ -65,6 +55,20 @@ const Registration = () => {
     zip,
   } = addressDetails;
 
+  // useState to store/remove and hide/show cities data.
+  const [cityUseState, setCityUseState] = useState({
+    citiesByState: [],
+    cityVisibilityClass: "d-none",
+  });
+  const { citiesByState, cityVisibilityClass } = cityUseState;
+
+  // useState to store/remove and hide/show address details.
+  const [addressValues, setAddressValues] = useState({
+    addressValue: "",
+    labelValue: "Add Details",
+    textAreaVisibility: "d-none",
+  });
+
   // useState to store each field's data from form.
   const [formData, setFormData] = useState({
     contact_details: {
@@ -76,8 +80,6 @@ const Registration = () => {
   // Store validation message and validation color based on input field.
   const [validationDetails, setValidationDetails] = useState({});
 
-  const { citiesByState, cityVisibilityClass } = cityUseState;
-
   // Object destructuring.
   const {
     aadhaarValidationMessage,
@@ -87,6 +89,8 @@ const Registration = () => {
     cinValidationMessage,
     zipCodeValidationColor,
     zipCodeValidationMessage,
+    landlineNumberValidationMessage,
+    landlineNumberValidationColor,
   } = validationDetails;
 
   // Things to be changed when we change form i.e. either individual or organization.
@@ -95,8 +99,6 @@ const Registration = () => {
     organizationActiveClass: "",
     individualDisplay: "",
     organizationDisplay: "d-none",
-    bankActiveClass: "",
-    bankDisplay: "d-none",
   });
 
   // Object destructuring.
@@ -104,9 +106,7 @@ const Registration = () => {
     individualActiveClass,
     organizationActiveClass,
     individualDisplay,
-    organizationDisplay,
-    bankActiveClass,
-    bankDisplay,
+    organizationDisplay
   } = toggleForms;
 
   // Function to reset values.
@@ -169,9 +169,10 @@ const Registration = () => {
 
   // Function to validate zipCodes.
   const zipValidationByState = async (zipValue, stateId) => {
+    let zipCodeValue = zipValue;
     await axios
       .post(`/sam/v1/customer-registration/zipcode-validation`, {
-        zipcode: zipValue,
+        zipcode: zipCodeValue,
         state_id: stateId,
       })
       .then((res) => {
@@ -191,6 +192,7 @@ const Registration = () => {
       });
   };
 
+  // show Individual Form
   const showIndividualForm = () => {
     setFormData({
       ...formData,
@@ -205,13 +207,12 @@ const Registration = () => {
     setToggleForms({
       individualActiveClass: "active",
       organizationActiveClass: "",
-      bankActiveClass: "",
       individualDisplay: "",
       organizationDisplay: "d-none",
-      bankDisplay: "d-none",
     });
   };
 
+  // show Organization Form
   const showOrganizationForm = () => {
     resetValues();
     setFormData({
@@ -225,30 +226,8 @@ const Registration = () => {
     setToggleForms({
       individualActiveClass: "",
       organizationActiveClass: "active",
-      bankActiveClass: "",
       individualDisplay: "d-none",
       organizationDisplay: "",
-      bankDisplay: "d-none",
-    });
-  };
-
-  const showBankForm = () => {
-    resetValues();
-    setFormData({
-      ...formData,
-      contact_details: { user_type: "Bank User" },
-    });
-
-    // Reset form fields and validations.
-    document.getElementById("bankForm").reset();
-    // Toggle checkbox and visibility of forms.
-    setToggleForms({
-      individualActiveClass: "",
-      organizationActiveClass: "",
-      bankActiveClass: "active",
-      individualDisplay: "d-none",
-      organizationDisplay: "d-none",
-      bankDisplay: "",
     });
   };
 
@@ -259,8 +238,6 @@ const Registration = () => {
       showOrganizationForm();
     } else if (attrOfForm === "individual") {
       showIndividualForm();
-    } else if (attrOfForm === "bank") {
-      showBankForm();
     }
   };
 
@@ -366,6 +343,11 @@ const Registration = () => {
         ...formData,
         contact_details: { ...formData.contact_details, [name]: value },
       });
+    } else if (name === "landmark") {
+      setFormData({
+        ...formData,
+        contact_details: { ...formData.contact_details, [name]: value },
+      });
     } else if (name === "locality") {
       setFormData({
         ...formData,
@@ -428,6 +410,7 @@ const Registration = () => {
     setAddressDetails({ ...addressDetails, [name]: value });
   };
 
+  // on Mobile Number Input Change
   const onMobileNumberInputChange = () => {
     setValidationDetails({
       ...validationDetails,
@@ -435,6 +418,7 @@ const Registration = () => {
     });
   };
 
+  // on Mobile Number Input Blur
   const onMobileNumberInputBlur = (e) => {
     let parsedPhoneNumber = parsePhoneNumberFromString(e.target.value);
     let isValid = parsedPhoneNumber ? parsedPhoneNumber.isValid() : false;
@@ -446,7 +430,6 @@ const Registration = () => {
       });
     } else {
       if (finalValue) {
-        // console.log("Valid From UI Library");
         validateMobileFromBackend(finalValue);
       }
     }
@@ -460,9 +443,8 @@ const Registration = () => {
     });
   };
 
+  // validate Mobile From Backend
   const validateMobileFromBackend = async (mobileValue) => {
-    console.log("--------- From backend --------");
-    console.log("Mobile validation function called", mobileValue);
     try {
       await axios
         .post(
@@ -532,16 +514,51 @@ const Registration = () => {
       style.borderColor = "";
     } else if (name === "flat_number") {
       setValues(name, value);
+      setFormData({
+        ...formData,
+        contact_details: {
+          ...formData.contact_details,
+          [name]: parseInt(value),
+        },
+      });
     } else if (name === "building_name") {
       setValues(name, value);
+      setFormData({
+        ...formData,
+        contact_details: {
+          ...formData.contact_details,
+          [name]: value,
+        },
+      });
     } else if (name === "society_name") {
       setValues(name, value);
+      setFormData({
+        ...formData,
+        contact_details: {
+          ...formData.contact_details,
+          [name]: value,
+        },
+      });
     } else if (name === "plot_number") {
       setValues(name, value);
+      setFormData({
+        ...formData,
+        contact_details: {
+          ...formData.contact_details,
+          [name]: parseInt(value),
+        },
+      });
     } else if (name === "locality") {
       setValues(name, value);
     } else if (name === "landmark") {
       setValues(name, value);
+      setFormData({
+        ...formData,
+        contact_details: {
+          ...formData.contact_details,
+          [name]: value,
+        },
+      });
       // } else if (name === "village") {
       //   setValues(name, value);
     } else if (name === "zip") {
@@ -603,57 +620,29 @@ const Registration = () => {
         contact_details: {
           ...formData.contact_details,
           [name]: parseInt(value),
-          address: cityName,
+          // address: cityName,
         },
       });
-    } else if (name === "flat_number") {
-      setFormData({
-        ...formData,
-        contact_details: {
-          ...formData.contact_details,
-          [name]: parseInt(value),
-        },
-      });
-    } else if (name === "building_name") {
-      setFormData({
-        ...formData,
-        contact_details: {
-          ...formData.contact_details,
-          [name]: value,
-        },
-      });
-    } else if (name === "society_name") {
-      setFormData({
-        ...formData,
-        contact_details: {
-          ...formData.contact_details,
-          [name]: value,
-        },
-      });
-    } else if (name === "landmark") {
-      setFormData({
-        ...formData,
-        contact_details: {
-          ...formData.contact_details,
-          [name]: value,
-        },
-      });
-    } else if (name === "plot_number") {
-      console.log(formData);
-      setFormData({
-        ...formData,
-        contact_details: {
-          ...formData.contact_details,
-          [name]: parseInt(value),
-        },
-      });
+    } else if (name === "landline_number") {
+      if (landlineNumberRegularExp.test(value) || value.length === 0) {
+        setValidationDetails({
+          ...validationDetails,
+          landlineNumberValidationMessage: "",
+        });
+        style.borderColor = "";
+      } else {
+        setValidationDetails({
+          ...validationDetails,
+          landlineNumberValidationMessage: "Invalid Landline Number Entered",
+        });
+        style.borderColor = "red";
+      }
+
     }
   };
 
   // Function will run after Individual Form submit button is clicked.
   const onIndividualFormSubmit = async (e) => {
-    console.log(formData);
-    console.log(addressDetails);
     e.preventDefault();
     const fieldsToDelete = [
       "organization_type",
@@ -766,63 +755,6 @@ const Registration = () => {
     }
   };
 
-  // Function will run after Organization Form submit button is clicked.
-  const onBankFormSubmit = async (e) => {
-    e.preventDefault();
-    const fieldsToDelete = [
-      "first_name",
-      "middle_name",
-      "last_name",
-      "aadhar_number",
-      "pan_number",
-    ];
-    fieldsToDelete.forEach((field) => {
-      delete formData[field];
-    });
-
-    if (addressValues.labelValue === "Add Details") {
-      setAlertDetails({
-        alertVisible: true,
-        alertMsg: "Please fill the address details",
-        alertClr: "danger",
-      });
-    } else {
-      setLoading(true);
-      // try {
-      //   await axios
-      //     .post(`/sam/v1/customer-registration/org-customer`, formData)
-      //     .then(async (res) => {
-      //       if (res.data.status === 0) {
-      //         document
-      //           .getElementById("registration-alert")
-      //           .scrollIntoView(true);
-      //         setLoading(false);
-      //         toast.success(
-      //           `Success: Please check your email for verification.`
-      //         );
-      //         e.target.reset();
-      //         resetValues();
-      //         goTo("/register/verify");
-      //       } else {
-      //         setLoading(false);
-      //         setAlertDetails({
-      //           alertVisible: true,
-      //           alertMsg: "Internal server error",
-      //           alertClr: "warning",
-      //         });
-      //       }
-      //     });
-      // } catch (error) {
-      //   setLoading(false);
-      //   setAlertDetails({
-      //     alertVisible: true,
-      //     alertMsg: "Internal server error",
-      //     alertClr: "warning",
-      //   });
-      // }
-    }
-  };
-
   useEffect(() => {
     rootTitle.textContent = "SAM TOOL - REGISTER";
     resetValues();
@@ -833,10 +765,10 @@ const Registration = () => {
     <Layout>
       <section className="registration-wrapper min-100vh section-padding">
         <div className="container-fluid">
-          <div className="row justify-content-center">
-            <div className="col-lg-12">
-              <div className="card form-wrapper-card shadow pt-3 pb-5 ps-lg-3 ps-0">
-                <div className="container-fluid registration-form-container">
+          <div className="row justify-content-center ">
+            <div className="col-lg-12 mt-4">
+              <div className="card form-wrapper-card shadow pt-3 pb-5 px-lg-4 ps-0">
+                <div className="container-fluid registration-form-container mb-5">
                   <div className="row">
                     {/* Individual Form Heading */}
                     <div className="col-lg-12">
@@ -857,13 +789,6 @@ const Registration = () => {
                         onClick={changeForm}
                       >
                         Organization
-                      </div>
-                      <div className="mx-2">|</div>
-                      <div className={`bank-label common-btn-font ${bankActiveClass}`}
-                        name="bank"
-                        onClick={changeForm}
-                      >
-                        Bank
                       </div>
                     </div>
                     <div className="col-12">
@@ -900,52 +825,54 @@ const Registration = () => {
                     >
                       <div className="col-lg-12">
                         {/* Full Name */}
-                        <div className="row fullNameRow">
+                        <div className="row fullNameRow mb-2">
                           <div className="col-lg-2 mb-lg-0 mb-2">
                             Full Name
                             <span className="text-danger fw-bold">*</span>
                           </div>
-                          <div className="col-lg-2 mb-lg-0 mb-2">
+                          <div className="col-lg-3 mb-lg-0 mb-2">
                             <input
                               onChange={onInputChange}
                               onBlur={onInputBlur}
                               name="first_name"
                               type="text"
                               placeholder="First Name"
-                              className="form-control"
+                              className="form-control custom-input "
                               required
                             />
+
+
                           </div>
-                          <div className="col-lg-2 mb-lg-0 mb-2">
+                          <div className="col-lg-3 mb-lg-0 mb-2">
                             <input
                               onChange={onInputChange}
                               onBlur={onInputBlur}
                               name="middle_name"
                               type="text"
                               placeholder="Middle Name"
-                              className="form-control"
+                              className="form-control custom-input "
                               required
                             />
                           </div>
-                          <div className="col-lg-2">
+                          <div className="col-lg-3">
                             <input
                               onChange={onInputChange}
                               onBlur={onInputBlur}
                               name="last_name"
                               type="text"
                               placeholder="Last Name"
-                              className="form-control"
+                              className="form-control custom-input "
                               required
                             />
                           </div>
                         </div>
                         {/* Aadhaar Pan */}
-                        <div className="row aadhaarPanRow mt-lg-3 mt-4">
+                        <div className="row aadhaarPanRow mt-4">
                           <div className="col-lg-2 mb-lg-0 mb-2">
                             Aadhaar Number
                             <span className="text-danger fw-bold">*</span>
                           </div>
-                          <div className="col-lg-2 mb-lg-0 mb-3">
+                          <div className="col-lg-3 mb-lg-0 mb-3">
                             <input
                               onChange={onInputChange}
                               onBlur={onInputBlur}
@@ -953,7 +880,7 @@ const Registration = () => {
                               type="Number"
                               placeholder="•••• •••• •••• ••••"
                               required
-                              className="form-control"
+                              className="form-control custom-input "
                             />
                             <span
                               className={`pe-1 ${aadhaarValidationMessage
@@ -973,7 +900,7 @@ const Registration = () => {
                             PAN Number
                             <span className="text-danger fw-bold">*</span>
                           </div>
-                          <div className="col-lg-2 mb-lg-0">
+                          <div className="col-lg-3 mb-lg-0">
                             <input
                               onChange={onInputChange}
                               onBlur={onInputBlur}
@@ -981,7 +908,7 @@ const Registration = () => {
                               type="text"
                               placeholder="PAN Number"
                               required
-                              className="form-control text-uppercase"
+                              className="form-control text-uppercase custom-input"
                             />
                             <span
                               className={`pe-1 ${panValidationMessage ? "text-danger" : "d-none"
@@ -1018,16 +945,16 @@ const Registration = () => {
                       className={`row ${organizationDisplay} OrganizationForm`}
                     >
                       <div className="col-lg-12">
-                        <div className="row organization-type-row">
+                        <div className="row organization-type-row align-items-center">
                           <div className="col-lg-2 mb-lg-0 mb-2">
                             Organization Type
                             <span className="text-danger fw-bold">*</span>
                           </div>
-                          <div className="col-lg-2">
+                          <div className="col-lg-3">
                             <select
                               onBlur={onInputBlur}
                               name="organization_type"
-                              className="form-select"
+                              className="form-select custom-input "
                               aria-label="Default select example"
                               required
                             >
@@ -1047,18 +974,18 @@ const Registration = () => {
                           </div>
                         </div>
                         {/* Organization Name & GST & Type */}
-                        <div className="row nameGstRow  mt-lg-3 mt-2">
+                        <div className="row nameGstRow  mt-lg-3 mt-2 align-items-center">
                           <div className="col-lg-2 mb-lg-0 mb-2">
                             Organization Name
                             <span className="text-danger fw-bold">*</span>
                           </div>
-                          <div className="col-lg-2 mb-lg-0 mb-2">
+                          <div className="col-lg-3 mb-lg-0 mb-2">
                             <input
                               onBlur={onInputBlur}
                               name="company_name"
                               type="text"
                               placeholder="Company Name"
-                              className="form-control"
+                              className="form-control custom-input"
                               required
                             />
                           </div>
@@ -1066,14 +993,14 @@ const Registration = () => {
                             GST Number
                             <span className="text-danger fw-bold">*</span>
                           </div>
-                          <div className="col-lg-2">
+                          <div className="col-lg-3">
                             <input
                               onChange={onInputChange}
                               onBlur={onInputBlur}
                               name="gst_number"
                               type="text"
                               placeholder="GST Number"
-                              className="form-control text-uppercase"
+                              className="form-control text-uppercase  custom-input"
                               required
                             />
                             <span
@@ -1086,19 +1013,19 @@ const Registration = () => {
                         </div>
 
                         {/* TAN & CIN */}
-                        <div className="row AadhaarPanRow  mt-lg-3 mt-2">
+                        <div className="row AadhaarPanRow  mt-lg-3 mt-2 align-items-center" >
                           <div className="col-lg-2 mb-lg-0 mb-2">
                             TAN Number
                             <span className="text-danger fw-bold">*</span>
                           </div>
-                          <div className="col-lg-2">
+                          <div className="col-lg-3">
                             <input
                               onChange={onInputChange}
                               onBlur={onInputBlur}
                               name="tan_number"
                               type="text"
                               placeholder="TAN Number"
-                              className="form-control text-uppercase"
+                              className="form-control text-uppercase  custom-input"
                               required
                             />
                             <span
@@ -1112,14 +1039,14 @@ const Registration = () => {
                             CIN Number
                             <span className="text-danger fw-bold">*</span>
                           </div>
-                          <div className="col-lg-2">
+                          <div className="col-lg-3">
                             <input
                               onChange={onInputChange}
                               onBlur={onInputBlur}
                               name="cin_number"
                               type="text"
-                              placeholder="CIN Number"
-                              className="form-control text-uppercase"
+                              // placeholder="CIN Number"
+                              className="form-control text-uppercase  custom-input"
                               required
                             />
                             <span
@@ -1143,64 +1070,20 @@ const Registration = () => {
                       </div>
                     </form>
 
-                    {/* Bank Main Form */}
-                    <form
-                      id="bankForm"
-                      onSubmit={onBankFormSubmit}
-                      action=""
-                      className={`row ${bankDisplay} BankForm`}
-                    >
-                      <div className="col-lg-12">
-                        <div className="row bank-type-row">
-                          <div className="col-lg-2 mb-lg-0 mb-2">
-                            Bank Name
-                            <span className="text-danger fw-bold">*</span>
-                          </div>
-                          <div className="col-lg-2">
-                            <select
-                              onBlur={onInputBlur}
-                              name="organization_type"
-                              className="form-select"
-                              aria-label="Default select example"
-                              required
-                            >
-                              <option value="" style={{ color: "gray" }}>
-                                Select Type
-                              </option>
-                              <option value="Proprietor">Proprietor</option>
-                              <option value="LLP">LLP</option>
-                              <option value="Partnership/Joint Venture">
-                                Partnership/Joint Venture
-                              </option>
-                              <option value="Private Limited">
-                                Private Limited
-                              </option>
-                              <option value="Limited">Limited</option>
-                            </select>
-                          </div>
-                        </div>
-
-
-                        <CommonFormFields
-                          validationDetails={validationDetails}
-                          resetValues={resetValues}
-                          addressValues={addressValues}
-                          onInputChange={onInputChange}
-                          onInputBlur={onInputBlur}
-                          loading={loading}
-                          onMobileNumberInputBlur={onMobileNumberInputBlur}
-                          onMobileNumberInputChange={onMobileNumberInputChange}
-                        />
-                      </div>
-                    </form>
                   </div>
                 </div>
-                <small className="token-verify-link">
-                  Already registered?
-                  <NavLink to="/register/verify" className="fw-bold ps-1">
-                    click here to verify
-                  </NavLink>
+                {/* <hr /> */}
+
+
+                {/* Already registered? */}
+                <small className="token-verify-link ">
+                  <div> Already registered?
+                    <NavLink to="/register/verify" className="fw-bold ps-1">
+                      click here to verify
+                    </NavLink></div>
                 </small>
+
+
               </div>
             </div>
           </div>
@@ -1242,7 +1125,7 @@ const Registration = () => {
                         id="flat_number"
                         name="flat_number"
                         type="number"
-                        className="form-control "
+                        className="form-control custom-input "
                         onChange={onInputChange}
                         placeholder="Flat Number"
                       />
@@ -1261,7 +1144,7 @@ const Registration = () => {
                         id="building_name"
                         name="building_name"
                         type="text"
-                        className="form-control "
+                        className="form-control custom-input "
                         onChange={onInputChange}
                         placeholder="Building Name"
                       />
@@ -1280,7 +1163,7 @@ const Registration = () => {
                         id="society_name"
                         name="society_name"
                         type="text"
-                        className="form-control "
+                        className="form-control custom-input "
                         onChange={onInputChange}
                         placeholder="Society Name"
                       />
@@ -1300,7 +1183,7 @@ const Registration = () => {
                         id="plot_number"
                         name="plot_number"
                         type="number"
-                        className="form-control "
+                        className="form-control custom-input "
                         onChange={onInputChange}
                         placeholder="Plot Number"
                       />
@@ -1321,7 +1204,7 @@ const Registration = () => {
                         id="locality"
                         name="locality"
                         type="text"
-                        className="form-control "
+                        className="form-control custom-input "
                         onChange={onInputChange}
                         placeholder="Locality, Area"
                       />
@@ -1341,7 +1224,7 @@ const Registration = () => {
                         id="landmark"
                         name="landmark"
                         type="text"
-                        className="form-control "
+                        className="form-control custom-input "
                         onChange={onInputChange}
                         placeholder="Landmark"
                       />
@@ -1361,13 +1244,13 @@ const Registration = () => {
                         id="village"
                         name="village"
                         type="text"
-                        className="form-control "
+                        className="form-control custom-input "
                         onChange={onInputChange}
                         placeholder="Village"
                       />
                     </div>
                   </div> */}
-                  <hr />
+                  {/* <hr /> */}
                   <div className="col-md-4">
                     <div className="form-group mb-3">
                       <label
@@ -1383,7 +1266,7 @@ const Registration = () => {
                         id="state"
                         name="state"
                         type="text"
-                        className="form-select"
+                        className="form-select custom-input"
                         placeholder="State"
                       >
                         <option
@@ -1424,7 +1307,7 @@ const Registration = () => {
                         id="city"
                         name="city"
                         type="text"
-                        className="form-select"
+                        className="form-select custom-input"
                         placeholder="city"
                       >
                         <option
@@ -1466,7 +1349,7 @@ const Registration = () => {
                         onBlur={onInputBlur}
                         placeholder="Zipcode"
                         name="zip"
-                        className={`form-control border-${zipCodeValidationColor}`}
+                        className={`form-control custom-input border-${zipCodeValidationColor}`}
                       ></input>
                       <span
                         className={`pe-1 ${zipCodeValidationMessage ? "text-danger" : "d-none"

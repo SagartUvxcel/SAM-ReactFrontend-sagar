@@ -1,20 +1,9 @@
-/* Demo Only */
-/* button {
-  background: #517ea5;
-  border: none;
-  color: #fff;
-  font-size: 24px;
-  font-weight: 700;
-  border-radius: 30px;
-  padding: 10px 20px;
-  cursor: pointer;
-} */
+
 
 .table-wrapper {
   margin-bottom: 15px;
   border-radius: 6px;
-  background: #fff;
-  overflow: hidden; /* Clip any scrollbars that appear */
+  background: #fff; 
 }
 
 .enquiry-table {
@@ -22,8 +11,7 @@
   display: grid;
   overflow-x: auto;
   overflow-y: hidden;
-  grid-template-columns: 70px 228px 228px 240px 228px 220px;
-  /* border:1px solid #dee2e6 !important; */
+  grid-template-columns: 70px 228px 228px 240px 228px 220px; 
 }
 
 .enquiry-table thead,
@@ -34,35 +22,30 @@
 }
 
 .enquiry-table th {
-  position: relative;
-  /* font-size: 18px; */
+  position: relative; 
 }
 
 .enquiry-table th,
 .enquiry-table td {
   text-align: center;
-  padding: 16px 20px;
-  /* min-width: 100px; */
+  padding: 16px 20px; 
   border:1px solid #dee2e6 !important;
 
 }
 
 .enquiry-table th span,
-.enquiry-table td span {
-  /* white-space: nowrap; */
+.enquiry-table td span { 
   text-wrap: wrap;
   text-overflow: ellipsis;
   overflow: hidden;
   display: block;
 }
 
-.enquiry-table tr td {
-  /* border-top: 1px solid #ccc; */
+.enquiry-table tr td { 
   text-wrap: wrap;
 }
 
-.enquiry-table th td {
-  /* border-top: 1px solid #ccc; */
+.enquiry-table th td { 
   text-wrap: wrap;
 }
 

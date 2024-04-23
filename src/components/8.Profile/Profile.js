@@ -50,8 +50,7 @@ const Profile = () => {
             headers: authHeaders,
           })
           .then(async (res) => {
-            // console.log(res.data);
-            const { individual_user, org_user, user_details } = res.data;
+            const { individual_user, org_user, user_details } = res.data; 
             if (individual_user) {
               const {
                 first_name,
@@ -93,7 +92,13 @@ const Profile = () => {
               zip,
               email_address,
               address,
-            } = user_details;
+              building_name,
+              contact_number,
+              flat_number,
+              landmark,
+              plot_number,
+              society_name,
+              user_id } = user_details;
 
             setCommonUserDetails({
               state_id: parseInt(state_id),
@@ -105,6 +110,13 @@ const Profile = () => {
               zip: zip,
               email: email_address,
               user_type: user_type,
+              building_name: building_name,
+              contact_number: contact_number,
+              flat_number: flat_number,
+              landmark: landmark,
+              plot_number: plot_number,
+              society_name: society_name,
+              user_id: user_id
             });
             setMainPageLoading(false);
           });
@@ -156,7 +168,7 @@ const Profile = () => {
                         ></i>
                       </div>
                     </div>
-                    <h3 className="text-center text-primary pt-2">
+                    <h3 className="text-center heading-text-primary pt-2">
                       {user_type === 0
                         ? "Personal Details"
                         : "Organization Details"}
@@ -280,7 +292,7 @@ const Profile = () => {
                         <i className="bi bi-geo-alt-fill fs-1 text-white"></i>
                       </div>
                     </div>
-                    <h3 className="text-center text-primary pt-2">
+                    <h3 className="text-center heading-text-primary pt-2">
                       Address Details
                     </h3>
                     <div className="profile-top-hr my-3" />
@@ -322,7 +334,7 @@ const Profile = () => {
                         <i className="bi bi-globe2 fs-1 text-white"></i>
                       </div>
                     </div>
-                    <h3 className="text-center text-primary pt-2">
+                    <h3 className="text-center heading-text-primary pt-2">
                       Quick Access
                     </h3>
                     <div className="profile-top-hr my-3" />

@@ -40,31 +40,24 @@ import UserProtected from "./components/UserProtected";
 import AccessDeniedPage from "./components/AccessDeniedPage";
 import SinglePropertyDocumentsUpload from "./Admin/Property/SinglePropertyDocumentsUpload";
 import ProtectedPages from "./components/ProtectedPages";
-import ProtectSetPasswordPage from "./components/ProtectSetPasswordPage";
-// import ProtectForgotPasswordPage from "./components/ProtectForgotPasswordPage";
+import ProtectSetPasswordPage from "./components/ProtectSetPasswordPage"; 
 import { ToastContainer, toast } from "react-toastify";
 import ManageUsers from "./Admin/User/ManageUsers";
-import { useEffect } from "react";
-
-
-
-// import { Elements } from '@stripe/react-stripe-js';
-// import { loadStripe } from '@stripe/stripe-js';
-
-// const stripePromise = loadStripe("pk_test_51Nk4qfSHRy9SkqBTfWc49bExrTp3Q5k6ZEwAjFcPHnqKn6MZ8D0ekQvimsKpJh47iig7hx2BNK8rFwx9D1LK1uxk00xu0jvJqs");
-
-
-
+import { useEffect } from "react"; 
+ 
+ 
 let isBank = false;
 let roleId = "";
 function App() {
   const MINUTE_MS = 1000;
   const goTo = useNavigate();
+  // login data
   const data = JSON.parse(localStorage.getItem("data"));
   if (data) {
     isBank = data.isBank;
     roleId = data.roleId;
   }
+  // logout function useEffect
   useEffect(() => {
     const interval = setInterval(async () => {
       const data = JSON.parse(localStorage.getItem("data"));
@@ -72,11 +65,9 @@ function App() {
         try {
           let res = await axios.get(`/sam/v1/user-registration/logout`, {
             headers: { Authorization: data.loginToken },
-          });
-          // console.log(res.data);
+          }); 
           if (res.data !== "Session expired or invalid user") {
-            let remainingTime = parseInt(res.data.TimeRemaining);
-            // console.log("Time Remaining = ", remainingTime);
+            let remainingTime = parseInt(res.data.TimeRemaining); 
             if (remainingTime > 5) {
               localStorage.removeItem("remainingTime");
             }
@@ -92,8 +83,7 @@ function App() {
             localStorage.setItem("userSession", "invalid");
             goTo("/login");
           }
-        } catch (error) {
-          console.log("error");
+        } catch (error) { 
           localStorage.removeItem("data");
           localStorage.removeItem("remainingTime");
           localStorage.removeItem("notificationRefresh");
@@ -106,6 +96,7 @@ function App() {
     return () => clearInterval(interval);
     // eslint-disable-next-line
   }, []);
+
 
   return (
     <>
@@ -138,11 +129,7 @@ function App() {
           />
           <Route
             path="/login"
-            element={
-              // <ProtectedPages>
-              <LoginMainPage />
-              // </ProtectedPages>
-            }
+            element={<LoginMainPage />}
           />
           <Route
             path="/change-password"
@@ -170,11 +157,7 @@ function App() {
           />
           <Route
             path="/forgot-password/reset-password"
-            element={
-              // <ProtectForgotPasswordPage>
-              <ForgotAndResetPassword />
-              // </ProtectForgotPasswordPage>
-            }
+            element={<ForgotAndResetPassword />}
           />
           <Route
             path="/profile"
@@ -200,7 +183,7 @@ function App() {
           />
 
           <Route path="/forgot-password/*" element={<ForgotPassword />} />
-          <Route path="/inactive-account/*" element={< InactiveUserEmailVerification />} />
+          <Route path="/inactive-account/*" element={<InactiveUserEmailVerification />} />
 
           <Route path="/forgot-password/password-reset/*" element={<SecurityQuestionAndEmailLinkPasswordReset />} />
 

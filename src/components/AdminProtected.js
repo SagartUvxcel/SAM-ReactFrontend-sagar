@@ -9,7 +9,7 @@ const AdminProtected = ({ children }) => {
     if (data) {
       if (data.roleId === 1 || data.isBank) {
       } else {
-        goTo("/access-denied");
+        goTo("/access-denied"); 
       }
     } else {
       goTo("/access-denied");

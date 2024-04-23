@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Layout from "../../components/1.CommonLayout/Layout";
-// import CommonFormFields from "../components/7.Registration/CommonFormFields";
 import axios from "axios";
 import { NavLink, useNavigate, } from "react-router-dom";
 import "react-phone-input-2/lib/style.css";
@@ -14,7 +13,6 @@ import Loader from "../../components/1.CommonLayout/Loader";
 
 const bankNameRegularExp = /^[A-Za-z0-9&\s.-]+$/
 const branchNameRegularExp = /^[A-Za-z0-9\s\-&.,'()]+/
-// const emailUserNameRegularExp = /^([a-zA-Z0-9._%+-]+)@/
 const emailUserNameRegularExp = /^[a-zA-Z0-9._]+$/
 const branchCodeRegularExp = /^\d{1,5}$/
 const ifscCodeRegularExp = /^[A-Z]{4}0\d{6}$/
@@ -26,21 +24,22 @@ const landlineNumberRegularExp = /^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/
 
 const BankRegistrationPage = () => {
 
-
     const goTo = useNavigate();
     const deselectStateInput = useRef();
     const navigate = useNavigate();
 
-
+    // on input focus
+    const handleFocus = (e) => {
+        e.target.nextSibling.classList.add('active');
+    };
+    // on input click
+    const handleClick = (inputId) => {
+        const input = document.getElementById(inputId);
+        input.focus();
+    };
     const [validationDetails, setValidationDetails] = useState({});
     // Object destructuring.
     const {
-        bankNameValidationMessage,
-        branchNameValidationMessage,
-        branchCodeValidationMessage,
-        ifscCodeValidationMessage,
-        branchSftpValidationMessage,
-        branchUUIDValidationMessage,
         zipCodeValidationMessage,
         zipCodeValidationColor,
         landlineNumberValidationMessage,
@@ -48,7 +47,6 @@ const BankRegistrationPage = () => {
     } = validationDetails;
     const [showLoader, setShowLoader] = useState(true);
     const { emailValidationMessage, mobileValidationMessage } = validationDetails;
-    const [banks, setBanks] = useState([]);
     const [loading, setLoading] = useState(false);
     const [alertDetails, setAlertDetails] = useState({
         alertVisible: false,
@@ -67,7 +65,6 @@ const BankRegistrationPage = () => {
 
     // useState to store each field's data from form.
     const [formData, setFormData] = useState({
-        // mobile_number: "",
         contact_details: {
         },
     });
@@ -82,7 +79,6 @@ const BankRegistrationPage = () => {
         plot_number,
         locality,
         landmark,
-        // village,
         state,
         city,
         zip,
@@ -116,16 +112,13 @@ const BankRegistrationPage = () => {
         tokenFromEmailUrl = urlParams.get("token");
         if (tokenFromEmailUrl) {
             const emailToken = tokenFromEmailUrl;
-            console.log(emailToken);
             // posting data 
             const dataToPost = JSON.stringify({ token: emailToken })
-            console.log(dataToPost);
             try {
                 await axios.post(`/sam/v1/bank-registration/branch/token/verify`, dataToPost)
                     .then((res) => {
 
                         if (res.data) {
-                            console.log(res.data);
                             const email = res.data.email;
                             const bank_name = res.data.bank_name;
                             const branch_code = res.data.branch_code;
@@ -156,12 +149,9 @@ const BankRegistrationPage = () => {
                     });
             } catch (error) {
                 setShowLoader(false);
-                console.log("failed to send token data for link validation.")
-                console.log(error);
+                toast.error("failed to send token data for link validation.")
             }
-
         } else {
-
             setShowLoader(false);
             navigate("/access-denied");
         }
@@ -176,15 +166,12 @@ const BankRegistrationPage = () => {
         } catch (error) { }
     };
 
-    // get bank data from api
-    const getDataFromApi = async () => {
-        const bankRes = await axios.get(`/sam/v1/property/by-bank`);
-        setBanks(bankRes.data);
-    };
-
     // Function to show backend validation on outside click of input filed.
     const onInputBlur = async (e) => {
         const { name, value, style } = e.target;
+        if (!value) {
+            e.target.nextSibling.classList.remove('active');
+        }
         if (name === "bank_name") {
             setFormData({ ...formData, [name]: value });
         } else if (name === "branch_name") {
@@ -242,9 +229,7 @@ const BankRegistrationPage = () => {
         } else if (name === "state") {
             SetIdOfState(value);
         } else if (name === "email") {
-            console.log(name, value);
             const emailValue = value + splittedBankEmailId.domain;
-            console.log(emailValue);
             setSplittedBankEmailId({ ...splittedBankEmailId, userName: value })
             setFormData({ ...formData, [name]: emailValue }
             );
@@ -320,6 +305,7 @@ const BankRegistrationPage = () => {
         });
     };
 
+    // onMobile Number Input Change
     const onMobileNumberInputChange = () => {
         setValidationDetails({
             ...validationDetails,
@@ -327,6 +313,7 @@ const BankRegistrationPage = () => {
         });
     };
 
+    // onMobile Number Input Blur
     const onMobileNumberInputBlur = (e) => {
         let parsedPhoneNumber = parsePhoneNumberFromString(e.target.value);
         let isValid = parsedPhoneNumber ? parsedPhoneNumber.isValid() : false;
@@ -338,7 +325,6 @@ const BankRegistrationPage = () => {
             });
         } else {
             if (finalValue) {
-                // console.log("Valid From UI Library");
                 validateMobileFromBackend(finalValue);
             }
         }
@@ -346,8 +332,6 @@ const BankRegistrationPage = () => {
     };
 
     const validateMobileFromBackend = async (mobileValue) => {
-        console.log("--------- From backend --------");
-        console.log("Mobile validation function called", mobileValue);
         try {
             await axios
                 .post(
@@ -384,9 +368,10 @@ const BankRegistrationPage = () => {
 
     // Function to validate zipCodes.
     const zipValidationByState = async (zipValue, stateId) => {
+        let zipCodeValue = zipValue;
         await axios
             .post(`/sam/v1/customer-registration/zipcode-validation`, {
-                zipcode: zipValue,
+                zipcode: zipCodeValue,
                 state_id: stateId,
             })
             .then((res) => {
@@ -405,7 +390,6 @@ const BankRegistrationPage = () => {
                 }
             });
     };
-
 
     // This will run onchange of input field.
     const onInputChange = async (e) => {
@@ -572,7 +556,6 @@ const BankRegistrationPage = () => {
             }
         } else if (name === "email") {
             const emailValue = value + splittedBankEmailId.domain;
-            console.log(emailValue);
             setSplittedBankEmailId({ ...splittedBankEmailId, userName: value })
 
             if (emailUserNameRegularExp.test(value)) {
@@ -634,6 +617,7 @@ const BankRegistrationPage = () => {
             });
         }
     };
+
     // Function to reset values.
     const resetValues = () => {
         let allInputs = document.querySelectorAll(".form-control");
@@ -647,7 +631,6 @@ const BankRegistrationPage = () => {
             society_name: "",
             plot_number: "",
             locality: "",
-            // village: "",
             landmark: "",
             state: "",
             city: "",
@@ -703,7 +686,6 @@ const BankRegistrationPage = () => {
         }
         setLoading(true);
         if (formData.email.length !== 0) {
-            console.log(formData);
             try {
                 // checking email exist or not 
                 const { data } = await axios.post(`/sam/v1/customer-registration/email-validation`,
@@ -717,7 +699,6 @@ const BankRegistrationPage = () => {
                     setLoading(false);
                     return toast.error(`error: Email already exists.`);
                 }
-                console.log(formData);
                 // posting data for registration
                 const { data: bankCreateRes } = await axios.post(`/sam/v1/bank-registration/branch`, formData)
                 if (bankCreateRes.status === 0) {
@@ -752,8 +733,8 @@ const BankRegistrationPage = () => {
         rootTitle.textContent = "SAM TOOL - REGISTER";
         resetValues();
         getAllSates();
-        getDataFromApi();
         getEmailTokenFromURL();
+        // eslint-disable-next-line
     }, []);
 
 
@@ -773,7 +754,7 @@ const BankRegistrationPage = () => {
                                                 <div className="row">
                                                     {/* Bank User Registration Form Heading */}
                                                     <div className="col-lg-12 mb-3">
-                                                        <h4 className="fw-bold text-primary all-page-heading-color">{bankEmailFromURL.is_bank_admin === true ? "Bank" : "Branch"} User Registration Form</h4>
+                                                        <h4 className="fw-bold heading-text-primary all-page-heading-color">{bankEmailFromURL.is_bank_admin === true ? "Bank" : "Branch"} User Registration Form</h4>
                                                         <hr />
                                                     </div>
                                                     {/* registration-alert */}
@@ -805,25 +786,13 @@ const BankRegistrationPage = () => {
                                                         id="bankForm"
                                                         onSubmit={onBankFormSubmit}
                                                         action=""
-                                                    // className={`row ${bankDisplay} BankForm`}
                                                     >
                                                         <div className="col-lg-12">
                                                             <div className="row bank-type-row">
                                                                 {/* Bank Name */}
-                                                                <div className="col-lg-3 mb-4">
+                                                                <div className="col-lg-4 mb-2">
                                                                     <label htmlFor="form-label " className='fw-bold mb-1'>Bank Name</label>
                                                                     <p>{bankEmailFromURL.bank_name}</p>
-                                                                    {/* <input
-                                                                        onChange={onInputChange}
-                                                                        onBlur={onInputBlur}
-                                                                        name="bank_name"
-                                                                        type="text"
-                                                                        placeholder="Bank Name"
-                                                                        className="form-control "
-                                                                        value={bankEmailFromURL.bank_name}
-                                                                        disabled
-                                                                        required
-                                                                    /> */}
                                                                 </div>
 
                                                                 {bankEmailFromURL.is_bank_admin === false ? (<>
@@ -831,83 +800,39 @@ const BankRegistrationPage = () => {
                                                                     <div className="col-lg-3 mb-4">
                                                                         <label htmlFor="form-label " className='fw-bold mb-1'>Branch Name</label>
                                                                         <p>{bankEmailFromURL.branch_name}</p>
-                                                                        {/* <input
-                                                                            onChange={onInputChange}
-                                                                            onBlur={onInputBlur}
-                                                                            name="branch_name"
-                                                                            type="text"
-                                                                            placeholder="Branch Name"
-                                                                            className="form-control"
-                                                                            value={bankEmailFromURL.branch_name}
-                                                                            disabled
-                                                                            required
-                                                                        /> */}
                                                                     </div>
                                                                     {/* Branch Code */}
                                                                     <div className="col-lg-3 mb-4">
                                                                         <label htmlFor="form-label " className='fw-bold mb-1'>Branch Code</label>
                                                                         <p>{bankEmailFromURL.branch_code}</p>
-                                                                        {/* <input
-                                                                            onChange={onInputChange}
-                                                                            onBlur={onInputBlur}
-                                                                            name="branch_code"
-                                                                            type="text"
-                                                                            placeholder="Branch Code"
-                                                                            className="form-control"
-                                                                            value={bankEmailFromURL.branch_code}
-                                                                            disabled
-                                                                            required
-                                                                        /> */}
                                                                     </div>
                                                                     {/* ifsc_code */}
                                                                     <div className="col-lg-3 mb-4">
                                                                         <label htmlFor="form-label " className='fw-bold mb-1'>IFSC code</label>
                                                                         <p>{bankEmailFromURL.ifsc_code}</p>
-                                                                        {/* <input
-                                                                            onChange={onInputChange}
-                                                                            onBlur={onInputBlur}
-                                                                            name="ifsc_code"
-                                                                            type="text"
-                                                                            placeholder=" IFSC code"
-                                                                            className="form-control"
-                                                                            value={bankEmailFromURL.ifsc_code}
-                                                                            disabled
-                                                                            required
-                                                                        /> */}
                                                                     </div>
                                                                     {/* branch_sftp */}
                                                                     <div className="col-lg-3 mb-4">
                                                                         <label htmlFor="form-label " className='fw-bold mb-1'> Branch SFTP</label>
                                                                         <p>{bankEmailFromURL.branch_sftp}</p>
-                                                                        {/* <input
-                                                                            onChange={onInputChange}
-                                                                            onBlur={onInputBlur}
-                                                                            name="branch_sftp"
-                                                                            type="text"
-                                                                            placeholder=" Branch SFTP"
-                                                                            className="form-control"
-                                                                            value={bankEmailFromURL.branch_sftp}
-                                                                            disabled
-                                                                            required
-                                                                        /> */}
                                                                     </div>
                                                                 </>) : ""}
 
                                                                 {/* Email */}
-                                                                <div className="col-lg-4 mb-4">
+                                                                <div className="col-lg-4 mb-2">
                                                                     <label htmlFor="form-label " className='fw-bold mb-1'>Email Address</label>
                                                                     <span className="text-danger fw-bold">*</span>
-                                                                    <div className="input-group ">
+                                                                    <div className="input-group custom-class-form-div flex-nowrap ">
                                                                         <input
                                                                             onChange={onInputChange}
                                                                             onBlur={onInputBlur}
                                                                             type="text"
                                                                             name="email"
-                                                                            className="form-control" placeholder="UserName"
+                                                                            className="form-control custom-input" placeholder="UserName"
                                                                             value={splittedBankEmailId.userName}
                                                                             required
                                                                         />
-                                                                        <span className="input-group-text" id="basic-addon2">{splittedBankEmailId.domain}</span>
+                                                                        <span className="input-group-text custom-input" id="basic-addon2">{splittedBankEmailId.domain}</span>
                                                                     </div>
                                                                     {/* </div> */}
                                                                     <span
@@ -917,11 +842,51 @@ const BankRegistrationPage = () => {
                                                                         {emailValidationMessage}
                                                                     </span>
                                                                 </div>
-
                                                             </div>
 
+                                                            {/* Contact */}
+                                                            <div className="row contactRow mt-lg-3 my-4">
+                                                                {/* Mobile Number */}
+                                                                <div className="col-lg-4 mb-lg-0 mb-2">
+
+                                                                    <PhoneInput
+                                                                        country={"in"}
+                                                                        onBlur={(e) => onMobileNumberInputBlur(e)}
+                                                                        onChange={onMobileNumberInputChange}
+                                                                        required
+                                                                    />
+
+                                                                    <span
+                                                                        className={`pe-1 ${mobileValidationMessage ? "text-danger" : "d-none"
+                                                                            }`}
+                                                                    >
+                                                                        {mobileValidationMessage}
+                                                                    </span>
+
+                                                                    <span className="form-text d-none"></span>
+                                                                </div>
+                                                                {/* Landline */}
+                                                                <div className="col-lg-4 mb-lg-0 mb-2 custom-class-form-div">
+                                                                    <input
+                                                                        onBlur={onInputBlur}
+                                                                        onChange={onInputChange}
+                                                                        onFocus={handleFocus}
+                                                                        name="landline_number"
+                                                                        id="landline_number"
+                                                                        type="Number"
+                                                                        className={`form-control border-${landlineNumberValidationColor} custom-input`}
+                                                                    />
+                                                                    <label className="px-2" htmlFor="landline_number" onClick={() => handleClick('landline_number')} >Landline (optional)</label>
+                                                                    <span
+                                                                        className={`pe-1 ${landlineNumberValidationMessage ? "text-danger" : "d-none"
+                                                                            }`}
+                                                                    >
+                                                                        {landlineNumberValidationMessage}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
                                                             {/* Address Row 1 */}
-                                                            <div className="row addressRow1 mt-lg-1 mt-4 mb-4">
+                                                            <div className="row addressRow1 mt-lg-3 my-4">
                                                                 <div className="col-lg-2 mb-lg-0 mb-2">
                                                                     <label htmlFor="form-label " className='fw-bold mb-1'>Address</label>
                                                                     <span className="text-danger fw-bold">*</span>
@@ -947,53 +912,8 @@ const BankRegistrationPage = () => {
                                                                     ></textarea>
                                                                 </div>
                                                             </div>
-                                                            {/* Contact */}
-                                                            <div className="row contactRow mt-lg-3 mt-4">
-                                                                <div className="col-lg-4 mb-lg-0 mb-2">
-                                                                    <label htmlFor="form-label " className='fw-bold mb-1'>Landline</label>
-                                                                    <span className="ps-1 text-muted">(optional)</span>
-
-                                                                    <input
-                                                                        onBlur={onInputBlur}
-                                                                        onChange={onInputChange}
-                                                                        name="landline_number"
-                                                                        type="Number"
-                                                                        placeholder="Landline"
-                                                                        className={`form-control border-${landlineNumberValidationColor}`}
-                                                                    />
-                                                                    <span
-                                                                        className={`pe-1 ${landlineNumberValidationMessage ? "text-danger" : "d-none"
-                                                                            }`}
-                                                                    >
-                                                                        {landlineNumberValidationMessage}
-                                                                    </span>
-                                                                </div>
-                                                                {/* Mobile Number */}
-                                                                <div className="col-lg-4 mb-lg-0 mb-2">
-                                                                    <label htmlFor="form-label " className='fw-bold mb-1'>Mobile Number</label>
-                                                                    <span className="text-danger fw-bold">*</span>
-
-                                                                    <PhoneInput
-                                                                        country={"in"}
-                                                                        // name="mobile_number"
-                                                                        // value={phoneNumber}
-                                                                        onBlur={(e) => onMobileNumberInputBlur(e)}
-                                                                        onChange={onMobileNumberInputChange}
-                                                                        required
-                                                                    />
-
-                                                                    <span
-                                                                        className={`pe-1 ${mobileValidationMessage ? "text-danger" : "d-none"
-                                                                            }`}
-                                                                    >
-                                                                        {mobileValidationMessage}
-                                                                    </span>
-
-                                                                    <span className="form-text d-none"></span>
-                                                                </div>
-                                                            </div>
                                                             {/* SAM T & C */}
-                                                            <div className="row register-links mt-4 ">
+                                                            <div className="row register-links mt-5 align-items-center ">
                                                                 <div className="col-lg-4">
                                                                     <NavLink to="/register">SAM Terms and Conditions</NavLink>
                                                                 </div>
@@ -1085,157 +1005,112 @@ const BankRegistrationPage = () => {
                                         <div className="modal-body">
                                             <div className="row">
                                                 {/* Flat Number */}
-                                                <div className="col-md-4">
-                                                    <div className="form-group mb-3">
-                                                        <label
-                                                            htmlFor="flat_number"
-                                                            className="form-label common-btn-font"
-                                                        >
-                                                            Flat Number
-                                                            {/* <span className="ps-1 text-muted"></span> */}
-                                                        </label>
+                                                <div className="col-md-6 my-md-2 my-4">
+                                                    <div className="form-group mb-3 custom-class-form-div">
                                                         <input
                                                             id="flat_number"
                                                             name="flat_number"
                                                             type="number"
-                                                            className="form-control "
+                                                            className="form-control custom-input"
                                                             onChange={onInputChange}
                                                             onBlur={onInputBlur}
-                                                            placeholder="Flat Number"
+                                                            onFocus={handleFocus}
                                                         />
+                                                        <label className="px-2" htmlFor="flat_number" onClick={() => handleClick('flat_number')} >  Flat Number </label>
                                                     </div>
                                                 </div>
                                                 {/* Building Name */}
-                                                <div className="col-md-4">
-                                                    <div className="form-group mb-3">
-                                                        <label
-                                                            htmlFor="building_name"
-                                                            className="form-label common-btn-font"
-                                                        >
-                                                            Building Name
-                                                            {/* <span className="ps-1 text-muted">(optional)</span> */}
-                                                        </label>
+                                                <div className="col-md-6 my-md-2 my-4">
+                                                    <div className="form-group mb-3 custom-class-form-div">
                                                         <input
                                                             id="building_name"
                                                             name="building_name"
                                                             type="text"
-                                                            className="form-control "
+                                                            className="form-control custom-input"
                                                             onChange={onInputChange}
+                                                            onFocus={handleFocus}
                                                             onBlur={onInputBlur}
-                                                            placeholder="Building Name"
                                                         />
+                                                        <label className="px-2" htmlFor="building_name" onClick={() => handleClick('building_name')} > Building Name </label>
                                                     </div>
                                                 </div>
                                                 {/* Society Name */}
-                                                <div className="col-md-4">
-                                                    <div className="form-group mb-3">
-                                                        <label
-                                                            htmlFor="society_name"
-                                                            className="form-label common-btn-font"
-                                                        >
-                                                            Society Name
-                                                            {/* <span className="ps-1 text-muted">(optional)</span> */}
-                                                        </label>
+                                                <div className="col-md-6 my-md-2 my-4">
+                                                    <div className="form-group mb-3 custom-class-form-div">
                                                         <input
                                                             id="society_name"
                                                             name="society_name"
                                                             type="text"
-                                                            className="form-control "
+                                                            className="form-control custom-input "
                                                             onChange={onInputChange}
                                                             onBlur={onInputBlur}
-                                                            placeholder="Society Name"
+                                                            onFocus={handleFocus}
                                                         />
+                                                        <label className="px-2" htmlFor="society_name" onClick={() => handleClick('society_name')} > Society Name </label>
                                                     </div>
                                                 </div>
                                                 {/*  Plot Number */}
-                                                <div className="col-md-4">
-                                                    <div className="form-group mb-3">
-                                                        <label
-                                                            htmlFor="plot_number"
-                                                            className="form-label common-btn-font"
-                                                        >
-                                                            Plot Number
-                                                            {/* <span className="ps-1 text-muted">(optional)</span> */}
-                                                        </label>
+                                                <div className="col-md-6 my-md-2 my-4">
+                                                    <div className="form-group mb-3 custom-class-form-div">
                                                         <input
                                                             id="plot_number"
                                                             name="plot_number"
                                                             type="number"
-                                                            className="form-control "
+                                                            className="form-control custom-input"
                                                             onChange={onInputChange}
                                                             onBlur={onInputBlur}
-                                                            placeholder="Plot Number"
+                                                            onFocus={handleFocus}
                                                         />
+                                                        <label className="px-2" htmlFor="plot_number" onClick={() => handleClick('plot_number')} > Plot Number </label>
                                                     </div>
                                                 </div>
                                                 {/* Locality */}
-                                                <div className="col-md-4">
-                                                    <div className="form-group mb-3">
-                                                        <label
-                                                            htmlFor="locality"
-                                                            className="form-label common-btn-font"
-                                                        >
-                                                            Locality
-                                                            <span className="text-danger fw-bold">*</span>
-                                                        </label>
+                                                <div className="col-md-6 my-md-2 my-4">
+                                                    <div className="form-group mb-3 custom-class-form-div">
                                                         <input
                                                             onBlur={onInputBlur}
                                                             id="locality"
                                                             name="locality"
                                                             type="text"
-                                                            className="form-control "
+                                                            className="form-control custom-input"
                                                             onChange={onInputChange}
-                                                            placeholder="Locality, Area"
+                                                            onFocus={handleFocus}
                                                         />
+                                                        <label className="px-2" htmlFor="locality" onClick={() => handleClick('locality')} >Locality <span className="text-danger">*</span> </label>
                                                     </div>
                                                 </div>
                                                 {/* Landmark */}
-                                                <div className="col-md-4">
-                                                    <div className="form-group mb-3">
-                                                        <label
-                                                            htmlFor="landmark"
-                                                            className="form-label common-btn-font"
-                                                        >
-                                                            Landmark
-                                                            <span className="text-danger fw-bold">*</span>
-                                                        </label>
+                                                <div className="col-md-6 my-md-2 my-4">
+                                                    <div className="form-group mb-3 custom-class-form-div">
                                                         <input
                                                             id="landmark"
                                                             name="landmark"
                                                             type="text"
-                                                            className="form-control "
+                                                            className="form-control custom-input"
                                                             onChange={onInputChange}
                                                             onBlur={onInputBlur}
-                                                            placeholder="Landmark"
+                                                            onFocus={handleFocus}
                                                         />
+                                                        <label className="px-2" htmlFor="landmark" onClick={() => handleClick('landmark')} >Landmark <span className="text-danger">*</span> </label>
                                                     </div>
                                                 </div>
-                                                <hr />
                                                 {/* State */}
-                                                <div className="col-md-4">
-                                                    <div className="form-group mb-3">
-                                                        <label
-                                                            htmlFor="state"
-                                                            className="form-label common-btn-font"
-                                                        >
-                                                            State
-                                                            <span className="text-danger fw-bold">*</span>
-                                                        </label>
+                                                <div className="col-md-6 my-md-2 my-4">
+                                                    <div className="form-group mb-3 custom-class-form-div">
                                                         <select
                                                             onChange={onInputChange}
                                                             onBlur={onInputBlur}
+                                                            onFocus={handleFocus}
                                                             id="state"
                                                             name="state"
                                                             type="text"
-                                                            className="form-select"
-                                                            placeholder="State"
+                                                            className="form-select custom-input"
                                                         >
                                                             <option
                                                                 ref={deselectStateInput}
                                                                 value=""
                                                                 style={{ color: "gray" }}
                                                             >
-                                                                Select state
                                                             </option>
                                                             {states
                                                                 ? states.map((state, Index) => {
@@ -1251,33 +1126,26 @@ const BankRegistrationPage = () => {
                                                                 })
                                                                 : ""}
                                                         </select>
+                                                        <label className="px-2" htmlFor="state" onClick={() => handleClick('state')} >State <span className="text-danger">*</span></label>
                                                     </div>
                                                 </div>
                                                 {/* city */}
-                                                <div className={`col-md-4 ${cityVisibilityClass}`}>
-                                                    <div className="form-group mb-3">
-                                                        <label
-                                                            htmlFor="city"
-                                                            className="form-label common-btn-font"
-                                                        >
-                                                            City
-                                                            <span className="text-danger fw-bold">*</span>
-                                                        </label>
+                                                <div className={`col-md-6 my-md-2 my-4 ${cityVisibilityClass}`}>
+                                                    <div className="form-group mb-3 custom-class-form-div">
                                                         <select
                                                             onChange={onInputChange}
                                                             onBlur={onInputBlur}
+                                                            onFocus={handleFocus}
                                                             id="city"
                                                             name="city"
                                                             type="text"
-                                                            className="form-select"
-                                                            placeholder="city"
+                                                            className="form-select custom-input"
                                                         >
                                                             <option
                                                                 id="selectedCity"
                                                                 value=""
                                                                 style={{ color: "gray" }}
                                                             >
-                                                                Select city
                                                             </option>
                                                             {citiesByState
                                                                 ? citiesByState.map((city, Index) => {
@@ -1293,27 +1161,22 @@ const BankRegistrationPage = () => {
                                                                 })
                                                                 : ""}
                                                         </select>
+                                                        <label className="px-2" htmlFor="city" onClick={() => handleClick('city')} >City <span className="text-danger">*</span> </label>
                                                     </div>
                                                 </div>
                                                 {/* ZIP Code */}
-                                                <div className="col-md-4">
-                                                    <div className="form-group mb-3">
-                                                        <label
-                                                            htmlFor="zip"
-                                                            className="form-label common-btn-font"
-                                                        >
-                                                            ZIP Code
-                                                            <span className="text-danger fw-bold">*</span>
-                                                        </label>
+                                                <div className="col-md-6 my-md-2 my-4">
+                                                    <div className="form-group mb-3 custom-class-form-div">
                                                         <input
                                                             type="number"
                                                             onChange={onInputChange}
+                                                            onFocus={handleFocus}
                                                             id="zip"
                                                             onBlur={onInputBlur}
-                                                            placeholder="Zipcode"
                                                             name="zip"
-                                                            className={`form-control border-${zipCodeValidationColor}`}
-                                                        ></input>
+                                                            className={`form-control custom-input border-${zipCodeValidationColor}`}
+                                                        />
+                                                        <label className="px-2" htmlFor="zip" onClick={() => handleClick('zip')} >ZIP Code <span className="text-danger">*</span> </label>
                                                         <span
                                                             className={`pe-1 ${zipCodeValidationMessage ? "text-danger" : "d-none"
                                                                 }`}
@@ -1346,6 +1209,7 @@ const BankRegistrationPage = () => {
                                     </div>
                                 </div>
                             </div>
+
 
                         </> : <>
                             <div className="container mt-5">

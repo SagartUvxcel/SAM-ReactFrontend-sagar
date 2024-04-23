@@ -33,6 +33,26 @@ const ForgotPassword = () => {
   const [captchaErr, setCaptchaErr] = useState(false);
   const captchaRef = useRef();
 
+
+  // on input focus
+  const handleFocus = (e) => {
+    e.target.nextSibling.classList.add('active');
+  };
+
+  // on click on label
+  const handleClick = (inputId) => {
+    const input = document.getElementById(inputId);
+    input.focus();
+  };
+
+  // on input blur
+  const onInputBlur = async (e) => {
+    const { value } = e.target;
+    if (!value) {
+      e.target.nextSibling.classList.remove('active');
+    }
+  }
+
   // captcha submit button function
   const onCaptchaSubmit = (e) => {
     e.preventDefault();
@@ -51,7 +71,7 @@ const ForgotPassword = () => {
     }
   };
 
-  // if email valiate
+  // if email validate
   const verifySecurityQuestionForResetPassword = async () => {
     try {
       await axios
@@ -60,7 +80,6 @@ const ForgotPassword = () => {
           JSON.stringify({ username: emailValue })
         )
         .then((res) => {
-          console.log(res);
           if (res.data.EmailSent === false) {
             const sensitiveData = { email: res.data.username, question: res.data.question }
             goTo("/forgot-password/password-reset", { state: { sensitiveData } });
@@ -131,13 +150,17 @@ const ForgotPassword = () => {
     captchaWrapper.classList.add("flexAndCenter");
     document.getElementById("reload_href").classList.add("d-none");
   };
-
+ 
   useEffect(() => {
     loadCaptchaOnRefresh();
+    setDisplayOfSections({
+      mainSectionDisplay: "",
+      afterSubmitSectionDisplay: "d-none",
+    })
   }, []);
   return (
     <Layout>
-      <section className="forgot-password section-padding min-100vh">
+      <section className="forgot-password-wrapper section-padding min-100vh">
         <div className="container wrapper">
           <div
             className={`row justify-content-lg-between justify-content-center ${mainSectionDisplay}`}
@@ -150,9 +173,9 @@ const ForgotPassword = () => {
                 onSubmit={resetPassword}
                 className="card shadow justify-content-center p-4 p-md-5"
               >
-                <h2 className="text-center fw-bold">Reset your password</h2>
+                <h2 className="text-center fw-bold">Reset password</h2>
                 <hr />
-
+                {/* alert msg div */}
                 <div
                   className={`login-alert alert alert-${alertClr} alert-dismissible show d-flex align-items-center ${alertVisible ? "" : "d-none"
                     }`}
@@ -173,24 +196,27 @@ const ForgotPassword = () => {
                   ></i>
                 </div>
                 {/* email */}
-                <div className="form-group mb-3">
-                  <label htmlFor="email" className="form-label common-btn-font">
-                    Enter your user account's verified email address and we will
-                    send you a password reset link.
-                  </label>
+                <label htmlFor="email" className="form-label text-secondary common-label-text-fontSize common-btn-font mb-4 ft-6">
+                  Enter your user account's verified email address and we will
+                  send you a password reset link.
+                </label>
+                <div className="form-group mb-4 custom-class-form-div">
                   <input
                     type="email"
                     name="email"
                     id="email"
-                    className="form-control forgot-password-form-control"
-                    placeholder="Enter your email address"
-                    required
+                    className="form-control forgot-password-form-control input-box-border-remove custom-input"
+                    onBlur={onInputBlur}
+                    onFocus={handleFocus}
                     onChange={(e) => {
                       setEmailValue(e.target.value);
                     }}
+                    required
                   />
+                  <label className="ps-0 forgot-password-label " htmlFor="email"
+                    onClick={() => handleClick('email')}
+                  >Email </label>
                 </div>
-
                 {/* captcha code */}
                 <div
                   className={`container ${captchaVerified ? "d-none" : ""
@@ -203,6 +229,7 @@ const ForgotPassword = () => {
                     >
                       <LoadCanvasTemplate />
                     </div>
+                    {/* loadCaptchaEnginge */}
                     <div className="col-xl-3 col-md-4 col-5 btn btn-primary">
                       <i
                         onClick={() => {
@@ -211,22 +238,30 @@ const ForgotPassword = () => {
                         className="bi bi-arrow-clockwise"
                       ></i>
                     </div>
-                    <div className="col-xl-9 col-md-8 col-7 ps-0 mt-3">
+                    <div className="col-xl-9 col-md-8 col-7 ps-0 mt-3 custom-class-form-div">
                       <input
                         type="text"
-                        className={`form-control ${captchaErr ? "border-danger" : "border-primary"
+                        name="captcha"
+                        id="captcha"
+                        className={`form-control input-box-border-remove custom-input  ${captchaErr ? "border-danger" : " "
                           }`}
+                        onBlur={onInputBlur}
+                        onFocus={handleFocus}
                         ref={captchaRef}
-                        placeholder="Enter captcha"
 
                       />
+                      <label className="ps-0 forgot-password-label " htmlFor="captcha"
+                        onClick={() => handleClick('captcha')}
+                      >Enter captcha </label>
                     </div>
+                    {/* Verify */}
                     <div
                       onClick={onCaptchaSubmit}
                       className="col-xl-3 col-md-4 col-5 btn btn-primary mt-3"
                     >
                       Verify
                     </div>
+                    {/* Invalid Captcha msg */}
                     <div
                       className={`col-xl-9 ps-0 ${captchaErr ? "" : "d-none"
                         }`}
@@ -235,7 +270,6 @@ const ForgotPassword = () => {
                     </div>
                   </div>
                 </div>
-
                 <div
                   className={`form-group mt-3 ${captchaVerified ? "" : "d-none"
                     }`}
@@ -245,7 +279,6 @@ const ForgotPassword = () => {
                     <i className="bi bi-patch-check-fill ms-1"></i>
                   </button>
                 </div>
-
                 {/* submit button */}
                 <button
                   className="btn btn-primary common-btn-font mt-4"
@@ -261,7 +294,7 @@ const ForgotPassword = () => {
                       Resetting password....
                     </>
                   ) : (
-                    "Reset password"
+                    "Reset my password"
                   )}
                 </button>
               </form>
@@ -271,7 +304,7 @@ const ForgotPassword = () => {
             className={`row justify-content-center ${afterSubmitSectionDisplay}`}
           >
             <div className="col-xl-4 col-lg-5 col-md-6">
-              <div className="card shadow p-4 bg-primary text-white">
+              <div className="card shadow p-4 bg-box-primary text-white">
                 <span className="mb-3">
                   Check your email for a link to reset your password. If it
                   doesn't appear within a few minutes, check your spam folder.

@@ -14,7 +14,7 @@ const AccessDeniedPage = () => {
   };
   useEffect(() => {
     rootTitle.textContent = "ACCESS DENIED";
-    checkIsUserLoggedIn();
+    checkIsUserLoggedIn(); 
   }, []);
 
   return (

@@ -1,15 +1,12 @@
 import axios from "axios";
 import React, { useEffect, useState, useRef } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { checkLoginSession, rootTitle, calculateDays } from "../../CommonFunctions";
+import { rootTitle, calculateDays } from "../../CommonFunctions";
 import Layout from "../1.CommonLayout/Layout";
 import CommonSpinner from "../../CommonSpinner";
 import LinkExpiredPasswordResetImage from "../../images/LinkExpiredPasswordResetImage.svg";
 
-let authHeaders = "";
-let isLogin = false;
-let planStatus = false;
 let planEndDate = "";
 
 const InactiveUserDetails = () => {
@@ -17,7 +14,6 @@ const InactiveUserDetails = () => {
   const goTo = useNavigate();
   const deselectStateInput = useRef();
   const [inactiveUserToken, setInactiveUserToken] = useState("");
-  const [continueBtnDisabled, setContinueBtnDisabled] = useState(false);
   const [updateBtnLoading, setUpdateBtnLoading] = useState(false);
 
   const [displayInactiveUserDetailsPage, setDisplayInactiveUserDetailsPage] = useState({
@@ -51,7 +47,7 @@ const InactiveUserDetails = () => {
     citiesByState: [],
     cityVisibilityClass: "",
   });
-  const { citiesByState, cityVisibilityClass } = cityUseState;
+  const { citiesByState } = cityUseState;
 
   // useState to store/remove and hide/show address details.
   const [addressValues, setAddressValues] = useState({
@@ -60,35 +56,23 @@ const InactiveUserDetails = () => {
     textAreaVisibility: "d-none",
   });
 
-  const { addressValue, labelValue, textAreaVisibility } = addressValues;
+  const { addressValue, textAreaVisibility } = addressValues;
 
   // useState to store address Details.
   const [addressDetails, setAddressDetails] = useState({ zip: "" });
-
-
-
-  const [originalValuesToShow, SetOriginalValuesToShow] = useState({});
   const [idOfState, setIdOfState] = useState("");
   const [userType, setUserType] = useState("");
-  const [daysCount, setDaysCount] = useState(null);
 
   // Object destructuring.
   const {
     user_type,
     mobile_number,
     locality,
-    address,
-    city,
     city_name,
-    state,
     state_name,
     zip,
     email,
-    building_name,
-    flat_number,
     landmark,
-    plot_number,
-    society_name,
   } = addressDetails;
 
   const [orgUserDetails, setOrgUserDetails] = useState({});
@@ -124,12 +108,8 @@ const InactiveUserDetails = () => {
 
   // To navigate to particular route.
   const data = JSON.parse(localStorage.getItem("data"));
-  const updatedSubscriptionStatus = localStorage.getItem("updatedSubscriptionStatus");
 
   if (data) {
-    authHeaders = { Authorization: data.loginToken };
-    isLogin = data.isLoggedIn;
-    planStatus = updatedSubscriptionStatus ? updatedSubscriptionStatus : data.subscription_status;
     planEndDate = data.subscription_end_date;
   }
 
@@ -142,7 +122,6 @@ const InactiveUserDetails = () => {
         state_id: stateId,
       })
       .then((res) => {
-        console.log(res.data);
         if (res.data.status === 0) {
           setValidationDetails({
             ...validationDetails,
@@ -162,11 +141,8 @@ const InactiveUserDetails = () => {
   useEffect(() => {
     if (planEndDate) {
       calculateDays(planEndDate);
-      setDaysCount(calculateDays(planEndDate));
-
-
     }
-
+    // eslint-disable-next-line
   }, [planEndDate])
 
 
@@ -179,10 +155,8 @@ const InactiveUserDetails = () => {
       })
 
       if (data) {
-        console.log("response data==>", data);
         const userType = parseInt(data.contact_details.user_type);
         if (userType === 0) {
-          // console.log("user Type==>'Individual User");
           setIndividualUserDetails({
             first_name: data.first_name,
             middle_name: data.middle_name,
@@ -191,7 +165,6 @@ const InactiveUserDetails = () => {
             aadhar_number: data.aadhar_number,
           });
         } else if (userType === 1) {
-          // console.log("user Type==>'Organizational User");
           setOrgUserDetails({
             cin_number: data.cin_number,
             company_name: data.company_name,
@@ -200,7 +173,6 @@ const InactiveUserDetails = () => {
             tan_number: data.tan_number,
           });
         } else if (userType === 2) {
-          // console.log("user Type==>'Bank User");
           setBankUserDetails({
             bank_name: data.bank_name,
             branch_name: data.branch_name,
@@ -297,7 +269,6 @@ const InactiveUserDetails = () => {
           citiesFromApi: cityByState.data,
           statesFromApi: allStates.data,
         });
-        SetOriginalValuesToShow(data.contact_details);
         setMainPageLoading(false);
 
 
@@ -309,9 +280,6 @@ const InactiveUserDetails = () => {
       }
 
     } catch (error) {
-      // setShowLoader(false);
-      console.log("failed to send token data for link validation.")
-      console.log(error);
       setMainPageLoading(false);
       setDisplayInactiveUserDetailsPage({
         display: false,
@@ -322,7 +290,7 @@ const InactiveUserDetails = () => {
 
   // This will run onchange of input field.
   const onInputChange = async (e) => {
-    const { name, value, style } = e.target;
+    const { name, value } = e.target;
     if (name === "flat_number") {
       setValues(name, value);
       setFormData({
@@ -422,15 +390,13 @@ const InactiveUserDetails = () => {
       let getCityName = document.getElementById(`city-name-${value}`);
       if (getCityName) {
         cityName = getCityName.innerText;
-        setValues("city_name", cityName);
-        // setValues(name, parseInt(value));
+        setValues("city_name", cityName); 
       }
       setFormData({
         ...formData,
         contact_details: {
           ...formData.contact_details,
-          [name]: parseInt(value),
-          // address: cityName,
+          [name]: parseInt(value), 
         },
       });
     }
@@ -486,20 +452,15 @@ const InactiveUserDetails = () => {
       email: formData.contact_details.email,
       token: inactiveUserToken
     }
-    console.log(dataToPost);
     setUpdateBtnLoading(true);
     try {
       await axios
         .put(`/sam/v1/customer-registration/activate-account/activate`, dataToPost)
         .then((res) => {
-          console.log(res.data);
-
           if (res.data.token) {
             setUpdateBtnLoading(false);
-            // toast.success("Account Activated Successfully");
             setAllUseStates({ editBtnClassName: "" });
             goTo(`/register/verify?token=${res.data.token}`);
-            setContinueBtnDisabled(false);
           } else {
             setUpdateBtnLoading(false);
             toast.error("Internal server error!");
@@ -519,10 +480,10 @@ const InactiveUserDetails = () => {
       if (token) {
         getUserDataWithToken(token);
         setInactiveUserToken(token);
-        // resetValues();
         getAllSates();
       }
     }
+    // eslint-disable-next-line
   }, []);
 
   return (
@@ -554,7 +515,7 @@ const InactiveUserDetails = () => {
                         <div className="card-body">
                           <div className="row">
                             <div className="col-md-12 col-8">
-                              <h6 className="mb-2 text-primary">
+                              <h6 className="mb-2 heading-text-primary">
                                 {user_type === 0
                                   ? "Personal Details"
                                   : user_type === 1
@@ -783,7 +744,7 @@ const InactiveUserDetails = () => {
                           {/* Address Row 1 */}
                           <div className="row mt-3">
                             <div className="col-lg-12 mb-lg-0 form-group mb-3">
-                              <label htmlFor="eMail" className="form-label text-primary">
+                              <label htmlFor="eMail" className="form-label heading-text-primary">
                                 Address
                               </label>
                               <a
@@ -870,8 +831,7 @@ const InactiveUserDetails = () => {
                                     htmlFor="flat_number"
                                     className="form-label common-btn-font"
                                   >
-                                    Flat Number
-                                    {/* <span className="ps-1 text-muted"></span> */}
+                                    Flat Number 
                                   </label>
                                   <input
                                     id="flat_number"
@@ -892,7 +852,7 @@ const InactiveUserDetails = () => {
                                     className="form-label common-btn-font"
                                   >
                                     Building Name
-                                    {/* <span className="ps-1 text-muted">(optional)</span> */}
+                                    
                                   </label>
                                   <input
                                     id="building_name"
@@ -913,7 +873,7 @@ const InactiveUserDetails = () => {
                                     className="form-label common-btn-font"
                                   >
                                     Society Name
-                                    {/* <span className="ps-1 text-muted">(optional)</span> */}
+                                    
                                   </label>
                                   <input
                                     id="society_name"
@@ -934,8 +894,7 @@ const InactiveUserDetails = () => {
                                     htmlFor="plot_number"
                                     className="form-label common-btn-font"
                                   >
-                                    Plot Number
-                                    {/* <span className="ps-1 text-muted">(optional)</span> */}
+                                    Plot Number 
                                   </label>
                                   <input
                                     id="plot_number"
@@ -1049,8 +1008,7 @@ const InactiveUserDetails = () => {
                                     type="text"
                                     className="form-select"
                                     placeholder="city"
-                                    value={formData.contact_details.city}
-                                  // value={addressDetails.city}
+                                    value={formData.contact_details.city} 
                                   >
                                     <option
                                       id="selectedCity"

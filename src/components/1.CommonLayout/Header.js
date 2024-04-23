@@ -107,51 +107,54 @@ function Header() {
           </button>
           <div className="collapse navbar-collapse mt-2 mt-md-0" id="navbarNav">
             <ul className="navbar-nav ms-auto">
+              {/* Home */}
               <li>
-                <NavLink to="/" className="nav-link">
+                <NavLink to="/" className={`nav-link ${roleId !== 2 && roleId !== 6 ? "" : "d-none"}`}>
                   <i className="bi bi-house me-2 text-light"></i>
                   Home
                 </NavLink>
               </li>
-
+              {/* Login */}
               <li className={`nav-item ps-md-2 ${loginStatus ? "d-none" : ""}`}>
                 <NavLink to="/login" className="nav-link">
                   <i className="bi bi-box-arrow-in-right me-2 text-light"></i>
                   Login
                 </NavLink>
               </li>
+              {/* Register */}
               <li className={`nav-item ps-md-2 ${loginStatus ? "d-none" : ""}`}>
                 <NavLink to="/register" className="nav-link">
                   <i className="bi bi-person-vcard me-2 text-light"></i>
                   Register
                 </NavLink>
               </li>
-
+              {/* Enquiries */}
               <li className={`nav-item ps-md-2 ${loginStatus && roleId !== 1 && roleId !== 6 ? "" : "d-none"}`}>
                 <NavLink to="/user-enquiries" className="nav-link">
                   <i className="bi bi-chat-text me-2 text-light"></i>
                   Enquiries
                 </NavLink>
               </li>
+              {/* userEmail */}
               <li className={`nav-item ps-md-2 ${loginStatus ? "" : "d-none"}`}>
                 <span className="nav-link">
                   <i className="bi bi-person-circle me-2 text-light"></i>
                   {userEmail}
                 </span>
               </li>
-              {/* If user is loggedIn then show these navbar links in dropdown */}
+              {/* If user is loggedIn then show these  Bank Registration links in dropdown */}
               {roleId === 1 && isBank === false ? (
                 <li>
                   <NavLink to="/bank-registration-link" className="nav-link">
-                  <i className="bi bi-bank2 me-2 text-light"></i>
+                    <i className="bi bi-bank2 me-2 text-light"></i>
                     Bank Registration
                   </NavLink>
                 </li>
               ) : (
                 ""
               )}
-              {/* If user is loggedIn then show these navbar links in dropdown */}
-              {roleId === 3 && isBank === false || loginStatus === false ? (
+              {/* If user is loggedIn then show these Subscribe links in dropdown */}
+              {(roleId === 3 && isBank === false) || loginStatus === false ? (
                 <li>
                   <NavLink to="/subscription" className="nav-link">
                     <i className="bi bi-wallet2 me-2 text-light"></i>
@@ -162,7 +165,7 @@ function Header() {
                 ""
               )}
 
-              {/* If user is not loggedIn then show these navbar links in dropdown */}
+              {/* If user is not loggedIn then show these logOut links in dropdown */}
               <li className="nav-item dropdown ps-md-2 d-md-block d-none">
                 <span
                   className="nav-link"
@@ -174,7 +177,7 @@ function Header() {
                   <i className="bi bi-caret-down-square-fill"></i>
                 </span>
                 <ul
-                  className="dropdown-menu main-nav-dropdown-menu bg-primary"
+                  className="dropdown-menu main-nav-dropdown-menu bg-box-primary"
                   data-bs-popper="static"
                 >
                   <CommonNavLinks allUseStates={allUseStates} logOut={logOut} />

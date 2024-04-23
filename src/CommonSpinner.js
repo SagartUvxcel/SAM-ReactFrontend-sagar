@@ -15,7 +15,7 @@ const CommonSpinner = ({
         role="status"
       ></div>
       <div
-        className={`mt-2 fw-bold text-primary ${spinnerText ? "" : "d-none"}`}
+        className={`mt-2 fw-bold heading-text-primary ${spinnerText ? "" : "d-none"}`}
       >
         {spinnerText}
       </div>

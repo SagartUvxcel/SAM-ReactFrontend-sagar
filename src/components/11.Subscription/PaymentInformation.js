@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Layout from "../1.CommonLayout/Layout";
-import './CardElementStyles.css'; // Import your CSS for styling
+import './CardElementStyles.css'; // Import CSS for styling
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -8,8 +8,7 @@ import { toast } from "react-toastify";
 
 
 
-let authHeaders = "";
-let isLogin = false;
+let authHeaders = ""; 
 let planStatus = false;
 let email = "";
 
@@ -24,8 +23,7 @@ export const PaymentInformation = () => {
   const updatedSubscriptionStatus = localStorage.getItem("updatedSubscriptionStatus");
 
   if (data) {
-    authHeaders = { Authorization: data.loginToken };
-    isLogin = data.isLoggedIn;
+    authHeaders = { Authorization: data.loginToken }; 
     planStatus = updatedSubscriptionStatus ? updatedSubscriptionStatus : data.subscription_status;
     email = data.user;
   }
@@ -82,10 +80,8 @@ export const PaymentInformation = () => {
     const { token, error } = await stripe.createToken(cardElement);
 
     if (error) {
-      setCardErrorMsg(error.message);
-      console.error(error.message);
+      setCardErrorMsg(error.message); 
       setSubscribeBtnLoading(false);
-
       return;
     } else {
       setCardErrorMsg(null);
@@ -98,35 +94,25 @@ export const PaymentInformation = () => {
       amount: parseFloat(planDetails.price),
       billing_cycle: planDetails.billing_cycle,
       email: email,
-    }
-
-    console.log(JSON.stringify(dataToPost));
+    } 
 
     // API url
     let urlSub = `/sam/v1/customer-registration/auth/${planStatus === true ? "upgrade-subscription" : "subscribe-user"}`;
-
-
     try {
       const response = await axios.post(urlSub, dataToPost, { headers: authHeaders });
       if (response.data) {
         if (response.data.status === 0) {
           setPaymentModal(true);
           setSubscribeBtnLoading(false);
-          // toast.success("Payment Successful.")
           resetCardFormInputs();
           setCardErrorMsg(null);
           localStorage.setItem("updatedSubscriptionStatus", true);
-
-          // setTimeout(() => {
-          //   navigate("/subscription");
-          // }, 500);
         } else {
           setSubscribeBtnLoading(false);
         }
       }
       // Handle success or error response from backend
-    } catch (error) {
-      console.error(error);
+    } catch (error) { 
       setSubscribeBtnLoading(false);
     }
   };
@@ -148,14 +134,12 @@ export const PaymentInformation = () => {
       billing_cycle: planDetails.billing_cycle,
       plan_name: planDetails.name,
       email: email,
-    }
-    const pageRefreshData = true;
+    } 
 
     try {
       const response = await axios.post("/sam/v1/customer-registration/auth/subscribe-user", dataToPost, { headers: authHeaders });
       if (response.data) {
-        if (response.data.status === 0) {
-          // setPaymentModal(true);
+        if (response.data.status === 0) { 
           setSubscribeBtnLoading(false);
           toast.success("Your Free Trial Started...")
           resetCardFormInputs();
@@ -169,8 +153,7 @@ export const PaymentInformation = () => {
         }
       }
       // Handle success or error response from backend
-    } catch (error) {
-      console.error(error);
+    } catch (error) { 
       setSubscribeBtnLoading(false);
     }
 
@@ -189,16 +172,21 @@ export const PaymentInformation = () => {
 
 
 
-  useEffect(() => {
-    console.log(planDetails);
+  useEffect(() => { 
     if (dataFromSubscriptionPage) {
       displayBillingCycleName();
     }
+    // eslint-disable-next-line
   }, [dataFromSubscriptionPage])
 
-  useEffect(() => {
-
+  useEffect(() => { 
+    if(dataFromSubscriptionPage){
+      setPlanDetails(dataFromSubscriptionPage ? dataFromSubscriptionPage : null)
+    }
+    // eslint-disable-next-line
   }, [])
+
+  // on page load
   window.onload = () => { navigate("/subscription"); }
 
   return (
@@ -218,14 +206,12 @@ export const PaymentInformation = () => {
                       </div>
                       <div className="subscription-div d-flex justify-content-between border-bottom py-1 align-items-center">
                         <h6 className="py-2 mb-0">{planDetails ? planDetails.name : ""}</h6>
-                        <p className=" text-secondary p-0 mb-0"><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup>
-                          {/* {planDetails ? planDetails.price : ""} */}
+                        <p className=" text-secondary p-0 mb-0"><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup> 
                           {perBillingCycleName}  </p>
                       </div>
                       <div className="subscription-div d-flex justify-content-between py-1 align-items-center">
                         <h6 className=" py-2 mb-0">Total</h6>
-                        <p className=" text-secondary p-0 mb-0 "><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup>
-                          {/* {planDetails ? planDetails.price : ""} */}
+                        <p className=" text-secondary p-0 mb-0 "><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup> 
                           {perBillingCycleName}</p>
                       </div>
                     </div>

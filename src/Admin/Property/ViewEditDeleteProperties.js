@@ -14,16 +14,15 @@ import ViewProperty from "./ViewProperty";
 import { NavLink } from "react-router-dom";
 import { toast } from "react-toastify";
 import { toggleClassOfNextPrevPageItems } from "../../CommonFunctions";
-import { Form, FormControl, Button } from 'react-bootstrap';
 import { v4 as uuid } from "uuid";
 
 
 let authHeader = "";
 let bank_Id = "";
-let userId = "";
 let roleId = "";
 let branch_Id = "";
 let propertiesPerPage = 4;
+let initial_batch_number = 1;
 let isBank = false;
 
 
@@ -32,7 +31,6 @@ const ViewEditDeleteProperties = () => {
   if (data) {
     authHeader = { Authorization: data.loginToken };
     isBank = data.isBank;
-    userId = data.userId;
     roleId = data.roleId;
     bank_Id = data.bank_id;
     branch_Id = data.branch_Id;
@@ -71,7 +69,7 @@ const ViewEditDeleteProperties = () => {
       paginationRef.current.classList.add("d-none");
     }
     let dataToPost = {
-      batch_number: 1,
+      batch_number: initial_batch_number,
       batch_size: propertiesPerPage,
     };
 
@@ -83,7 +81,6 @@ const ViewEditDeleteProperties = () => {
         dataToPost,
         { headers: authHeader }
       );
-      console.log(propertiesRes.data);
       if (propertiesRes.data !== null && propertiesRes.data.length > 0) {
         paginationRef.current.classList.remove("d-none");
         setProperties(propertiesRes.data);
@@ -94,8 +91,6 @@ const ViewEditDeleteProperties = () => {
         `/sam/v1/property/auth/property-count`,
         { headers: authHeader }
       );
-      console.log(propertiesRes.data);
-      console.log(propertyCountRes);
       let arr = propertyCountRes.data;
       let totalCount = 0;
 
@@ -219,7 +214,6 @@ const ViewEditDeleteProperties = () => {
       `/sam/v1/property/auth/property_document_list/${id}`,
       { headers: authHeader }
     );
-    console.log(propertyDocsListRes.data);
     setPropertyDocumentsList(propertyDocsListRes.data);
     setViewSinglePropertyPageLoading(false);
   };
@@ -234,16 +228,10 @@ const ViewEditDeleteProperties = () => {
     setProperties(propertiesRes.data);
     setPropertiesLinkDisabled(false);
     viewCurrentPropertyRef.current.classList.add("d-none");
+    enquiriesPageRef.current.classList.add("d-none");
     editPropertyRef.current.classList.add("d-none");
     allPropertiesPageRef.current.classList.remove("d-none");
   };
-
-  const [possessionCheckValue, setPossessionCheckValue] = useState({
-    titleClearYes: false,
-    titleClearNo: false,
-  });
-
-  const { titleClearYes, titleClearNo } = possessionCheckValue;
 
   const [formData, setFormData] = useState({
     address_details: {},
@@ -262,9 +250,6 @@ const ViewEditDeleteProperties = () => {
     property_id,
     is_sold,
     territory,
-    distress_value,
-    is_stressed,
-    // is_available_for_sale,
   } = formData;
 
 
@@ -308,10 +293,10 @@ const ViewEditDeleteProperties = () => {
     useState(false);
 
   const commonFnToSaveFormData = (name, value) => {
-    console.log("common function===>", formData);
     setFormData((oldData) => ({ ...oldData, [name]: value }));
   };
 
+  // on Input Change
   const onInputChange = async (e) => {
     const { name, value } = e.target;
     if (name === "bank") {
@@ -363,34 +348,30 @@ const ViewEditDeleteProperties = () => {
       });
     } else if (name === "title_clear_property") {
       if (value === "1") {
-        setPossessionCheckValue({ titleClearYes: true, titleClearNo: false });
         setFormData({
           ...formData,
           [name]: parseInt(value),
           possession_of_the_property: "Owner / Customer consent",
         });
       } else if (value === "0") {
-        setPossessionCheckValue({ titleClearYes: false, titleClearNo: true });
         setFormData({
           ...formData,
           [name]: parseInt(value),
           possession_of_the_property: "Legally attached",
         });
       } else {
-        setPossessionCheckValue({ titleClearYes: false, titleClearNo: false });
       }
     }
   };
 
+  // onFormSubmit
   const onFormSubmit = async (e) => {
     e.preventDefault();
     setUpdateBtnLoading(true);
-    console.log(formData);
     try {
       const { data } = await axios.post(`/sam/v1/property/auth/update-property`, formData, {
         headers: authHeader,
       })
-      console.log(data);
       if (data.status === 0) {
         toast.success("Property updated successfully");
         setUpdateBtnLoading(false);
@@ -400,7 +381,6 @@ const ViewEditDeleteProperties = () => {
         setUpdateBtnLoading(false);
       }
     } catch (error) {
-      console.log(error);
       toast.error("Internal server error");
       setUpdateBtnLoading(false);
     }
@@ -413,9 +393,6 @@ const ViewEditDeleteProperties = () => {
   // Current Property DataToUpdate button click
   const getCurrentPropertyDataToUpdate = async (propertyId) => {
     setMainPageLoading(true);
-    // let propertyId = localStorage.getItem("propertyId");
-    console.log("pId==>", propertyId);
-    console.log(formData);
     if (propertyId) {
       // Get current property values
       const currentPropertyRes = await axios.get(
@@ -423,19 +400,19 @@ const ViewEditDeleteProperties = () => {
         { headers: authHeader }
       );
       const currentPropertyData = currentPropertyRes.data
+
+      console.log(currentPropertyData);
       const {
         type_id,
         completion_date,
         purchase_date,
         mortgage_date,
-        market_price,
         ready_reckoner_price,
         expected_price,
         building_name,
         landmark,
         flat_no,
         plot_no,
-        saleable_area,
         carpet_area,
         property_number,
         society_name,
@@ -445,7 +422,6 @@ const ViewEditDeleteProperties = () => {
         is_available_for_sale,
         status,
         is_stressed,
-        property_id,
         state_id,
         city_id,
         bank_id,
@@ -454,10 +430,9 @@ const ViewEditDeleteProperties = () => {
         title_clear_property,
         distress_value,
         bank_branch_id,
+        branch_name,
       } = currentPropertyData;
       setOtherValuesToShow(currentPropertyRes.data);
-      console.log("data from currentPropertyData==>", currentPropertyData);
-
 
       if (currentPropertyData) {
         setFormData({
@@ -465,6 +440,7 @@ const ViewEditDeleteProperties = () => {
           property_id: currentPropertyData.property_id,
           type_id: parseInt(type_id),
           bank_branch_id: parseInt(bank_branch_id),
+          branch_name: branch_name,
           property_number: property_number,
           is_stressed: parseInt(is_stressed),
           is_available_for_sale: parseInt(is_available_for_sale),
@@ -497,13 +473,12 @@ const ViewEditDeleteProperties = () => {
           },
         });
       }
-      console.log("after set==>", formData);
-
       // Get details from api.
       const bankRes = await axios.get(`/sam/v1/property/by-bank`);
       setBanks(bankRes.data);
       let bankData = bankRes.data
-      const activeBankDetails = bankData.filter(bank => bank.bank_id === bank_Id)[0]
+      const activeBankDetails = bankData.filter(bank => bank.bank_id === (bank_Id ? bank_Id : parseInt(bank_id)))[0]
+
       let branchIDFromProperty = parseInt(bank_branch_id);
       const branchRes = await axios.get(`/sam/v1/property/auth/bank-branches/${bank_id}`, {
         headers: authHeader,
@@ -513,15 +488,11 @@ const ViewEditDeleteProperties = () => {
         const activeBranchDetails = branchResData.filter(branch => branch.branch_id === branchIDFromProperty)[0]
         setActiveBranch(activeBranchDetails);
       }
-
       setActiveBank(activeBankDetails);
 
       allPropertiesPageRef.current.classList.add("d-none");
       editPropertyRef.current.classList.remove("d-none");
       setPropertiesLinkDisabled(true);
-
-
-
 
       setAllDefaultValues(
         bank_id,
@@ -530,18 +501,14 @@ const ViewEditDeleteProperties = () => {
         title_clear_property,
         bank_branch_id
       );
+
       if (branch_Id === 0) {
         branch_Id = parseInt(bank_branch_id);
-
-
       }
 
       if (isBank) {
         getBankDetails(bankRes.data);
       }
-
-      console.log("after get bank==>", formData);
-
     }
   };
 
@@ -575,34 +542,22 @@ const ViewEditDeleteProperties = () => {
         const EnquiryRes = await axios.get(`/sam/v1/property/auth/property-enquiries/${propertyId}`, {
           headers: authHeader,
         })
-        const dataValue = EnquiryRes.data
-        if (dataValue) {
-          setEnquiryList(dataValue);
-          setTempEnquiryList(dataValue);
-          setMainPageLoading(false);
-        } else {
-          setMainPageLoading(false);
-        }
+        const dataValue = EnquiryRes.data;
+        setEnquiryList(dataValue);
+        setTempEnquiryList(dataValue);
+        setMainPageLoading(false);
       } catch (error) {
         setMainPageLoading(false);
       }
-
-      // if (isBank) {
-      //   getBankDetails(bankRes.data);
-      // }
-
     }
   };
 
   // get Bank Details form API
   const getBankDetails = async (bankData) => {
-    console.log("get bank function===>", formData);
     const activeBankDetails = bankData.filter(bank => bank.bank_id === bank_Id)[0]
     setActiveBank(activeBankDetails);
     commonFnToSaveFormData("bank", bank_Id);
     commonFnToSaveFormData("bank_branch_id", branch_Id);
-
-    console.log("after common fun==>", formData);
   }
   // set All Default Values
   const setAllDefaultValues = async (
@@ -616,6 +571,17 @@ const ViewEditDeleteProperties = () => {
     let defaultBank = document.getElementById(`bank-${bank_id}`);
     if (defaultBank) {
       defaultBank.selected = true;
+      try {
+        const branchRes = await axios.get(
+          `/sam/v1/property/auth/bank-branches/${defaultBank.value}`,
+          {
+            headers: authHeader,
+          }
+        );
+        setBankBranches(branchRes.data);
+        console.log(branchRes.data);
+      } catch (error) {
+      }
       const branchRes = await axios.get(
         `/sam/v1/property/auth/bank-branches/${defaultBank.value}`,
         {
@@ -653,9 +619,6 @@ const ViewEditDeleteProperties = () => {
       defaultTitleClear.selected = true;
     }
     if (title_clear_property === "yes") {
-      setPossessionCheckValue({ titleClearYes: true, titleClearNo: false });
-    } else {
-      setPossessionCheckValue({ titleClearYes: false, titleClearNo: true });
     }
     setMainPageLoading(false);
   };
@@ -675,7 +638,6 @@ const ViewEditDeleteProperties = () => {
         `/sam/v1/property/auth/user/enquiry/property/`, dataToPost,
         { headers: authHeader }
       );
-      console.log(res.data);
       if (res.data) {
         setMessages(res.data.EnquiryLogDetails);
         setPropertyId(res.data.EnquiryLogDetails[0].property_id);
@@ -720,12 +682,12 @@ const ViewEditDeleteProperties = () => {
   const sendMessage = async (e) => {
     setSendReplyBtnLoading(true);
     e.preventDefault();
+    let enquiry_source= "email"
     let dataToPost = {
       property_id: propertyId,
-      enquiry_source: "email",
+      enquiry_source: enquiry_source,
       enquiry_comments: newMessage,
     };
-    console.log(dataToPost);
 
     if (isBank) {
       dataToPost.enquiry_id = enquiryId;
@@ -743,29 +705,23 @@ const ViewEditDeleteProperties = () => {
           }
         );
         if (res.data.msg === 0) {
-          // onViewEnquiryClick(enquiryId);
           setNewMessage("");
           setSendReplyBtnLoading(false);
 
           if (socket && socket.readyState === WebSocket.OPEN) {
             const messageToSend = {
-              // User_id: String(userId),
               messages_id: String(uuid()),
               message_type: "sam-user",
               msg: newMessage,
               reply_from: isBank ? 1 : 0,
               enquiry_log_date: new Date().toISOString(),
-              // property_id: propertyId,
               enquiry_id: enquiryId,
             };
             try {
               socket.send(JSON.stringify(messageToSend));
-              console.log("Message sent successfully");
             } catch (error) {
-              console.error("Error sending message:", error);
             }
           } else {
-            console.log("WebSocket is not open.");
           }
         }
       } catch (error) {
@@ -790,11 +746,9 @@ const ViewEditDeleteProperties = () => {
         `/sam/v1/property/auth/user/enquiry/property/`, dataToPost,
         { headers: authHeader }
       );
-      // console.log(res);
       if (res.data) {
         let currentChatArray = res.data.EnquiryLogDetails;
         setMessages((msg) => [...currentChatArray, ...msg]);
-        // setPropertyId(res.data.EnquiryLogDetails[0].property_id);
         setIsMoreMassage(res.data.IsMoreEnquiryLog)
         setChatPageLoading(false);
         if (modalBodyRef.current) {
@@ -802,7 +756,6 @@ const ViewEditDeleteProperties = () => {
         }
       }
     } catch (error) {
-      console.log(error);
       setChatPageLoading(false);
     }
 
@@ -827,27 +780,23 @@ const ViewEditDeleteProperties = () => {
     const newSocket = new WebSocket("ws://localhost:3000/ws");
     setSocket(newSocket);
   };
-
-  // console.log(pathLocation);
   useEffect(() => {
     rootTitle.textContent = "ADMIN - PROPERTIES";
+    setCurrentChatMassageSize(25);
     if (data) {
       setLoading(true);
       checkLoginSession(data.loginToken).then((res) => {
         if (res === "Valid") {
           getPropertiesFromApi();
-          // getUserEnquiriesList();
-
         }
       });
     }
-    // eslint-disable-next-line
     if (window.location.pathname) {
       const currentPagePath = window.location.pathname;
       const firstPathSegment = currentPagePath.split('/')[1];
       setPathLocation(firstPathSegment);
     }
-
+    // eslint-disable-next-line
   }, []);
 
   // on click view more chat if currentMassage batch change
@@ -855,6 +804,7 @@ const ViewEditDeleteProperties = () => {
     if (currentMassageBatch) {
       fetchMoreChatMessage();
     }
+    // eslint-disable-next-line
   }, [currentMassageBatch])
 
   // Scroll to the latest message whenever messages are updated
@@ -863,43 +813,27 @@ const ViewEditDeleteProperties = () => {
       modalBodyRef.current.scrollTop = modalBodyRef.current.scrollHeight;
     }
     return (() => setNewComingMessage(null))
+
+    // eslint-disable-next-line
   }, [messages]);
 
   // WebSocket connection
   useEffect(() => {
     if (socket) {
       socket.onopen = () => {
-        console.log("WebSocket connection opened");
       };
 
       socket.onclose = (event) => {
-        console.log("WebSocket connection closed:", event.code, event.reason);
       };
 
       socket.onmessage = (event) => {
         try {
           const receivedMessage = JSON.parse(event.data);
-          console.log("newMessage", receivedMessage);
-          const { User_id, msg, message_type } = receivedMessage;
-          console.log("message_type", typeof (message_type));
-
+          const { message_type } = receivedMessage;
           if (message_type === "sam-user") {
-            console.log("newMessage", receivedMessage);
             setNewComingMessage({ ...receivedMessage });
-
-            // if (User_id !== String(userId)) {
-            //   const currentDate = new Date();
-            //   let msgObj = {
-            //     enquiry_comments: msg,
-            //     enquiry_log_date: currentDate.toISOString(),
-            //     reply_from: isBank ? 0 : 1,
-            //   };
-            //   console.log("Received Message: ", receivedMessage);
-            //   setMessages((messages) => [...messages, msgObj]);
-            // }
           }
         } catch (error) {
-          console.error("Error handling received message:", error);
         }
       };
     }
@@ -908,14 +842,12 @@ const ViewEditDeleteProperties = () => {
   // WebSocket connection for new coming message
   useEffect(() => {
     if (newComingMessage) {
-      console.log(newComingMessage);
       if (enquiryId === newComingMessage.enquiry_id) {
         let msgObj = {
           enquiry_comments: newComingMessage.msg,
           enquiry_log_date: newComingMessage.enquiry_log_date,
           reply_from: newComingMessage.reply_from,
         };
-        console.log(msgObj)
         setMessages((messages) => [...messages, msgObj]);
       }
 
@@ -937,7 +869,7 @@ const ViewEditDeleteProperties = () => {
           >
             <BreadCrumb />
             <>
-              <h1 className="text-center text-primary fw-bold">Properties</h1>
+              <h1 className="text-center heading-text-primary fw-bold">Properties</h1>
               <hr />
               {loading ? (
                 <div
@@ -1041,9 +973,6 @@ const ViewEditDeleteProperties = () => {
                                     {/* Current property DataToUpdate button */}
                                     <button
                                       onClick={() => {
-                                        {/* getCurrentPropertyDataToUpdate(
-                                          property_id
-                                        );*/}
                                         getCurrentPropertyDataToUpdate(
                                           property_id
                                         );
@@ -1088,9 +1017,9 @@ const ViewEditDeleteProperties = () => {
                                         getCurrentPropertyAllEnquires(
                                           property_id, property_number, category
                                         );
-                                        getCurrentPropertyAllEnquires(
-                                          property_id, property_number, category
-                                        );
+                                        // getCurrentPropertyAllEnquires(
+                                        //   property_id, property_number, category
+                                        // );
                                       }}
                                       className="mx-2 btn btn-sm btn-outline-info property-button-wrapper"
                                     >
@@ -1196,8 +1125,7 @@ const ViewEditDeleteProperties = () => {
                           }`}
                       >
                         <div className="card-body">
-                          <h4 className="fw-bold">Update Property</h4>
-                          <hr />
+                          <h4 className="fw-bold mb-4">Update Property</h4>
                           <div className="row mb-3">
                             <div className="col-12 d-md-flex justify-content-md-start">
                               {/* Property ID */}
@@ -1209,7 +1137,7 @@ const ViewEditDeleteProperties = () => {
                                   <span className="common-btn-font">
                                     Property ID
                                   </span>
-                                  <span className="badge bg-light text-primary ms-2">
+                                  <span className="badge bg-light heading-text-primary ms-2">
                                     {property_id}
                                   </span>
                                 </button>
@@ -1223,308 +1151,97 @@ const ViewEditDeleteProperties = () => {
                                   <span className="common-btn-font">
                                     Property Number
                                   </span>
-                                  <span className="badge bg-light text-primary ms-2">
+                                  <span className="badge bg-light heading-text-primary ms-2">
                                     {property_number}
                                   </span>
                                 </button>
                               </div>
                             </div>
                           </div>
+
+                          <hr />
                           {/* Row 1 - Basic Details */}
                           <div className="row mb-3">
                             <div className="col-12">
-                              <h5 className="fw-bold text-primary">
+                              <h5 className="fw-bold heading-text-primary mb-3">
                                 Basic details
                               </h5>
                             </div>
-                            {type_name ? (
-                              <div className="col-xl-4 col-md-6">
-                                <div className="form-group">
-                                  <label
-                                    className="form-label common-btn-font"
-                                    htmlFor="type_name"
-                                  >
-                                    Property type
-                                  </label>
-                                  <input
-                                    id="type_name"
-                                    type="text"
-                                    className="form-control"
-                                    value={type_name}
-                                    disabled
-                                  />
-                                </div>
-                              </div>
-                            ) : (
-                              <></>
-                            )}
+                            <div className="col-md-6">
 
-                            <div className="col-xl-4 col-md-6">
-                              <div className="form-group">
-                                <label
-                                  className="form-label common-btn-font"
-                                  htmlFor="bank"
-                                >
-                                  Bank
-                                </label>
-                                {pathLocation === 'admin' ?
-                                  <select
-                                    id="bank"
-                                    name="bank"
-                                    className="form-select"
-                                    onChange={onInputChange}
-                                    disabled
-                                  >
-                                    <option value=""></option>
-                                    {banks ? (
-                                      banks.map((data) => {
-                                        return (
-                                          <option
-                                            key={data.bank_id}
-                                            value={data.bank_id}
-                                            id={`bank-${data.bank_id}`}
-                                          >
-                                            {data.bank_name}
-                                          </option>
-                                        );
-                                      })
-                                    ) : (
-                                      <></>
-                                    )}
-                                  </select> :
-                                  <input
-                                    type="text"
-                                    id="bank"
-                                    name="bank"
-                                    className="form-control"
-                                    // onChange={onInputChange}
-                                    value={activeBank.bank_name}
-                                    required
-                                    disabled
-                                  />}
-                              </div>
-                            </div>
-                            <div className="col-xl-4 col-md-6 mt-xl-0 mt-3">
-                              <div className="form-group">
-                                <label
-                                  className="form-label common-btn-font"
-                                  htmlFor="bank_branch_id"
-                                >
-                                  Branch
-                                </label>
-                                {pathLocation === 'admin' ?
-                                  <select
-                                    id="bank_branch_id"
-                                    name="bank_branch_id"
-                                    className="form-select"
-                                    onChange={onInputChange}
-                                    disabled
-                                  >
-                                    <option value=""></option>
-                                    {bankBranches ? (
-                                      bankBranches.map((data) => {
-                                        return (
-                                          <option
-                                            key={data.branch_id}
-                                            value={data.branch_id}
-                                            id={`branch-${data.branch_id}`}
-                                          >
-                                            {data.branch_name}
-                                          </option>
-                                        );
-                                      })
-                                    ) : (
-                                      <></>
-                                    )}
-                                  </select> :
-                                  <input
-                                    type="text"
-                                    id="bank_branch_id"
-                                    name="bank_branch_id"
-                                    className="form-control"
-                                    // onChange={onInputChange}
-                                    value={activeBranch && activeBranch.branch_name}
-                                    required
-                                    disabled
-                                  />}
-                              </div>
-                            </div>
-                            <div className="col-xl-4 col-md-6 mt-3">
-                              <div className="form-group">
-                                <label
-                                  className="form-label common-btn-font"
-                                  htmlFor="title_clear_property"
-                                >
-                                  Title clear Property
-                                </label>
-                                <select
-                                  id="title_clear_property"
-                                  name="title_clear_property"
-                                  className="form-select"
-                                  onChange={onInputChange}
-                                  disabled
-                                >
-                                  <option value=""></option>
-                                  <option
-                                    id="title_clear_property-yes"
-                                    value="1"
-                                  >
-                                    Yes
-                                  </option>
-                                  <option
-                                    id="title_clear_property-no"
-                                    value="0"
-                                  >
-                                    No
-                                  </option>
-                                </select>
-                              </div>
-                            </div>
-                            {/* <div className="col-xl-4 col-md-6 mt-3">
-                              <div className="form-group">
-                                <label
-                                  className="form-label common-btn-font"
-                                  htmlFor="possession"
-                                >
-                                  Possession of the property
-                                </label>
-                                <div id="possession">
-                                  <div className="form-check form-check-inline">
-                                    <input
-                                      className="form-check-input"
-                                      type="radio"
-                                      name="inlineRadioOptions"
-                                      id="possessionValue1"
-                                      value="possessionValue"
-                                      disabled
-                                      checked={titleClearNo}
-                                    />
-                                    <label
-                                      className="form-check-label"
-                                      htmlFor="possessionValue1"
-                                    >
-                                      Legally attached
-                                    </label>
-                                  </div>
-                                  <div className="form-check form-check-inline">
-                                    <input
-                                      className="form-check-input"
-                                      type="radio"
-                                      name="inlineRadioOptions"
-                                      id="possessionValue2"
-                                      value="possessionValue"
-                                      disabled
-                                      checked={titleClearYes}
-                                    />
-                                    <label
-                                      className="form-check-label"
-                                      htmlFor="possessionValue2"
-                                    >
-                                      Owner / Customer consent
-                                    </label>
-                                  </div>
-                                </div>
-                              </div>
-                            </div> */}
-                            {/* {is_stressed ? (
-                              <div className="col-xl-4 col-md-6 mt-3">
+                              {/* Property type */}
+                              {type_name ? (
                                 <div className="form-group">
-                                  <label
-                                    htmlFor="is_stressed"
-                                    className="form-label common-btn-font"
-                                  >
-                                    Is stressed?
-                                  </label>
-                                  <input
-                                    id="is_stressed"
-                                    type="text"
-                                    className="form-control"
-                                    value={is_stressed === 1 ? "Yes" : "No"}
-                                    disabled
-                                  />
+                                  <p><span className="paragraph-label-text">Property type</span>{type_name}</p>
                                 </div>
+                              ) : (
+                                <></>
+                              )}
+                              {/* Bank */}
+                              <div className="form-group">
+                                <p><span className="paragraph-label-text">Bank</span>{activeBank && activeBank.bank_name}
+                                </p>
                               </div>
-                            ) : (
-                              <></>
-                            )} */}
-                            {territory ? (
-                              <div className="col-xl-4 col-md-6 mt-3">
-                                <div className="form-group">
-                                  <label
-                                    htmlFor="territory"
-                                    className="form-label common-btn-font"
-                                  >
-                                    Territory
-                                  </label>
-                                  <input
-                                    type="text"
-                                    id="territory"
-                                    name="territory"
-                                    className="form-control"
-                                    value={territory}
-                                    disabled
-                                  />
-                                </div>
+                              {/* Branch */}
+                              <div className="form-group">
+                                <p><span className="paragraph-label-text">Branch</span>{formData.branch_name}
+                                </p>
                               </div>
-                            ) : (
-                              <></>
-                            )}
+
+
+                            </div>
+                            <div className="col-md-6">
+                              {/* Title clear Property */}
+                              <div className="form-group">
+                                <p><span className="paragraph-label-text"> Title clear Property</span>{formData.title_clear_property === 1 ? "Yes" : "No"}
+                                </p>
+                              </div>
+                              {/* territory */}
+                              <div className="form-group">
+                                {territory ? (
+                                  <p><span className="paragraph-label-text"> Territory</span>{territory}
+                                  </p>
+                                ) : (
+                                  <></>
+                                )}
+                              </div>
+                            </div>
                           </div>
+
+                          <hr />
                           {/* Row 2 - Area Details*/}
                           <div className="row mb-3">
                             <div className="col-12">
-                              <h5 className="fw-bold text-primary">Area</h5>
+                              <h5 className="fw-bold heading-text-primary mb-3">Area</h5>
                             </div>
-                            {saleable_area ? (
-                              <div className="col-xl-4 col-md-6">
-                                <div className="form-group">
-                                  <label
-                                    className="form-label common-btn-font"
-                                    htmlFor="saleable_area"
-                                  >
-                                    Saleable area (sq. ft.)
-                                  </label>
-                                  <input
-                                    type="text"
-                                    className="form-control"
-                                    id="saleable_area"
-                                    name="saleable_area"
-                                    value={saleable_area ? saleable_area : ""}
-                                    disabled
-                                  />
-                                </div>
-                              </div>
-                            ) : (
-                              <></>
-                            )}
-                            {carpet_area ? (
-                              <div className="col-xl-4 col-md-6 mt-3 mt-md-0">
-                                <div className="form-group">
-                                  <label
-                                    className="form-label common-btn-font"
-                                    htmlFor="carpet_area"
-                                  >
-                                    Carpet area (sq. ft.)
-                                  </label>
-                                  <input
-                                    type="text"
-                                    className="form-control"
-                                    id="carpet_area"
-                                    name="carpet_area"
-                                    value={saleable_area ? carpet_area : ""}
-                                    disabled
-                                  />
-                                </div>
-                              </div>
-                            ) : (
-                              <></>
-                            )}
-                          </div>
+                            <div className="col-md-6">
+                              {/* Saleable area (sq. ft.) */}
+                              <div className="form-group">
+                                {saleable_area ? (
+                                  <p><span className="paragraph-label-text">Saleable area (sq. ft.)</span>{saleable_area ? saleable_area : ""}</p>
+                                ) : (
+                                  <></>
+                                )}
 
+                              </div>
+                            </div>
+
+                            <div className="col-md-6">
+                              {/*  Carpet area (sq. ft.) */}
+                              <div className="form-group">
+                                {carpet_area ? (
+                                  <p><span className="paragraph-label-text"> Carpet area (sq. ft.)</span>{carpet_area ? carpet_area : ""}</p>
+                                ) : (
+                                  <></>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          <hr />
                           {/* Row 3 - Pricing Details */}
                           <div className="row mb-3">
                             <div className="col-12">
-                              <h5 className="fw-bold text-primary">Pricing</h5>
+                              <h5 className="fw-bold heading-text-primary mb-3">Pricing</h5>
                             </div>
                             <div className="col-xl-4 col-md-6">
                               <div className="form-group">
@@ -1583,179 +1300,50 @@ const ViewEditDeleteProperties = () => {
                                 />
                               </div>
                             </div>
-                            {/* <div className="col-xl-4 col-md-6 mt-3">
-                              <div className="form-group">
-                                <label
-                                  className="form-label common-btn-font"
-                                  htmlFor="distress_value"
-                                >
-                                  Distress Value (Rs.)
-                                </label>
-                                <input
-                                  type="number"
-                                  className="form-control"
-                                  id="distress_value"
-                                  name="distress_value"
-                                  onChange={onInputChange}
-                                  defaultValue={distress_value}
-                                  required
-                                />
-                              </div>
-                            </div> */}
                           </div>
 
+                          <hr />
                           {/* Row 4 - Dates & Availability Details */}
                           <div className="row mb-3">
                             <div className="col-12">
-                              <h5 className="fw-bold text-primary">
+                              <h5 className="fw-bold heading-text-primary mb-3">
                                 Dates & Availability
                               </h5>
                             </div>
-                            {completion_date ? (
-                              <div className="col-xl-4 mb-3 col-md-6">
+                            <div className="col-md-6">
+                              {/* Completion date */}
+                              {completion_date ? (
                                 <div className="form-group">
-                                  <label
-                                    htmlFor="completion_date"
-                                    className="form-label common-btn-font"
-                                  >
-                                    Completion date
-                                  </label>
-                                  <input
-                                    className="form-control"
-                                    type="date"
-                                    id="completion_date"
-                                    name="completion_date"
-                                    value={completion_date}
-                                    disabled
-                                  />
+                                  <p><span className="paragraph-label-text">Completion date</span>{completion_date}</p>
                                 </div>
-                              </div>
-                            ) : (
-                              <></>
-                            )}
-                            {purchase_date ? (
-                              <div className="col-xl-4 mb-3 col-md-6">
+                              ) : (
+                                <></>
+                              )}
+                              {/* Purchase date */}
+                              {purchase_date ? (
                                 <div className="form-group">
-                                  <label
-                                    htmlFor="purchase_date"
-                                    className="form-label common-btn-font"
-                                  >
-                                    Purchase date
-                                  </label>
-                                  <input
-                                    className="form-control"
-                                    type="date"
-                                    id="purchase_date"
-                                    name="purchase_date"
-                                    value={purchase_date}
-                                    disabled
-                                  />
+                                  <p><span className="paragraph-label-text">Purchase date</span>{purchase_date}</p>
                                 </div>
-                              </div>
-                            ) : (
-                              <></>
-                            )}
-                            <div className="col-xl-4 mb-3 col-md-6">
+                              ) : (
+                                <></>
+                              )}
+                            </div>
+                            <div className="col-md-6">
+                              {/* Mortgage date */}
                               <div className="form-group">
-                                <label
-                                  htmlFor="mortgage_date"
-                                  className="form-label common-btn-font"
-                                >
-                                  Mortgage date
-                                </label>
-                                <input
-                                  className="form-control"
-                                  type="date"
-                                  id="mortgage_date"
-                                  name="mortgage_date"
-                                  onChange={onInputChange}
-                                  defaultValue={mortgage_date}
-                                  required
-                                  disabled
-                                />
+                                <p><span className="paragraph-label-text">Mortgage date</span>{mortgage_date}</p>
+                              </div>
+                              {/* Available for sale? */}
+                              <div className="form-group">
+                                <p><span className="paragraph-label-text">Available for sale?</span>{formData.is_available_for_sale === 1 ? "Yes" : "No"}</p>
                               </div>
                             </div>
-                            {/* <div className="col-xl-4 col-md-6 mb-3 mb-xl-0">
-                              <div className="form-group">
-                                <label className="form-label common-btn-font">
-                                  Is sold?
-                                </label>
-                                <br />
-                                <div className="form-check form-check-inline">
-                                  <input
-                                    className="form-check-input"
-                                    type="radio"
-                                    name="is_sold"
-                                    value="1"
-                                    id="is_sold-1"
-                                    onChange={onInputChange}
-                                    disabled
-                                  />
-                                  <label
-                                    className="form-check-label"
-                                    htmlFor="inlineRadio1"
-                                  >
-                                    Yes
-                                  </label>
-                                </div>
-                                <div className="form-check form-check-inline">
-                                  <input
-                                    className="form-check-input"
-                                    type="radio"
-                                    name="is_sold"
-                                    value="0"
-                                    id="is_sold-0"
-                                    onChange={onInputChange}
-                                    ref={notSoldCheckRef}
-                                  />
-                                  <label
-                                    className="form-check-label"
-                                    htmlFor="inlineRadio2"
-                                  >
-                                    No
-                                  </label>
-                                </div>
-                              </div>
-                            </div> */}
-                            <div
-                              className={`col-xl-4 col-md-6 mb-3 mb-xl-0 ${is_sold === 1 ? "d-none" : ""
-                                }`}
-                            >
-                              <div className="form-group">
-                                <label
-                                  className="form-label common-btn-font"
-                                  htmlFor="is_available_for_sale"
-                                >
-                                  Available for sale?
-                                </label>
-                                <select
-                                  id="is_available_for_sale"
-                                  name="is_available_for_sale"
-                                  className="form-select"
-                                  onChange={onInputChange}
-                                  required
-                                  disabled
-                                >
-                                  <option
-                                    value="1"
-                                    id="is_available_for_sale-1"
-                                  >
-                                    Yes
-                                  </option>
-                                  <option
-                                    value="0"
-                                    id="is_available_for_sale-0"
-                                  >
-                                    No
-                                  </option>
-                                </select>
-                              </div>
-                            </div>
+
                           </div>
                           {/* Row 5 - Address Details */}
                           <div className="row">
                             <div className="col-12">
-                              <h5 className="fw-bold text-primary">Address</h5>
+                              <h5 className="fw-bold heading-text-primary">Address</h5>
                             </div>
                             {flat_number ? (
                               <div className="col-xl-4 mb-3 col-md-6">
@@ -1997,43 +1585,32 @@ const ViewEditDeleteProperties = () => {
               <section className="add-property-wrapper mb-4">
                 <div className="container-fluid">
                   <h3 className="text-center fw-bold ">Enquiries</h3>
-
-                  <div className="row justify-content-between align-items-center">
-                    <div className="col-md-6 col-12 d-flex  mb-md-0 mb-3">
+                  <hr />
+                  <div className="row justify-content-between align-items-center mb-4">
+                    <div className="col-md-8 col-12 d-flex  mb-md-0 mb-3">
                       <div className="text-start "><span className="fw-bold me-1">Property Number:</span> {selectedPropertyNumberForEnquiry}</div>
                       <div className="text-end ms-5"><span className="fw-bold me-1">Property Type:</span> {selectedPropertyTypeForEnquiry}</div>
                     </div>
 
-                    {/* search filter for property search */}
-                    <div className="col-md-6 d-flex justify-content-end">
-                      <div className="col-lg-6 me-4">
+                    {/* search filter for enquiry search */}
+                    <div className="col-md-4 d-flex justify-content-end">
+                      <div className="search-box d-flex align-items-center position-relative w-100 me-4 ">
                         <input
                           type="search"
-                          className="form-control "
                           placeholder="Search"
-                          // value={searchTerm}
+                          className="form-control search-input custom-input"
                           onChange={onEnquirySearchInputChange}
                         />
+                        <i className="fa fa-search text-secondary position-absolute "></i>
                       </div>
+
                     </div>
                   </div>
 
-                  <hr />
+                  {/* <hr /> */}
                   <div className="row justify-content-center">
 
                     <div className="col-xl-12">
-                      {/* <div
-                        className={`${mainPageLoading ? "" : "d-none"
-                          } d-flex align-items-center justify-content-center`}
-                        style={{ minHeight: "75vh" }}
-                      >
-                        <CommonSpinner
-                          spinnerColor="primary"
-                          height="5rem"
-                          width="5rem"
-                          spinnerType="grow"
-                        />
-                      </div> */}
                       {mainPageLoading ? (
                         <>
                           <CommonSpinner
@@ -2043,16 +1620,16 @@ const ViewEditDeleteProperties = () => {
                             spinnerType="grow"
                           />
                         </>
-                      ) : enquiryList.length < 1 ? (
+                      ) : !enquiryList || enquiryList.length < 1 ? (
                         <h4 className="text-center fw-bold custom-heading-color mt-4">
                           No Enquiries Found !
                         </h4>
                       ) : (
                         <>
                           <div className="enquiry-list-table-wrapper">
-                            <table className="table table-striped table-bordered text-center">
-                              <thead>
-                                <tr>
+                            <table className="table align-middle table-striped table-bordered mb-0 bg-white admin-users-table  text-center ">
+                              <thead className="bg-light">
+                                <tr className="table-heading-class">
                                   <th scope="col">#</th>
                                   {/* <th scope="col">Property Number</th>
                                   <th scope="col">Type</th> */}
@@ -2071,8 +1648,6 @@ const ViewEditDeleteProperties = () => {
                                 {enquiryList && enquiryList.map((enquiry, Index) => {
                                   const {
                                     enquiry_id,
-                                    property_number,
-                                    property_type,
                                     user_name,
                                     added_date,
                                   } = enquiry;
@@ -2191,7 +1766,6 @@ const ViewEditDeleteProperties = () => {
                 data-bs-dismiss="modal"
                 aria-label="Close"
                 onClick={() => {
-                  // setConditionShouldCloseWebSocket(true);
                   setCurrentMassageBatch(1);
                   setNewComingMessage(null);
                   setPropertyId(null);

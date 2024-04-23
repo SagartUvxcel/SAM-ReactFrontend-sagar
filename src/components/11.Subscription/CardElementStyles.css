@@ -1,14 +1,11 @@
-/* CardElementStyles.css */
+
 
 /* Center the card element */
 .card-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  /* padding: 50px; */
   height: auto;
-  /* Adjust as needed */
-  /* width: 600px; */
   margin: auto;
   text-align: center;
   background-color: #f5f5f5;
@@ -25,7 +22,6 @@
   background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   max-width: 800px;
-  /* Adjust as needed */
   width: 100%;
 }
 
@@ -55,7 +51,6 @@
   background-color: white;
   border: 1px solid #ccc;
   border-radius: 4px;
-  /* margin-bottom: 10px; */
 }
 
 .StripeElement--focus {
@@ -92,42 +87,32 @@ body {
 .packagesBox-shadow {
   box-shadow: 0 11px 15px rgba(30, 35, 33, 1), 0 15px 12px rgba(30, 35, 33, 0.2) !important;
 }
-.packages {
-  /* margin: 20px;
-  width: 300px; */
+.packages { 
   flex-basis: calc(20% - 1rem);
   padding-bottom: 1.5em;
   padding-top: 1.5em;
-  background-color: grey;
-  /* background: linear-gradient( 0deg, rgb(247 97 5 / 52%) 0%, rgb(255 174 0 / 44%) 100% ); */
+  background-color: grey; 
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   border-radius: 20px;
-  flex-wrap: wrap;
-  /* color: #f4f4f4; */
-  color: white;
-  /* justify-content: space-around; */
+  flex-wrap: wrap; 
+  color: white; 
 }
 
-.upgradePackages {
-  /* margin: 20px;
-  width: 300px; */
+.upgradePackages { 
   flex-basis: calc(25% - 1rem);
   padding-bottom: 1.5em;
   padding-top: 1.5em;
-  background-color: grey;
-  /* background: linear-gradient( 0deg, rgb(247 97 5 / 52%) 0%, rgb(255 174 0 / 44%) 100% ); */
+  background-color: grey; 
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   border-radius: 20px;
-  flex-wrap: wrap;
-  /* color: #f4f4f4; */
-  color: white;
-  /* justify-content: space-around; */
+  flex-wrap: wrap; 
+  color: white; 
 }
 
 .packages .plan-price span {
@@ -171,8 +156,7 @@ ul {
 .button {
   padding: 10px 30px;
   text-decoration: none;
-  font-size: 1em;
-  /* margin: 15px 15px; */
+  font-size: 1em; 
   border-radius: 50px;
   color: #f4f4f4;
   transition: all 0.3s ease 0s;
@@ -187,8 +171,7 @@ ul {
 }
 
 .card-text-2 {
-  color: #ff007c;
-  /* color: #0a58ca; */
+  color: #ff007c; 
 }
 
 .card-text-3 {
@@ -281,9 +264,7 @@ input:checked + .slider:before {
 
 @media screen and (max-width: 992px) {
   .packages,
-  .upgradePackages {
-    /* margin: 20px;
-    width: 300px; */
+  .upgradePackages { 
     flex-basis: calc(50% - 1rem);
   }
 }
@@ -296,17 +277,14 @@ input:checked + .slider:before {
 
 /*  payment page success modal */
 
-#success_tic .page-body {
-  /* max-width: 300px; */
+#success_tic .page-body { 
   background-color: #ffffff;
   margin: 6% auto;
 }
 #success_tic .page-body .head {
   text-align: center;
 }
-/* #success_tic .tic{
-  font-size:186px;
-} */
+
 #success_tic .close {
   opacity: 1;
   position: absolute;

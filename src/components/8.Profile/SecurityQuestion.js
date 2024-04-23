@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { toast } from "react-toastify";
 import Layout from "../1.CommonLayout/Layout";
 import securityQuestionImg from "../../images/securityQuestionImg.svg";
@@ -8,7 +8,6 @@ import axios from "axios";
 import CommonSpinner from "../../CommonSpinner";
 
 
-let userId = "";
 let authHeader = "";
 const SecurityQuestion = () => {
 
@@ -16,11 +15,28 @@ const SecurityQuestion = () => {
     const data = JSON.parse(localStorage.getItem("data"));
     if (data) {
         authHeader = { Authorization: data.loginToken };
-        userId = data.userId;
     }
 
-    // Used to navigate to particular page.
-    const goTo = useNavigate();
+
+    // on input focus
+    const handleFocus = (e) => {
+        e.target.nextSibling.classList.add('active');
+    };
+
+    // on click on label
+    const handleClick = (inputId) => {
+        const input = document.getElementById(inputId);
+        input.focus();
+    };
+
+    // on input blur
+    const onInputBlur = (e) => {
+        const { value } = e.target;
+        if (!value) {
+            e.target.nextSibling.classList.remove('active');
+        }
+    }
+
 
     const [loading, setLoading] = useState(false);
     const [alertDetails, setAlertDetails] = useState({
@@ -67,7 +83,7 @@ const SecurityQuestion = () => {
         question_id: 0,
         questionFromDatabase: "",
     });
-    const { questionExist, questionFromDatabase } = securityQuestionsFromDatabase;
+    const { questionFromDatabase } = securityQuestionsFromDatabase;
 
     // question list from database
     const [securityQuestionsList, setSecurityQuestionsList] = useState([]);
@@ -83,12 +99,10 @@ const SecurityQuestion = () => {
 
         try {
             const { data } = await axios.get("/sam/v1/customer-registration/security-questions");
-            // console.log(data);
             if (data) {
                 setSecurityQuestionsList(data);
             }
         } catch (error) {
-            console.log(error);
         }
     };
 
@@ -115,7 +129,6 @@ const SecurityQuestion = () => {
                 setLoading(false);
             }
         } catch (error) {
-            console.log(error);
             setSecurityQuestionsFromDatabase({
                 questionExist: false,
                 questionFromDatabase: "",
@@ -123,15 +136,6 @@ const SecurityQuestion = () => {
             setLoading(false);
         }
     };
-
-    // on update security question and answer
-    const onUpdateSecurityQuestionAnswer = () => {
-        setSecurityQuestionsFromDatabase({
-            questionExist: false,
-            questionFromDatabase: "",
-        })
-    };
-
 
     // Toggle the eye-icon to show and hide password for field 2.
     const changeEyeIcon = () => {
@@ -149,6 +153,9 @@ const SecurityQuestion = () => {
     // Function to check if the password satisfies the given password condition.
     const onPasswordsBlur = (e) => {
         const { name, value } = e.target;
+        if (!value) {
+            e.target.nextSibling.classList.remove('active');
+        }
         if (name === "currentPassword") {
             const regexForPassword =
                 /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/;
@@ -244,15 +251,12 @@ const SecurityQuestion = () => {
                 "security_answer": securityQuestionsDetails.answer,
                 "password": securityQuestionsDetails.currentPassword
             })
-            console.log(dataToPost);
             try {
                 await axios
                     .post(
                         `/sam/v1/customer-registration/auth/update/security-question`, dataToPost, {
                         headers: authHeader,
-                    }
-
-                    )
+                    })
                     .then((res) => {
                         if (res.data.status === 0) {
                             getUpdatedSecurityQuestion();
@@ -293,9 +297,20 @@ const SecurityQuestion = () => {
     return (
         <Layout>
             <section className="security-question-wrapper section-padding min-100vh">
-                <div className="container mt-5">
+                <div className="container mt-3">
+                
+          {/* back btn to View Profile */}
+          <div className="col-md-4 col-6 text-start mb-3">
+            <NavLink
+              to="/profile"
+              className="ms-4 text-decoration-none"
+            >
+              <i className="bi bi-arrow-left"></i> Back
+            </NavLink>
+          </div>
                     <div className="row justify-content-lg-between justify-content-center p-2 p-md-0 mb-3">
-                        <div className="col-xl-6 col-lg-6 col-md-8 order-1 order-lg-2 security-question-box card p-4 p-sm-5">
+                        {/* /form box */}
+                        <div className="col-xl-6 col-lg-6 col-md-8 order-1 order-lg-2 security-question-box card px-sm-5 pb-5 px-4 pb-sm-5 pt-4">
                             <h4 className="text-center fw-bold">Your Security Questions</h4>
                             {loading ? (
                                 <div
@@ -311,8 +326,8 @@ const SecurityQuestion = () => {
                                 </div>
                             ) : (
                                 <>
-                                    <form className=" " onSubmit={onSecurityQuestionAnswerSubmit}>
                                         <hr />
+                                    <form className=" " onSubmit={onSecurityQuestionAnswerSubmit}>
                                         {/* alert msg div */}
                                         <div
                                             className={`login-alert alert alert-${alertClr} alert-dismissible show d-flex align-items-center ${alertVisible ? alertMsg : "d-none"
@@ -320,12 +335,6 @@ const SecurityQuestion = () => {
                                             role="alert"
                                         >
                                             <span>
-                                                {/* <i
-                                            className={`bi bi-exclamation-triangle-fill me-2 ${alertClr === "danger" || alertClr === "warning"
-                                                    ? ""
-                                                    : "d-none"
-                                                }`}
-                                        ></i> */}
                                             </span>
                                             <small className="fw-bold">{alertMsg}</small>
                                             <i
@@ -336,22 +345,17 @@ const SecurityQuestion = () => {
                                         <div className="row mt-3">
                                             {/* question */}
                                             <div className="col-lg-12 mb-3">
-                                                <label className="text-muted" htmlFor="securityQuestions">
-                                                    Security Question
-                                                    <span className="text-danger ps-1">*</span>
-                                                </label>
-                                                <div className="form-group position-relative">
+                                                <div className="form-group position-relative custom-class-form-div mb-2">
                                                     <select
                                                         id="securityQuestions"
                                                         name="securityQuestions"
-                                                        className="form-select  form-control ps-3 mt-2"
+                                                        className="form-select custom-input"
                                                         onChange={onSecurityQuestionAnswerChange}
-                                                        // placeholder="Select your question"
-                                                        // value={securityQuestionsDetails.id}
+                                                        onBlur={onInputBlur}
+                                                        onFocus={handleFocus}
                                                         required
                                                     >
-                                                        {/* <option value="" className="text-gray"  > Select Your Question</option> */}
-                                                        <option className="text-gray" hidden >Select Your Security Question</option>
+                                                        <option className="text-gray" hidden > </option>
                                                         {securityQuestionsList ? (
                                                             securityQuestionsList.map((data, index) => {
                                                                 return (
@@ -368,6 +372,7 @@ const SecurityQuestion = () => {
                                                             <> </>
                                                         )}
                                                     </select>
+                                                    <label className="px-0 security-question-label " htmlFor="securityQuestions" onClick={() => handleClick('securityQuestions')} >Security Question <span className="text-danger ">*</span></label>
 
                                                 </div>
                                                 {questionNotSelectedMessage ? (
@@ -380,20 +385,18 @@ const SecurityQuestion = () => {
                                             </div>
                                             {/* Answer */}
                                             <div className="col-lg-12 mb-3 " >
-                                                <label className="text-muted" htmlFor="securityAnswer">
-                                                    Answer
-                                                    <span className="text-danger ps-1">*</span>
-                                                </label>
-                                                <div className="form-group position-relative">
+                                                <div className="form-group position-relative custom-class-form-div mb-2">
                                                     <input
                                                         id="securityAnswer"
                                                         name="securityAnswer"
                                                         type={answerType}
-                                                        className="form-control"
+                                                        className="form-control custom-input"
                                                         onChange={onSecurityQuestionAnswerChange}
+                                                        onBlur={onInputBlur}
+                                                        onFocus={handleFocus}
                                                         required
-
                                                     />
+                                                    <label className="px-0 pb-2 security-question-label    " htmlFor="securityAnswer" onClick={() => handleClick('securityAnswer')} >Answer <span className="text-danger ">*</span></label>
                                                     <i
                                                         placeholder={eyeIcon}
                                                         onClick={changeEyeIcon}
@@ -410,19 +413,18 @@ const SecurityQuestion = () => {
                                             </div>
                                             {/*current password */}
                                             <div className="col-lg-12 mb-3">
-                                                <div className="form-group position-relative">
-                                                    <label className="text-muted" htmlFor="current-password">
-                                                        Current Password<span className="text-danger ps-1">*</span>
-                                                    </label>
+                                                <div className="form-group position-relative custom-class-form-div">
                                                     <input
-                                                        id="current-password"
+                                                        id="currentPassword"
                                                         name="currentPassword"
                                                         type={passwordType}
-                                                        className="form-control"
+                                                        className="form-control custom-input "
                                                         onBlur={onPasswordsBlur}
+                                                        onFocus={handleFocus}
                                                         onChange={onSecurityQuestionAnswerChange}
                                                         required
                                                     />
+                                                    <label className="px-0 pb-2 security-question-label  " htmlFor="currentPassword" onClick={() => handleClick('currentPassword')} >Current Password <span className="text-danger ">*</span></label>
 
                                                     <i
                                                         placeholder={eyeIcon}
@@ -471,6 +473,7 @@ const SecurityQuestion = () => {
                                 </>
                             )}
                         </div>
+                        {/* order 2 image */}
                         <div className="col-xl-5 col-lg-6 col-md-8 my-5 my-lg-0 order-2 order-lg-1 ">
                             <img src={securityQuestionImg} alt="" className="set-pass-img  p-4" />
                         </div>

@@ -9,7 +9,7 @@ const AboutUs = () => {
   useEffect(() => {
     rootTitle.textContent = "SAM TOOL - ABOUT";
   }, []);
-
+ 
   return (
     <Layout>
       <section className="section-padding about-wrapper min-100vh">

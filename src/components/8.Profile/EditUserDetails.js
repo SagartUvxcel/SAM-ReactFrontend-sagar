@@ -4,11 +4,9 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { checkLoginSession, rootTitle, calculateDays } from "../../CommonFunctions";
 import Layout from "../1.CommonLayout/Layout";
-import CommonSpinner from "../../CommonSpinner";
-import CommonSubscriptionNotificationMsg from "../11.Subscription/CommonSubscriptionNotificationMsg";
+import CommonSpinner from "../../CommonSpinner"; 
 
-let authHeaders = "";
-let isLogin = false;
+let authHeaders = ""; 
 let planStatus = false;
 let planEndDate = "";
 
@@ -33,6 +31,11 @@ const EditUserDetails = () => {
     state_name,
     zip,
     email,
+     building_name, 
+    flat_number,
+    landmark,
+    plot_number,
+    society_name, 
   } = commonUserDetails;
 
   const [orgUserDetails, setOrgUserDetails] = useState({});
@@ -96,14 +99,11 @@ const EditUserDetails = () => {
   const updatedSubscriptionStatus = localStorage.getItem("updatedSubscriptionStatus");
 
   if (data) {
-    authHeaders = { Authorization: data.loginToken };
-    isLogin = data.isLoggedIn;
+    authHeaders = { Authorization: data.loginToken }; 
     planStatus = updatedSubscriptionStatus ? updatedSubscriptionStatus : data.subscription_status;
     planEndDate = data.subscription_end_date;
   }
-
-
-
+ 
   // Function will get the data of user whose details are to be edited.
   const getUserToEdit = async () => {
     if (data) {
@@ -113,7 +113,8 @@ const EditUserDetails = () => {
           .get(`/sam/v1/user-registration/auth/${userId}`, {
             headers: authHeaders,
           })
-          .then(async (res) => {
+          .then(async (res) => { 
+            console.log(res.data);
             const { individual_user, org_user, user_details } = res.data;
             if (individual_user) {
               const {
@@ -154,8 +155,15 @@ const EditUserDetails = () => {
               state_name,
               state_id,
               zip,
-              email_address,
-            } = user_details;
+              email_address, 
+              building_name,
+              contact_number,
+              flat_number,
+              landmark,
+              plot_number,
+              society_name,
+              user_id
+            } = user_details; 
             setUserType(user_type);
             setIdOfState(parseInt(state_id));
             setCommonUserDetails({
@@ -168,6 +176,13 @@ const EditUserDetails = () => {
               zip: zip,
               email: email_address,
               user_type: user_type,
+              building_name: building_name,
+              contact_number: contact_number,
+              flat_number: flat_number,
+              landmark: landmark,
+              plot_number: plot_number,
+              society_name: society_name,
+              user_id: user_id
             });
             // Get Cities using state_id from api.
             const cityByState = await axios.post(`/sam/v1/property/by-city`, {
@@ -248,6 +263,16 @@ const EditUserDetails = () => {
       setCommonUserDetails({ ...commonUserDetails, [name]: value });
     } else if (name === "locality") {
       setCommonUserDetails({ ...commonUserDetails, address: value });
+    }else if (name === "flat_number") {
+      setCommonUserDetails({ ...commonUserDetails, [name]: value });
+    }else if (name === "building_name") {
+      setCommonUserDetails({ ...commonUserDetails, [name]: value });
+    }else if (name === "plot_number") {
+      setCommonUserDetails({ ...commonUserDetails, [name]: value });
+    }else if (name === "society_name") {
+      setCommonUserDetails({ ...commonUserDetails, [name]: value });
+    }else if (name === "landmark") {
+      setCommonUserDetails({ ...commonUserDetails, [name]: value });
     }
   };
 
@@ -345,17 +370,19 @@ const EditUserDetails = () => {
       zip: zip,
       state: state_name,
       email: email,
-    };
-    console.log(JSON.stringify(dataToPost));
+      building_name: building_name, 
+      flat_number: flat_number,
+      landmark: landmark,
+      plot_number: plot_number,
+      society_name: society_name,
+    }; 
     setUpdateBtnLoading(true);
     try {
       await axios
         .post(`/sam/v1/customer-registration/auth/edit-details`, dataToPost, {
           headers: authHeaders,
         })
-        .then((res) => {
-          console.log(res);
-
+        .then((res) => { 
           if (res.data.status === 0) {
             setUpdateBtnLoading(false);
             toast.success("Details Updated Successfully");
@@ -385,10 +412,8 @@ const EditUserDetails = () => {
     if (planEndDate) {
       calculateDays(planEndDate);
       setDaysCount(calculateDays(planEndDate));
-
-
     }
-
+// eslint-disable-next-line
   }, [planEndDate])
 
   useEffect(() => {
@@ -403,6 +428,7 @@ const EditUserDetails = () => {
         }
       });
     }
+    // eslint-disable-next-line
   }, []);
 
   return (
@@ -428,7 +454,7 @@ const EditUserDetails = () => {
                   <div className="card-body">
                     <div className="row">
                       <div className="col-md-8 col-6">
-                        <h6 className="mb-2 text-primary">
+                        <h6 className="mb-2 heading-text-primary">
                           {user_type === 0
                             ? "Personal Details"
                             : user_type === 1
@@ -602,7 +628,7 @@ const EditUserDetails = () => {
                     <div className="row mt-3">
                       {/* Address */}
                       <div className="col-12">
-                        <h6 className="text-primary">
+                        <h6 className="heading-text-primary">
                           Address
                           <i
                             onClick={editDetails}
@@ -610,8 +636,97 @@ const EditUserDetails = () => {
                           ></i>
                         </h6>
                       </div>
+                      {/* flat_number */}
+                      <div className="col-xl-3 col-lg-3 col-md-4  col-12">
+                        <div className="form-group mb-3">
+                          <label htmlFor="flat_number" className="form-label">
+                          Flat Number
+                          </label>
+                          <input
+                            onChange={onInputChange}
+                            name="flat_number"
+                            type="text"
+                            className={`form-control ${editClassName}`}
+                            id="flat_number"
+                            defaultValue={flat_number}
+                            readOnly={isReadOnly}
+                            required
+                          />
+                        </div>
+                      </div>
+                      {/* building_name */}<div className="col-xl-3 col-lg-3 col-md-4  col-12">
+                        <div className="form-group mb-3">
+                          <label htmlFor="building_name" className="form-label">
+                          Building Name
+                          </label>
+                          <input
+                            onChange={onInputChange}
+                            name="building_name"
+                            type="text"
+                            className={`form-control ${editClassName}`}
+                            id="building_name"
+                            defaultValue={building_name}
+                            readOnly={isReadOnly}
+                            required
+                          />
+                        </div>
+                      </div> 
+                      {/* society_name */}
+                      <div className="col-xl-3 col-lg-3 col-md-4  col-12">
+                        <div className="form-group mb-3">
+                          <label htmlFor="society_name" className="form-label">
+                          Society Name
+                          </label>
+                          <input
+                            onChange={onInputChange}
+                            name="society_name"
+                            type="text"
+                            className={`form-control ${editClassName}`}
+                            id="society_name"
+                            defaultValue={society_name}
+                            readOnly={isReadOnly}
+                            required
+                          />
+                        </div>
+                      </div>
+                      {/* plot_number */}
+                      <div className="col-xl-3 col-lg-3 col-md-4  col-12">
+                        <div className="form-group mb-3">
+                          <label htmlFor="plot_number" className="form-label">
+                          Plot Number
+                          </label>
+                          <input
+                            onChange={onInputChange}
+                            name="plot_number"
+                            type="text"
+                            className={`form-control ${editClassName}`}
+                            id="plot_number"
+                            defaultValue={plot_number}
+                            readOnly={isReadOnly}
+                            required
+                          />
+                        </div>
+                      </div>
+                      {/* Landmark */}
+                      <div className="col-xl-3 col-lg-3 col-md-4  col-12">
+                        <div className="form-group mb-3">
+                          <label htmlFor="Landmark" className="form-label">
+                          Landmark
+                          </label>
+                          <input
+                            onChange={onInputChange}
+                            name="landmark"
+                            type="text"
+                            className={`form-control ${editClassName}`}
+                            id="landmark"
+                            defaultValue={landmark}
+                            readOnly={isReadOnly}
+                            required
+                          />
+                        </div>
+                      </div>
                       {/* Locality */}
-                      <div className="col-xl-4 col-lg-4 col-md-6  col-12">
+                      <div className="col-xl-3 col-lg-3 col-md-4  col-12">
                         <div className="form-group mb-3">
                           <label htmlFor="locality" className="form-label">
                             Locality
@@ -629,7 +744,7 @@ const EditUserDetails = () => {
                         </div>
                       </div>
                       {/* State */}
-                      <div className="col-xl-4 col-lg-4 col-md-6  col-12">
+                      <div className="col-xl-3 col-lg-3 col-md-4  col-12">
                         <div className="form-group mb-3">
                           <label className="form-label">State</label>
                           <p className={`${lableVisibility} testing`}>
@@ -659,7 +774,7 @@ const EditUserDetails = () => {
                         </div>
                       </div>
                       {/* City */}
-                      <div className="col-xl-4 col-lg-4 col-md-6 col-12">
+                      <div className="col-xl-3 col-lg-3 col-md-4 col-12">
                         <div className="form-group mb-3">
                           <label htmlFor="city" className="form-label">
                             City
@@ -689,7 +804,7 @@ const EditUserDetails = () => {
                         </div>
                       </div>
                       {/* Zip Code */}
-                      <div className="col-xl-4 col-lg-4 col-md-6 col-12">
+                      <div className="col-xl-3 col-lg-3 col-md-4 col-12">
                         <div className="form-group mb-3">
                           <label htmlFor="zip" className="form-label">
                             Zip Code

@@ -37,6 +37,7 @@ const AdminHomePage = () => {
   const [usersCountLoading, setUsersCountLoading] = useState(false);
   const { propertyLabels, typeWiseCount } = typeWisePropertyDetails;
 
+  // set Total Count Of Users
   const setTotalCountOfUsers = async (authHeaders) => {
     // Get and store the count of both types of Users i.e. Individual Users and Organizational Users.
 
@@ -56,13 +57,16 @@ const AdminHomePage = () => {
         countOfBankUsers: bankUsersCount,
       });
     } catch (error) {
-      console.log(error);
     }
     if (roleId === 6) {
+      let initial_page_number = 1;
+      let initial_status = 0;
+      let per_page_records_number = 5;
+
       const dataToPost = {
-        status: 0,
-        page_number: 1,
-        number_of_records: 5,
+        status: initial_status,
+        page_number: initial_page_number,
+        number_of_records: per_page_records_number,
         bank_id: bank_id
       }
       try {
@@ -76,7 +80,6 @@ const AdminHomePage = () => {
           });
 
       } catch (error) {
-        console.log(error);
       }
     }
     setUsersCountLoading(false);
@@ -85,7 +88,7 @@ const AdminHomePage = () => {
   const [chart1Type, setChart1Type] = useState("pie");
   const [chart2Type, setChart2Type] = useState("bar");
   const [chart1TitleVisible, setChart1TitleVisible] = useState(true);
-  const [chart2TitleVisible, setChart2TitleVisible] = useState(true);
+  const [chart2TitleVisible, setChart2TitleVisible] = useState(false);
 
   // chart selection 1
   const onChart1Selection = (e) => {
@@ -119,7 +122,7 @@ const AdminHomePage = () => {
       {
         label: "Count",
         data: [countOfIndividualUsers, countOfOrgUsers, countOfBankUsers],
-        backgroundColor: ["rgb(13, 110, 253)", "orange", "green"],
+        backgroundColor: ["#0a4cae", "orange", "green"],
         borderColor: ["black"],
         borderWidth: 1,
       },
@@ -132,7 +135,7 @@ const AdminHomePage = () => {
       {
         label: "Properties",
         data: typeWiseCount,
-        backgroundColor: ["rgb(13, 110, 253)", "orange", "green"],
+        backgroundColor: ["#0a4cae", "orange", "green"],
         borderColor: ["black"],
         borderWidth: 1,
       },
@@ -150,6 +153,9 @@ const AdminHomePage = () => {
       title: {
         display: true,
         text: "Users",
+        font: {
+          size: 18,
+        },
       },
       legend: {
         display: chart1TitleVisible,
@@ -163,12 +169,20 @@ const AdminHomePage = () => {
       title: {
         display: true,
         text: "Properties",
+        font: {
+          size: 20,
+          weight: 'bold',
+          family: 'Arial, sans-serif',
+        },
+        padding: 20,
       },
       legend: {
         display: chart2TitleVisible,
       },
+
     },
   };
+
   // get Property Count From Api
   const getPropertyCountFromApi = async (authHeaders) => {
     try {
@@ -188,7 +202,6 @@ const AdminHomePage = () => {
       });
 
       setTotalPropertiesCount(totalCount);
-
       setTypeWisePropertyDetails({
         propertyTypesCount: arr.length,
         propertyLabels: labels,
@@ -219,6 +232,7 @@ const AdminHomePage = () => {
         }
       });
     }
+    // eslint-disable-next-line
   }, []);
 
   return (
@@ -227,7 +241,7 @@ const AdminHomePage = () => {
         <div className="row min-100vh position-relative">
           <AdminSideBar />
           <div className="col-xl-10 col-lg-9 col-md-8">
-            <div className="container-fluid my-4 admin-home-wrapper">
+            <div className="container-fluid mt-4 my-5 admin-home-wrapper">
               <div className="row">
                 {/* Properties */}
                 <div className="col-xl-3 col-md-6">
@@ -235,20 +249,19 @@ const AdminHomePage = () => {
                     to={`${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"}/property/properties`}
                     className="card text-decoration-none admin-top-card"
                   >
-                    <div className="container-fluid p-4">
-                      <div className="row justify-content-center">
-                        <div className="col-12 col-5 text-center fw-bold text-white hover-color-secondary fs-5">
-                          <div>
-                            <i className="bi bi-buildings-fill text-white hover-color-secondary icon fs-1 me-4"></i>
+                    <div className="card-body d-flex align-items-center">
+                      <div className="d-flex align-items-center justify-content-between w-100">
+                        <div className="icon-box icon-box-lg rounded-circle text-center">
+                          <i className="bi bi-buildings-fill text-black hover-color-secondary icon fs-2"></i>
+                        </div>
+                        <div className="total-projects ms-3">
+                          <h3 className="heading-text-primary count text-center">
                             {propertyCountLoading ? (
-                              <span className="fs-2 spinner spinner-border"></span>
-                            ) : (
-                              <span className="fs-1" id="propertyCount">
-                                {totalPropertiesCount}
-                              </span>
+                              <span className="fs-4 spinner spinner-border"></span>
+                            ) : (<span className="user-card-count">{totalPropertiesCount}</span>
                             )}
-                          </div>
-                          <span>Properties</span>
+                          </h3>
+                          <span className="user-count-card-title">Total Properties</span>
                         </div>
                       </div>
                     </div>
@@ -259,42 +272,48 @@ const AdminHomePage = () => {
                   <NavLink
                     to={`${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"
                       }/property/upload-properties`}
-                    className="card admin-top-card text-decoration-none"
+                    className="card admin-top-card text-decoration-none "
                   >
-                    <div className="container-fluid">
-                      <div className="row justify-content-center">
-                        <div className="col-12 text-center text-white hover-color-secondary">
-                          <div>
-                            <i className="bi bi-upload text-white hover-color-secondary icon fs-1"></i>
-                          </div>
-                          <h5 className="fw-bold">Upload Bulk Properties</h5>
+                    <div className="card-body d-flex align-items-center">
+                      <div className="d-flex align-items-center justify-content-between w-100">
+                        <div className="icon-box icon-box-lg rounded-circle text-center">
+                          <i className="bi bi-upload text-black hover-color-secondary icon fs-2"></i>
+                        </div>
+                        <div className="total-projects ms-3 text-center">
+                          <span className="user-count-card-title">Upload Bulk Properties</span>
                         </div>
                       </div>
                     </div>
                   </NavLink>
                 </div>
+
                 {!isBank ? (
                   <>
                     {/* Individual Users */}
                     <div className="col-xl-2 col-md-4 mt-4 mt-xl-0">
                       <NavLink
                         to="/admin/users/individual-users"
-                        className="card admin-top-card text-decoration-none"
+                        className="card admin-top-card text-decoration-none "
                       >
-                        <div className="container-fluid">
-                          <div className="row justify-content-center">
-                            <div className="col-12 col-5 text-center fw-bold text-white hover-color-secondary fs-5">
-                              <div>
-                                <i className="bi bi-person-circle text-white hover-color-secondary icon fs-1 me-4"></i>
-                                {usersCountLoading ? (
-                                  <span className="fs-2 spinner spinner-border"></span>
-                                ) : (
-                                  <span className="fs-1" id="individualCount">
-                                    {individualUsersCount}
-                                  </span>
-                                )}
+                        <div className="card-body">
+                          <div className="d-flex justify-content-between text-center flex-column align-items-center ">
+                            <div className=" d-flex w-100 justify-content-evenly align-items-center mb-2">
+                              <div className="user-icon-box icon-box-lg rounded-circle text-center">
+
+                                <i className="bi bi-person-circle text-black hover-color-secondary icon col-6"></i>
                               </div>
-                              <span>Individual Users</span>
+
+                              <h4 className="m-0 col-4 heading-text-primary ">
+                                {usersCountLoading ? (
+                                  <span className="spinner fs-3 spinner-border"></span>
+                                ) : (<span className="user-card-count" >
+                                  {individualUsersCount}
+                                </span>
+                                )}</h4>
+
+                            </div>
+                            <div>
+                              <span className="user-count-card-title">Individual Users</span>
                             </div>
                           </div>
                         </div>
@@ -304,25 +323,24 @@ const AdminHomePage = () => {
                     <div className="col-xl-2 col-md-4 mt-4 mt-xl-0">
                       <NavLink
                         to="/admin/users/organizational-users"
-                        className="card admin-top-card text-decoration-none"
+                        className="card admin-top-card text-decoration-none "
                       >
-                        <div className="container-fluid">
-                          <div className="row justify-content-center">
-                            <div className="col-12 col-5 text-center fw-bold text-white hover-color-secondary fs-5">
-                              <div>
-                                <i className="bi bi-laptop-fill text-white hover-color-secondary icon fs-1 me-4"></i>
-                                {usersCountLoading ? (
-                                  <span className="fs-2 spinner spinner-border"></span>
-                                ) : (
-                                  <span
-                                    className="fs-1"
-                                    id="organizationalCount"
-                                  >
-                                    {organizationalUsersCount}
-                                  </span>
-                                )}
+                        <div className="card-body">
+                          <div className="d-flex justify-content-between text-center flex-column align-items-center ">
+                            <div className=" d-flex w-100 justify-content-evenly align-items-center mb-2">
+                              <div className="user-icon-box icon-box-lg rounded-circle text-center">
+                                <i className="bi bi-building-fill  text-black hover-color-secondary icon "></i>
                               </div>
-                              <span>Organizational Users</span>
+                              <h5 className="m-0 heading-text-primary">
+                                {usersCountLoading ? (
+                                  <span className="spinner fs-3 spinner-border"></span>
+                                ) : (<span className="user-card-count" >
+                                  {organizationalUsersCount}
+                                </span>
+                                )}</h5>
+                            </div>
+                            <div>
+                              <span className="user-count-card-title" >Organizational Users</span>
                             </div>
                           </div>
                         </div>
@@ -332,25 +350,24 @@ const AdminHomePage = () => {
                     <div className="col-xl-2 col-md-4 mt-4 mt-xl-0">
                       <NavLink
                         to="/admin/users/bank-users"
-                        className="card admin-top-card text-decoration-none"
+                        className="card admin-top-card text-decoration-none "
                       >
-                        <div className="container-fluid">
-                          <div className="row justify-content-center">
-                            <div className="col-12 col-5 text-center fw-bold text-white hover-color-secondary fs-5">
-                              <div>
-                                <i className="bi bi-laptop-fill text-white hover-color-secondary icon fs-1 me-4"></i>
-                                {usersCountLoading ? (
-                                  <span className="fs-2 spinner spinner-border"></span>
-                                ) : (
-                                  <span
-                                    className="fs-1"
-                                    id="bankCount"
-                                  >
-                                    {bankUsersCount}
-                                  </span>
-                                )}
+                        <div className="card-body">
+                          <div className="d-flex justify-content-between text-center flex-column align-items-center ">
+                            <div className=" d-flex w-100 justify-content-evenly align-items-center mb-2">
+                              <div className="user-icon-box icon-box-lg rounded-circle text-center">
+                                <i className="bi bi-bank text-black hover-color-secondary icon "></i>
                               </div>
-                              <span>Bank Admin Users</span>
+                              <h5 className="m-0 heading-text-primary">
+                                {usersCountLoading ? (
+                                  <span className="spinner fs-3 spinner-border"></span>
+                                ) : (<span className="user-card-count">
+                                  {bankUsersCount}
+                                </span>
+                                )}</h5>
+                            </div>
+                            <div>
+                              <span className="user-count-card-title">Bank Admin Users</span>
                             </div>
                           </div>
                         </div>
@@ -370,23 +387,22 @@ const AdminHomePage = () => {
                         }
                         className="card admin-top-card cursor-pointer"
                       >
-                        <div className="container-fluid">
-                          <div className="row justify-content-center">
-                            <div className="col-12 col-5 text-center fw-bold text-white hover-color-secondary fs-5">
-                              <div>
-                                <i className="bi bi-laptop-fill text-white hover-color-secondary icon fs-1 me-4"></i>
-                                {usersCountLoading ? (
-                                  <span className="fs-2 spinner spinner-border"></span>
-                                ) : (
-                                  <span
-                                    className="fs-1"
-                                    id="bankCount"
-                                  >
-                                    {bankBranchUsersCount}
-                                  </span>
-                                )}
+                        <div className="card-body">
+                          <div className="d-flex justify-content-between text-center flex-column align-items-center ">
+                            <div className=" d-flex w-100 justify-content-evenly align-items-center mb-2">
+                              <div className="user-icon-box icon-box-lg rounded-circle text-center">
+                                <i className="bi bi-bank text-black hover-color-secondary icon "></i>
                               </div>
-                              <span>Branch Users</span>
+                              <h5 className="m-0 heading-text-primary">
+                                {usersCountLoading ? (
+                                  <span className="spinner fs-3 spinner-border"></span>
+                                ) : (<span className="user-card-count">
+                                  {bankBranchUsersCount}
+                                </span>
+                                )}</h5>
+                            </div>
+                            <div>
+                              <span className="user-count-card-title">Branch Users</span>
                             </div>
                           </div>
                         </div>
@@ -399,11 +415,13 @@ const AdminHomePage = () => {
               {!isBank ? (
                 <>
                   <div className="row">
+                    {/* Chart 1 View  */}
                     <div className="col-xl-6">
                       <div
                         className="container-fluid shadow"
                         style={{ border: "1px solid var(--primary-color)" }}
                       >
+
                         <div className="row chart-wrapper position-relative bg-light">
                           <div className="h-100 w-100 canvas-wrapper d-flex justify-content-center position-absolute p-4">
                             <Pie
@@ -426,9 +444,10 @@ const AdminHomePage = () => {
                             ></Doughnut>
                           </div>
                         </div>
+
                         <div className="row p-2 ">
                           <div className="col-md-3">
-                            <span className="common-btn-font text-primary">
+                            <span className="common-btn-font heading-text-primary">
                               Chart View
                             </span>
                           </div>
@@ -489,6 +508,7 @@ const AdminHomePage = () => {
                         </div>
                       </div>
                     </div>
+                    {/* Chart 2 View  */}
                     <div className="col-xl-6 mt-xl-0 mt-4">
                       <div
                         className="container-fluid shadow"
@@ -513,7 +533,7 @@ const AdminHomePage = () => {
                         </div>
                         <div className="row p-2 ">
                           <div className="col-md-3">
-                            <span className="common-btn-font text-primary">
+                            <span className="common-btn-font heading-text-primary">
                               Chart View
                             </span>
                           </div>
@@ -561,6 +581,7 @@ const AdminHomePage = () => {
               ) : (
                 <>
                   <div className="col-xl-6 mt-xl-0 mt-4">
+                    {/* Chart View */}
                     <div
                       className="container-fluid shadow"
                       style={{ border: "1px solid var(--primary-color)" }}
@@ -584,7 +605,7 @@ const AdminHomePage = () => {
                       </div>
                       <div className="row p-2 ">
                         <div className="col-md-3">
-                          <span className="common-btn-font text-primary">
+                          <span className="common-btn-font heading-text-primary">
                             Chart View
                           </span>
                         </div>

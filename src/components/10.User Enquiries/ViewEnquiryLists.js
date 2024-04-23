@@ -1,7 +1,6 @@
 import axios from "axios";
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import Layout from "../1.CommonLayout/Layout";
-import { useLocation } from "react-router-dom";
 import CommonSpinner from "../../CommonSpinner";
 import { transformDateFormat } from "../../CommonFunctions";
 import { w3cwebsocket as WebSocket } from "websocket";
@@ -11,7 +10,6 @@ import "./TableStyle.css";
 
 let authHeader = "";
 let isBank = false;
-let userId = "";
 let enquiryPerPage = 5;
 
 // enquiry table headers
@@ -36,13 +34,12 @@ const createHeaders = (headers) => {
   }));
 };
 
-// const websocket = new WebSocket(websocketUrl);
+// View Enquiry Lists
 const ViewEnquiryLists = () => {
   const data = JSON.parse(localStorage.getItem("data"));
   if (data) {
     authHeader = { Authorization: data.loginToken };
     isBank = data.isBank;
-    userId = data.userId;
   }
 
   const [enquiryList, setEnquiryList] = useState([]);
@@ -92,9 +89,6 @@ const ViewEnquiryLists = () => {
         if (resFromApi.data) {
           setPageCount(totalPages);
         }
-
-
-        // console.log(resFromApi.data);
         setPageLoading(false);
       } else {
         setPageLoading(false);
@@ -120,7 +114,6 @@ const ViewEnquiryLists = () => {
         headers: authHeader,
       });
       if (normalUserResFromApi.data) {
-        // console.log(normalUserResFromApi);
         setNormalUserEnquiryList(normalUserResFromApi.data.Enquiries);
         let totalPages = Math.ceil(normalUserResFromApi.data.Getcount / enquiryPerPage);
         setPageCount(totalPages);
@@ -138,7 +131,6 @@ const ViewEnquiryLists = () => {
 
   // on category tab change
   const onCategoryChange = async (category) => {
-    console.log(category);
     setActiveCategory(category);
     setPageLoading(true);
     let dataToPost = {
@@ -151,22 +143,16 @@ const ViewEnquiryLists = () => {
         headers: authHeader,
       });
       let resData = resFromApi.data;
-      // console.log(resFromApi);
       if (resFromApi.data) {
-        console.log(resData);
         if (category === "Unread") {
           setUnreadEnquiryList(resData.Enquiries);
           let totalPages = Math.ceil(resFromApi.data.Getcount / enquiryPerPage);
           setPageCount(totalPages);
-          // setPageCount(resFromApi.data.Getcount);
-
         } else if (category === "All") {
           setEnquiryList(resData.Enquiries);
           let totalPages = Math.ceil(resFromApi.data.Getcount / enquiryPerPage);
           setPageCount(totalPages);
-          // setPageCount(resFromApi.data.Getcount);
         }
-        // console.log(resFromApi.data);
         setPageLoading(false);
       } else {
         setPageLoading(false);
@@ -174,7 +160,6 @@ const ViewEnquiryLists = () => {
     } catch (error) {
       setPageLoading(false);
     }
-
   }
 
   // sort type for date
@@ -229,13 +214,20 @@ const ViewEnquiryLists = () => {
     return formattedDate;
   };
 
+// type message function
+const typeMessageFunction =(e)=>{
+  const {value}=e.target;
+   setNewMessage(value);
+}
+
   // send chat Message
   const sendMessage = async (e) => {
     setSendReplyBtnLoading(true);
     e.preventDefault();
+    let enquiry_source= "email"
     let dataToPost = {
       property_id: propertyId,
-      enquiry_source: "email",
+      enquiry_source: enquiry_source,
       enquiry_comments: newMessage,
     };
 
@@ -255,28 +247,23 @@ const ViewEnquiryLists = () => {
           }
         );
         if (res.data.msg === 0) {
-          // onViewEnquiryClick(enquiryId);
           setNewMessage("");
           setSendReplyBtnLoading(false);
 
           if (socket && socket.readyState === WebSocket.OPEN) {
             const messageToSend = {
-              // User_id: String(userId),
               message_id: String(uuid()),
               message_type: "sam-user",
               msg: newMessage,
               reply_from: isBank ? 1 : 0,
               enquiry_log_date: new Date().toISOString(),
-              // property_id: propertyId,
               enquiry_id: enquiryId,
             };
             try {
               socket.send(JSON.stringify(messageToSend));
             } catch (error) {
-              console.error("Error sending message:", error);
             }
           } else {
-            console.log("WebSocket is not open.");
           }
         }
       } catch (error) {
@@ -291,7 +278,6 @@ const ViewEnquiryLists = () => {
   const handlePageClick = async (pageNumber) => {
     window.scrollTo(0, 0);
     let currentPage = pageNumber.selected + 1;
-    console.log(currentPage);
     const nextOrPrevPageEnquiryData = await fetchMoreEnquiry(currentPage);
     if (activeCategory === "Unread") {
       setUnreadEnquiryList(nextOrPrevPageEnquiryData.Enquiries);
@@ -299,7 +285,6 @@ const ViewEnquiryLists = () => {
       setEnquiryList(nextOrPrevPageEnquiryData.Enquiries);
       setPageCount(nextOrPrevPageEnquiryData.Getcount)
     }
-    console.log(nextOrPrevPageEnquiryData);
   };
 
   // Fetch more jobs on page click.
@@ -313,7 +298,6 @@ const ViewEnquiryLists = () => {
       searchAPI: `/sam/v1/property/auth/user/enquiry`
     };
     const res = await axios.post(apis.searchAPI, dataOfNextOrPrevPage, { headers: authHeader });
-    console.log(res);
     return res.data;
   };
 
@@ -325,14 +309,11 @@ const ViewEnquiryLists = () => {
     } else if (name === "search_category") {
       setEnquirySearchInputData({ ...enquirySearchInputData, search_category: value })
     }
-    console.log(name, value);
   }
 
   // search form submit
   const onSearchFormSubmit = async (e) => {
     e.preventDefault();
-
-    console.log(enquirySearchInputData);
     let dataToPost = {
       enquiry_category: "All_Filter",
       batch_size: enquiryPerPage,
@@ -346,11 +327,7 @@ const ViewEnquiryLists = () => {
       const resFromApi = await axios.post(`/sam/v1/property/auth/user/enquiry`, dataToPost, {
         headers: authHeader,
       });
-
-      // console.log(resFromApi);
       if (resFromApi.data) {
-        console.log(dataToPost);
-        console.log(resFromApi.data);
         setEnquiryList(resFromApi.data.Enquiries);
         setPageLoading(false);
       } else {
@@ -369,6 +346,7 @@ const ViewEnquiryLists = () => {
       modalBodyRef.current.scrollTop = modalBodyRef.current.scrollHeight;
     }
     return (() => setNewComingMessage(null))
+    // eslint-disable-next-line
   }, [messages]);
 
   // on click View Enquiry
@@ -387,7 +365,6 @@ const ViewEnquiryLists = () => {
         `/sam/v1/property/auth/user/enquiry/property/`, dataToPost,
         { headers: authHeader }
       );
-      console.log(res);
       if (res.data) {
         setMessages(res.data.EnquiryLogDetails);
         setPropertyId(res.data.EnquiryLogDetails[0].property_id);
@@ -395,13 +372,11 @@ const ViewEnquiryLists = () => {
         setIsMoreMassage(res.data.IsMoreEnquiryLog);
       }
     } catch (error) {
-      console.log(error);
     }
   };
 
   //on click view more button in modal fetch More Chat Message
   const fetchMoreChatMessage = async () => {
-
     setChatPageLoading(true);
     try {
       const dataToPost = {
@@ -413,11 +388,9 @@ const ViewEnquiryLists = () => {
         `/sam/v1/property/auth/user/enquiry/property/`, dataToPost,
         { headers: authHeader }
       );
-      // console.log(res);
       if (res.data) {
         let currentChatArray = res.data.EnquiryLogDetails;
         setMessages((msg) => [...currentChatArray, ...msg]);
-        // setPropertyId(res.data.EnquiryLogDetails[0].property_id);
         setIsMoreMassage(res.data.IsMoreEnquiryLog)
         setChatPageLoading(false);
         if (modalBodyRef.current) {
@@ -425,10 +398,8 @@ const ViewEnquiryLists = () => {
         }
       }
     } catch (error) {
-      console.log(error);
       setChatPageLoading(false);
     }
-
   }
 
   // on click view more chat if currentMassage batch change
@@ -436,12 +407,14 @@ const ViewEnquiryLists = () => {
     if (currentMassageBatch) {
       fetchMoreChatMessage();
     }
+    // eslint-disable-next-line
   }, [currentMassageBatch])
 
 
   useEffect(() => {
     getUserEnquiriesList();
     getNormalUserEnquiriesList();
+    setCurrentChatMassageSize(25);
     // table hight define
   }, []);
 
@@ -456,25 +429,19 @@ const ViewEnquiryLists = () => {
   useEffect(() => {
     if (socket) {
       socket.onopen = () => {
-        console.log("WebSocket connection opened");
       };
 
       socket.onclose = (event) => {
-        console.log("WebSocket connection closed:", event.code, event.reason);
       };
 
       socket.onmessage = (event) => {
         try {
           const receivedMessage = JSON.parse(event.data);
-          // console.log("received data", receivedMessage)
-          const { User_id, msg, message_type, enquiry_id } = receivedMessage;
-          // console.log("from en 1")
+          const { message_type } = receivedMessage;
           if (message_type === "sam-user") {
-            console.log("newMessage", receivedMessage)
             setNewComingMessage({ ...receivedMessage })
           }
         } catch (error) {
-          console.error("Error handling received message:", error);
         }
       };
     }
@@ -483,14 +450,12 @@ const ViewEnquiryLists = () => {
   // WebSocket connection for new coming message
   useEffect(() => {
     if (newComingMessage) {
-      console.log(newComingMessage);
       if (enquiryId === newComingMessage.enquiry_id) {
         let msgObj = {
           enquiry_comments: newComingMessage.msg,
           enquiry_log_date: newComingMessage.enquiry_log_date,
           reply_from: newComingMessage.reply_from,
         };
-        console.log(msgObj)
         setMessages((messages) => [...messages, msgObj]);
       }
 
@@ -516,6 +481,7 @@ const ViewEnquiryLists = () => {
         " "
       )}`;
     },
+    //eslint-disable-next-line
     [activeIndex, bankEnquiryTableColumns, minCellWidth]
   );
 
@@ -580,14 +546,10 @@ const ViewEnquiryLists = () => {
                             className="form-control w-100 rounded-0 search_input" />
                         </div>
                         <div className="input-field second-wrap">
-                          {/* <div className="input-select"> */}
-
                           <select className="form-select form-select-sm h-100 rounded-0" name="search_category" onChange={onSearchFormInputChange} aria-label="Default select example">
                             <option value="property_number" selected>Property Number</option>
                             <option value="username">User Name</option>
                           </select>
-                          {/* </div> */}
-
                         </div>
                         <div className="input-field third-wrap">
                           <button className="btn btn-primary h-100 rounded-0" type="submit">SEARCH</button>
@@ -695,9 +657,9 @@ const ViewEnquiryLists = () => {
                   ) : (
                     <>
                       <div className="enquiry-list-table-wrapper px-md-4" >
-                        <table className="table table-striped table-bordered text-center">
-                          <thead>
-                            <tr>
+                        <table className="table align-middle table-striped table-bordered mb-0 bg-white admin-users-table  text-center ">
+                          <thead className="bg-light">
+                            <tr className="table-heading-class">
                               <th scope="col">#</th>
                               <th scope="col">Property Number</th>
                               <th scope="col">Type</th>
@@ -711,19 +673,6 @@ const ViewEnquiryLists = () => {
                               </th>
                               <th scope="col">Action</th>
                             </tr>
-                            {/* <tr>
-                              {bankEnquiryTableColumns.map(({ ref, text }, i) => (
-                                <th ref={ref} key={text} className="">
-                                  <span>{text}</span>
-                                  <div
-                                    style={{ height: tableHeight }}
-                                    onMouseDown={() => mouseDown(i)}
-                                    className={`resize-handle ${activeIndex === i ? "active" : "idle"
-                                      }`}
-                                  />
-                                </th>
-                              ))}
-                            </tr> */}
                           </thead>
                           <tbody>
                             {enquiryList.map((enquiry, Index) => {
@@ -798,9 +747,9 @@ const ViewEnquiryLists = () => {
                 ) : (
                   <>
                     <div className="enquiry-list-table-wrapper px-md-4" >
-                      <table className="table table-striped table-bordered text-center">
-                        <thead>
-                          <tr>
+                      <table className="table align-middle table-striped table-bordered mb-0 bg-white admin-users-table  text-center ">
+                        <thead className="bg-light">
+                          <tr className="table-heading-class">
                             <th scope="col">#</th>
                             <th scope="col">Property Number</th>
                             <th scope="col">Type</th>
@@ -837,7 +786,7 @@ const ViewEnquiryLists = () => {
                                       onViewEnquiryClick(enquiry_id);
                                       setChatPersonOrBankName(enquiry_id, isBank);
                                     }}
-                                    className="btn btn-primary"
+                                    className="btn btn-primary viewEnquiryModalBtn"
                                     data-bs-toggle="modal"
                                     data-bs-target="#chatModal"
                                   >
@@ -889,8 +838,6 @@ const ViewEnquiryLists = () => {
                   data-bs-dismiss="modal"
                   aria-label="Close"
                   onClick={() => {
-                    // setConditionShouldCloseWebSocket(true);
-                    // console.log("enquiryid==>", enquiryId)
                     setCurrentMassageBatch(1);
                     setNewComingMessage(null);
                     setPropertyId(null);
@@ -967,7 +914,8 @@ const ViewEnquiryLists = () => {
                       className="form-control chatBox-chat-input"
                       placeholder="Type your message..."
                       value={newMessage}
-                      onChange={(e) => setNewMessage(e.target.value)}
+                      required
+                      onChange={typeMessageFunction}
                     />
                   </div>
                   <div className="col-xl-3 col-lg-4 col-md-5 mt-md-0 mt-3">

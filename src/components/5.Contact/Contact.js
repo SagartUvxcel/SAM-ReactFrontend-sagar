@@ -11,16 +11,22 @@ import {
 import axios from "axios";
 
 const Contact = () => {
+
+  const captchaRef = useRef();
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     message: "",
   });
+  const { name, email, message } = formData;
 
   const [captchaVerified, setCaptchaVerified] = useState(false);
   const [captchaErr, setCaptchaErr] = useState(false);
-  const captchaRef = useRef();
+  const [loading, setLoading] = useState(false);
+  const [emailError, setEmailError] = useState(false);
 
+  // on Captcha Submit
   const onCaptchaSubmit = (e) => {
     e.preventDefault();
     let user_captcha = captchaRef.current.value;
@@ -38,10 +44,7 @@ const Contact = () => {
     }
   };
 
-  const [loading, setLoading] = useState(false);
-  const [emailError, setEmailError] = useState(false);
-
-  const { name, email, message } = formData;
+  // // on Input change
   const onInputChange = (e) => {
     const { name, value } = e.target;
     if (name === "name") {
@@ -53,6 +56,7 @@ const Contact = () => {
     }
   };
 
+  // on Input Blur
   const onInputBlur = (e) => {
     const { name, value } = e.target;
     var emailFormat = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
@@ -65,11 +69,11 @@ const Contact = () => {
     }
   };
 
+  // on Form Submit
   const onFormSubmit = async (e) => {
     e.preventDefault();
     if (!emailError) {
       setLoading(true);
-      console.log(JSON.stringify(formData));
       try {
         await axios
           .post(
@@ -77,7 +81,6 @@ const Contact = () => {
             JSON.stringify(formData)
           )
           .then((res) => {
-            console.log(res);
             if (res.data.status === 0) {
               e.target.reset();
               toast.success("Message sent successfully");
@@ -95,6 +98,7 @@ const Contact = () => {
     }
   };
 
+  // load Captcha On Refresh
   const loadCaptchaOnRefresh = () => {
     loadCaptchaEnginge(6);
     const captchaWrapper =
@@ -132,6 +136,7 @@ const Contact = () => {
             </div>
           </div>
         </div>
+        {/* form */}
         <div className="container contact-form-wrapper position-relative py-4 py-md-0 min-100vh">
           <div className="row">
             <div className="col-xl-12">
@@ -142,12 +147,14 @@ const Contact = () => {
                 <div className="container-fluid">
                   <div className="row">
                     <div className="col-md-6">
+                      {/* Get In Touch */}
                       <div className="form-title mb-4">
                         <span>
                           <i className="bi bi-person-vcard fs-4 me-2"></i>
                         </span>
                         <span className="fw-bold fs-5"> Get In Touch</span>
                       </div>
+                      {/* Name */}
                       <div className="form-group mb-3">
                         <input
                           onChange={onInputChange}
@@ -158,6 +165,7 @@ const Contact = () => {
                           required
                         />
                       </div>
+                      {/* email */}
                       <div className="form-group mb-3">
                         <input
                           onChange={onInputChange}
@@ -169,13 +177,13 @@ const Contact = () => {
                           required
                         />
                         <span
-                          className={`text-danger ${
-                            emailError ? "" : "d-none"
-                          }`}
+                          className={`text-danger ${emailError ? "" : "d-none"
+                            }`}
                         >
                           Invalid email address
                         </span>
                       </div>
+                      {/* message */}
                       <div className="form-group mb-3">
                         <textarea
                           onChange={onInputChange}
@@ -188,11 +196,10 @@ const Contact = () => {
                           required
                         ></textarea>
                       </div>
-
+                      {/* captcha */}
                       <div
-                        className={`container ${
-                          captchaVerified ? "d-none" : ""
-                        }`}
+                        className={`container ${captchaVerified ? "d-none" : ""
+                          }`}
                       >
                         <div className="row">
                           <div
@@ -212,9 +219,8 @@ const Contact = () => {
                           <div className="col-xl-9 col-md-8 col-7 ps-0 mt-3">
                             <input
                               type="text"
-                              className={`form-control ${
-                                captchaErr ? "border-danger" : "border-primary"
-                              }`}
+                              className={`form-control ${captchaErr ? "border-danger" : "border-primary"
+                                }`}
                               ref={captchaRef}
                               placeholder="Enter captcha"
                             />
@@ -226,36 +232,34 @@ const Contact = () => {
                             Verify
                           </div>
                           <div
-                            className={`col-xl-9 ps-0 ${
-                              captchaErr ? "" : "d-none"
-                            }`}
+                            className={`col-xl-9 ps-0 ${captchaErr ? "" : "d-none"
+                              }`}
                           >
                             <span className="text-danger">Invalid Captcha</span>
                           </div>
                         </div>
                       </div>
-
+                      {/* Verified */}
                       <div
-                        className={`form-group mt-3 ${
-                          captchaVerified ? "" : "d-none"
-                        }`}
+                        className={`form-group mt-3 ${captchaVerified ? "" : "d-none"
+                          }`}
                       >
                         <button className="btn btn-outline-success disabled w-100">
                           Verified
                           <i className="bi bi-patch-check-fill ms-1"></i>
                         </button>
                       </div>
-
+                      {/* submit button */}
                       <button
                         type="submit"
                         className="btn btn-primary w-100 mt-3"
                         style={{ borderRadius: "0" }}
                         disabled={
                           name &&
-                          email &&
-                          message &&
-                          captchaVerified &&
-                          !loading
+                            email &&
+                            message &&
+                            captchaVerified &&
+                            !loading
                             ? false
                             : true
                         }
@@ -278,18 +282,19 @@ const Contact = () => {
                     <div className="col-md-1 d-md-flex d-none justify-content-center">
                       <div className="vr bg-secondary"></div>
                     </div>
+                    {/* contact-details */}
                     <div className="col-md-5 d-flex align-items-center mt-5 mt-md-0">
                       <div className="contact-details">
                         <p>
-                          <i className="pe-3 bi bi-envelope-fill text-primary"></i>
+                          <i className="pe-3 bi bi-envelope-fill heading-text-primary"></i>
                           example@mail.com
                         </p>
                         <p>
-                          <i className="pe-3 bi bi-telephone-fill text-primary"></i>
+                          <i className="pe-3 bi bi-telephone-fill heading-text-primary"></i>
                           464066935, 4567869394
                         </p>
                         <p>
-                          <i className="pe-3 bi bi-geo-alt-fill text-primary"></i>
+                          <i className="pe-3 bi bi-geo-alt-fill heading-text-primary"></i>
                           Example Address, Location
                         </p>
                       </div>

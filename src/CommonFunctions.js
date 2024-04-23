@@ -32,8 +32,7 @@ export const makeFirstPageActive = () => {
   if (allPageItems) {
     allPageItems.forEach((i) => {
       if (i.textContent === "1") {
-        i.click();
-        console.log("div is clicked", i.classList);
+        i.click(); 
       }
     });
   }

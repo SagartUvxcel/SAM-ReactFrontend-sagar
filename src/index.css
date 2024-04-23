@@ -1,3 +1,9 @@
+
+
+
+
+
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
@@ -17,23 +23,49 @@ code {
 }
 
 :root {
-  --bg-gradient-blue: linear-gradient(
-    0deg,
-    rgba(2, 48, 251) 0%,
-    rgb(0, 191, 255) 100%
-  );
+  --bg-gradient-blue: linear-gradient(0deg, #063484 0%, rgb(4 122 203) 100%);
   --bg-gradient-orange: linear-gradient(
     0deg,
     rgb(251, 97, 2) 0%,
     rgb(255, 174, 0) 100%
   );
-  --navbar-bg: linear-gradient(0deg, rgb(2, 77, 251) 0%, rgb(0, 157, 255) 100%);
-  --primary-color: rgb(13, 110, 253);
+  --navbar-bg: linear-gradient(0deg, #063484 0%, rgb(4 134 215) 100%);
+  --primary-color: #063484;
+  --gray-color: rgba(
+    var(--bs-secondary-rgb),
+    var(--bs-text-opacity)
+  ) !important;
   --secondary-color: orange;
-  --primary-color-hover: #0a58ca;
+  --primary-color-hover: #063484;
+  --bs-btn-bg-color: #063484;
+  --bs-btn-link-color: #0a4cae;
+  --bs-input-border-color: #0645b2;
+  --bs-box-bg-color: rgb(4 115 196) !important;
 }
+
+input[type="date"]:in-range::-webkit-datetime-edit-year-field,
+input[type="date"]:in-range::-webkit-datetime-edit-month-field,
+input[type="date"]:in-range::-webkit-datetime-edit-day-field,
+input[type="date"]:in-range::-webkit-datetime-edit-text {
+  color: transparent !important;
+  display: none !important;
+}
+
+.bg-box-primary {
+  background-color: var(--bs-box-bg-color) !important;
+  border-color: var(--bs-box-bg-color) !important;
+}
+
+.heading-text-primary {
+  color: var(--primary-color) !important;
+}
+
+.disabled {
+  cursor: not-allowed !important;
+}
+
 .all-page-heading-color {
-color: var(--primary-color) !important;
+  color: var(--primary-color) !important;
 }
 
 .rotate-180deg {
@@ -68,7 +100,30 @@ color: var(--primary-color) !important;
 .loader-color {
   color: var(--primary-color) !important;
 }
-/* Common css */
+
+/* Common css  start*/
+
+.btn-primary {
+  background-color: var(--bs-btn-bg-color) !important;
+}
+
+.form-control:focus,
+.border-primary {
+  border-color: var(--bs-input-border-color) !important;
+}
+
+a {
+  color: var(--bs-btn-link-color) !important;
+}
+
+.enquiry-section .btn {
+  border: 1px solid var(--primary-color) !important;
+}
+
+.enquiry-section .btn:hover {
+  color: var(--secondary-color) !important;
+  background-color: var(--bs-btn-link-color) !important;
+}
 
 .navbar-nav .nav-link.active,
 .navbar-nav .nav-link.show {
@@ -99,6 +154,169 @@ small {
 .dropdown-item {
   cursor: pointer !important;
 }
+
+.custom-class-form-div {
+  position: relative !important;
+}
+
+.custom-class-form-div .login-label {
+  padding-left: 3rem !important;
+}
+
+.custom-class-form-div .change-password-label, .custom-class-form-div .forgot-password-label, .custom-class-form-div .set-password-label , .custom-class-form-div .security-question-label {
+  padding-left: 0.8rem !important;
+}
+
+.custom-class-form-div > label {
+  color: #9e9e9e;
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 1rem;
+  cursor: text;
+  transition: transform 0.2s ease-out, color 0.2s ease-out;
+  transform-origin: 0% 100%;
+  text-align: initial;
+  transform: translateY(5px);
+  padding-left: 1.5rem !important;
+}
+
+.modal-body .custom-class-form-div > label,
+.bank-registration-link-page .custom-class-form-div > label {
+  padding-left: 0.5rem !important;
+}
+
+.custom-class-form-div input:not([type]):focus:not([readonly]) + label,
+.custom-class-form-div
+  input[type="text"]:not(.browser-default):focus:not([readonly])
+  + label,
+.custom-class-form-div
+  input[type="password"]:not(.browser-default):focus:not([readonly])
+  + label,
+.custom-class-form-div
+  input[type="email"]:not(.browser-default):focus:not([readonly])
+  + label,
+.custom-class-form-div
+  input[type="url"]:not(.browser-default):focus:not([readonly])
+  + label,
+.custom-class-form-div
+  input[type="time"]:not(.browser-default):focus:not([readonly])
+  + label,
+.custom-class-form-div
+  input[type="date"]:not(.browser-default):focus:not([readonly])
+  + label,
+.custom-class-form-div
+  input[type="datetime"]:not(.browser-default):focus:not([readonly])
+  + label,
+.custom-class-form-div
+  input[type="datetime-local"]:not(.browser-default):focus:not([readonly])
+  + label,
+.custom-class-form-div
+  input[type="tel"]:not(.browser-default):focus:not([readonly])
+  + label,
+.custom-class-form-div
+  input[type="number"]:not(.browser-default):focus:not([readonly])
+  + label,
+.custom-class-form-div
+  input[type="search"]:not(.browser-default):focus:not([readonly])
+  + label,
+.custom-class-form-div
+  select:not(.browser-default):focus:not([readonly])
+  + label,
+textarea.materialize-textarea:focus:not([readonly]) + label {
+  color: var(--primary-color-hover);
+}
+
+.custom-input,
+.react-tel-input > input {
+  width: 100% !important;
+}
+
+.custom-input:focus {
+  border-color: var(--bs-input-border-color) !important;
+  /* border-color: 1px solid var(--bs-input-border-color) !important; */
+  outline: 0;
+}
+
+.custom-class-form-div > label:focus {
+  border-color: #80bdff;
+  outline: 0;
+  color: var(--bs-input-border-color) !important;
+}
+
+.inactive-account-wrapper .custom-input,
+.forgot-password-wrapper .custom-input {
+  border: 1px solid var(--bs-input-border-color) !important;
+}
+
+.login-wrapper .custom-class-form-div .active {
+  font-size: 0.8rem;
+  transform: translateY(-50%);
+  background-color: white;
+  margin-left: 2.6rem !important;
+  padding-left: 0.5rem !important;
+}
+
+.custom-class-form-div .active {
+  font-size: 0.8rem;
+  transform: translateY(-50%);
+  background-color: white;
+  margin-left: 1.2rem !important;
+  padding-left: 0.5rem !important;  
+  padding-right: 0.2rem !important;
+}
+
+
+.set-password-wrapper .custom-class-form-div .active,
+.change-password-wrapper .custom-class-form-div .active,
+.forgot-password-wrapper .custom-class-form-div .active,
+.security-question-wrapper .custom-class-form-div .active,
+.registration-address-modal .custom-class-form-div .active,
+.inactive-account-wrapper .custom-class-form-div .active,
+.bank-registration-link-page .custom-class-form-div .active {
+  font-size: 0.8rem;
+  transform: translateY(-50%);
+  margin-left: 0.7rem !important;
+  padding-left: 0.2rem !important;
+  padding-right: 0.2rem !important;
+}
+
+.custom-class-form-div.active ~ label:not(.label-icon) {
+  font-size: 0.8rem;
+  transform: translateY(-50%);
+}
+
+.react-tel-input .flag-dropdown {
+  border: none !important;
+  background-color: transparent !important;
+}
+
+.common-label-text-fontSize {
+  font-size: 14px !important;
+  color: var(--gray-color);
+}
+
+.search-box .fa-search {
+  right: 0.5rem !important;
+}
+
+.search-box .search-input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.header-wrapper a,
+.subscription-access-denied-page-btn a {
+  color: white !important;
+}
+
+.paragraph-label-text{
+  display: inline-block;
+  width: 50%;
+  color: #948f8f;
+  /* font-size: 12px; */
+}
+
+/* common css end  */
 
 /* scroll to top button */
 .scroll-top {
@@ -192,7 +410,10 @@ input:-webkit-autofill:active {
 }
 
 .navbar.navbar-lightBg {
-  background: #5857579a;
+  /* background: var(--primary-color);
+   */
+   /* background: #5857579a; */
+
 }
 
 .header-scrolled {
@@ -236,9 +457,9 @@ input:-webkit-autofill:active {
   transition: 0.3s ease-in-out;
 }
 
-.main-nav-dropdown-menu {
+/* .main-nav-dropdown-menu {
   border: 2px solid var(--primary-color-hover) !important;
-}
+} */
 
 /* Home */
 
@@ -247,10 +468,8 @@ input:-webkit-autofill:active {
   height: 50px;
   background-color: white;
   position: fixed;
-  /* top: 20%; */
   bottom: 13rem;
   right: 0px;
-  /* transform: translateY(-50%); */
   border: 1px solid var(--primary-color-hover);
   border-right: unset;
   transition: width 0.3s ease;
@@ -335,12 +554,16 @@ input:-webkit-autofill:active {
   background-color: #e0e0e0 !important; /* Bootstrap's table-striped even row color */
 }
 
-.table-heading-class th{
+.table-heading-class th {
   font-size: smaller !important;
 }
 
 .odd-row {
   background-color: #ffffff !important; /* Bootstrap's table-striped odd row color */
+}
+
+.home-wrapper .searchHistoryDiv .dropdown-toggle::after {
+  content: none !important;
 }
 
 .home-wrapper .searchHistoryDiv .dropdown:hover .historyDropdownMenu {
@@ -417,7 +640,6 @@ input:-webkit-autofill:active {
 
 .property-sort-box {
   width: fit-content !important;
-  /* position: fixed; */
   top: 4.5rem;
   right: 0;
   z-index: 1;
@@ -476,7 +698,7 @@ input:-webkit-autofill:active {
   width: 100%;
   height: auto;
   min-height: 360px;
-  background-image: url("images/bgblue.png");
+  background-color: #0482d3 !important; 
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -515,7 +737,7 @@ input:-webkit-autofill:active {
 .forgot-password-form-control,
 .inactive-account-form-control {
   border-radius: 0;
-  border-color: var(--primary-color) !important;
+  /* border-color: var(--primary-color) !important; */
   font-size: 12px;
   padding: 13px;
 }
@@ -534,11 +756,7 @@ input:-webkit-autofill:active {
 /* Footer */
 
 .footer-bg {
-  background: linear-gradient(
-    0deg,
-    rgba(2, 48, 251, 0.779) 0%,
-    rgb(0, 157, 255) 100%
-  ) !important;
+  background: linear-gradient(0deg, #063484 0%, rgb(4 134 215) 100%) !important;
 }
 
 .footer-wrapper {
@@ -581,19 +799,16 @@ input:-webkit-autofill:active {
 }
 
 .bank-registration-link-page .showBankForm {
-  /* border-top: unset !important;
-  border-left: unset !important;
-  border-right: unset !important;
-  border-radius: none ; */
   border: 2px solid var(--primary-color-hover) !important;
 }
+
 .bank-registration-link-page .otherBankName {
   border-top: none;
   border-left: none;
   border-right: none;
   border-bottom: 2px solid var(--primary-color);
 }
-.bank-registration-link-page .otherBankNameDiv  {
+.bank-registration-link-page .otherBankNameDiv {
   font-size: 0.9rem !important;
 }
 
@@ -606,6 +821,13 @@ input:-webkit-autofill:active {
   border: none;
   border-bottom: 2px solid var(--primary-color);
   outline-offset: 0px;
+}
+
+.registration-wrapper .individual-label:hover,
+.registration-wrapper .organization-label:hover {
+  cursor: pointer;
+  color: var(--secondary-color);
+  border-bottom-color: var(--secondary-color);
 }
 
 .registration-wrapper .form-wrapper-card {
@@ -682,15 +904,33 @@ input:-webkit-autofill:active {
   right: 1rem;
 }
 
+.login-page-input-icon {
+  padding: 0.375rem 0.75rem !important;
+  border-top-left-radius:0.375rem !important;
+  border-bottom-left-radius:0.375rem !important;
+  height: 100%;
+  border: 0px !important;
+}
+
+.login-input {
+  border: 1px solid var(--bs-input-border-color) !important;
+}
+
+.login-wrapper .login-input,
+.change-password-wrapper .change-input {
+  border-top-right-radius: 0.375rem !important;
+  border-bottom-right-radius: 0.375rem !important;
+}
+
 .bi {
   cursor: pointer;
 }
+/* /login end */
 
 /* Set Password */
 
-.set-password-wrapper .form-control,
 .admin-users-filter select,
-.security-question-wrapper .form-control {
+.admin-users-filter .search-input {
   border-top: none;
   border-left: none;
   border-right: none;
@@ -701,12 +941,14 @@ input:-webkit-autofill:active {
 .security-question-wrapper .security-question-box {
   height: fit-content !important;
 }
+
 .set-password-wrapper .modal .form-control {
-  /* border-top: none;
-  border-left: none;
-  border-right: none;*/
   border-radius: initial !important;
   padding: 0.2rem 0.4rem !important;
+}
+
+.security-question-wrapper .securityAnswerPadding {
+  margin-top: -0.4rem !important;
 }
 
 .set-password-wrapper .form-control:focus {
@@ -717,8 +959,8 @@ input:-webkit-autofill:active {
   position: absolute;
   right: 1rem;
   bottom: 0.5rem;
-  font-size: 21px;
-  color: rgba(128, 128, 128, 0.855);
+  font-size: 17px;
+  color: rgba(128, 128, 128, 0.77);
   cursor: pointer;
 }
 
@@ -730,6 +972,7 @@ input:-webkit-autofill:active {
   height: 100%;
   width: 100%;
 }
+/* set password end */
 
 /* Reset Password */
 
@@ -748,7 +991,7 @@ input:-webkit-autofill:active {
   right: 1rem;
   bottom: 0.21rem;
   font-size: 21px;
-  color: rgba(128, 128, 128, 0.855);
+  color: rgb(158 158 158);
   cursor: pointer;
 }
 
@@ -761,14 +1004,7 @@ input:-webkit-autofill:active {
   height: 100%;
   width: 100%;
 }
-
-.forgot-password .securityQuestionAnswer {
-  border-top: none;
-  border-left: none;
-  border-right: none;
-  border-radius: unset !important;
-  padding: 0.2rem 0.1rem !important;
-}
+/* reset password end */
 
 /* Verify Token */
 
@@ -777,7 +1013,7 @@ input:-webkit-autofill:active {
   width: 100%;
 }
 
-/* Edit Details */
+/* Edit Details  start*/
 
 .subscription-notification-container {
   position: fixed;
@@ -795,8 +1031,9 @@ input:-webkit-autofill:active {
   box-shadow: none !important;
   padding-left: 0 !important;
 }
+/* edit details end */
 
-/* Profile */
+/* Profile  start*/
 
 .profile-top-hr {
   height: 10px;
@@ -805,8 +1042,8 @@ input:-webkit-autofill:active {
 
 .profile-inner-card {
   color: white !important;
-  background-color: var(--primary-color-hover) !important;
-  border: 2px solid var(--primary-color-hover) !important;
+  background-color: var(--primary-color) !important;
+  border: 2px solid var(--primary-color) !important;
   transition: 0.3s ease-in-out;
 }
 
@@ -826,6 +1063,7 @@ input:-webkit-autofill:active {
 .profile-icon-wrapper i {
   transition: 0.2s ease-in-out;
 }
+/* profile end */
 
 /* Page Not Found */
 
@@ -858,12 +1096,13 @@ input:-webkit-autofill:active {
   min-height: 100vh;
   background-image: url("images/access-denied.svg");
   background-repeat: no-repeat;
-  background-position: center;
+  background-position: right;
   background-attachment: fixed;
   position: relative;
 }
+/* page not found and access denied end */
 
-/* Enquiry */
+/* Enquiry start*/
 
 .chatBox-modal-body {
   display: flex;
@@ -875,7 +1114,6 @@ input:-webkit-autofill:active {
 .enquiry-filter-row {
   border-bottom: 1px solid lightgray;
 }
-
 
 .chatBox-modal-header {
   background: linear-gradient(0deg, rgba(2, 48, 251) 0%, rgb(0, 191, 255) 100%);
@@ -963,6 +1201,12 @@ input:-webkit-autofill:active {
   border: 1px solid #dee2e6;
 }
 
+.viewEnquiryModalBtn {
+  font-size: 0.7rem !important;
+  --bs-btn-font-size: 0.7rem !important;
+}
+/* enquiry end */
+
 /* Admin  */
 
 /* Breadcrumb */
@@ -982,6 +1226,19 @@ input:-webkit-autofill:active {
 .admin-sidebar {
   background: var(--bg-gradient-blue);
   transition: 0.3s ease-in-out;
+}
+
+.admin-sidebar .collapse .card {
+  background: rgb(4 133 214) !important;
+  border-color: var(--bs-box-bg-color) !important;
+}
+
+.admin-sidebar a {
+  color: white !important;
+}
+
+.admin-sidebar .collapse .card a:hover {
+  color: var(--secondary-color) !important;
 }
 
 .sidebar-toggle-btn-sm {
@@ -1014,16 +1271,56 @@ input:-webkit-autofill:active {
 }
 
 .admin-top-card {
-  background: var(--secondary-color) !important;
+  border-color: var(--primary-color) !important;
   transition: 0.3s ease-in-out;
   height: 125px !important;
   display: flex;
   justify-content: center;
 }
 
+.admin-top-card:hover {
+  transition: 0.3s ease-in-out;
+  border-color: var(--secondary-color) !important;
+  background-color: var(--secondary-color) !important;
+  transform: scale(1.04);
+}
+.admin-top-card .icon-box.icon-box-lg {
+  height: 4.375rem;
+  width: 4.375rem;
+  line-height: 4.375rem;
+  background: rgba(255, 166, 0, 0.372);
+}
+
+.admin-top-card .user-icon-box.icon-box-lg {
+  height: 2.375rem;
+  width: 2.375rem;
+  line-height: 2.375rem;
+  background: rgba(255, 166, 0, 0.372);
+}
+
+.admin-top-card:hover .user-icon-box.icon-box-lg,
+.admin-top-card:hover .icon-box.icon-box-lg {
+  background: rgb(247, 246, 243);
+}
+
+.admin-top-card:hover .user-count-card-title,
+.admin-top-card:hover .user-card-count {
+  color: black !important;
+  font-weight: 600 !important;
+}
+
+.admin-top-card .user-count-card-title,
+.admin-top-card .user-card-count {
+  font-weight: 500 !important;
+  font-size: 0.9rem !important;
+}
+
 .hover-color-secondary {
+  border-color: var(--secondary-color);
   transition: 0.3s ease-in-out;
 }
+/* admin home page end */
+
 
 /* View all properties */
 
@@ -1088,11 +1385,19 @@ input:-webkit-autofill:active {
   min-height: 100% !important;
 }
 
+/* view single property end */
+
 /* Bulk upload properties*/
 
 .sample-file-download-btn {
   border: 1px solid var(--secondary-color) !important;
   background-color: var(--secondary-color) !important;
+}
+
+.sample-file-download-btn:hover {
+  color: white !important;
+  border: 1px solid var(--primary-color) !important;
+  background-color: var(--primary-color) !important;
 }
 
 .csv-data-table {
@@ -1150,6 +1455,7 @@ input:-webkit-autofill:active {
 #header-bar {
   display: none !important;
 }
+/* bulk upload property end */
 
 /* Admin users */
 
@@ -1179,8 +1485,9 @@ input:-webkit-autofill:active {
   color: white !important;
 }
 
-.admin-users-table {
-  height: 200px;
+.admin-users-table td,
+.admin-users-table th {
+  font-size: 14px !important;
 }
 
 .confirm-delete-modal {
@@ -1231,11 +1538,13 @@ input:-webkit-autofill:active {
 .tooltip-arrow::before {
   border-top-color: var(--primary-color) !important;
 }
+/* admin user end */
 
-/* Subscription */
+/* Subscription start */
 
 .subscription-access-denied-page-btn .btn:hover {
   color: white !important;
+  background-color: var(--bs-input-border-color) !important;
 }
 
 .plan-select-btn {
@@ -1261,15 +1570,6 @@ input:-webkit-autofill:active {
 .subscription-wrapper .card {
   min-height: fit-content;
   border: none !important;
-}
-
-.subscription-wrapper .card .plan-header-wrapper {
-  /* display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center; */
-  /* height: 140px; */
-  /* border-color: unset !important; */
 }
 
 .subscription-wrapper .plan-card-1 .plan-header-wrapper.disabled {
@@ -1317,7 +1617,6 @@ input:-webkit-autofill:active {
 .subscription-wrapper .active-plans-details-card {
   max-width: 700px !important;
   box-shadow: 0 2px 3px rgba(56, 59, 61, 0.05);
-  /* background-color: #d9d4d4; */
   background-clip: border-box;
   border: 1px solid #f0f1f2;
   border-radius: 0.1875rem;
@@ -1341,6 +1640,8 @@ input:-webkit-autofill:active {
   transition: 0.3s ease-in-out;
   background: var(--secondary-color);
 }
+
+/* subscription end */
 
 /* Media Queries */
 
@@ -1538,7 +1839,7 @@ input:-webkit-autofill:active {
 
   a:hover,
   .address-label:hover {
-    color: var(--primary-color) !important;
+    color: var(--secondary-color) !important;
   }
 
   .btn-home:hover {
@@ -1566,7 +1867,6 @@ input:-webkit-autofill:active {
   .historyDropdownMenu {
     overflow: auto !important;
     width: auto !important;
-    /* height: 700px !important; */
   }
 
   .w-22 {
@@ -1733,4 +2033,10 @@ input:-webkit-autofill:active {
     bottom: 11px;
     right: 30px;
   }
+  
+
+.paragraph-label-text{ 
+  width: 100%;  
+  margin-bottom: .6rem;
+}
 }

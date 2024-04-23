@@ -9,7 +9,7 @@ const UserProtected = ({ children }) => {
   const checkIsAdmin = async () => {
     const data = JSON.parse(localStorage.getItem("data"));
     if (data) {
-      if (data.roleId === 3 && data.isBank===false || data.roleId === "" ) {
+      if ((data.roleId === 3 && data.isBank===false )|| (data.roleId === "") ) {
       } else {
         goTo("/access-denied");
         

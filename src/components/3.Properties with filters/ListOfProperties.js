@@ -17,7 +17,6 @@ const ListOfProperties = () => {
   const location = useLocation();
   const secretKey = "my_secret_key";
   const queryParams = new URLSearchParams(location.search);
-  // const dataFromSearchResultParams = location.state ? location.state.sensitiveData : null;
   const data = queryParams.get("data");
   const dataFromParams = JSON.parse(
     CryptoJS.AES.decrypt(data, secretKey).toString(CryptoJS.enc.Utf8)
@@ -28,9 +27,7 @@ const ListOfProperties = () => {
     isBank = localData.isBank;
   }
   const [sortText, setSortText] = useState("Relevance");
-  const [dataToPost, setDataToPost] = useState(dataFromParams);
   const [enquiryFormData, setEnquiryFormData] = useState({
-    // user_id: localData.userId ?? "",
     property_id: "",
     enquiry_source: "email",
     enquiry_comments: "",
@@ -41,13 +38,9 @@ const ListOfProperties = () => {
   const [searchFields, setSearchFields] = useState({
     states: "",
     cities: "",
-    // localities: "",
     assetCategory: "",
     banks: "",
   });
-
-  const { states, assetCategory, cities, banks } = searchFields;
-  // console.log(dataToPost);
 
   // It will fetch all states, banks, assets from api and will map those values to respective select fields.
   const getSearchDetails = async () => {
@@ -81,10 +74,10 @@ const ListOfProperties = () => {
     } catch (error) { }
   };
 
+  // viewCurrentProperty
   const viewCurrentProperty = async () => {
     delete dataFromParams.batch_number;
     delete dataFromParams.batch_size;
-    // console.log(dataFromParams);
     try {
       await axios
         .post(`/sam/v1/property/auth/view-properties`, dataFromParams, {
@@ -92,17 +85,16 @@ const ListOfProperties = () => {
         })
         .then((res) => {
           setSelectedPropertyResults(res.data);
-          console.log(res.data);
           localStorage.setItem(
             "defaultResultsOfProperties",
             JSON.stringify(res.data)
           );
         });
     } catch (error) {
-      console.log("there is an error", error);
     }
   };
 
+  // showSortedResults
   const showSortedResults = (e) => {
     window.scrollTo(0, 0);
     setSortText(e.target.textContent);
@@ -122,6 +114,7 @@ const ListOfProperties = () => {
     }
   };
 
+  // on Enquiry Fields Change
   const onEnquiryFieldsChange = (e) => {
     const { name, value } = e.target;
     if (name === "enquiry-comment") {
@@ -129,16 +122,15 @@ const ListOfProperties = () => {
     }
   };
 
+  // on Enquiry Form Submit
   const onEnquiryFormSubmit = async (e) => {
     e.preventDefault();
-    console.log(enquiryFormData);
     try {
       await axios
         .post(`/sam/v1/property/auth/property_enquiry`, enquiryFormData, {
           headers: authHeaders,
         })
         .then((res) => {
-          console.log(res, enquiryFormData);
           if (res.data.msg === 0) {
             toast.success("Message sent successfully");
           } else if (res.data.msg === 3) {
@@ -161,7 +153,6 @@ const ListOfProperties = () => {
   }, []);
 
   useEffect(() => {
-    // console.log(dataFromParams);
     changeActiveSortStyle(sortText);
   }, [sortText]);
 
@@ -178,6 +169,7 @@ const ListOfProperties = () => {
                   aria-expanded="false"
                   className="form-select"
                 >
+                  {/* Sort by */}
                   <div
                     value=""
                     style={{
@@ -197,11 +189,9 @@ const ListOfProperties = () => {
                   </div>
                 </div>
                 <ul
-                  // onClick={(e) => {
-                  //   e.stopPropagation();
-                  // }}
                   className="dropdown-menu shadow w-100"
                 >
+                  {/* Relevance */}
                   <li>
                     <span
                       data-name="relevance"
@@ -211,6 +201,7 @@ const ListOfProperties = () => {
                       Relevance
                     </span>
                   </li>
+                  {/* Price - Low to High */}
                   <li>
                     <span
                       data-name="price-low-to-high"
@@ -220,6 +211,7 @@ const ListOfProperties = () => {
                       Price - Low to High
                     </span>
                   </li>
+                  {/* Price - High to Low */}
                   <li>
                     <span
                       data-name="price-high-to-low"
@@ -229,6 +221,7 @@ const ListOfProperties = () => {
                       Price - High to Low
                     </span>
                   </li>
+                  {/* Most Recent */}
                   <li>
                     <span
                       data-name="most-recent"
@@ -250,10 +243,6 @@ const ListOfProperties = () => {
                 <div className="row">
                   {selectedPropertyResults === null ? (
                     <div className="py-5 text-center">
-                      {/* <h2 className="text-capitalize">No results found </h2>
-                      <span className="text-muted">
-                        Please try with other filters
-                      </span> */}
                       <>
                         <CommonSpinner
                           spinnerColor="primary"
@@ -284,15 +273,12 @@ const ListOfProperties = () => {
                       city_name,
                       zip,
                       state_name,
-                      is_stressed,
                       territory,
-                      distress_value,
                       title_clear_property,
-                      possession_of_the_property,
                     } = property;
                     return (
                       <div key={Index} className="p-0">
-                        <div className="p-0 fw-bold h4 text-primary">
+                        <div className="p-0 fw-bold h4 heading-text-primary">
                           Property: {Index + 1}
                         </div>
                         <div
@@ -385,7 +371,7 @@ const ListOfProperties = () => {
                               <div className="col-lg-8 col-md-7 pe-0">
                                 <div className="container-fluid">
                                   <div className="row">
-                                  {/* Property Type */}
+                                    {/* Property Type */}
                                     <div
                                       className={`col-xl-3 col-lg-4 col-6 mt-3 mt-md-0 ${type_name ? "" : "d-none"
                                         }`}

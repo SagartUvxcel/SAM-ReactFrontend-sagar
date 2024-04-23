@@ -6,8 +6,7 @@ import axios from "axios";
 
 let authHeaders = "";
 let isLogin = false;
-let planStatus = false;
-let planEndDate = "";
+let planStatus = false; 
 
 const UpgradeSubscriptionPage = () => {
   const navigate = useNavigate();
@@ -18,8 +17,7 @@ const UpgradeSubscriptionPage = () => {
   if (data) {
     authHeaders = { Authorization: data.loginToken };
     isLogin = data.isLoggedIn;
-    planStatus = updatedSubscriptionStatus ? updatedSubscriptionStatus : data.subscription_status;
-    planEndDate = data.subscription_end_date;
+    planStatus = updatedSubscriptionStatus ? updatedSubscriptionStatus : data.subscription_status; 
   }
 
   // subscription Plans
@@ -30,21 +28,14 @@ const UpgradeSubscriptionPage = () => {
     basicCardDisable: false,
     advancedCardDisable: false,
   });
-  const [disabledIndex, setDisabledIndex] = useState(-1);
-  const { basicCardDisable, advancedCardDisable } = planCardDisable;
-
-  const [selectedBillingCycle, setSelectedBillingCycle] = useState({
-    halfYearlyCycleSelected: true,
-    annualCycleSelected: false,
-  });
-  const { halfYearlyCycleSelected, annualCycleSelected } = selectedBillingCycle;
+  const [disabledIndex, setDisabledIndex] = useState(-1);  
 
   const [plansOnCard, setPlansOnCard] = useState({
     basicPlanOnCard: null,
     advancedPlanOnCard: null,
-  });
-  const { basicPlanOnCard, advancedPlanOnCard } = plansOnCard;
+  }); 
 
+  // handle Active Current Plan
   const handleActiveCurrentPlan = (cycle) => {
     let disablePlanBillingCycle;
     let disablePlanName;
@@ -78,8 +69,7 @@ const UpgradeSubscriptionPage = () => {
             }
           }
         }
-      } else {
-        console.log("not that cycle");
+      } else { 
         setPlanCardDisable({
           basicCardDisable: false,
           advancedCardDisable: false,
@@ -97,6 +87,7 @@ const UpgradeSubscriptionPage = () => {
       setSelectedPlan(selectedPlansDetails[0]);
       setDisabledIndex(planToDisable.plan_id)
     }
+    // eslint-disable-next-line
   }, [planToDisable, plans]);
 
   // get Subscription Plans Details from database
@@ -114,8 +105,7 @@ const UpgradeSubscriptionPage = () => {
             setPlans(plansValue);
           }
         });
-    } catch (error) {
-      console.error("Error fetching plans:", error);
+    } catch (error) { 
     }
   };
 
@@ -129,13 +119,11 @@ const UpgradeSubscriptionPage = () => {
         })
         .then((response) => {
           const activePlansRes = response.data;
-          if (activePlansRes) {
-            // console.log("Active plan:", response.data);
+          if (activePlansRes) { 
             setPlanToDisable(activePlansRes);
           }
         });
-    } catch (error) {
-      console.error("Error fetching plans:", error);
+    } catch (error) { 
     }
   };
 
@@ -159,65 +147,14 @@ const UpgradeSubscriptionPage = () => {
 
   // destructing
   const {
-    basicHalfYearly,
-    basicAnnual,
-    basicFreeTrial,
-    advancedHalfYearly,
-    advancedAnnual,
+    basicHalfYearly, 
+    advancedHalfYearly, 
   } = individualPlanDetails;
-
-  // on click function 6 month button
-  const onHalfYearlyBtnClick = () => {
-    setPlansOnCard({
-      basicPlanOnCard: basicHalfYearly,
-      advancedPlanOnCard: advancedHalfYearly,
-    });
-    setSelectedBillingCycle({
-      halfYearlyCycleSelected: true,
-      annualCycleSelected: false,
-    });
-    // setSelectedPlan(basicHalfYearly);
-    handleActiveCurrentPlan("half yearly");
-  };
-
-  // on click function annual button
-  const onAnnualBtnClick = () => {
-    setPlansOnCard({
-      basicPlanOnCard: basicAnnual,
-      advancedPlanOnCard: advancedAnnual,
-    });
-
-    setSelectedBillingCycle({
-      halfYearlyCycleSelected: false,
-      annualCycleSelected: true,
-    });
-    // setSelectedPlan(basicAnnual);
-    handleActiveCurrentPlan("annual");
-  };
-
-  // on click function basic card
-  const onBasicCardClick = () => {
-    if (halfYearlyCycleSelected) {
-      setSelectedPlan(basicHalfYearly);
-    } else if (annualCycleSelected) {
-      setSelectedPlan(basicAnnual);
-    }
-  };
-
-  // on click function annual card
-  const onAdvancedCardClick = () => {
-    if (halfYearlyCycleSelected) {
-      setSelectedPlan(advancedHalfYearly);
-    } else if (annualCycleSelected) {
-      setSelectedPlan(advancedAnnual);
-    }
-  };
-
+ 
   // passing subscription data plans details on payment page
   const onSubscribeClick = () => {
     const sensitiveData = selectedPlan;
-    navigate("/subscription/payment", { state: { sensitiveData } });
-    console.log(selectedPlan);
+    navigate("/subscription/payment", { state: { sensitiveData } }); 
   };
 
   // selected subscription table
@@ -255,15 +192,9 @@ const UpgradeSubscriptionPage = () => {
       handleActiveColumn(1);
     } else if (e.name === "Advanced plan") {
       handleActiveColumn(2);
-    } else {
-      console.log(e.name, i);
+    } else { 
     }
-  }
-
-  // default select card
-  // useEffect(() => {
-  //   setSelectedPlan(basicHalfYearly);
-  // }, [basicHalfYearly]);
+  } 
 
   useEffect(() => {
     setPlansOnCard({
@@ -273,16 +204,21 @@ const UpgradeSubscriptionPage = () => {
   }, [basicHalfYearly, advancedHalfYearly, plans]);
 
   // useEffect for axios
-  useEffect(() => {
-    // handleActiveColumn(1);
-
+  useEffect(() => { 
     if (isLogin) {
       getSubscriptionPlansDetails();
       if (planStatus) {
         getActivePlansDetails();
       }
     }
+    // eslint-disable-next-line
   }, [planStatus]);
+
+useEffect(() => {
+  setPlanCardDisable({...planCardDisable});
+  // eslint-disable-next-line
+}, [])
+
 
   return (
     <Layout>
@@ -434,8 +370,6 @@ const UpgradeSubscriptionPage = () => {
                                   setSelectedPlan(plan);
                                 }}
                               >
-
-
                                 <span
                                   className={`position-absolute top-0 start-100 translate-middle badge  bg-success ${selectedPlan.plan_id === plan.plan_id ? "" : "d-none"} `}
                                 >
@@ -443,8 +377,7 @@ const UpgradeSubscriptionPage = () => {
                                 </span>
                                 <h4 className={`plan-title mb-4 fw-bold text-uppercase ${plan.billing_cycle === "half yearly" ? "card-text-2" : ""} ${plan.billing_cycle === "annual" ? "card-text-3" : ""}`}>{plan.name.replace(' plan', '')}</h4>
                                 <h5 className="fw-bold plan-price">
-                                  <sup>&#8377;</sup> <sup>&#8377;</sup> <sup>&#8377;</sup> <sup>&#8377;</sup>
-                                  {/* {plan.price.replace('.00', '')}  */}
+                                  <sup>&#8377;</sup> <sup>&#8377;</sup> <sup>&#8377;</sup> <sup>&#8377;</sup> 
                                   <span className="fs-5"> / {plan.billing_cycle === "half yearly" ? "6 Months" : ""}{plan.billing_cycle === "annual" ? "Year" : ""}</span>
                                 </h5>
                               </button>
@@ -469,19 +402,7 @@ const UpgradeSubscriptionPage = () => {
                             : "Basic"}
                           <i className="bi bi-chevron-right"></i>
                         </button>
-                      </div>
-                      {/* <div className="col-md-6 mt-4 mt-md-0">
-                                                <button
-                                                    className="w-100 btn btn-outline-primary text-capitalize common-btn-font"
-                                                    onClick={onFreeTrialClick}
-                                                >
-                                                    Free Trial -{" "}
-                                                    {selectedPlan && selectedPlan.name === "Advanced plan"
-                                                        ? "Advance"
-                                                        : "Basic"}
-                                                    <i className="bi bi-chevron-right"></i>
-                                                </button>
-                                            </div> */}
+                      </div> 
                     </div>
                   </div>
                 </div>

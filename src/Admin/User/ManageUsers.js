@@ -5,7 +5,7 @@ import AdminSideBar from "../AdminSideBar";
 import CommonSpinner from "../../CommonSpinner";
 import Pagination from "../../Pagination";
 import { toast } from "react-toastify";
-import { NavLink, useNavigate, useLocation } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 import BreadCrumb from "../BreadCrumb";
 import {
   checkLoginSession,
@@ -16,6 +16,7 @@ const records_per_page = 5;
 let authHeader = "";
 let roleId = "";
 let bank_id = 0;
+let initial_page_number = 1;
 let defaultRoleText = "";
 let defaultRoleIds = [];
 let rolesToRemove = [];
@@ -39,7 +40,7 @@ const ManageUsers = ({ userType }) => {
     otherDetailsOfUser;
   const [categoryWiseUserDetails, setCategoryWiseUserDetails] = useState({});
   const [roles, setRoles] = useState([]);
-  const [accountStatus, setAccountStatus] = useState(0);
+  const [accountStatus, setAccountStatus] = useState(null);
   const [loggedInUserId, setLoggedInUserId] = useState(null);
   const [displayClassesOfMainSections, setDisplayClassesOfMainSections] =
     useState({
@@ -65,18 +66,19 @@ const ManageUsers = ({ userType }) => {
     useState(true);
   const confirmDeleteInputRef = useRef();
   const [currentPageNumber, setCurrentPageNumber] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
 
 
   // get All Users data
-  const getAllUsers = async () => {
+  const getAllUsers = async (searchInput = "") => {
     setLoading(true);
-
     if (dataFromBankAdminPage === null) {
       const dataToPost = {
         type: userType,
-        page_number: 1,
+        page_number: initial_page_number,
         status: accountStatus,
         number_of_records: records_per_page,
+        search_input: searchInput
       };
       try {
         await axios
@@ -107,13 +109,13 @@ const ManageUsers = ({ userType }) => {
         status: accountStatus,
         page_number: 1,
         number_of_records: records_per_page,
-        bank_id: dataFromBankAdminPage
+        bank_id: dataFromBankAdminPage,
+        search_input: searchInput
       }
       try {
         await axios.post(`/sam/v1/bank-registration/auth/bank/user-list`, dataToPost, { headers: authHeader })
           .then((res) => {
             setUsers(res.data.bank_users);
-            console.log(res.data.bank_users);
             setLoading(false);
           });
         await axios.get(`${url}/type-count`, { headers: authHeader })
@@ -179,7 +181,7 @@ const ManageUsers = ({ userType }) => {
   const onDeleteBtnClick = (userId, userName) => {
     setSelectedUserId(userId);
     setSelectedUserEmail(userName);
-    confirmDeleteInputRef.current.value = "";
+    getAllUsers();
     setConfirmDeleteUserBtnDisabled(true);
   };
 
@@ -204,8 +206,7 @@ const ManageUsers = ({ userType }) => {
         })
         .then((res) => {
           if (res.data.status === 0) {
-            toast.success(`User ${userName} deleted successfully`);
-            confirmDeleteInputRef.current.value = "";
+            toast.success(`User ${userName} ${roleId === 6 ? "deleted" : `${roleId === 1 && accountStatus === 1 ? "activated" : "deactivated"}`} successfully`);
             setConfirmDeleteUserBtnDisabled(true);
             setTotalUsersCount(totalUsersCount - 1);
             if (totalUsersCount - 1 !== 0) {
@@ -240,7 +241,6 @@ const ManageUsers = ({ userType }) => {
         `/sam/v1/user-registration/auth/${id}`,
         { headers: authHeader }
       );
-      console.log(currentUser.data);
       const typeOfUser = Object.keys(currentUser.data)[2];
       setCategoryWiseUserDetails(currentUser.data[typeOfUser]);
       setOtherDetailsOfUser(currentUser.data.user_details);
@@ -399,13 +399,24 @@ const ManageUsers = ({ userType }) => {
     }
   };
 
-  // const showBranchList=()=>
+
+  useEffect(() => {
+    let timeOut;
+    if (searchTerm && searchTerm.length > 0) {
+      timeOut = setTimeout(() => {
+        getAllUsers(searchTerm);
+      }, 800)
+    }
+    return () => clearTimeout(timeOut)
+    // eslint-disable-next-line
+  }, [searchTerm])
+
 
   useEffect(() => {
     if (accountStatus !== null) {
       getAllUsers();
     }
-
+    // eslint-disable-next-line
   }, [accountStatus]);
 
   useEffect(() => {
@@ -432,6 +443,7 @@ const ManageUsers = ({ userType }) => {
 
             {/* search filter */}
             <div className="row px-md-4 mt-4 admin-users-filter d-flex justify-content-between flex-wrap">
+              {/* set Account Status */}
               <div className=" col-md-5 px-4 px-md-0 ">
                 <div className="inner-box d-flex align-items-center col-12">
                   <label htmlFor="state " className="px-3 py-1">User Status:</label>
@@ -450,14 +462,18 @@ const ManageUsers = ({ userType }) => {
                   </div>
                 </div>
               </div>
-              <div className=" col-md-3   p-4 p-md-0">
-                <input
-                  type="search"
-                  placeholder="Search"
-                  className="form-control "
-                // value={searchTerm}
-                // onChange={onEnquirySearchInputChange}
-                />
+              {/* search */}
+              <div className=" col-md-3 p-4 p-md-0 ">
+                <div className="search-box d-flex align-items-center position-relative ps-4">
+                  <input
+                    type="search"
+                    placeholder="Search"
+                    className="form-control search-input"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                  <i className="fa fa-search text-secondary position-absolute "></i>
+                </div>
               </div>
             </div>
             <hr />
@@ -476,7 +492,6 @@ const ManageUsers = ({ userType }) => {
               ) : (
                 <>
                   <div className="table-wrapper table-bordered">
-                    {/* <table className="table table-bordered table-primary admin-users-table table-striped text-center "> */}
                     <table className="table align-middle table-striped table-bordered mb-0 bg-white admin-users-table  text-center ">
                       <thead className="bg-light">
                         <tr className="table-heading-class">
@@ -490,9 +505,8 @@ const ManageUsers = ({ userType }) => {
                       <tbody>
                         {users.map((user, Index) => {
                           const { email_address, user_id, } = user.user_details;
-                          const { bank_id, bank_name } = user;
+                          const { bank_id } = user;
                           if (user.bank_user) {
-                            const { BranchId, branch_name } = user.bank_user;
                           }
                           let currentRolesArray = user.role;
                           let roleIdArray = [];
@@ -543,6 +557,7 @@ const ManageUsers = ({ userType }) => {
                                     className="dropdown-menu"
                                     aria-labelledby="navbarDropdown"
                                   >
+                                    {/* View */}
                                     {arrayOfRoles.join(", ") !== "Bank Admin" ? <div
                                       className="dropdown-item"
                                       onClick={() => {
@@ -565,23 +580,27 @@ const ManageUsers = ({ userType }) => {
                                       <i className="bi bi-eye pe-1"></i> View Branch List
                                     </div>}
 
-                                    <div
-                                      data-bs-toggle="modal"
-                                      data-bs-target="#confirmDeleteUserModal"
-                                      className={`dropdown-item ${email_address === data.user
-                                        ? "d-none"
-                                        : ""
-                                        }`}
-                                      onClick={() => {
-                                        onDeleteBtnClick(
-                                          user_id,
-                                          email_address
-                                        );
-                                      }}
-                                    >
-                                      <i className="bi bi-trash pe-2"></i>
-                                      Delete
-                                    </div>
+                                    {/* Delete */}
+                                    {(roleId === 6 && accountStatus !== 1) || (roleId === 1) ?
+                                      <div
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#confirmDeleteUserModal"
+                                        className={`dropdown-item ${email_address === data.user
+                                          ? "d-none"
+                                          : ""
+                                          }`}
+                                        onClick={() => {
+                                          onDeleteBtnClick(
+                                            user_id,
+                                            email_address
+                                          );
+                                        }}
+                                      >
+                                        <i className="bi bi-trash pe-2"></i>
+                                        {roleId === 6 ? "Delete" : `${roleId === 1 && accountStatus === 1 ? "Activate" : "Deactivate"}`}
+
+                                      </div>
+                                      : ""}
                                   </ul>
                                 </li>
                               </td>
@@ -625,7 +644,7 @@ const ManageUsers = ({ userType }) => {
                       : `${categoryWiseUserDetails.branch_name}`}
                 </h2>
                 {/* details div */}
-                <div className="row justify-content-center">
+                <div className="row justify-content-center mb-5">
                   <div className="col-xl-10 col-lg-11">
                     <form
                       action=""
@@ -654,12 +673,12 @@ const ManageUsers = ({ userType }) => {
                             >
                               Role
                               {/* editDetails */}
-                              {roleId !== 6 ? <span className={`ms-4 ${classOnPageLoad}`}>
+                              <span className={`ms-4 ${classOnPageLoad}`}>
                                 {!defaultRoleIds.includes(1) && <i
                                   onClick={editDetails}
                                   className="bi bi-pencil-square"
                                 ></i>}
-                              </span> : ""}
+                              </span>
                               <span
                                 onClick={cancelEditing}
                                 className={`ms-4 ${classOnEditClick}`}
@@ -680,6 +699,9 @@ const ManageUsers = ({ userType }) => {
 
                             <div className={`form-group ${classOnEditClick}`}>
                               {roles && roles.map((data, Index) => {
+                                if (roleId === 6 && (data.id === 3 || data.id === 1)) {
+                                  return null;
+                                }
                                 defaultRoleIds.forEach((id) => {
                                   if (id === data.id) {
                                     const defaultRole = document.getElementById(
@@ -705,15 +727,12 @@ const ManageUsers = ({ userType }) => {
                                       id={data.id}
                                       value={data.id}
                                       disabled={
-                                        user_id === loggedInUserId &&
-                                          data.id === 1
-                                          ? true
-                                          : false
+                                        user_id === loggedInUserId
                                       }
                                     />
                                     <label
                                       className="form-check-label"
-                                      htmlFor="inlineCheckbox1"
+                                      htmlFor={`inlineCheckbox${data.id}`}
                                     >
                                       {data.role}
                                     </label>
@@ -789,7 +808,7 @@ const ManageUsers = ({ userType }) => {
                               <div className="form-group mb-3">
                                 <label
                                   className="form-label fw-bold"
-                                  htmlFor="aadhar_number"
+                                  htmlFor="aadhaar_number"
                                 >
                                   Aadhaar Number:
                                 </label>
@@ -978,6 +997,7 @@ const ManageUsers = ({ userType }) => {
           </div>
         </div>
       </div>
+
       {/* Modal */}
       <div
         className="modal fade"

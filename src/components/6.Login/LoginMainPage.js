@@ -8,9 +8,30 @@ import { toast } from "react-toastify";
 import { rootTitle } from "../../CommonFunctions";
 
 const LoginMainPage = () => {
+
+
   // It is used to navigate to particular route.
   const goTo = useNavigate();
   const [loading, setLoading] = useState(false);
+
+  // on input focus
+  const handleFocus = (e) => {
+    e.target.nextSibling.classList.add('active');
+  };
+
+  // on click on label
+  const handleClick = (inputId) => {
+    const input = document.getElementById(inputId);
+    input.focus();
+  };
+
+  // on input blur
+  const onInputBlur = async (e) => {
+    const { value } = e.target;
+    if (!value) {
+      e.target.nextSibling.classList.remove('active');
+    }
+  }
 
   // Password type and eye icon details.
   const [loginDetails, setLoginDetails] = useState({
@@ -29,7 +50,6 @@ const LoginMainPage = () => {
 
   const { email, password, eyeIcon, passwordType } = loginDetails;
   const { alertMsg, alertClr, alertVisible } = alertDetails;
-  // const { loading, loginBtnClassName, loginBtnTxt } = loaderDetails;
 
   const onUserNameAndPasswordChange = (e) => {
     const { name, value } = e.target;
@@ -68,9 +88,7 @@ const LoginMainPage = () => {
           JSON.stringify({ username: email, password: password })
         )
         .then((res) => {
-          // console.log(res);
           const { email, token, role_id, user_id, is_bank, subscription_end_date, subscription_status, bank_id, branch_id } = res.data.token;
-          console.log(res.data.token);
           let admin = null;
           let editor = null;
           let viewer = null;
@@ -111,7 +129,7 @@ const LoginMainPage = () => {
               })
             );
             setLoading(false);
-            is_bank === true ? goTo(`${bank_admin === 6 ? "/bank" : "/branch"}`) : goTo("/");
+            is_bank === true ? goTo(`${bank_admin === 6 ? "/bank" : "/branch"}`) : goTo(`${admin === 1 ? "/admin" : "/"}`);
           } else {
             setLoading(false);
             setAlertDetails({
@@ -122,7 +140,6 @@ const LoginMainPage = () => {
           }
         });
     } catch (error) {
-      console.log(error.response.data.error);
       if (error.response.data.error !== "Your account block for 24 hour" && error.response.data.error !== "Your account has been deactivated") {
         toast.warning(`Invalid credentials.${error.response.data.remaining_attempt} attempts remaining.`);
       }
@@ -182,38 +199,44 @@ const LoginMainPage = () => {
                     className="bi bi-x login-alert-close-btn close"
                   ></i>
                 </div>
-                <h6 className="fw-bold">Login with Email</h6>
+                <h6 className="common-label-text-fontSize text-secondary mb-4">Login with Email</h6>
                 <div className="row">
+                  {/* email */}
                   <div className="col-lg-12 mb-3">
-                    <div className="input-group">
-                      <span className="input-group-text" id="basic-addon1">
+                    <div className="input-group custom-class-form-div justify-content-end align-items-center h-100">
+                      <span className="input-group-text login-page-input-icon" id="basic-addon1">
                         <i className="bi bi-envelope-at-fill"></i>
                       </span>
                       <input
                         onChange={onUserNameAndPasswordChange}
+                        onBlur={onInputBlur}
+                        onFocus={handleFocus}
                         type="email"
                         name="email"
-                        className="form-control"
-                        id="exampleInputEmail1"
-                        placeholder="Email"
+                        id="email"
+                        className="form-control custom-input  login-input w-75"
                         required
                       />
+                      <label className="ps-0 login-label " htmlFor="email" onClick={() => handleClick('email')} >Email </label>
                     </div>
                   </div>
-                  <div className="col-lg-12 mb-3">
-                    <div className="input-group position-relative">
-                      <span className="input-group-text" id="basic-addon1">
+                  {/* password */}
+                  <div className="col-lg-12 mb-3 ">
+                    <div className="input-group position-relative custom-class-form-div h-100">
+                      <span className="input-group-text login-page-input-icon" id="basic-addon1">
                         <i className="bi bi-lock-fill"></i>
                       </span>
                       <input
                         onChange={onUserNameAndPasswordChange}
+                        onBlur={onInputBlur}
+                        onFocus={handleFocus}
                         name="password"
                         type={passwordType}
-                        className="form-control"
-                        id="exampleInputPassword1"
-                        placeholder="Password"
+                        className="form-control login-password-input  custom-input login-input w-75"
+                        id="password"
                         required
                       />
+                      <label className="px-0 ps-1 login-label " htmlFor="password" onClick={() => handleClick('password')} >Password </label>
                       <i
                         placeholder={eyeIcon}
                         onClick={changeEyeIcon1}
@@ -222,25 +245,7 @@ const LoginMainPage = () => {
                     </div>
                   </div>
                 </div>
-                {/* Login with OTP section */}
-                {/* <div className="row">
-                  <h6 className="text-center fw-bold">OR</h6>
-                  <h6 className="fw-bold mt-3 mt-md-0">Login with OTP</h6>
-                  <div className="col-md-7 col-xl-8 mb-3">
-                    <input
-                      type="Number"
-                      className="form-control"
-                      id="mobile"
-                      placeholder="Mobile Number"
-                    />
-                  </div>
-                  <div className="col-md-5 col-xl-4 text-md-end text-center">
-                    <button type="button" className="btn btn-primary">
-                      Send OTP
-                    </button>
-                  </div>
-                </div> */}
-                <hr />
+                {/*   Signing in.... */}
                 <div className="text-center my-3">
                   <button
                     disabled={loading ? true : false}
@@ -260,7 +265,7 @@ const LoginMainPage = () => {
                     )}
                   </button>
                 </div>
-
+                <hr />
                 <div className="d-flex justify-content-between">
                   <div className="">
                     <small className="fw-bold">

@@ -40,6 +40,8 @@ const ViewProperty = ({
   }
 
   let dataString = "";
+
+  // all file types
   let fileTypesObj = {
     pdf: "data:application/pdf;base64,",
     docx: "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,",
@@ -47,7 +49,6 @@ const ViewProperty = ({
     xls: "data:application/vnd.ms-excel;base64,",
     zip: "data:application/zip;base64,",
     rar: "data:application/x-rar-compressed;base64,",
-    // rar: "data:application/vnd.rar;base64,",
     jpg: "data:image/jpg;base64,",
     jpeg: "data:image/jpeg;base64,",
     png: "data:image/png;base64,",
@@ -72,10 +73,8 @@ const ViewProperty = ({
     is_available_for_sale,
     mortgage_date,
     is_sold,
-    is_stressed,
     property_number,
     property_id,
-    // status,
     society_name,
     plot_no,
     flat_no,
@@ -90,6 +89,7 @@ const ViewProperty = ({
   let combinedBinaryFormatOfChunks = "";
   const [fileName, setFileName] = useState();
 
+  // fetch Excel Files Data
   const fetchExcelFilesData = async (url) => {
     fetch(url)
       .then((response) => response.blob())
@@ -108,6 +108,7 @@ const ViewProperty = ({
       });
   };
 
+  // fetch Zip File Data
   const fetchZipFileData = async (url) => {
     const response = await fetch(url);
     const blob = await response.blob();
@@ -116,7 +117,7 @@ const ViewProperty = ({
     const extractedContent = Object.keys(zip.files).map((fileName) => fileName);
     setZipExtractedContent(extractedContent);
   };
-
+// get Chunks Of Documents
   const getChunksOfDocuments = async (documentId, propertyId) => {
     setDocumentLoading(true);
     let dataToPost = {
@@ -125,7 +126,6 @@ const ViewProperty = ({
       chunk_number: cnt,
       chunk_size: 1024 * 1204 * 25,
     };
-    // console.log(dataToPost);
     try {
       await axios
         .post(`/sam/v1/property/auth/property-docs`, dataToPost, {
@@ -134,7 +134,6 @@ const ViewProperty = ({
         .then(async (res) => {
           if (s1 !== res.data.data) {
             s1 += res.data.data;
-            // console.log(res.data.data);
             combinedBinaryFormatOfChunks += window.atob(res.data.data);
             if (res.data.last_chunk !== true) {
               cnt += 1;
@@ -144,7 +143,6 @@ const ViewProperty = ({
               let extensionArr = res.data.file_name.split(".");
               let fileExtension = extensionArr[extensionArr.length - 1];
               setFileExtension(fileExtension);
-              console.log("Extension : ", fileExtension);
               if (fileTypesObj[fileExtension]) {
                 dataString = fileTypesObj[fileExtension];
               } else {
@@ -170,6 +168,7 @@ const ViewProperty = ({
     }
   };
 
+  // show Hide Upload And Refresh Btn
   const showHideUploadAndRefreshBtn = () => {
     let documentContainer = document.querySelector(".document-container");
     let uploadRefresh = document.querySelectorAll(".upload-refresh");
@@ -196,6 +195,7 @@ const ViewProperty = ({
     }
   };
 
+  // delete Documents
   const deleteDocuments = async (arrayOfIds) => {
     let dataToPost = { doc_id: arrayOfIds };
     const url = `/sam/v1/property/auth/delete-property-document`;
@@ -222,6 +222,7 @@ const ViewProperty = ({
     showHideUploadAndRefreshBtn();
   }, [propertyDocumentsList]);
 
+  // is Image File
   const isImageFile = (type) => {
     if (type === "jpg" || type === "jpeg" || type === "png") {
       return true;
@@ -230,6 +231,7 @@ const ViewProperty = ({
     }
   };
 
+  // is Audio Video File
   const isAudioVideoFile = (type) => {
     if (type === "mp4" || type === "mp3" || type === "wav") {
       return true;
@@ -238,6 +240,7 @@ const ViewProperty = ({
     }
   };
 
+  // handle Check box Change
   const handleCheckboxChange = (documentId) => {
     const updatedDocuments = propertyDocumentsList.map((doc) =>
       doc.document_id === documentId ? { ...doc, checked: !doc.checked } : doc
@@ -246,6 +249,7 @@ const ViewProperty = ({
     setSelectAll(updatedDocuments.every((doc) => doc.checked));
   };
 
+  // toggle Select All
   const toggleSelectAll = () => {
     const updatedDocuments = propertyDocumentsList.map((doc) => ({
       ...doc,
@@ -255,6 +259,7 @@ const ViewProperty = ({
     setSelectAll(!selectAll);
   };
 
+  // on Delete Document Btn Click
   const onDeleteDocumentBtnClick = () => {
     // Implement your deletion logic here
     const selectedDocs = propertyDocumentsList.filter((doc) => doc.checked);
@@ -267,7 +272,7 @@ const ViewProperty = ({
   return (
     <>
       <section className="admin-edit-property mb-5">
-        <h3 className="fw-bold text-primary pb-2">{type_name}</h3>
+        <h3 className="fw-bold heading-text-primary pb-2">{type_name}</h3>
         <div className="container-fluid border p-3">
           <div className="row ">
             <div className="col-xl-5">
@@ -346,6 +351,7 @@ const ViewProperty = ({
               </div>
               <div className="container-fluid p-0">
                 <div className="row mt-3">
+                {/* Property Number */}
                   {property_number ? (
                     <div className="col-6">
                       <div className="card p-2 text-center border-primary border-2 border">
@@ -358,19 +364,6 @@ const ViewProperty = ({
                   ) : (
                     <></>
                   )}
-
-                  {/* {is_stressed ? (
-                    <div className="col-6">
-                      <div className="card p-2 text-center border-primary border-2 border">
-                        <small className="text-muted">Is stressed</small>
-                        <small className="common-btn-font text-capitalize">
-                          {is_stressed === "1" ? "Yes" : "No"}
-                        </small>
-                      </div>
-                    </div>
-                  ) : (
-                    <></>
-                  )} */}
                   <div className="col-12 mt-3">
                     <div className="card p-2 text-center border-primary border-2 border position-relative">
                       {propertyDocumentsList ? (
@@ -421,15 +414,15 @@ const ViewProperty = ({
                                     {propertyDocumentsList.some(
                                       (doc) => doc.checked
                                     ) && (
-                                      <button
-                                        onClick={onDeleteDocumentBtnClick}
-                                        className="btn btn-sm btn-danger ms-4"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#confirmDeleteDocumentModal"
-                                      >
-                                        Delete
-                                      </button>
-                                    )}
+                                        <button
+                                          onClick={onDeleteDocumentBtnClick}
+                                          className="btn btn-sm btn-danger ms-4"
+                                          data-bs-toggle="modal"
+                                          data-bs-target="#confirmDeleteDocumentModal"
+                                        >
+                                          Delete
+                                        </button>
+                                      )}
                                   </td>
                                 </tr>
                               </tbody>
@@ -506,9 +499,8 @@ const ViewProperty = ({
                             })
                           );
                         }}
-                        to={`${
-                          isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"
-                        }/property/single-property-documents-upload`}
+                        to={`${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"
+                          }/property/single-property-documents-upload`}
                         className="text-decoration-none mt-1 upload-refresh"
                       >
                         <i className="bi bi-upload me-2"></i>Upload documents
@@ -532,12 +524,12 @@ const ViewProperty = ({
               <div className="container-fluid">
                 <div className="row">
                   {flat_no ||
-                  plot_no ||
-                  society_name ||
-                  locality ||
-                  city_name ||
-                  state_name ||
-                  zip ? (
+                    plot_no ||
+                    society_name ||
+                    locality ||
+                    city_name ||
+                    state_name ||
+                    zip ? (
                     <div className="col-12 mb-2">
                       <span className="text-muted">
                         <i className="bi bi-geo-alt pe-2"></i>
@@ -696,9 +688,9 @@ const ViewProperty = ({
                     <></>
                   )}
                   {market_price ||
-                  ready_reckoner_price ||
-                  expected_price ||
-                  distress_value ? (
+                    ready_reckoner_price ||
+                    expected_price ||
+                    distress_value ? (
                     <>
                       <div className="col-12">
                         <hr className="my-md-2 my-3" />
@@ -746,17 +738,6 @@ const ViewProperty = ({
                   ) : (
                     <></>
                   )}
-                  {/* {distress_value ? (
-                    <div className="col-md-4 mt-2">
-                      <small className="text-muted">Distress Value</small>
-                      <h5 className="mt-1">
-                        <i className="bi bi-currency-rupee"></i>
-                        {(distress_value / 10000000).toFixed(2)} Cr.
-                      </h5>
-                    </div>
-                  ) : (
-                    <></>
-                  )} */}
                   {is_sold || is_available_for_sale ? (
                     <>
                       <div className="col-12">
@@ -772,16 +753,6 @@ const ViewProperty = ({
                   ) : (
                     <></>
                   )}
-                  {/* {is_sold ? (
-                    <div className="col-md-4 col-6">
-                      <small className="text-muted">Is Sold?</small>
-                      <h5 className="mt-1 text-capitalize">
-                        {is_sold === "1" ? "Yes" : "No"}
-                      </h5>
-                    </div>
-                  ) : (
-                    <></>
-                  )} */}
                   {is_available_for_sale ? (
                     <div className="col-md-4">
                       <small className="text-muted">
@@ -796,9 +767,9 @@ const ViewProperty = ({
                   )}
 
                   {branch_name ||
-                  territory ||
-                  title_clear_property ||
-                  possession_of_the_property ? (
+                    territory ||
+                    title_clear_property ||
+                    possession_of_the_property ? (
                     <>
                       <div className="col-12">
                         <hr className="my-md-2 my-3" />
@@ -836,19 +807,6 @@ const ViewProperty = ({
                       {title_clear_property === "yes" ? "Yes" : "No"}
                     </h5>
                   </div>
-
-                  {/* {possession_of_the_property ? (
-                    <div className="col-md-6 mt-2">
-                      <small className="text-muted">
-                        Possession of the property
-                      </small>
-                      <h5 className="mt-1 text-capitalize">
-                        {possession_of_the_property}
-                      </h5>
-                    </div>
-                  ) : (
-                    <></>
-                  )} */}
                 </div>
               </div>
             </div>
@@ -866,15 +824,15 @@ const ViewProperty = ({
         <div className="modal-dialog modal-fullscreen">
           <div className="modal-content">
             <div
-              className="modal-header text-white"
+              className="modal-header text-white justify-content-between"
               style={{ background: "var(--bg-gradient-blue)" }}
             >
               <h5 className="modal-title" id="exampleModalLabel">
                 {documentLoading
                   ? "Loading file name..."
                   : fileName
-                  ? fileName
-                  : ""}
+                    ? fileName
+                    : ""}
               </h5>
               <div className="d-flex align-items-center">
                 <a
@@ -990,7 +948,7 @@ const ViewProperty = ({
                         </>
                       ) : (
                         <div className="wrapper">
-                          <h1 className="text-center text-primary">
+                          <h1 className="text-center heading-text-primary">
                             No Renderer for this file type
                           </h1>
                           <span className="text-muted">

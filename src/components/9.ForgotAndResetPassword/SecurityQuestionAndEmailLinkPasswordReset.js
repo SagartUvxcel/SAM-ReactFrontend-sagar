@@ -1,16 +1,10 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Layout from "../1.CommonLayout/Layout";
 import resetPassImg from "../../images/resetPass.svg";
 import axios from "axios";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Loader from "../1.CommonLayout/Loader";
-
-import {
-  LoadCanvasTemplate,
-  loadCaptchaEnginge,
-  validateCaptcha,
-} from "react-simple-captcha";
 
 // regular expression
 const regexForPassword = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/;
@@ -21,15 +15,12 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
   const location = useLocation();
   // Used to navigate to particular page.
   const goTo = useNavigate();
-  const [emailValue, setEmailValue] = useState("");
   const [showLoader, setShowLoader] = useState(true);
-
   const [alertDetails, setAlertDetails] = useState({
     alertVisible: false,
     alertMsg: "",
     alertClr: "",
   });
-
   const [emailAndQuestionData, setEmailAndQuestionData] = useState("");
   //  Important variables for storing password data as well as validation data.
   const [details, setDetails] = useState({
@@ -77,20 +68,35 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
   const { mainSectionDisplay, afterSubmitSectionDisplay } = displayOfSections;
   const [securityQuestionsList, setSecurityQuestionsList] = useState([]);
 
+  // on input focus
+  const handleFocus = (e) => {
+    e.target.nextSibling.classList.add('active');
+  };
+
+  // on click on label
+  const handleClick = (inputId) => {
+    const input = document.getElementById(inputId);
+    input.focus();
+  };
+
+  // on input blur
+  const onInputBlur = (e) => {
+    const { value } = e.target;
+    if (!value) {
+      e.target.nextSibling.classList.remove('active');
+    }
+  }
+
   // Function getSecurityQuestionList.
   const getSecurityQuestionList = async () => {
-
     try {
       const { data } = await axios.get("/sam/v1/customer-registration/security-questions");
-      // console.log(data);
       if (data) {
         setSecurityQuestionsList(data);
       }
-    } catch (error) {
-      console.log(error);
+    } catch (error) { 
     }
   };
-
 
   // radio button handle function
   const handleRadioButtonClick = (option) => {
@@ -150,6 +156,9 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
   // Function to check if the password and answer satisfies the given password condition.
   const onFormInputsBlur = (e) => {
     const { name, value } = e.target;
+    if (!value) {
+      e.target.nextSibling.classList.remove('active');
+    }
     if (name === "setPassword") {
       if (value) {
         if (value.match(regexForPassword)) {
@@ -271,8 +280,7 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
             }
           });
       } catch (error) {
-        setLoading(false);
-        console.log(error);
+        setLoading(false); 
         if (error.response.data.error !== "You are block for 24 hour to reset your password") {
           toast.warning(`Invalid credentials.${error.response.data.remaining_attempted} attempts remaining.`);
         }
@@ -294,8 +302,7 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
           `/sam/v1/customer-registration/forgot-password`,
           JSON.stringify({ username: emailAndQuestionData.email })
         )
-        .then((res) => {
-          console.log(res.data);
+        .then((res) => { 
           if (res.data.status === 0) {
             toast.success(`Success: Please check your email for password reset link.`);
             setDisplayOfSections({
@@ -323,6 +330,7 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
       setShowLoader(false);
       goTo("/login");
     }
+    // eslint-disable-next-line
   }, []);
 
   return (
@@ -335,10 +343,9 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
             <div
               className={`row justify-content-lg-between justify-content-center ${mainSectionDisplay}`}
             >
-
               <div className="col-xl-6 col-lg-7 col-md-8 order-1 order-lg-1 mt-lg-0 mt-5 card ">
                 <div className="justify-content-center p-4 p-md-5">
-                  <h4 className=" fw-bold">Select an Option to Reset Password</h4>
+                  <h4 className=" fw-bold">Select an option to reset password</h4>
                   <hr />
                   <div className={`card p-2 ${securityQuestionInputDisplay === true ? " bg-light" : "mt-5"}`}>
                     <div className="form-check ">
@@ -350,10 +357,10 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
                         Use my security answer
                       </label>
                     </div>
-
                   </div>
                   <form className={` ${securityQuestionInputDisplay === true ? "" : "d-none"}`}
                     onSubmit={onSetPasswordFormSubmit}>
+                    {/* alert error */}
                     <div
                       className={`login-alert alert p-2 mt-2 alert-${alertClr} alert-dismissible show d-flex align-items-center ${alertVisible ? "" : "d-none"
                         }`}
@@ -374,23 +381,19 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
                       ></i>
                     </div>
                     <div className="row mt-1 px-3">
-
                       {/* Question */}
                       <div className="col-lg-12 my-3">
-                        <label className="text-muted" htmlFor="securityQuestion">
-                          Security Question
-                          <span className="text-danger ps-1">*</span>
-                        </label>
-                        <div className="form-group position-relative">
+                        <div className="form-group position-relative custom-class-form-div">
                           <select
                             id="securityQuestion"
                             name="securityQuestion"
-                            className="form-select  form-control ps-3 mt-2 securityQuestionAnswer"
+                            className="form-select  custom-input ps-3 mt-2 securityQuestionAnswer"
                             onChange={onFormInputsChange}
-                            // value={formData.bank_name}
+                            onBlur={onInputBlur}
+                            onFocus={handleFocus}
                             required
                           >
-                            <option className="text-gray" hidden >Select Your Security Question</option>
+                            <option className="text-gray" hidden > </option>
                             {securityQuestionsList ? (
                               securityQuestionsList.map((data, index) => {
                                 return (
@@ -407,31 +410,23 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
                               <> </>
                             )}
                           </select>
-
+                          <label className="px-0 security-question-label " htmlFor="securityQuestion" onClick={() => handleClick('securityQuestion')} >Security Question  <span className="text-danger ">*</span></label>
                         </div>
-                        {/* {questionNotSelectedMessage ? (
-                                                    <span className="pe-1 text-danger">
-                                                        {questionNotSelectedMessage}
-                                                    </span>
-                                                ) : (
-                                                    <span className="d-none"></span>
-                                                )} */}
                       </div>
                       {/* answer */}
                       <div className="col-lg-12 mb-3 " >
-                        <label className="text-muted" htmlFor="securityQuestionAnswer">
-                          Answer
-                          <span className="text-danger ps-1">*</span>
-                        </label>
-                        <div className="form-group position-relative">
+                        <div className="form-group position-relative custom-class-form-div">
                           <input
                             id="securityQuestionAnswer"
                             name="securityQuestionAnswer"
                             type={passwordType3}
-                            className="form-control securityQuestionAnswer"
+                            className="form-control securityQuestionAnswer custom-input"
                             onChange={onFormInputsChange}
+                            onBlur={onInputBlur}
+                            onFocus={handleFocus}
                             required
                           />
+                          <label className="px-0 security-question-label " htmlFor="securityQuestionAnswer" onClick={() => handleClick('securityQuestionAnswer')} >Answer  <span className="text-danger ">*</span></label>
                           <i
                             placeholder={eyeIcon}
                             onClick={changeEyeIcon3}
@@ -441,20 +436,18 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
                       </div>
                       {/* new Password */}
                       <div className="col-lg-12 mb-3 " >
-                        <label className="text-muted" htmlFor="set-password">
-                          New Password:
-                          <span className="text-danger ps-1">*</span>
-                        </label>
-                        <div className="form-group position-relative">
+                        <div className="form-group position-relative custom-class-form-div">
                           <input
-                            id="set-password"
+                            id="setPassword"
                             name="setPassword"
                             type={passwordType1}
-                            className="form-control securityQuestionAnswer"
+                            className="form-control securityQuestionAnswer custom-input"
                             onBlur={onFormInputsBlur}
                             onChange={onFormInputsChange}
+                            onFocus={handleFocus}
                             required
                           />
+                          <label className="px-0 security-question-label " htmlFor="setPassword" onClick={() => handleClick('setPassword')} > New Password<span className="text-danger ">*</span></label>
                           <i
                             placeholder={eyeIcon}
                             onClick={changeEyeIcon1}
@@ -468,7 +461,7 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
                         ) : (
                           <span className="d-none"></span>
                         )}
-                        <p className="text-muted password-condition mt-2">
+                        <p className="text-muted password-condition mt-2 mb-0">
                           Password should contain at least 1 uppercase letter, 1
                           lowercase letter, 1 number, 1 special character and should
                           be 8-15 characters long.
@@ -476,19 +469,18 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
                       </div>
                       {/* Confirm Password */}
                       <div className="col-lg-12 mb-3 " >
-                        <label className="text-muted" htmlFor="confirm-password">
-                          Confirm Password:
-                          <span className="text-danger ps-1">*</span>
-                        </label>
-                        <div className="form-group position-relative">
+                        <div className="form-group position-relative custom-class-form-div">
                           <input
-                            id="confirm-password"
+                            id="confirmPassword"
                             name="confirmPassword"
                             type={passwordType2}
-                            className="form-control securityQuestionAnswer"
+                            className="form-control securityQuestionAnswer custom-input"
                             onChange={onFormInputsChange}
+                            onBlur={onInputBlur}
+                            onFocus={handleFocus}
                             required
                           />
+                          <label className="px-0 security-question-label " htmlFor="confirmPassword" onClick={() => handleClick('confirmPassword')} > Confirm Password<span className="text-danger ">*</span></label>
                           <i
                             placeholder={eyeIcon}
                             onClick={changeEyeIcon2}
@@ -521,7 +513,6 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
                     <hr className="mt-4" />
                   </form>
 
-
                   {/* option 2 for reset password(email link) */}
                   <div className={`card p-2 text-muted ${emailLink === true ? "mt-3 bg-light" : "mt-4"}`}>
                     <div className="form-check">
@@ -545,7 +536,6 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
                       type="email"
                       className="form-control "
                       value={emailAndQuestionData ? emailAndQuestionData.email : ""}
-                      // onChange={onFormInputsChange}
                       disabled
                     />
                     <button
@@ -564,11 +554,8 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
                         "Send password reset email"
                       )}
                     </button>
-
                   </form>
                 </div>
-
-
               </div>
               {/* image div */}
               <div className="col-xl-5 col-lg-5 col-md-8 order-2 order-lg-2 mt-md-5 mt-lg-0">
@@ -576,12 +563,12 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
               </div>
             </div>
 
-
+            {/*  Return to sign in */}
             <div
               className={`row justify-content-center ${afterSubmitSectionDisplay}`}
             >
               <div className="col-xl-4 col-lg-5 col-md-6">
-                <div className="card shadow p-4 bg-primary text-white">
+                <div className="card shadow p-4 bg-box-primary text-white">
                   <span className="mb-3">
                     Check your email for a link to reset your password. If it
                     doesn't appear within a few minutes, check your spam folder.

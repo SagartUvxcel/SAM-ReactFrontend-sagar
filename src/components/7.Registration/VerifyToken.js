@@ -73,17 +73,12 @@ const VerifyToken = () => {
 
   const getTokenFromURL = () => {
     const urlParams = new URLSearchParams(window.location.search);
-    tokenFromEmailUrl = urlParams.get("token");
-    console.log(tokenFromEmailUrl);
+    tokenFromEmailUrl = urlParams.get("token"); 
     if (tokenFromEmailUrl) {
       mainFunctionToVerifyToken(tokenFromEmailUrl, "");
     }
   };
-
-  // window.onload = () => {
-  //   getTokenFromURL();
-  // };
-
+ 
   useEffect(() => {
     rootTitle.textContent = "SAM TOOL - VERIFY TOKEN";
   }, []);

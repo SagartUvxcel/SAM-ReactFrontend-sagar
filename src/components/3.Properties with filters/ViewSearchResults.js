@@ -11,36 +11,32 @@ let authHeaders = "";
 let isLogin = false;
 
 const ViewSearchResults = () => {
+
   const location = useLocation();
-  // const dataFromParams = location.state ? location.state.sensitiveData : null;
   const goTo = useNavigate();
+  const moreFiltersForm = useRef();
+  const paginationRef = useRef();
+
+  const localData = JSON.parse(localStorage.getItem("data"));
+  const data = JSON.parse(localStorage.getItem("data"));
+  if (data) {
+    authHeaders = { Authorization: data.loginToken };
+    isLogin = data.isLoggedIn;
+  }
   const [batch_size, setBatch_size] = useState(4);
   const [dataFromHome, setDataFromHome] = useState(null);
   const [dataToPost, setDataToPost] = useState([]);
   const [dataFromParams, setDataFromParams] = useState(null);
   const [loading, setLoading] = useState(false);
   const [pageCount, setPageCount] = useState(0);
-  const paginationRef = useRef();
-  // const { batch_size } = dataFromParams;
   const [propertyData, setPropertyData] = useState([]);
-  const localData = JSON.parse(localStorage.getItem("data"));
   const [searchFields, setSearchFields] = useState({
     states: "",
     cities: "",
-    // localities: "",
     assetCategory: "",
     banks: "",
   });
   const { states, assetCategory, cities, banks } = searchFields;
-  const moreFiltersForm = useRef();
-
-
-  const data = JSON.parse(localStorage.getItem("data"));
-  if (data) {
-    authHeaders = { Authorization: data.loginToken };
-    isLogin = data.isLoggedIn;
-  }
-
 
   // It will fetch all states, banks, assets from api and will map those values to respective select fields.
   const getSearchDetails = async () => {
@@ -63,7 +59,6 @@ const ViewSearchResults = () => {
           state_id: dataFromParams.state_id,
         });
       }
-
       // store states, banks and asset categories into searchFields useState.
       setSearchFields({
         ...searchFields,
@@ -73,9 +68,9 @@ const ViewSearchResults = () => {
         assetCategory: assetCategories.data,
       });
     } catch (error) { }
-
   };
 
+  // show Updated MinMax Price Rage
   const showUpdatedMinMaxPriceRage = () => {
     if (dataToPost && dataToPost.max_price && dataToPost.min_price) {
       let minPriceToDisplay = `${(
@@ -128,7 +123,6 @@ const ViewSearchResults = () => {
       await axios.post(apis.searchAPI, dataToPost).then((res) => {
         // Store Searched results into propertyData useState.
         if (res.data !== null) {
-          console.log(res.data);
           setPropertyData(res.data);
           setLoading(false);
           setTimeout(() => {
@@ -142,9 +136,8 @@ const ViewSearchResults = () => {
         }
       });
     } catch (error) {
-      // toast.error("Internal server error");
+      toast.error("Internal server error");
       setLoading(false);
-      console.log("error===>", error);
     }
   };
 
@@ -215,22 +208,7 @@ const ViewSearchResults = () => {
       } else {
         delete dataToPost.city_id;
       }
-      // If input is cities then post selected city id to api for getting locality info. based on selected city.
-      // const localityByCity = await axios.post(apis.addressAPI, {
-      //   city_id: parseInt(value),
-      // });
-      // Store locality data into searchField useState.
-      // setSearchFields({ ...searchFields, localities: localityByCity.data });
-    }
-    // else if (name === "localities") {
-    //   // Store locality value ( if available ) into dataToPost useState (It is required for search functionality).
-    //   if (value) {
-    //     setDataToPost({ ...dataToPost, locality: value });
-    //   } else {
-    //     delete dataToPost.locality;
-    //   }
-    // }
-    else if (name === "asset") {
+    } else if (name === "asset") {
       // Store asset type id ( if available ) into dataToPost useState (It is required for search functionality).
       if (value) {
         setDataToPost({ ...dataToPost, type_id: parseInt(value) });
@@ -341,10 +319,6 @@ const ViewSearchResults = () => {
     }
     setFiltersCount(count);
     return count;
-    // setPriceFilterSelected(!!dataToPost.min_price);
-    // setAreaFilterSelected(!!dataToPost.min_area);
-    // setLatestAddedFilterSelected(!!dataToPost.latest_added_properties);
-
   }
 
   useEffect(() => {
@@ -388,7 +362,6 @@ const ViewSearchResults = () => {
           if (parseInt(value) >= parseInt(option.value)) {
             option.setAttribute("disabled", true);
             option.nextElementSibling.selected = true;
-            console.log(option.nextElementSibling.value);
             setDataToPost({
               ...dataToPost,
               [name]: value,
@@ -529,7 +502,6 @@ const ViewSearchResults = () => {
   };
 
   const navigateToReceiver = (data) => {
-    console.log("sensetive data", data);
     // Use navigate with the encoded data in URL parameters
     const secretKey = "my_secret_key";
     // Encoding (Encryption)
@@ -546,7 +518,6 @@ const ViewSearchResults = () => {
   };
 
   useEffect(() => {
-    // location.state ? location.state.sensitiveData : null
     if (location.state) {
       setDataFromHome(location.state.sensitiveData);
       setDataToPost(location.state.sensitiveData);
@@ -557,8 +528,8 @@ const ViewSearchResults = () => {
       getPropertyData();
       setFiltersValue();
       getSearchDetails();
-      // setDataFromHome(null);
     }
+    // eslint-disable-next-line
   }, [location, dataFromHome])
 
 
@@ -575,7 +546,6 @@ const ViewSearchResults = () => {
             {/* search bar for mobile view*/}
             <div
               className="row extra-filters-row justify-content-center align-items-center py-3 dropdown-menu " aria-labelledby="dropdownMenu2" id="mainDropdownBox"
-            // style={{ height: "80px" }}
             >
               {/* State */}
               <div className="col-md-2 col-6 mt-3 mt-md-0">
@@ -957,7 +927,6 @@ const ViewSearchResults = () => {
           {/* for desktop screen search bar */}
           <div
             className="row extra-filters-row filter-fullWindow justify-content-center align-items-center py-3 "
-          // style={{ height: "80px" }}
           >
             {/* State */}
             <div className="col-md-2 col-12 mt-3 mt-md-0">
@@ -1374,7 +1343,7 @@ const ViewSearchResults = () => {
               </button>
             </div>
           </div>
-          {/* list Wrapper */}
+          {/* list Wrapper */} 
           <div className="property-wrapper">
             <div className="container-fluid display-on-search py-3">
               <div className="row">
@@ -1410,7 +1379,7 @@ const ViewSearchResults = () => {
                             />
                             <div className="card-body">
                               {count ? (
-                                <div className="text-capitalize text-primary fw-bold">
+                                <div className="text-capitalize heading-text-primary fw-bold">
                                   {`${count > 1
                                     ? count + " Properties"
                                     : count + " Property"

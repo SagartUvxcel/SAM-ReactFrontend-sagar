@@ -10,6 +10,8 @@ import { rootTitle } from "../../CommonFunctions";
 
 const ForgotAndResetPassword = () => {
   const navigate = useNavigate();
+  const goTo = useNavigate();
+
   //  Important variables for storing password data as well as validation data.
   const [details, setDetails] = useState({
     newPassword: "",
@@ -20,23 +22,6 @@ const ForgotAndResetPassword = () => {
     passwordType1: "password",
     passwordType2: "password",
   });
-
-  const [loading, setLoading] = useState(false);
-  const [showLoader, setShowLoader] = useState(true);
-  const [emailFromURL, setEmailFromURL] = useState(null);
-  const [displayForgotPasswordPage, setDisplayForgotPasswordPage] = useState({
-    display: false,
-  });
-
-  const [alertDetails, setAlertDetails] = useState({
-    alertVisible: false,
-    alertMsg: "",
-    alertClr: "",
-  });
-  const { alertMsg, alertClr, alertVisible } = alertDetails;
-  // Used to navigate to particular page.
-  const goTo = useNavigate();
-
   const {
     newPassword,
     confirmPassword,
@@ -47,9 +32,46 @@ const ForgotAndResetPassword = () => {
     passwordType2,
   } = details;
 
+  const [loading, setLoading] = useState(false);
+  const [showLoader, setShowLoader] = useState(true);
+  const [emailForgotPasswordToken, setEmailForgotPasswordToken] = useState(null);
+  const [emailFromURL, setEmailFromURL] = useState(null);
+  const [displayForgotPasswordPage, setDisplayForgotPasswordPage] = useState({
+    display: false,
+  });
+  const [alertDetails, setAlertDetails] = useState({
+    alertVisible: false,
+    alertMsg: "",
+    alertClr: "",
+  });
+  const { alertMsg, alertClr, alertVisible } = alertDetails;
+
+
+  // on input focus
+  const handleFocus = (e) => {
+    e.target.nextSibling.classList.add('active');
+  };
+
+  // on click on label
+  const handleClick = (inputId) => {
+    const input = document.getElementById(inputId);
+    input.focus();
+  };
+
+  // on input blur
+  const onInputBlur = (e) => {
+    const { value } = e.target;
+    if (!value) {
+      e.target.nextSibling.classList.remove('active');
+    }
+  }
+
   // Function to check if the password satisfies the given password condition.
   const onPasswordsBlur = (e) => {
     const { name, value } = e.target;
+    if (!value) {
+      e.target.nextSibling.classList.remove('active');
+    }
     if (name === "newPassword") {
       const regexForPassword =
         /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/;
@@ -74,6 +96,9 @@ const ForgotAndResetPassword = () => {
   // Onchange function for both password fields.
   const onPasswordsChange = (e) => {
     const { name, value } = e.target;
+    if (!value) {
+      e.target.nextSibling.classList.remove('active');
+    }
     if (name === "newPassword") {
       setDetails({
         ...details,
@@ -91,7 +116,6 @@ const ForgotAndResetPassword = () => {
   // On setPassWord Button click this function will run.
   const onResetPasswordFormSubmit = async (e) => {
     e.preventDefault();
-    // console.log(details);
     if (
       newPassword !== confirmPassword &&
       invalidMessage1 !== "Invalid Password"
@@ -132,16 +156,15 @@ const ForgotAndResetPassword = () => {
       const postData = JSON.stringify({
         password: newPassword,
         username: emailFromURL,
+        token:emailForgotPasswordToken,
       });
-      console.log("sending data===>", postData);
       try {
         const { data } = await axios.post(`/sam/v1/customer-registration/forgot-password-change`, postData)
-        console.log("response from API ====>", data);
 
+        console.log(data);
         if (data.status === 0) {
           setLoading(false);
           toast.success("Password Changed Successfully !");
-          // localStorage.removeItem("forgotPassUserName");
           goTo("/login");
         } else {
           setLoading(false);
@@ -152,9 +175,7 @@ const ForgotAndResetPassword = () => {
           });
         }
       } catch (error) {
-        console.log("error from api===>", error);
         setLoading(false);
-        // toast.error("Password must be different from the last 3 passwords");
         setAlertDetails({
           alertVisible: true,
           alertMsg: "Password must be different from the last password",
@@ -189,37 +210,30 @@ const ForgotAndResetPassword = () => {
       });
     }
   };
-  // console.log(displayForgotPasswordPage);
 
   // get token from email URL
   let emailFromEmailUrl = "";
   const getEmailFromURL = async () => {
-
-    // console.log("full url from window location==>", window.location.search);
     const urlParams = new URLSearchParams(window.location.search);
-    emailFromEmailUrl = urlParams.get("email");
+    emailFromEmailUrl = urlParams.get("token");
+    setEmailForgotPasswordToken(emailFromEmailUrl);
 
     if (emailFromEmailUrl) {
-      const forgotPasswordUrlToken = emailFromEmailUrl.split('=');
-      // console.log("url token==>", forgotPasswordUrlToken);
-      const emailToken = forgotPasswordUrlToken[0];
-      const tokenDataToPost = forgotPasswordUrlToken[1];
-
+      // const forgotPasswordUrlToken = emailFromEmailUrl.split('='); 
+      // const emailToken = forgotPasswordUrlToken[0];
+      // const tokenDataToPost = forgotPasswordUrlToken[1]; 
 
       // posting data 
       const dataToPost = JSON.stringify(
         {
-          mail_id: emailToken,
-          token: tokenDataToPost
+          token: emailFromEmailUrl
         })
 
       try {
-        // console.log(dataToPost);
         await axios.post(`/sam/v1/customer-registration/verify-link-token`, dataToPost)
           .then((res) => {
 
             if (res.data) {
-              // console.log("response data==>", res.data);
               const emailValue = res.data.email
               const validValue = res.data.valid
               if (emailValue && validValue) {
@@ -234,28 +248,21 @@ const ForgotAndResetPassword = () => {
                   display: false,
                 });
                 setShowLoader(false);
-                // navigate("/access-denied");
               }
-              // localStorage.setItem("forgotPassUserName", emailValue);
             }
           });
       } catch (error) {
         setShowLoader(false);
-        console.log("failed to send token data for link validation.")
-        console.log(error);
       }
-
     } else {
-
       setShowLoader(false);
-      navigate("/access-denied");
+      // navigate("/access-denied");
     }
-
   };
 
   useEffect(() => {
-    getEmailFromURL();
     rootTitle.textContent = "SAM TOOL - RESET PASSWORD";
+    getEmailFromURL();
   });
   return (
     <Layout>
@@ -271,6 +278,7 @@ const ForgotAndResetPassword = () => {
                   <form onSubmit={onResetPasswordFormSubmit} className="card p-5">
                     <h3 className="text-center fw-bold">Reset Password</h3>
                     <hr />
+                    {/* alert msg */}
                     <div
                       className={`login-alert alert alert-${alertClr} alert-dismissible show d-flex align-items-center ${alertVisible ? "" : "d-none"
                         }`}
@@ -290,22 +298,22 @@ const ForgotAndResetPassword = () => {
                         className="bi bi-x login-alert-close-btn close"
                       ></i>
                     </div>
-
+                    {/* newPassword */}
                     <div className="row mt-3">
+                      {/* newPassword */}
                       <div className="col-lg-12 mb-4">
-                        <div className="form-group position-relative">
-                          <label className="text-muted" htmlFor="new-password">
-                            Password<span className="text-danger ps-1">*</span>
-                          </label>
+                        <div className="form-group position-relative custom-class-form-div">
                           <input
-                            id="new-password"
+                            id="newPassword"
                             name="newPassword"
                             type={passwordType1}
-                            className="form-control"
+                            className="form-control custom-input"
                             onBlur={onPasswordsBlur}
                             onChange={onPasswordsChange}
+                            onFocus={handleFocus}
                             required
                           />
+                          <label className="px-0 forgot-password-label " htmlFor="newPassword" onClick={() => handleClick('newPassword')} >Password   <span className="text-danger ">*</span></label>
 
                           <i
                             placeholder={eyeIcon}
@@ -326,20 +334,20 @@ const ForgotAndResetPassword = () => {
                           be 8-15 characters long.
                         </span>
                       </div>
+                      {/* confirm Password */}
                       <div className="col-lg-12 mb-4">
-                        <label className="text-muted" htmlFor="confirm-password">
-                          Confirm Password
-                          <span className="text-danger ps-1">*</span>
-                        </label>
-                        <div className="form-group position-relative">
+                        <div className="form-group position-relative custom-class-form-div">
                           <input
-                            id="confirm-password"
+                            id="confirmPassword"
                             name="confirmPassword"
                             type={passwordType2}
-                            className="form-control"
+                            className="form-control custom-input"
                             onChange={onPasswordsChange}
+                            onBlur={onInputBlur}
+                            onFocus={handleFocus}
                             required
                           />
+                          <label className="px-0 forgot-password-label " htmlFor="confirmPassword" onClick={() => handleClick('confirmPassword')} >Confirm Password   <span className="text-danger ">*</span></label>
                           <i
                             placeholder={eyeIcon}
                             onClick={changeEyeIcon2}
@@ -347,6 +355,7 @@ const ForgotAndResetPassword = () => {
                           ></i>
                         </div>
                       </div>
+                      {/* submit button */}
                       <div className="col-lg-12">
                         <button
                           disabled={loading ? true : false}
@@ -370,6 +379,7 @@ const ForgotAndResetPassword = () => {
                     </div>
                   </form>
                 </div>
+                {/* image */}
                 <div className="col-xl-5 col-lg-6 col-md-8 my-5 my-lg-0">
                   <img src={setPassImg} alt="" className="set-pass-img" />
                 </div>

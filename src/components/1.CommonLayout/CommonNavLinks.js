@@ -5,12 +5,14 @@ const CommonNavLinks = ({ allUseStates, logOut }) => {
   const { loginStatus, roleId, isBank } = allUseStates;
   return (
     <>
+    {/* About */}
       <li>
         <NavLink className="nav-link" to="/about">
           <i className="bi bi-info-circle text-white me-2"></i>
           About
         </NavLink>
       </li>
+      {/* Contact */}
       <li>
         <NavLink className="nav-link" to="/contact">
           <i className="bi bi-telephone text-white me-2"></i>
@@ -33,12 +35,14 @@ const CommonNavLinks = ({ allUseStates, logOut }) => {
       )}
       {loginStatus ? (
         <>
+        {/* Profile */}
           <li className={`${isBank ? "d-none" : ""}`}>
             <NavLink to="/profile" className="nav-link">
               <i className="bi bi-person-square text-white me-2"></i>
               Profile
             </NavLink>
           </li>
+          {/* Logout */}
           <li>
             <span
               style={{ cursor: "pointer" }}

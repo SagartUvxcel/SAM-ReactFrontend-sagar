@@ -2,10 +2,9 @@ import React, { useEffect, useState, useRef } from "react";
 import { v4 as uuid } from "uuid";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { checkLoginSession } from "../../CommonFunctions";
 import CommonSpinner from "../../CommonSpinner";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
-
+import Layout from "../../components/1.CommonLayout/Layout";
 let authHeader = "";
 let temp = 0;
 let chunkSize = 0;
@@ -30,9 +29,10 @@ const SinglePropertyDocumentsUpload = () => {
   if (data) {
     authHeader = { Authorization: data.loginToken };
   }
-
+  // renderTooltip
   const renderTooltip = (props) => <Tooltip id="tooltip">{props}</Tooltip>;
 
+  // if local storage single Property Success 
   const fromAddPropertyPage = localStorage.getItem("singlePropertySuccess");
   const showPropertySuccessMsg = () => {
     if (fromAddPropertyPage === "true") {
@@ -52,10 +52,6 @@ const SinglePropertyDocumentsUpload = () => {
     useState(null);
   const [uniqueId, setUniqueId] = useState(uuid());
   const [imageLoading, setImageLoading] = useState(false);
-  const [societyDetailsStatus, setSocietyDetailsStatus] = useState(false);
-  const [allotmentLetterStatus, setAllotmentLetterStatus] = useState(false);
-  const [societyDetailsText, setSocietyDetailsText] = useState("");
-  const [allotmentLetterText, setAllotmentLetterText] = useState("");
   let defaultCategoryText = "Select one from above categories";
   const [documentsInfo, setDocumentsInfo] = useState({
     category_id: 0,
@@ -77,8 +73,6 @@ const SinglePropertyDocumentsUpload = () => {
   const { category_id, category_text, categoryTextColor, description } =
     documentsInfo;
   let otherCategoryId = null;
-  let societyDetailsCategoryId = null;
-  let allotmentLetterCategoryId = null;
 
   const getCategoriesFromDB = async () => {
     setCategoriesLoading(true);
@@ -115,39 +109,6 @@ const SinglePropertyDocumentsUpload = () => {
     }
   };
 
-  // const onSocietyRegisteredSelect = (e) => {
-  //   const registerDetails = e.target.value;
-  //   console.log(registerDetails);
-  //   if (registerDetails === "registered") {
-  //     setDocumentsInfo({
-  //       ...documentsInfo,
-  //       category_id: societyDetailsCategoryId,
-  //       category_text: "Society details",
-  //       categoryTextColor: "black common-btn-font",
-  //     });
-  //     setSocietyDetailsText(registerDetails)
-  //   } else {
-  //     setDocumentsInfo({
-  //       ...documentsInfo,
-  //       category_id: societyDetailsCategoryId,
-  //       category_text: defaultCategoryText,
-  //       categoryTextColor: "muted",
-  //     });
-  //   }
-  // }
-
-  // const onAllotmentLetterRadioCheck = (e) => {
-  //   const allotmentDetails = e.target.value;
-  //   setDocumentsInfo({
-  //     ...documentsInfo,
-  //     category_id: allotmentLetterCategoryId,
-  //     category_text: "Allotment Letter",
-  //     categoryTextColor: "black common-btn-font",
-  //   });
-  //   setAllotmentLetterText(allotmentDetails)
-  // }
-
-
   // on Category Radio button Check
   const onCategoryRadioCheck = (e) => {
     let categoryText = e.target.nextElementSibling.textContent;
@@ -156,69 +117,6 @@ const SinglePropertyDocumentsUpload = () => {
     } else {
       setAllowedExtensions(allAllowedExtensions);
     }
-
-    // if (categoryText === "Society details") {
-    //   setSocietyDetailsStatus(true);
-    //   setAllotmentLetterStatus(false);
-    //   setAllotmentLetterText("");
-    //   setDocumentsInfo({
-    //     ...documentsInfo,
-    //     category_id: parseInt(e.target.value),
-    //     category_text: defaultCategoryText,
-    //     categoryTextColor: "muted",
-    //   });
-    //   let allotmentLetterCheck = document.querySelectorAll(".allotmentLetterCheckBox");
-    //   if (allotmentLetterCheck) {
-    //     allotmentLetterCheck.forEach((check) => {
-    //       if (check.checked) {
-    //         check.checked = false;
-    //       }
-    //     });
-    //   }
-    // } else {
-
-    //   // setSocietyDetailsStatus(false);
-    //   // setAllotmentLetterStatus(false);
-    //   // setSocietyDetailsText("");
-    //   // setAllotmentLetterText("");
-    //   // let societyDetailsAllCheck = document.querySelectorAll(".society_registered-checkBox");
-    //   // if (societyDetailsAllCheck) {
-    //   //   societyDetailsAllCheck.forEach((check) => {
-    //   //     if (check.checked) {
-    //   //       check.checked = false;
-    //   //     }
-    //   //   });
-    //   // }
-    //   // let allotmentLetterCheck = document.querySelectorAll(".allotmentLetterCheckBox");
-    //   // if (allotmentLetterCheck) {
-    //   //   allotmentLetterCheck.forEach((check) => {
-    //   //     if (check.checked) {
-    //   //       check.checked = false;
-    //   //     }
-    //   //   });
-    //   // }
-    // }
-    // else if (categoryText === "Allotment Letter") {
-    //   setAllotmentLetterStatus(true);
-    //   setSocietyDetailsStatus(false);
-    //   setSocietyDetailsText("");
-    //   setDocumentsInfo({
-    //     ...documentsInfo,
-    //     category_id: parseInt(e.target.value),
-    //     category_text: defaultCategoryText,
-    //     categoryTextColor: "muted",
-    //   });
-    //   let societyDetailsAllCheck = document.querySelectorAll(".society_registered-checkBox");
-    //   if (societyDetailsAllCheck) {
-    //     societyDetailsAllCheck.forEach((check) => {
-    //       if (check.checked) {
-    //         check.checked = false;
-    //       }
-    //     });
-    //   }
-
-    // } 
-
     setDocumentsInfo({
       ...documentsInfo,
       category_id: parseInt(e.target.value),
@@ -230,11 +128,10 @@ const SinglePropertyDocumentsUpload = () => {
     otherCategoryWrapperRef.current.classList.add("d-none");
   };
 
+  // on Other Category Radio Check
   const onOtherRadioCheck = (e) => {
     if (e.target.checked === true) {
       setAllowedExtensions(allAllowedExtensions);
-      setSocietyDetailsStatus(false);
-      setAllotmentLetterStatus(false);
       setDocumentsInfo({
         ...documentsInfo,
         category_id: otherCategoryId,
@@ -242,29 +139,12 @@ const SinglePropertyDocumentsUpload = () => {
         categoryTextColor: "muted",
       });
       otherCategoryWrapperRef.current.classList.remove("d-none");
-      // let societyDetailsAllCheck = document.querySelectorAll(".society_registered-checkBox");
-      // if (societyDetailsAllCheck) {
-      //   societyDetailsAllCheck.forEach((check) => {
-      //     if (check.checked) {
-      //       check.checked = false;
-      //     }
-      //   });
-      // }
-      // let allotmentLetterCheck = document.querySelectorAll(".allotmentLetterCheckBox");
-      // if (allotmentLetterCheck) {
-      //   allotmentLetterCheck.forEach((check) => {
-      //     if (check.checked) {
-      //       check.checked = false;
-      //     }
-      //   });
-      // }
     }
   };
-
+  // on Reset Btn Click
   const onResetBtnClick = () => {
     window.scrollTo(0, 0);
     let allCategoryChecks = document.querySelectorAll(".category-checks");
-    // let societyDetailsAllCheck = document.querySelectorAll(".society_registered-checkBox");
     setDocumentsInfo({
       category_id: 0,
       category_text: defaultCategoryText,
@@ -277,8 +157,6 @@ const SinglePropertyDocumentsUpload = () => {
     otherCategoryInputRef.current.value = "";
     otherCategoryWrapperRef.current.classList.add("d-none");
     setOtherCategoryBlankCharErr(false);
-    setSocietyDetailsStatus(false);
-    setAllotmentLetterStatus(false);
     if (allCategoryChecks) {
       allCategoryChecks.forEach((check) => {
         if (check.checked) {
@@ -286,24 +164,8 @@ const SinglePropertyDocumentsUpload = () => {
         }
       });
     }
-    // if (societyDetailsAllCheck) {
-    //   societyDetailsAllCheck[0].selected=false;
-    //   societyDetailsAllCheck.forEach((check) => {
-    //     if (check.checked) {
-    //       check.checked = false;
-    //     }
-    //   });
-    // }
-    // let allotmentLetterCheck = document.querySelectorAll(".allotmentLetterCheckBox");
-    // if (allotmentLetterCheck) {
-    //   allotmentLetterCheck.forEach((check) => {
-    //     if (check.checked) {
-    //       check.checked = false;
-    //     }
-    //   });
-    // }
   };
-
+  // save Documents Details
   const saveDocumentsDetails = (e) => {
     const { name, value } = e.target;
     if (name === "description") {
@@ -319,9 +181,9 @@ const SinglePropertyDocumentsUpload = () => {
     alertMsg: "",
     alertClr: "",
   });
-
   const { alertMsg, alertClr, alertVisible } = alertDetails;
 
+  // handle Image File Change
   const handleImageFileChange = (e) => {
     e.preventDefault();
     if (e.target.files[0]) {
@@ -329,10 +191,8 @@ const SinglePropertyDocumentsUpload = () => {
       let currentFileExtension = arrForExtension[arrForExtension.length - 1];
       let size = parseFloat((e.target.files[0].size / 1024 / 1024).toFixed(2));
       let currentTotalSize = size + totalSizeOfDocuments;
-      console.log("Total Size Will be: ", currentTotalSize, " MB");
       if (currentTotalSize <= 25) {
         setAlertDetails({ alertVisible: false });
-        console.log("Extension of current file: ", currentFileExtension);
         if (allowedExtensions.length > 0) {
           if (allowedExtensions.includes(currentFileExtension)) {
             setSavedImageFiles([...imageFiles, ...e.target.files]);
@@ -353,12 +213,14 @@ const SinglePropertyDocumentsUpload = () => {
     }
   };
 
+  // reload Page
   const reloadPage = () => {
     setTimeout(() => {
       window.location.reload();
     }, 4000);
   };
 
+  // read And Upload Current Image Chunk
   const readAndUploadCurrentImageChunk = () => {
     const reader = new FileReader();
     const file = imageFiles[currentImageFileIndex];
@@ -373,6 +235,7 @@ const SinglePropertyDocumentsUpload = () => {
     reader.readAsDataURL(blob);
   };
 
+  // upload Image Chunk
   const uploadImageChunk = async (readerEvent) => {
     const file = imageFiles[currentImageFileIndex];
     const size = file.size;
@@ -382,33 +245,30 @@ const SinglePropertyDocumentsUpload = () => {
       tempChunkSize = size - (temp - chunkSize);
     }
     const data = readerEvent.target.result.split(",")[1];
+    const fileName=file.name;
+    const totalChunks=Math.ceil(size / chunkSize);
+    const chunkNumber=currentChunkIndexOfImage + 1;
     const detailsToPost = {
-      upload_id: uniqueId,
+      upload_id: uniqueId, 
       property_number: currentPropertyNumber,
-      chunk_number: currentChunkIndexOfImage + 1,
-      total_chunks: Math.ceil(size / chunkSize),
+      chunk_number: chunkNumber,
+      total_chunks: totalChunks,
       chunk_size: tempChunkSize,
       total_file_size: size,
-      file_name: file.name,
+      file_name: fileName,
       category_id: category_id,
       description: description,
-      society_registration_status: societyDetailsText,
-      // allotment_letter_status: allotmentLetterText,
       data: data,
     };
-    console.log(detailsToPost);
     const chunks = Math.ceil(file.size / chunkSize) - 1;
     const isLastChunk = currentChunkIndexOfImage === chunks;
-    console.warn("IS LAST CHUNK: ", isLastChunk);
     try {
       await axios
         .post(`/sam/v1/property/auth/property-documents`, detailsToPost, {
           headers: authHeader,
         })
         .then((res) => {
-          console.log(res.data);
           if (isLastChunk) {
-            console.log(res.data);
             if (res.data.msg === 0) {
               if (currentImageFileIndex === savedImageFiles.length - 1) {
                 setImageLoading(false);
@@ -418,7 +278,7 @@ const SinglePropertyDocumentsUpload = () => {
             } else {
               setImageLoading(false);
               toast.error("Error while uploading files");
-              // reloadPage();
+              reloadPage();
             }
           }
         });
@@ -438,6 +298,7 @@ const SinglePropertyDocumentsUpload = () => {
     }
   };
 
+  // alertVisible useEffect
   useEffect(() => {
     if (alertVisible) {
       window.scrollTo(0, 0);
@@ -480,12 +341,14 @@ const SinglePropertyDocumentsUpload = () => {
     // eslint-disable-next-line
   }, [currentChunkIndexOfImage]);
 
+  // post Images
   const postImages = (e) => {
     e.preventDefault();
     setImageLoading(true);
     setImageFiles(savedImageFiles);
   };
 
+  // check Can Upload New Document
   const checkCanUploadNewDocument = async (id) => {
     if (id) {
       try {
@@ -497,7 +360,6 @@ const SinglePropertyDocumentsUpload = () => {
           let sizeInMegaBytes = parseFloat(
             (sizeInBytes / 1024 / 1024).toFixed(2)
           );
-          console.log("Size in Database: ", sizeInMegaBytes, " MB");
           setTotalSizeOfDocuments(sizeInMegaBytes);
         }
       } catch (error) { }
@@ -516,297 +378,293 @@ const SinglePropertyDocumentsUpload = () => {
     // eslint-disable-next-line
   }, []);
 
-  // window.onload = () => {
-  //   showPropertySuccessMsg();
-  // };
-
   return (
-    // <Layout>
-    <div className="container-fluid skyblue-bg" onLoad={showPropertySuccessMsg()}>
-      <div className="row min-100vh position-relative justify-content-center">
-        {/* <AdminSideBar /> */}
-        <div className="col-11 wrapper mt-md-0">
-          <section className="upload-documents-wrapper">
-            <div className="container-fluid">
-              <div className="row">
-                <div className="col-md-6">
-                  <h3 className="fw-bold p-0">Upload Documents</h3>
-                  <h6 className="fw-bold text-muted p-0">
-                    Property Number
-                    <span className="badge bg-primary ms-2">
-                      {currentPropertyNumber}
-                    </span>
-                  </h6>
-                </div>
-                <div className="col-md-6">
-                  <div
-                    className={`login-alert alert alert-${alertClr} alert-dismissible show d-flex align-items-center mb-0 ${alertVisible ? "" : "d-none"
-                      }`}
-                    role="alert"
-                  >
-                    <small className="fw-bold">{alertMsg}</small>
-                    <i
-                      onClick={() => setAlertDetails({ alertVisible: false })}
-                      className="bi bi-x login-alert-close-btn close"
-                    ></i>
+    <Layout>
+      <div className="container-fluid skyblue-bg" onLoad={showPropertySuccessMsg()}>
+        <div className="row min-100vh position-relative justify-content-center">
+          {/* <AdminSideBar /> */}
+          <div className="col-11 wrapper mt-md-0">
+            <section className="upload-documents-wrapper mt-5">
+              <div className="container-fluid">
+                <div className="row">
+                  <div className="col-md-6">
+                    <h3 className="fw-bold p-0">Upload Documents</h3>
+                    <h6 className="fw-bold text-muted p-0">
+                      Property Number
+                      <span className="badge bg-box-primary ms-2">
+                        {currentPropertyNumber}
+                      </span>
+                    </h6>
+                  </div>
+                  <div className="col-md-6">
+                    <div
+                      className={`login-alert alert alert-${alertClr} alert-dismissible show d-flex align-items-center mb-0 ${alertVisible ? "" : "d-none"
+                        }`}
+                      role="alert"
+                    >
+                      <small className="fw-bold">{alertMsg}</small>
+                      <i
+                        onClick={() => setAlertDetails({ alertVisible: false })}
+                        className="bi bi-x login-alert-close-btn close"
+                      ></i>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="row mb-4">
-                <div className="col-12">
-                  <hr />
-                </div>
-                <div className="col-12 px-0">
-                  <div className="container-fluid">
-                    {categoriesLoading ? (
-                      <CommonSpinner
-                        spinnerColor="primary"
-                        spinnerType="grow"
-                      />
-                    ) : (
-                      <>
-                        {" "}
-                        <label
-                          className="form-label common-btn-font "
-                          style={{ color: "var(--primary-color-hover)" }}
-                        >
-                          Select document category
-                        </label>
-                        <div className="row">
-                          {allCategoriesFromDB.map((category, Index) => {
-                            if (category.category_Name === "Other") {
-                              otherCategoryId = parseInt(category.category_id);
-                            }
+                <div className="row mb-4">
+                  <div className="col-12">
+                    <hr />
+                  </div>
+                  <div className="col-12 px-0">
+                    <div className="container-fluid">
+                      {categoriesLoading ? (
+                        <CommonSpinner
+                          spinnerColor="primary"
+                          spinnerType="grow"
+                        />
+                      ) : (
+                        <>
+                          {" "}
+                          <label
+                            className="form-label common-btn-font "
+                            style={{ color: "var(--primary-color-hover)" }}
+                          >
+                            Select document category
+                          </label>
+                          <div className="row">
+                            {allCategoriesFromDB.map((category, Index) => {
+                              if (category.category_Name === "Other") {
+                                otherCategoryId = parseInt(category.category_id);
+                              }
 
-                            return (
-                              <div
-                                className={`col-xl-4 d-flex ${category.category_Name === "Other"
-                                  ? "d-none"
-                                  : ""
-                                  }`}
-                                key={Index}
-                              >
-                                <div className="form-check form-check-inline">
-                                  <input
-                                    onChange={onCategoryRadioCheck}
-                                    className="form-check-input category-checks"
-                                    type="radio"
-                                    name="category_id"
-                                    id="category_id"
-                                    value={category.category_id}
-                                  />
-                                  <label
-                                    className="form-check-label"
-                                    htmlFor="category_id"
-                                  >
-                                    {category.category_Name}
-                                  </label>
-                                </div>
-                              </div>
-                            );
-
-                          })}
-
-                          <div className="col-xl-4">
-                            <div className="form-check form-check-inline">
-                              <input
-                                className="form-check-input category-checks"
-                                type="radio"
-                                name="category_id"
-                                id="category_id"
-                                value={0}
-                                onChange={onOtherRadioCheck}
-                              />
-                              <label
-                                className="form-check-label"
-                                htmlFor="category_id"
-                              >
-                                Other
-                              </label>
-                            </div>
-                            <div
-                              className="container-fluid mt-2 d-none"
-                              ref={otherCategoryWrapperRef}
-                            >
-                              <form
-                                onSubmit={onSaveOtherCategoryClick}
-                                className="row"
-                              >
-                                <div className="col-xl-7 col-lg-4 col-md-5 col-8">
-                                  <div className="form-group">
+                              return (
+                                <div
+                                  className={`col-xl-4 d-flex ${category.category_Name === "Other"
+                                    ? "d-none"
+                                    : ""
+                                    }`}
+                                  key={Index}
+                                >
+                                  <div className="form-check form-check-inline">
                                     <input
-                                      type="text"
-                                      className={`form-control ${otherCategoryBlankCharErr
-                                        ? "border-danger"
-                                        : ""
-                                        }`}
-                                      placeholder="Enter category"
-                                      ref={otherCategoryInputRef}
-                                      required
+                                      onChange={onCategoryRadioCheck}
+                                      className="form-check-input category-checks"
+                                      type="radio"
+                                      name="category_id"
+                                      id="category_id"
+                                      value={category.category_id}
                                     />
+                                    <label
+                                      className="form-check-label"
+                                      htmlFor="category_id"
+                                    >
+                                      {category.category_Name}
+                                    </label>
                                   </div>
                                 </div>
-                                <div className="col-xl-5 col-lg-4 col-md-5 col-4 p-0">
-                                  <button
-                                    type="submit"
-                                    className="btn btn-primary"
-                                  >
-                                    Save
-                                  </button>
-                                </div>
-                                <small
-                                  className={`text-danger ${otherCategoryBlankCharErr ? "" : "d-none"
-                                    }`}
+                              );
+
+                            })}
+
+                            <div className="col-xl-4">
+                              <div className="form-check form-check-inline">
+                                <input
+                                  className="form-check-input category-checks"
+                                  type="radio"
+                                  name="category_id"
+                                  id="category_id"
+                                  value={0}
+                                  onChange={onOtherRadioCheck}
+                                />
+                                <label
+                                  className="form-check-label"
+                                  htmlFor="category_id"
                                 >
-                                  Blank characters are not allowed
-                                </small>
-                              </form>
+                                  Other
+                                </label>
+                              </div>
+                              <div
+                                className="container-fluid mt-2 d-none"
+                                ref={otherCategoryWrapperRef}
+                              >
+                                <form
+                                  onSubmit={onSaveOtherCategoryClick}
+                                  className="row"
+                                >
+                                  <div className="col-xl-7 col-lg-4 col-md-5 col-8">
+                                    <div className="form-group">
+                                      <input
+                                        type="text"
+                                        className={`form-control ${otherCategoryBlankCharErr
+                                          ? "border-danger"
+                                          : ""
+                                          }`}
+                                        placeholder="Enter category"
+                                        ref={otherCategoryInputRef}
+                                        required
+                                      />
+                                    </div>
+                                  </div>
+                                  <div className="col-xl-5 col-lg-4 col-md-5 col-4 p-0">
+                                    <button
+                                      type="submit"
+                                      className="btn btn-primary"
+                                    >
+                                      Save
+                                    </button>
+                                  </div>
+                                  <small
+                                    className={`text-danger ${otherCategoryBlankCharErr ? "" : "d-none"
+                                      }`}
+                                  >
+                                    Blank characters are not allowed
+                                  </small>
+                                </form>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
-              <hr />
-              <div className="row">
-                {/* Category */}
-                <div className="col-xl-3 col-md-6">
-                  <div className="form-group">
-                    <label
-                      htmlFor="category_text"
-                      className="form-label common-btn-font "
-                      style={{ color: "var(--primary-color-hover)" }}
-                    >
-                      Category
-                    </label>
-                    <div className={`text-${categoryTextColor}`}>
-                      {category_text}
-                    </div>
-                  </div>
-                </div>
-                {/* File */}
-                <div className="col-xl-3 col-md-6 mt-md-0 mt-3">
-                  <div className="form-group">
-                    <label
-                      htmlFor="file-upload"
-                      className="form-label common-btn-font "
-                      style={{ color: "var(--primary-color-hover)" }}
-                    >
-                      File
-                    </label>
-                    <input
-                      onChange={handleImageFileChange}
-                      ref={fileRef}
-                      type="file"
-                      name="file-upload"
-                      id="file-upload"
-                      className="form-control"
-                      disabled={
-                        category_text !== defaultCategoryText ? false : true
-                      }
-                    />
-
-                    <OverlayTrigger
-                      placement="top"
-                      overlay={renderTooltip(
-                        allowedExtensions ? allowedExtensions.join(", ") : ""
+                        </>
                       )}
-                    >
-                      <small className="text-muted">
-                        Extensions allowed
-                        <i
-                          className="bi bi-info-circle ms-2"
-                          type="button"
-                          data-bs-toggle="tooltip"
-                          data-bs-placement="top"
-                          title=""
-                        ></i>
-                      </small>
-                    </OverlayTrigger>
+                    </div>
                   </div>
                 </div>
-                {/* Document Description */}
-                <div className="col-xl-3 col-md-6 mt-xl-0 mt-3">
-                  <div className="form-group">
-                    <label
-                      htmlFor="description"
-                      className="form-label common-btn-font "
-                      style={{ color: "var(--primary-color-hover)" }}
-                    >
-                      Document Description
-                    </label>
-                    <input
-                      ref={decsRef}
-                      type="text"
-                      name="description"
-                      id="description"
-                      className="form-control"
-                      placeholder="Description (min. 2 words)"
-                      onChange={saveDocumentsDetails}
-                    ></input>
+                <hr />
+                <div className="row">
+                  {/* Category */}
+                  <div className="col-xl-3 col-md-6">
+                    <div className="form-group">
+                      <label
+                        htmlFor="category_text"
+                        className="form-label common-btn-font "
+                        style={{ color: "var(--primary-color-hover)" }}
+                      >
+                        Category
+                      </label>
+                      <div className={`text-${categoryTextColor}`}>
+                        {category_text}
+                      </div>
+                    </div>
                   </div>
-                </div>
-                {/* Action */}
-                <div className="col-xl-3 col-md-6 mt-xl-0 mt-3">
-                  <div className="form-group">
-                    <label
-                      htmlFor="action-buttons"
-                      className="form-label common-btn-font "
-                      style={{ color: "var(--primary-color-hover)" }}
-                    >
-                      Action
-                    </label>
-                    <div
-                      id="action-buttons"
-                      className="d-flex justify-content-between"
-                    >
-                      <button
+                  {/* File */}
+                  <div className="col-xl-3 col-md-6 mt-md-0 mt-3">
+                    <div className="form-group">
+                      <label
+                        htmlFor="file-upload"
+                        className="form-label common-btn-font "
+                        style={{ color: "var(--primary-color-hover)" }}
+                      >
+                        File
+                      </label>
+                      <input
+                        onChange={handleImageFileChange}
+                        ref={fileRef}
+                        type="file"
+                        name="file-upload"
+                        id="file-upload"
+                        className="form-control"
                         disabled={
-                          savedImageFiles.length === 0 ||
-                            imageLoading ||
-                            description.trim() === "" ||
-                            description.trim().split(" ").length < 2 ||
-                            category_text === defaultCategoryText ||
-                            alertVisible === true
-                            ? true
-                            : false
+                          category_text !== defaultCategoryText ? false : true
                         }
-                        className="btn btn-primary w-75"
-                        onClick={postImages}
-                      >
-                        {imageLoading ? (
-                          <>
-                            <div
-                              className="spinner-border spinner-border-sm text-light me-2"
-                              role="status"
-                            ></div>
-                            <span>Uploading...</span>
-                          </>
-                        ) : (
-                          "Upload"
+                      />
+
+                      <OverlayTrigger
+                        placement="top"
+                        overlay={renderTooltip(
+                          allowedExtensions ? allowedExtensions.join(", ") : ""
                         )}
-                      </button>
-                      <button
-                        className="btn btn-secondary"
-                        style={{ width: "22%" }}
-                        onClick={onResetBtnClick}
-                        disabled={imageLoading ? true : false}
                       >
-                        <i className="bi bi-x-lg"></i>
-                      </button>
+                        <small className="text-muted">
+                          Extensions allowed
+                          <i
+                            className="bi bi-info-circle ms-2"
+                            type="button"
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            title=""
+                          ></i>
+                        </small>
+                      </OverlayTrigger>
+                    </div>
+                  </div>
+                  {/* Document Description */}
+                  <div className="col-xl-3 col-md-6 mt-xl-0 mt-3">
+                    <div className="form-group">
+                      <label
+                        htmlFor="description"
+                        className="form-label common-btn-font "
+                        style={{ color: "var(--primary-color-hover)" }}
+                      >
+                        Document Description
+                      </label>
+                      <input
+                        ref={decsRef}
+                        type="text"
+                        name="description"
+                        id="description"
+                        className="form-control"
+                        placeholder="Description (min. 2 words)"
+                        onChange={saveDocumentsDetails}
+                      ></input>
+                    </div>
+                  </div>
+                  {/* Action */}
+                  <div className="col-xl-3 col-md-6 mt-xl-0 mt-3">
+                    <div className="form-group">
+                      <label
+                        htmlFor="action-buttons"
+                        className="form-label common-btn-font "
+                        style={{ color: "var(--primary-color-hover)" }}
+                      >
+                        Action
+                      </label>
+                      <div
+                        id="action-buttons"
+                        className="d-flex justify-content-between"
+                      >
+                        <button
+                          disabled={
+                            savedImageFiles.length === 0 ||
+                              imageLoading ||
+                              description.trim() === "" ||
+                              description.trim().split(" ").length < 2 ||
+                              category_text === defaultCategoryText ||
+                              alertVisible === true
+                              ? true
+                              : false
+                          }
+                          className="btn btn-primary w-75"
+                          onClick={postImages}
+                        >
+                          {imageLoading ? (
+                            <>
+                              <div
+                                className="spinner-border spinner-border-sm text-light me-2"
+                                role="status"
+                              ></div>
+                              <span>Uploading...</span>
+                            </>
+                          ) : (
+                            "Upload"
+                          )}
+                        </button>
+                        <button
+                          className="btn btn-secondary"
+                          style={{ width: "22%" }}
+                          onClick={onResetBtnClick}
+                          disabled={imageLoading ? true : false}
+                        >
+                          <i className="bi bi-x-lg"></i>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </section>
+            </section>
+          </div>
         </div>
       </div>
-    </div>
-    // </Layout>
+    </Layout>
   );
 };
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, NavLink } from "react-router-dom";
 import { toast } from "react-toastify";
 import Layout from "../1.CommonLayout/Layout";
 import changePassImg from "../../images/changePassword.svg";
@@ -7,9 +7,31 @@ import { rootTitle } from "../../CommonFunctions";
 import axios from "axios";
 let userId = "";
 const ChangePassword = () => {
+
+  // Used to navigate to particular page.
+  const goTo = useNavigate();
   const data = JSON.parse(localStorage.getItem("data"));
   if (data) {
     userId = data.userId;
+  }
+
+  // on input focus
+  const handleFocus = (e) => {
+    e.target.nextSibling.classList.add('active');
+  };
+
+  // on click on label
+  const handleClick = (inputId) => {
+    const input = document.getElementById(inputId);
+    input.focus();
+  };
+
+  // on input blur
+  const onInputBlur = async (e) => {
+    const { value } = e.target;
+    if (!value) {
+      e.target.nextSibling.classList.remove('active');
+    }
   }
 
   //  Important variables for storing password data as well as validation data.
@@ -22,18 +44,13 @@ const ChangePassword = () => {
     passwordType1: "password",
     passwordType2: "password",
   });
-
   const [loading, setLoading] = useState(false);
-
   const [alertDetails, setAlertDetails] = useState({
     alertVisible: false,
     alertMsg: "",
     alertClr: "",
   });
   const { alertMsg, alertClr, alertVisible } = alertDetails;
-  // Used to navigate to particular page.
-  const goTo = useNavigate();
-
   const {
     currentPassword,
     newPassword,
@@ -47,6 +64,9 @@ const ChangePassword = () => {
   // Function to check if the password satisfies the given password condition.
   const onPasswordsBlur = (e) => {
     const { name, value } = e.target;
+    if (!value) {
+      e.target.nextSibling.classList.remove('active');
+    }
     if (name === "new-password") {
       const regexForPassword =
         /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/;
@@ -85,6 +105,7 @@ const ChangePassword = () => {
     }
   };
 
+  // displayPasswordInputs
   const displayPasswordInputs = () => {
     setDetails({
       ...details,
@@ -117,15 +138,15 @@ const ChangePassword = () => {
       });
     } else {
       setLoading(true);
+      let userIdValue=userId.toString();
       try {
         await axios
           .post(`/sam/v1/customer-registration/reset-password`, {
-            user_id: userId.toString(),
+            user_id: userIdValue,
             old_password: currentPassword,
             new_password: newPassword,
           })
           .then((res) => {
-            console.log(res.data)
             if (res.data.status === 0) {
               setLoading(false);
               toast.success("Password changed successfully");
@@ -186,25 +207,32 @@ const ChangePassword = () => {
   return (
     <Layout>
       <section className="change-password-wrapper section-padding min-100vh">
-        <div className="container mt-5">
+        <div className="container mt-2">
+          {/* back btn to View Profile */}
+          <div className="col-md-4 col-6 text-start mb-3">
+            <NavLink
+              to="/profile"
+              className="ms-4 text-decoration-none"
+            >
+              <i className="bi bi-arrow-left"></i> Back
+            </NavLink>
+          </div>
           <div className="row justify-content-lg-between justify-content-center">
             <div className="col-xl-5 col-lg-6 col-md-8 order-1 order-lg-2">
               <form onSubmit={onChangePasswordFormSubmit} className="card p-3 p-sm-5 ">
                 <h3 className="text-center fw-bold">Change Password</h3>
                 <hr />
                 <div
-                  className={`login-alert alert alert-${alertClr} alert-dismissible show d-flex align-items-center ${
-                    alertVisible ? "" : "d-none"
-                  }`}
+                  className={`login-alert alert alert-${alertClr} alert-dismissible show d-flex align-items-center ${alertVisible ? "" : "d-none"
+                    }`}
                   role="alert"
                 >
                   <span>
                     <i
-                      className={`bi bi-exclamation-triangle-fill me-2 ${
-                        alertClr === "danger" || alertClr === "warning"
-                          ? ""
-                          : "d-none"
-                      }`}
+                      className={`bi bi-exclamation-triangle-fill me-2 ${alertClr === "danger" || alertClr === "warning"
+                        ? ""
+                        : "d-none"
+                        }`}
                     ></i>
                   </span>
                   <small className="fw-bold">{alertMsg}</small>
@@ -214,28 +242,23 @@ const ChangePassword = () => {
                   ></i>
                 </div>
                 <div className="row mt-3">
+                  {/* Current Password */}
                   <div className="col-lg-12 mb-4">
                     <div className="form-group">
-                      <label
-                        className="text-muted form-label"
-                        htmlFor="current-password"
-                      >
-                        Current Password
-                        <span className="text-danger ps-1">*</span>
-                      </label>
-
-                      <div className="input-group position-relative">
-                        <span className="input-group-text" id="basic-addon1">
-                          <i className="bi bi-lock-fill"></i>
-                        </span>
+                      <div className="input-group position-relative custom-class-form-div">
                         <input
                           id="current-password"
                           name="current-password"
                           type={passwordType1}
-                          className="form-control"
+                          className="form-control custom-input change-input "
                           onChange={onPasswordsChange}
+                          onBlur={onInputBlur}
+                          onFocus={handleFocus}
                           required
                         />
+                        <label className="ps-0 change-password-label " htmlFor="current-password"
+                          onClick={() => handleClick('current-password')}
+                        >Current Password </label>
                         <i
                           placeholder={eyeIcon}
                           onClick={changeEyeIcon1}
@@ -244,28 +267,23 @@ const ChangePassword = () => {
                       </div>
                     </div>
                   </div>
+                  {/* new password */}
                   <div className="col-lg-12 mb-4">
-                    <label
-                      className="text-muted form-label"
-                      htmlFor="new-password"
-                    >
-                      New Password
-                      <span className="text-danger ps-1">*</span>
-                    </label>
                     <div className="form-group">
-                      <div className="input-group position-relative">
-                        <span className="input-group-text" id="basic-addon1">
-                          <i className="bi bi-lock-fill"></i>
-                        </span>
+                      <div className="input-group position-relative custom-class-form-div">
                         <input
                           id="new-password"
                           name="new-password"
                           type={passwordType2}
-                          className="form-control"
+                          className="form-control custom-input change-input"
                           onBlur={onPasswordsBlur}
                           onChange={onPasswordsChange}
+                          onFocus={handleFocus}
                           required
                         />
+                        <label className="ps-0 change-password-label " htmlFor="new-password"
+                          onClick={() => handleClick('new-password')}
+                        >New Password </label>
                         <i
                           placeholder={eyeIcon}
                           onClick={changeEyeIcon2}
@@ -275,9 +293,8 @@ const ChangePassword = () => {
                     </div>
 
                     <span
-                      className={`pe-1 text-danger ${
-                        invalidMessage1 ? "" : "d-none"
-                      }`}
+                      className={`pe-1 text-danger ${invalidMessage1 ? "" : "d-none"
+                        }`}
                     >
                       {invalidMessage1}
                     </span>
@@ -288,7 +305,8 @@ const ChangePassword = () => {
                       be 8-15 characters long.
                     </span>
                   </div>
-                  <div className="col-lg-12">
+                  {/* submit */}
+                  <div className="col-lg-12 mt-3">
                     <button
                       disabled={loading ? true : false}
                       type="submit"

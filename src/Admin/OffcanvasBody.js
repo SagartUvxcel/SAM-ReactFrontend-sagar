@@ -6,6 +6,7 @@ const OffcanvasBody = ({ canvasNumber, propertiesLinkDisabled, isBank, roleId })
     <div className={`offcanvas-body ${canvasNumber ? "pt-0" : ""}`}>
       <ul className="navbar-nav">
         <hr className="text-white" />
+        {/* Dashboard */}
         <li className="nav-item">
           <NavLink
             className="nav-link admin-home-link sidebar-link"
@@ -17,7 +18,7 @@ const OffcanvasBody = ({ canvasNumber, propertiesLinkDisabled, isBank, roleId })
             Dashboard
           </NavLink>
         </li>
-
+        {/* Property */}
         <li className="nav-item">
           <span
             className="nav-link"
@@ -81,7 +82,7 @@ const OffcanvasBody = ({ canvasNumber, propertiesLinkDisabled, isBank, roleId })
             </div>
           </div>
         </li>
-
+        {/* Users */}
         {roleId !== 2 ? <li className="nav-item">
           <span
             className="nav-link"
@@ -120,7 +121,7 @@ const OffcanvasBody = ({ canvasNumber, propertiesLinkDisabled, isBank, roleId })
                         className="nav-link sidebar-link"
                         to="/admin/users/organizational-users"
                       >
-                        <i className="bi bi-laptop me-2 text-light"></i>
+                        <i className="bi bi-building me-2 text-light"></i>
                         Organizational
                       </NavLink>
                     </li>
@@ -136,6 +137,7 @@ const OffcanvasBody = ({ canvasNumber, propertiesLinkDisabled, isBank, roleId })
                     </li>
                   </>
                 ) : (<>
+                {/* Branch */}
                   {roleId === 6 ?
                     <li className="nav-item">
                       <NavLink
@@ -143,7 +145,7 @@ const OffcanvasBody = ({ canvasNumber, propertiesLinkDisabled, isBank, roleId })
                         to={`/bank/users/branch-users`}
                       >
                         <i className="bi bi-bank me-2 text-light"></i>
-                        Branch 
+                        Branch
                       </NavLink>
                     </li>
                     : ""}</>

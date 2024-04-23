@@ -21,7 +21,7 @@ const BreadCrumb = ({
   const data = JSON.parse(localStorage.getItem("data"));
   if (data) {
     isBank = data.isBank;
-    roleId = data.roleId;
+    roleId = data.roleId; 
   }
   const [isBulkUploadPropertyPageActive, setIsBulkUploadPropertyPageActive] =
     useState(false);

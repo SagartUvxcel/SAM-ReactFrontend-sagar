@@ -12,7 +12,7 @@ const EnquiryProtected = ({ children }) => {
         goTo("/access-denied");
       }
     } else {
-      goTo("/access-denied");
+      goTo("/access-denied"); 
     }
   };
   useEffect(() => {

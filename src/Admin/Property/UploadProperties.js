@@ -16,7 +16,8 @@ let temp = 0;
 let authHeaders = "";
 
 const UploadProperties = () => {
-  // Bootstrap alert details.
+
+  // error alert details.
   const [errorModalDetails, setErrorModalDetails] = useState({
     errorModalOpen: false,
     errorHeading: "",
@@ -68,13 +69,10 @@ const UploadProperties = () => {
   const readFileFunction = (inputFile) => {
     setFileName(inputFile.name);
     const reader = new FileReader();
-    console.log("reader==>",reader);
 
     reader.onload = async ({ target }) => {
       const csv = Papa.parse(target.result, { header: true });
-      console.log("csv==>",csv);
       const parsedData = csv.data;
-      console.log("parsedData==>",parsedData);
       setAllUseStates({
         ...allUseStates,
         tableHeadings: Object.keys(parsedData[0]),
@@ -87,13 +85,12 @@ const UploadProperties = () => {
     document.getElementById("showCsvDataInTable").scrollIntoView(true);
   };
 
+  // file Upload function
   const fileUpload = (e) => {
     setSavedFile([...files, ...e.target.files]);
     if (e.target.files.length) {
       const inputFile = e.target.files[0];
       const fileExtension = inputFile.type.split("/")[1];
-      console.log("inputFile==>",inputFile);
-      console.log("fileExtension==>",fileExtension);
       if (!allowedExtensions.includes(fileExtension)) {
         alert("Please upload a csv file");
         fileRef.current.value = "";
@@ -105,7 +102,7 @@ const UploadProperties = () => {
     }
   };
 
-  // fileUpload
+  // file extension checking
   const handleDrop = (e) => {
     e.preventDefault();
     setSavedFile([...files, ...e.dataTransfer.files]);
@@ -137,6 +134,7 @@ const UploadProperties = () => {
     reader.readAsDataURL(blob);
   };
 
+  // upload Chunk
   const uploadChunk = async (readerEvent) => {
     const file = files[currentFileIndex];
     const size = file.size;
@@ -156,17 +154,14 @@ const UploadProperties = () => {
       file_name: file.name,
       data: data,
     };
-    console.log(detailsToPost);
     const chunks = Math.ceil(file.size / chunkSize) - 1;
     const isLastChunk = currentChunkIndex === chunks;
-    console.log(chunks, isLastChunk);
     try {
       await axios
         .post(`/sam/v1/property/auth/upload-chunk`, detailsToPost, {
           headers: authHeaders,
         })
         .then((res) => {
-          console.log(res.data);
           if (isLastChunk) {
             if (res.data.msg === 0) {
               toast.success("File uploaded successfully");
@@ -193,7 +188,6 @@ const UploadProperties = () => {
           }
         });
     } catch (error) {
-      console.log(error);
       if (isLastChunk) {
         toast.error("Internal server error");
         reloadPage();
@@ -243,6 +237,7 @@ const UploadProperties = () => {
     // eslint-disable-next-line
   }, [currentChunkIndex]);
 
+  // post Chunks To DataBase
   const postChunksToDataBase = () => {
     setFiles(saveFile);
   };
@@ -252,6 +247,7 @@ const UploadProperties = () => {
     // eslint-disable-next-line
   }, []);
 
+  // page reload function
   const reloadPage = () => {
     setTimeout(() => {
       window.location.reload();
@@ -276,7 +272,7 @@ const UploadProperties = () => {
             <div className="d-flex justify-content-between align-items-center mt-2">
             <BreadCrumb />
                 <a
-                  className="btn btn-primary sample-file-download-btn me-4"
+                  className="btn btn-primary text-white sample-file-download-btn me-4"
                   href={sampleCSVFile}
                   download="SampleBulkFile.csv"
                 >
@@ -364,15 +360,18 @@ const UploadProperties = () => {
                       </tbody>
                     </table>
                   </div>
+                  {/* save and cancel button */}
                   <div
                     className={`text-end mt-3 bg-light  save-cancel-btn-div ${tableDisplayClass}`}
                   >
+                  {/* Save */}
                     <button
                       className="btn btn-success me-2"
                       onClick={postChunksToDataBase}
                     >
                       Save
                     </button>
+                    {/* cancel */}
                     <button
                       onClick={onCancelClick}
                       className="btn btn-secondary"

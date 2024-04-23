@@ -1,15 +1,12 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Layout from "../../components/1.CommonLayout/Layout";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { checkLoginSession, openInNewTab } from "../../CommonFunctions";
+import { checkLoginSession } from "../../CommonFunctions";
 import bankRegistrationLinkPage from "../../images/bankRegistrationLinkPage.svg";
 
 
 let authHeader = "";
-let bank_Id = "";
-let isBank = false;
-
 // regular expression
 const emailRegularExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 const branchNameRegularExp = /^[A-Za-z0-9\s\-&.,'()]+/
@@ -23,8 +20,6 @@ const BankRegistrationLinkPage = () => {
     const data = JSON.parse(localStorage.getItem("data"));
     if (data) {
         authHeader = { Authorization: data.loginToken };
-        isBank = data.isBank;
-        bank_Id = data.bank_id;
     }
 
     const [banks, setBanks] = useState([]);
@@ -51,7 +46,6 @@ const BankRegistrationLinkPage = () => {
     const getDataFromApi = async () => {
         const bankRes = await axios.get(`/sam/v1/property/by-bank`);
         setBanks(bankRes.data);
-        // console.log(bankRes.data);
     };
 
     // clear Error Msg Function after change bank or branch form 
@@ -66,7 +60,16 @@ const BankRegistrationLinkPage = () => {
             branchSftpValidationMessage: "",
         });
     }
+    // on input focus
+    const handleFocus = (e) => {
+        e.target.nextSibling.classList.add('active');
+    };
 
+    // on click on label
+    const handleClick = (inputId) => {
+        const input = document.getElementById(inputId);
+        input.focus();
+    };
 
     // on Input Change Function
     const onInputChange = async (e) => {
@@ -85,38 +88,7 @@ const BankRegistrationLinkPage = () => {
                 });
                 // style.borderColor = "";
                 setFormData({ ...formData, [name]: value });
-                // If input field is email then post its value to api for validating.
-                try {
-                    await axios
-                        .post(
-                            `/sam/v1/customer-registration/email-validation`,
-                            JSON.stringify({ email: value })
-                        )
-                        .then((res) => {
-                            var emailFormat = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
-                            if (res.data.status === 1) {
-                                setValidationDetails({
-                                    ...validationDetails,
-                                    emailValidationMessage: "Email id already exists.",
-                                });
-                                style.borderColor = "red";
-                            } else if (!emailFormat.test(value)) {
-                                setValidationDetails({
-                                    ...validationDetails,
-                                    emailValidationMessage: "Invalid email Id.",
-                                });
-                                style.borderColor = "red";
-                            } else {
-                                setValidationDetails({
-                                    ...validationDetails,
-                                    emailValidationMessage: "",
-                                });
-                                style.borderColor = "";
-                            }
-                        });
-                } catch (error) {
-                    toast.error("Server error while validating email");
-                }
+
             } else {
                 setValidationDetails({
                     ...validationDetails,
@@ -188,10 +160,55 @@ const BankRegistrationLinkPage = () => {
             }
         }
     }
-
-    const onOtherBankNameInputChange = (e) => {
+    // on input blur
+    const onInputBlur = async (e) => {
         const { name, value, style } = e.target;
-        console.log(name, value);
+        if (!value) {
+            e.target.nextSibling.classList.remove('active');
+        }
+        if (name === "email") {
+            setFormData({
+                ...formData,
+                contact_details: { ...formData.contact_details, [name]: value },
+            });
+            // If input field is email then post its value to api for validating.
+            try {
+                await axios
+                    .post(
+                        `/sam/v1/customer-registration/email-validation`,
+                        JSON.stringify({ email: value })
+                    )
+                    .then((res) => {
+                        var emailFormat = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
+                        if (res.data.status === 1) {
+                            setValidationDetails({
+                                ...validationDetails,
+                                emailValidationMessage: "Email id already exists.",
+                            });
+                            style.borderColor = "red";
+                        } else if (!emailFormat.test(value)) {
+                            setValidationDetails({
+                                ...validationDetails,
+                                emailValidationMessage: "Invalid email Id.",
+                            });
+                            style.borderColor = "red";
+                        } else {
+                            setValidationDetails({
+                                ...validationDetails,
+                                emailValidationMessage: "",
+                            });
+                            style.borderColor = "";
+                        }
+                    });
+            } catch (error) {
+                toast.error("Server error while validating email");
+            }
+        }
+    }
+
+    // other bank name selected 
+    const onOtherBankNameInputChange = (e) => {
+        const { value } = e.target;
         setOtherBankName(value);
     }
 
@@ -199,8 +216,6 @@ const BankRegistrationLinkPage = () => {
     const onFormSubmit = async (e) => {
         e.preventDefault();
         const dataToPost = { ...formData, "bank_name": `${formData.bank_name === "other" && bankSelected === 0 ? otherBankName : formData.bank_name}` }
-        console.log(dataToPost);
-
         setLoading(true);
         try {
             await axios.post(`/sam/v1/bank-registration/auth/branch/token`, dataToPost, {
@@ -208,7 +223,6 @@ const BankRegistrationLinkPage = () => {
             })
                 .then((res) => {
                     if (res.data.status === 0) {
-                        console.log(res);
                         setLoading(false);
                         setFormData({});
                         toast.success("Send Registration Link Successfully !");
@@ -219,7 +233,6 @@ const BankRegistrationLinkPage = () => {
                     }
                 });
         } catch (error) {
-            console.log(error);
             setLoading(false);
             toast.error(error.response.data.error);
         }
@@ -233,6 +246,7 @@ const BankRegistrationLinkPage = () => {
                 }
             });
         }
+        // eslint-disable-next-line
     }, []);
 
 
@@ -298,24 +312,18 @@ const BankRegistrationLinkPage = () => {
                                         <div className="row bank-type-row flex-wrap">
                                             {/* Bank Name */}
                                             <div className="col-xl-6 col-md-6 mt-3 mt-xl-0 mb-3">
-                                                <div className="form-group d-flex align-items-center flex-wrap">
-                                                    <label
-                                                        className="form-label common-btn-font m-0 me-1"
-                                                        htmlFor="bank"
-                                                    >
-                                                        Bank Name
-                                                        <span className="fw-bold text-danger">*</span>
-                                                    </label>
+                                                <div className="form-group d-flex align-items-center flex-wrap custom-class-form-div">
                                                     <select
-                                                        id="bank"
+                                                        id="bank_name"
                                                         name="bank_name"
-                                                        className="form-select  form-bank-select ps-3"
+                                                        className="form-select custom-input  form-bank-select ps-3"
                                                         onChange={onInputChange}
-                                                        placeholder="Select Bank Name"
+                                                        onBlur={onInputBlur}
+                                                        onFocus={handleFocus} 
                                                         value={formData.bank_name}
                                                         required
                                                     >
-                                                        <option value="" className="text-gray"  > Select Bank Name</option>
+                                                        <option value="" className="text-gray"  >  </option>
                                                         {banks ? (
                                                             banks.map((data) => {
                                                                 return (
@@ -334,13 +342,13 @@ const BankRegistrationLinkPage = () => {
                                                         {/* <option value="other">Other</option> */}
 
                                                     </select>
+                                                    <label className="ps-0" htmlFor="bank_name" onClick={() => handleClick('bank_name')} >Select Bank Name<span className="text-danger">*</span></label>
                                                     {bankNameSelectedOption === 'other' && (
                                                         <div className="otherBankNameDiv mt-2 w-100">
                                                             <input type="text"
                                                                 className="otherBankName ps-2  form-control w-100 "
                                                                 name="other_bankName"
                                                                 placeholder="Enter bank name"
-                                                                // value={formData.bank_name} 
                                                                 onChange={onOtherBankNameInputChange}
 
                                                             />
@@ -351,23 +359,18 @@ const BankRegistrationLinkPage = () => {
                                             </div>
                                             {/* Email */}
                                             <div className="col-xl-6 col-md-6 mt-3 mt-xl-0 mb-3">
-                                                <div className="form-group d-flex align-items-center flex-wrap">
-                                                    <label
-                                                        className="form-label common-btn-font m-0 me-1"
-                                                        htmlFor="email"
-                                                    >
-                                                        Email
-                                                        <span className="fw-bold text-danger">*</span>
-                                                    </label>
+                                                <div className="form-group d-flex align-items-center flex-wrap custom-class-form-div"> 
                                                     <input
                                                         onChange={onInputChange}
+                                                        onBlur={onInputBlur}
+                                                        onFocus={handleFocus} 
                                                         type="email"
                                                         name="email"
-                                                        className="form-control form-bank-select "
-                                                        id="email"
-                                                        placeholder="Email"
+                                                        className="form-control custom-input form-bank-select "
+                                                        id="email" 
                                                         required
                                                     />
+                                                    <label className="ps-0" htmlFor="email" onClick={() => handleClick('email')} >Email<span className="text-danger">*</span></label>
                                                     <span
                                                         className={`pe-1 ${emailValidationMessage ? "text-danger" : "d-none"
                                                             }`}
@@ -385,9 +388,9 @@ const BankRegistrationLinkPage = () => {
                                                     <button
                                                         disabled={loading ? true : false}
                                                         type="submit"
-                                                        className={`btn btn-primary text-center  md-w-50 common-btn-font ${emailValidationMessage && emailValidationMessage.length > 0 ||
-                                                            bankNameValidationMessage
-                                                            && bankNameValidationMessage.length > 0 ? "disabled" : ""} `}
+                                                        className={`btn btn-primary text-center  md-w-50 common-btn-font ${(emailValidationMessage && emailValidationMessage.length > 0) ||
+                                                            (bankNameValidationMessage
+                                                                && bankNameValidationMessage.length > 0) || (formData.bank_name > 0 && formData.email > 0) ? "disabled" : ""} `}
                                                     >{loading ? (
                                                         <>
                                                             <span
@@ -416,25 +419,18 @@ const BankRegistrationLinkPage = () => {
                                         <div className="row bank-type-row flex-wrap">
                                             {/* Bank Name */}
                                             <div className="col-xl-6 col-md-6 mt-3 mt-xl-0 mb-3">
-                                                <div className="form-group d-flex align-items-center flex-wrap">
-                                                    <label
-                                                        className="form-label common-btn-font m-0 me-1"
-                                                        htmlFor="bank"
-                                                    >
-                                                        Bank Name
-                                                        <span className="fw-bold text-danger">*</span>
-                                                    </label>
-
-                                                    <select
-                                                        id="bank"
+                                                <div className="form-group d-flex align-items-center flex-wrap custom-class-form-div"> 
+                                                    <select 
                                                         name="bank_name"
-                                                        className="form-select  form-bank-select ps-3"
+                                                        id="bank_name"
+                                                        className="form-select custom-input  form-bank-select ps-3"
                                                         onChange={onInputChange}
-                                                        placeholder="Select Bank Name"
+                                                        onBlur={onInputBlur}
+                                                        onFocus={handleFocus}  
                                                         value={formData.bank_name}
                                                         required
                                                     >
-                                                        <option value="" className="text-gray" > Select Bank Name</option>
+                                                        <option value="" className="text-gray" >  </option>
                                                         {banks ? (
                                                             banks.map((data) => {
                                                                 return (
@@ -451,27 +447,24 @@ const BankRegistrationLinkPage = () => {
                                                             <> </>
                                                         )}
                                                     </select>
+                                                    <label className="ps-0" htmlFor="bank_name" onClick={() => handleClick('bank_name')} >Select Bank Name<span className="text-danger">*</span></label>
 
                                                 </div>
                                             </div>
                                             {/* Branch Name */}
                                             <div className="col-xl-6 col-md-6 mt-3 mt-xl-0 mb-3">
-                                                <div className="form-group d-flex align-items-center flex-wrap">
-                                                    <label
-                                                        className="form-label common-btn-font m-0 me-1"
-                                                        htmlFor="bank"
-                                                    >
-                                                        Branch Name
-                                                        <span className="fw-bold text-danger">*</span>
-                                                    </label>
+                                                <div className="form-group d-flex align-items-center flex-wrap custom-class-form-div"> 
                                                     <input
                                                         onChange={onInputChange}
+                                                        onBlur={onInputBlur}
+                                                        onFocus={handleFocus} 
                                                         name="branch_name"
-                                                        type="text"
-                                                        placeholder="Branch Name "
-                                                        className="form-control form-bank-select "
+                                                        id="branch_name"
+                                                        type="text" 
+                                                        className="form-control custom-input form-bank-select "
                                                         required
                                                     />
+                                                    <label className="ps-0" htmlFor="branch_name" onClick={() => handleClick('branch_name')} >Branch Name<span className="text-danger">*</span></label>
                                                     <span
                                                         className={`pe-1 ${branchNameValidationMessage ? "text-danger" : "d-none"
                                                             }`}
@@ -482,23 +475,18 @@ const BankRegistrationLinkPage = () => {
                                             </div>
                                             {/* Branch Code */}
                                             <div className="col-xl-6 col-md-6 mt-3 mt-xl-0 mb-3">
-                                                <div className="form-group d-flex align-items-center flex-wrap">
-                                                    {/* <div className="form-group mb-4"> */}
-                                                    <label
-                                                        className="form-label common-btn-font m-0 me-1"
-                                                        htmlFor="bank"
-                                                    >
-                                                        Branch Code
-                                                        <span className="fw-bold text-danger">*</span>
-                                                    </label>
+                                                <div className="form-group d-flex align-items-center flex-wrap custom-class-form-div"> 
                                                     <input
                                                         onChange={onInputChange}
+                                                        onBlur={onInputBlur}
+                                                        onFocus={handleFocus} 
                                                         name="branch_code"
-                                                        type="text"
-                                                        placeholder="Branch Code"
-                                                        className="form-control form-bank-select "
+                                                        id="branch_code"
+                                                        type="text" 
+                                                        className="form-control custom-input form-bank-select "
                                                         required
                                                     />
+                                                    <label className="ps-0" htmlFor="branch_code" onClick={() => handleClick('branch_code')} >Branch Code<span className="text-danger">*</span></label>
                                                     <span
                                                         className={`pe-1 ${branchCodeValidationMessage ? "text-danger" : "d-none"
                                                             }`}
@@ -510,22 +498,18 @@ const BankRegistrationLinkPage = () => {
                                             </div>
                                             {/* IFSC code */}
                                             <div className="col-xl-6 col-md-6 mt-3 mt-xl-0 mb-3">
-                                                <div className="form-group d-flex align-items-center flex-wrap">
-                                                    <label
-                                                        className="form-label common-btn-font m-0 me-1"
-                                                        htmlFor="bank"
-                                                    >
-                                                        IFSC code
-                                                        <span className="fw-bold text-danger">*</span>
-                                                    </label>
+                                                <div className="form-group d-flex align-items-center flex-wrap custom-class-form-div"> 
                                                     <input
                                                         onChange={onInputChange}
+                                                        onBlur={onInputBlur}
+                                                        onFocus={handleFocus} 
                                                         name="ifsc_code"
-                                                        type="text"
-                                                        placeholder=" IFSC Code"
-                                                        className="form-control form-bank-select "
+                                                        id="ifsc_code"
+                                                        type="text" 
+                                                        className="form-control custom-input form-bank-select "
                                                         required
                                                     />
+                                                    <label className="ps-0" htmlFor="ifsc_code" onClick={() => handleClick('ifsc_code')} >IFSC code<span className="text-danger">*</span></label>
                                                     <span
                                                         className={`pe-1 ${ifscCodeValidationMessage ? "text-danger" : "d-none"
                                                             }`}
@@ -537,23 +521,18 @@ const BankRegistrationLinkPage = () => {
                                             </div>
                                             {/* Branch SFTP */}
                                             <div className="col-xl-6 col-md-6 mt-3 mt-xl-0 mb-3">
-                                                <div className="form-group d-flex align-items-center flex-wrap">
-                                                    <label
-                                                        className="form-label common-btn-font m-0 me-1"
-                                                        htmlFor="bank"
-                                                    >
-                                                        Branch SFTP
-                                                        <span className="fw-bold text-danger">*</span>
-                                                    </label>
+                                                <div className="form-group d-flex align-items-center flex-wrap custom-class-form-div"> 
                                                     <input
                                                         onChange={onInputChange}
-
+                                                        onBlur={onInputBlur}
+                                                        onFocus={handleFocus} 
                                                         name="branch_sftp"
-                                                        type="text"
-                                                        placeholder=" Branch SFTP"
-                                                        className="form-control form-bank-select "
+                                                        id="branch_sftp"
+                                                        type="text" 
+                                                        className="form-control custom-input form-bank-select "
                                                         required
                                                     />
+                                                    <label className="ps-0" htmlFor="branch_sftp" onClick={() => handleClick('branch_sftp')} >Branch SFTP<span className="text-danger">*</span></label>
                                                     <span
                                                         className={`pe-1 ${branchSftpValidationMessage ? "text-danger" : "d-none"
                                                             }`}
@@ -565,23 +544,18 @@ const BankRegistrationLinkPage = () => {
                                             </div>
                                             {/* Email */}
                                             <div className="col-xl-6 col-md-6 mt-3 mt-xl-0 mb-3">
-                                                <div className="form-group d-flex align-items-center flex-wrap">
-                                                    <label
-                                                        className="form-label common-btn-font m-0 me-1"
-                                                        htmlFor="email"
-                                                    >
-                                                        Email
-                                                        <span className="fw-bold text-danger">*</span>
-                                                    </label>
+                                                <div className="form-group d-flex align-items-center flex-wrap custom-class-form-div"> 
                                                     <input
                                                         onChange={onInputChange}
+                                                        onBlur={onInputBlur}
+                                                        onFocus={handleFocus} 
                                                         type="email"
                                                         name="email"
-                                                        className="form-control  form-bank-select "
-                                                        id="email"
-                                                        placeholder="Email"
+                                                        className="form-control custom-input form-bank-select "
+                                                        id="email" 
                                                         required
                                                     />
+                                                    <label className="ps-0" htmlFor="email" onClick={() => handleClick('email')} >Email<span className="text-danger">*</span></label>
                                                     <span
                                                         className={`pe-1 ${emailValidationMessage ? "text-danger" : "d-none"
                                                             }`}
@@ -598,14 +572,14 @@ const BankRegistrationLinkPage = () => {
                                                     <button
                                                         disabled={loading ? true : false}
                                                         type="submit" className={`btn btn-primary text-center  md-w-50 common-btn-font
-                                                        ${emailValidationMessage && emailValidationMessage.length > 0 ||
-                                                            branchNameValidationMessage
-                                                            && branchNameValidationMessage.length > 0||
-                                                            bankNameValidationMessage
-                                                            && bankNameValidationMessage.length > 0 || branchCodeValidationMessage &&
-                                                            branchCodeValidationMessage.length > 0 || ifscCodeValidationMessage &&
-                                                            ifscCodeValidationMessage.length > 0 || branchSftpValidationMessage &&
-                                                            branchSftpValidationMessage.length > 0 ? "disabled" : ""}  `}
+                                                        ${(emailValidationMessage && emailValidationMessage.length > 0) ||
+                                                                (branchNameValidationMessage
+                                                                    && branchNameValidationMessage.length > 0) ||
+                                                                (bankNameValidationMessage
+                                                                    && bankNameValidationMessage.length > 0) || (branchCodeValidationMessage &&
+                                                                        branchCodeValidationMessage.length > 0) || (ifscCodeValidationMessage &&
+                                                                            ifscCodeValidationMessage.length > 0) || (branchSftpValidationMessage &&
+                                                                                branchSftpValidationMessage.length > 0) ? "disabled" : ""}  `}
                                                     >{loading ? (
                                                         <>
                                                             <span
