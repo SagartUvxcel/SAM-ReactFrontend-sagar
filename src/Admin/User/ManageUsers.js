@@ -13,10 +13,10 @@ import {
 } from "../../CommonFunctions";
 
 const records_per_page = 5;
+let initial_page_number = 1;
 let authHeader = "";
 let roleId = "";
 let bank_id = 0;
-let initial_page_number = 1;
 let defaultRoleText = "";
 let defaultRoleIds = [];
 let rolesToRemove = [];
@@ -40,7 +40,7 @@ const ManageUsers = ({ userType }) => {
     otherDetailsOfUser;
   const [categoryWiseUserDetails, setCategoryWiseUserDetails] = useState({});
   const [roles, setRoles] = useState([]);
-  const [accountStatus, setAccountStatus] = useState(null);
+  const [accountStatus, setAccountStatus] = useState(0);
   const [loggedInUserId, setLoggedInUserId] = useState(null);
   const [displayClassesOfMainSections, setDisplayClassesOfMainSections] =
     useState({
@@ -73,6 +73,7 @@ const ManageUsers = ({ userType }) => {
   const getAllUsers = async (searchInput = "") => {
     setLoading(true);
     if (dataFromBankAdminPage === null) {
+      console.log(accountStatus);
       const dataToPost = {
         type: userType,
         page_number: initial_page_number,
@@ -85,6 +86,7 @@ const ManageUsers = ({ userType }) => {
           .post(`${url}/get-users`, dataToPost, { headers: authHeader })
           .then((res) => {
             setUsers(res.data);
+            console.log(res.data);
             setLoading(false);
           });
         await axios
@@ -116,6 +118,8 @@ const ManageUsers = ({ userType }) => {
         await axios.post(`/sam/v1/bank-registration/auth/bank/user-list`, dataToPost, { headers: authHeader })
           .then((res) => {
             setUsers(res.data.bank_users);
+
+            console.log(res.data.bank_users);
             setLoading(false);
           });
         await axios.get(`${url}/type-count`, { headers: authHeader })
@@ -178,11 +182,36 @@ const ManageUsers = ({ userType }) => {
   };
 
   // onDeleteBtnClick
-  const onDeleteBtnClick = (userId, userName) => {
+  const onDeleteBtnClick = async (userId, userName, roleValue, branchIdDetails, branchNameDetails) => {
+    console.log(roleValue, branchIdDetails, branchNameDetails);
     setSelectedUserId(userId);
     setSelectedUserEmail(userName);
-    getAllUsers();
-    setConfirmDeleteUserBtnDisabled(true);
+    // getAllUsers();
+    if (roleValue === "Editor") {
+      const dataToPost = {
+        "current_branch_id": parseInt(branchIdDetails)
+      }
+      try {
+        await axios.post(`/sam/v1/bank-registration/auth/close-branch-initial-check`, dataToPost, { headers: authHeader })
+          .then((res) => {
+            const response = res.data
+            console.log(response);
+            if (response) {
+              const sensitiveData = { ...response, branchIdDetails, branchNameDetails, dataFromBankAdminPage };
+              navigate(`${roleId === 6 ? "/bank" : "/admin"
+                }/users/branch-users/change-user-branch`, { state: { sensitiveData } })
+            }
+          });
+
+      } catch (error) {
+        // setLoading(false);
+        console.log(error);
+        toast.error(`${error.response.data.error=== 'Not have any other branch'? "No other branch is present to transfer.": "Internal server error"}`)
+      }
+      // navigate("/");
+    } else {
+      setConfirmDeleteUserBtnDisabled(true);
+    }
   };
 
   // toggle Active Page Class
@@ -199,15 +228,25 @@ const ManageUsers = ({ userType }) => {
 
   // delete User
   const deleteUser = async (userId, userName) => {
+
+    const status = accountStatus === 0 ? 1 : 0;
+    const dataToPost = {
+      "user_id": userId,
+      "status": status,
+    }
+    confirmDeleteInputRef.value = "";
     try {
       await axios
-        .delete(`/sam/v1/user-registration/auth/${userId}`, {
+        .put(`/sam/v1/user-registration/auth/change-user-status`, dataToPost, {
           headers: authHeader,
         })
         .then((res) => {
           if (res.data.status === 0) {
             toast.success(`User ${userName} ${roleId === 6 ? "deleted" : `${roleId === 1 && accountStatus === 1 ? "activated" : "deactivated"}`} successfully`);
             setConfirmDeleteUserBtnDisabled(true);
+            setAccountStatus(accountStatus);
+            getAllUsers();
+            console.log(totalUsersCount);
             setTotalUsersCount(totalUsersCount - 1);
             if (totalUsersCount - 1 !== 0) {
               let newPageCount = Math.ceil(
@@ -220,7 +259,7 @@ const ManageUsers = ({ userType }) => {
                 handlePageClick({ selected: currentPageNumber - 1 });
               }
             } else {
-              setUsers(false);
+              // setUsers([]);
             }
           } else {
             toast.error("Internal server error");
@@ -506,8 +545,8 @@ const ManageUsers = ({ userType }) => {
                         {users.map((user, Index) => {
                           const { email_address, user_id, } = user.user_details;
                           const { bank_id } = user;
-                          if (user.bank_user) {
-                          }
+                          let branchIdDetails = dataFromBankAdminPage !== null ? user.bank_user.BranchId : "";
+                          let branchNameDetails = dataFromBankAdminPage !== null ? user.bank_user.branch_name : "";
                           let currentRolesArray = user.role;
                           let roleIdArray = [];
                           let arrayOfRoles = [];
@@ -558,32 +597,33 @@ const ManageUsers = ({ userType }) => {
                                     aria-labelledby="navbarDropdown"
                                   >
                                     {/* View */}
-                                    {arrayOfRoles.join(", ") !== "Bank Admin" ? <div
-                                      className="dropdown-item"
-                                      onClick={() => {
-                                        saveCurrentUserData(user_id);
-                                        setDisplayClassesOfMainSections({
-                                          showAllUsersSectionClass: "d-none",
-                                          viewCurrentUserSectionClass: "",
-                                        });
-                                      }}
-                                    >
-                                      <i className="bi bi-eye pe-1"></i> View
-                                    </div> : <div
-                                      className="dropdown-item"
-                                      onClick={() => {
-                                        const sensitiveData = bank_id;
-                                        navigate(`${roleId === 6 ? "/bank" : "/admin"
-                                          }/users/branch-users`, { state: { sensitiveData } })
-                                      }}
-                                    >
-                                      <i className="bi bi-eye pe-1"></i> View Branch List
-                                    </div>}
+                                    {arrayOfRoles.join(", ") !== "Bank Admin" ?
+                                      <div
+                                        className="dropdown-item"
+                                        onClick={() => {
+                                          saveCurrentUserData(user_id);
+                                          setDisplayClassesOfMainSections({
+                                            showAllUsersSectionClass: "d-none",
+                                            viewCurrentUserSectionClass: "",
+                                          });
+                                        }}
+                                      >
+                                        <i className="bi bi-eye pe-1"></i> View
+                                      </div> : <div
+                                        className="dropdown-item"
+                                        onClick={() => {
+                                          const sensitiveData = bank_id;
+                                          navigate(`${roleId === 6 ? "/bank" : "/admin"
+                                            }/users/branch-users`, { state: { sensitiveData } })
+                                        }}
+                                      >
+                                        <i className="bi bi-eye pe-1"></i> View Branch List
+                                      </div>}
 
                                     {/* Delete */}
-                                    {(roleId === 6 && accountStatus !== 1) || (roleId === 1) ?
+                                    {arrayOfRoles.join(", ") !== "Bank Admin" ?
                                       <div
-                                        data-bs-toggle="modal"
+                                        data-bs-toggle={`${arrayOfRoles.join(", ") === "Editor" ? "" : "modal"}`}
                                         data-bs-target="#confirmDeleteUserModal"
                                         className={`dropdown-item ${email_address === data.user
                                           ? "d-none"
@@ -592,12 +632,15 @@ const ManageUsers = ({ userType }) => {
                                         onClick={() => {
                                           onDeleteBtnClick(
                                             user_id,
-                                            email_address
+                                            email_address,
+                                            arrayOfRoles.join(", "),
+                                            branchIdDetails,
+                                            branchNameDetails
                                           );
                                         }}
                                       >
                                         <i className="bi bi-trash pe-2"></i>
-                                        {roleId === 6 ? "Delete" : `${roleId === 1 && accountStatus === 1 ? "Activate" : "Deactivate"}`}
+                                        {arrayOfRoles.join(", ") === "Editor" ? "Close Branch" : `${roleId === 1 && accountStatus === 1 ? "Activate" : "Deactivate"}`}
 
                                       </div>
                                       : ""}
@@ -734,7 +777,7 @@ const ManageUsers = ({ userType }) => {
                                       className="form-check-label"
                                       htmlFor={`inlineCheckbox${data.id}`}
                                     >
-                                      {data.role}
+                                      {data.role === "Bank_Admin" ? "Bank Admin" : data.role}
                                     </label>
                                   </div>
                                 );
@@ -1045,7 +1088,7 @@ const ManageUsers = ({ userType }) => {
                 disabled={confirmDeleteUserBtnDisabled}
                 className="btn btn-danger w-100 mt-3 fw-bold"
               >
-                Delete User
+                {roleId === 6 ? "Activate" : `${roleId === 1 && accountStatus === 1 ? "Activate User" : "Deactivate User"}`}
               </button>
             </div>
           </div>

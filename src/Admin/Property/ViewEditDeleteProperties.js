@@ -4,6 +4,7 @@ import {
   checkLoginSession,
   rootTitle,
   transformDateFormat,
+  propertyDateFormat
 } from "../../CommonFunctions";
 import Layout from "../../components/1.CommonLayout/Layout";
 import AdminSideBar from "../AdminSideBar";
@@ -296,6 +297,25 @@ const ViewEditDeleteProperties = () => {
     setFormData((oldData) => ({ ...oldData, [name]: value }));
   };
 
+  // handle Focus
+  const handleFocus = (e) => {
+    e.target.nextSibling.classList.add('active');
+  };
+
+  // on input blur
+  const onInputBlur = async (e) => {
+    const { value } = e.target;
+    if (!value) {
+      e.target.nextSibling.classList.remove('active');
+    }
+  }
+
+  // handle Click
+  const handleClick = (inputId) => {
+    const input = document.getElementById(inputId);
+    input.focus();
+  };
+
   // on Input Change
   const onInputChange = async (e) => {
     const { name, value } = e.target;
@@ -543,6 +563,7 @@ const ViewEditDeleteProperties = () => {
           headers: authHeader,
         })
         const dataValue = EnquiryRes.data;
+        console.log(dataValue);
         setEnquiryList(dataValue);
         setTempEnquiryList(dataValue);
         setMainPageLoading(false);
@@ -682,7 +703,7 @@ const ViewEditDeleteProperties = () => {
   const sendMessage = async (e) => {
     setSendReplyBtnLoading(true);
     e.preventDefault();
-    let enquiry_source= "email"
+    let enquiry_source = "email"
     let dataToPost = {
       property_id: propertyId,
       enquiry_source: enquiry_source,
@@ -854,6 +875,8 @@ const ViewEditDeleteProperties = () => {
     }
   }, [newComingMessage, enquiryId])
 
+
+
   return (
     <Layout>
       <div className="container-fluid section-padding">
@@ -941,7 +964,7 @@ const ViewEditDeleteProperties = () => {
                                         <i className="bi bi-currency-rupee"></i>
                                         {`${(
                                           parseInt(market_value) / 10000000
-                                        ).toFixed(2)} Cr.`}
+                                        ).toFixed(2)} `}<small className="text-muted">Cr.</small>
                                       </span>
                                     </div>
                                   ) : (
@@ -954,7 +977,7 @@ const ViewEditDeleteProperties = () => {
                                         <i className="bi bi-currency-rupee"></i>
                                         {`${(
                                           parseInt(expected_price) / 10000000
-                                        ).toFixed(2)} Cr.`}
+                                        ).toFixed(2)} `}<small className="text-muted">Cr.</small>
                                       </span>
                                     </div>
                                   ) : (
@@ -997,11 +1020,18 @@ const ViewEditDeleteProperties = () => {
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       onClick={() => {
+                                        // handleButtonClick()
                                         localStorage.setItem(
                                           "upload-doc",
                                           JSON.stringify({
                                             number: property_number,
                                             id: property_id,
+                                          })
+                                        );
+                                        localStorage.setItem(
+                                          "upload-doc-page",
+                                          JSON.stringify({
+                                            status:"open"
                                           })
                                         );
                                       }}
@@ -1207,30 +1237,28 @@ const ViewEditDeleteProperties = () => {
                               </div>
                             </div>
                           </div>
-
                           <hr />
                           {/* Row 2 - Area Details*/}
                           <div className="row mb-3">
                             <div className="col-12">
                               <h5 className="fw-bold heading-text-primary mb-3">Area</h5>
                             </div>
+                            {/* Saleable area (sq. ft.) */}
                             <div className="col-md-6">
-                              {/* Saleable area (sq. ft.) */}
                               <div className="form-group">
                                 {saleable_area ? (
-                                  <p><span className="paragraph-label-text">Saleable area (sq. ft.)</span>{saleable_area ? saleable_area : ""}</p>
+                                  <p><span className="paragraph-label-text">Saleable area</span>{saleable_area ? saleable_area : ""} <small className="text-muted">sqft</small></p>
                                 ) : (
                                   <></>
                                 )}
 
                               </div>
                             </div>
-
+                            {/*  Carpet area (sq. ft.) */}
                             <div className="col-md-6">
-                              {/*  Carpet area (sq. ft.) */}
                               <div className="form-group">
                                 {carpet_area ? (
-                                  <p><span className="paragraph-label-text"> Carpet area (sq. ft.)</span>{carpet_area ? carpet_area : ""}</p>
+                                  <p><span className="paragraph-label-text"> Carpet area</span>{carpet_area ? carpet_area : ""} <small className="text-muted">sqft</small></p>
                                 ) : (
                                   <></>
                                 )}
@@ -1243,65 +1271,58 @@ const ViewEditDeleteProperties = () => {
                             <div className="col-12">
                               <h5 className="fw-bold heading-text-primary mb-3">Pricing</h5>
                             </div>
+                            {/* Market price (Rs.) */}
                             <div className="col-xl-4 col-md-6">
-                              <div className="form-group">
-                                <label
-                                  htmlFor="market_price"
-                                  className="form-label common-btn-font"
-                                >
-                                  Market price (Rs.)
-                                </label>
+                              <div className="form-group custom-class-form-div">
                                 <input
-                                  className="form-control"
+                                  className="form-control custom-input"
                                   type="number"
                                   id="market_price"
                                   name="market_price"
                                   defaultValue={market_price}
                                   onChange={onInputChange}
+                                  onBlur={onInputBlur}
+                                  onFocus={handleFocus}
                                   required
                                 />
+                                <label className="px-2 active" htmlFor="market_price" onClick={() => handleClick('market_price')} >Market price (Rs.)<span className="text-danger">*</span></label>
                               </div>
                             </div>
+                            {/* Ready reckoner price (Rs.) */}
                             <div className="col-xl-4 col-md-6 mt-3 mt-md-0">
-                              <div className="form-group">
-                                <label
-                                  htmlFor="ready_reckoner_price"
-                                  className="form-label common-btn-font"
-                                >
-                                  Ready reckoner price (Rs.)
-                                </label>
+                              <div className="form-group custom-class-form-div">
                                 <input
                                   type="number"
                                   id="ready_reckoner_price"
                                   name="ready_reckoner_price"
-                                  className="form-control"
+                                  className="form-control custom-input"
                                   defaultValue={ready_reckoner_price}
                                   onChange={onInputChange}
+                                  onBlur={onInputBlur}
+                                  onFocus={handleFocus}
                                   required
                                 />
+                                <label className="px-2 active" htmlFor="ready_reckoner_price" onClick={() => handleClick('ready_reckoner_price')} >Ready reckoner price (Rs.)<span className="text-danger">*</span></label>
                               </div>
                             </div>
+                            {/* Reserved Price (Rs.) */}
                             <div className="col-xl-4 col-md-6 mt-3 mt-xl-0">
-                              <div className="form-group">
-                                <label
-                                  className="form-label common-btn-font"
-                                  htmlFor="expected_price"
-                                >
-                                  Reserved Price (Rs.)
-                                </label>
+                              <div className="form-group custom-class-form-div">
                                 <input
                                   type="number"
-                                  className="form-control"
+                                  className="form-control custom-input"
                                   id="expected_price"
                                   name="expected_price"
                                   defaultValue={expected_price}
                                   onChange={onInputChange}
+                                  onBlur={onInputBlur}
+                                  onFocus={handleFocus}
                                   required
                                 />
+                                <label className="px-2 active" htmlFor="expected_price" onClick={() => handleClick('expected_price')} >Reserved Price (Rs.)<span className="text-danger">*</span></label>
                               </div>
                             </div>
                           </div>
-
                           <hr />
                           {/* Row 4 - Dates & Availability Details */}
                           <div className="row mb-3">
@@ -1314,7 +1335,7 @@ const ViewEditDeleteProperties = () => {
                               {/* Completion date */}
                               {completion_date ? (
                                 <div className="form-group">
-                                  <p><span className="paragraph-label-text">Completion date</span>{completion_date}</p>
+                                  <p><span className="paragraph-label-text">Completion date</span>{propertyDateFormat(completion_date)}</p>
                                 </div>
                               ) : (
                                 <></>
@@ -1322,16 +1343,16 @@ const ViewEditDeleteProperties = () => {
                               {/* Purchase date */}
                               {purchase_date ? (
                                 <div className="form-group">
-                                  <p><span className="paragraph-label-text">Purchase date</span>{purchase_date}</p>
+                                  <p><span className="paragraph-label-text">Purchase date</span>{propertyDateFormat(purchase_date)}</p>
                                 </div>
                               ) : (
                                 <></>
                               )}
                             </div>
+                            {/* Mortgage date */}
                             <div className="col-md-6">
-                              {/* Mortgage date */}
                               <div className="form-group">
-                                <p><span className="paragraph-label-text">Mortgage date</span>{mortgage_date}</p>
+                                <p><span className="paragraph-label-text">Mortgage date</span>{propertyDateFormat(mortgage_date)}</p>
                               </div>
                               {/* Available for sale? */}
                               <div className="form-group">
@@ -1340,211 +1361,90 @@ const ViewEditDeleteProperties = () => {
                             </div>
 
                           </div>
+                          <hr />
                           {/* Row 5 - Address Details */}
-                          <div className="row">
+                          <div className="row mb-3">
                             <div className="col-12">
                               <h5 className="fw-bold heading-text-primary">Address</h5>
                             </div>
-                            {flat_number ? (
-                              <div className="col-xl-4 mb-3 col-md-6">
+                            <div className="col-md-6">
+                              {/* Flat No. */}
+                              {flat_number ? (
                                 <div className="form-group">
-                                  <label
-                                    className="form-label common-btn-font"
-                                    htmlFor="flat_number"
-                                  >
-                                    Flat No.
-                                  </label>
-                                  <input
-                                    id="flat_number"
-                                    name="flat_number"
-                                    type="number"
-                                    className="form-control"
-                                    value={flat_number}
-                                    disabled
-                                  />
+                                  <p><span className="paragraph-label-text">Flat No.</span>{flat_number}</p>
                                 </div>
-                              </div>
-                            ) : (
-                              <></>
-                            )}
-                            {building_name ? (
-                              <div className="col-xl-4 col-md-6 mb-3">
+                              ) : (
+                                <></>
+                              )}
+                              {/* Building Name */}
+                              {building_name ? (
                                 <div className="form-group">
-                                  <label
-                                    className="form-label common-btn-font"
-                                    htmlFor="building_name"
-                                  >
-                                    Building Name
-                                  </label>
-                                  <input
-                                    id="building_name"
-                                    name="building_name"
-                                    type="text"
-                                    className="form-control"
-                                    value={building_name}
-                                    disabled
-                                  />
+                                  <p><span className="paragraph-label-text">Building Name</span>{building_name}</p>
                                 </div>
-                              </div>
-                            ) : (
-                              <></>
-                            )}
-                            {society_name ? (
-                              <div className="col-xl-4 col-md-6 mb-3">
+                              ) : (
+                                <></>
+                              )}
+                              {/* Society Name */}
+                              {society_name ? (
                                 <div className="form-group">
-                                  <label
-                                    className="form-label common-btn-font"
-                                    htmlFor="society_name"
-                                  >
-                                    Society Name
-                                  </label>
-                                  <input
-                                    id="society_name"
-                                    name="society_name"
-                                    type="text"
-                                    className="form-control"
-                                    value={society_name}
-                                    disabled
-                                  />
+                                  <p><span className="paragraph-label-text">Society Name</span>{society_name}</p>
                                 </div>
-                              </div>
-                            ) : (
-                              <></>
-                            )}
-                            {plot_number ? (
-                              <div className="col-xl-4 mb-3 col-md-6">
+                              ) : (
+                                <></>
+                              )}
+                              {/* Plot No. */}
+                              {plot_number ? (
                                 <div className="form-group">
-                                  <label
-                                    className="form-label common-btn-font"
-                                    htmlFor="plot_number"
-                                  >
-                                    Plot No.
-                                  </label>
-                                  <input
-                                    id="plot_number"
-                                    name="plot_number"
-                                    type="number"
-                                    className="form-control"
-                                    value={plot_number}
-                                    disabled
-                                  />
+                                  <p><span className="paragraph-label-text">Plot No.</span>{plot_number}</p>
                                 </div>
-                              </div>
-                            ) : (
-                              <></>
-                            )}
-                            {locality ? (
-                              <div className="col-xl-4 mb-3 col-md-6">
+                              ) : (
+                                <></>
+                              )}
+                              {/* locality */}
+                              {locality ? (
                                 <div className="form-group">
-                                  <label
-                                    className="form-label common-btn-font"
-                                    htmlFor="locality"
-                                  >
-                                    Locality
-                                  </label>
-                                  <input
-                                    id="locality"
-                                    name="locality"
-                                    type="text"
-                                    className="form-control"
-                                    value={locality}
-                                    disabled
-                                  />
+                                  <p><span className="paragraph-label-text">Locality</span>{locality}</p>
                                 </div>
-                              </div>
-                            ) : (
-                              <></>
-                            )}
-
-                            {landmark ? (
-                              <div className="col-xl-4 col-md-6 mb-3">
+                              ) : (
+                                <></>
+                              )}
+                            </div>
+                            <div className=" col-md-6 ">
+                              {/* Landmark */}
+                              {landmark ? (
                                 <div className="form-group">
-                                  <label
-                                    className="form-label common-btn-font"
-                                    htmlFor="landmark"
-                                  >
-                                    Landmark
-                                  </label>
-                                  <input
-                                    id="landmark"
-                                    name="landmark"
-                                    type="text"
-                                    className="form-control"
-                                    value={landmark}
-                                    disabled
-                                  />
+                                  <p><span className="paragraph-label-text">Landmark</span>{landmark}</p>
                                 </div>
-                              </div>
-                            ) : (
-                              <></>
-                            )}
-
-                            {state_name ? (
-                              <div className="col-xl-4 col-md-6 mb-3">
+                              ) : (
+                                <></>
+                              )}
+                              {/* State */}
+                              {state_name ? (
                                 <div className="form-group">
-                                  <label
-                                    className="form-label common-btn-font"
-                                    htmlFor="state"
-                                  >
-                                    State
-                                  </label>
-                                  <input
-                                    id="state"
-                                    name="state"
-                                    className="form-control"
-                                    value={state_name}
-                                    disabled
-                                  />
+                                  <p><span className="paragraph-label-text">State</span>{state_name}</p>
                                 </div>
-                              </div>
-                            ) : (
-                              <></>
-                            )}
-                            {city_name ? (
-                              <div className="col-xl-4 col-md-6 mb-3">
+                              ) : (
+                                <></>
+                              )}
+                              {/* City */}
+                              {city_name ? (
                                 <div className="form-group">
-                                  <label
-                                    className="form-label common-btn-font"
-                                    htmlFor="city"
-                                  >
-                                    City
-                                  </label>
-                                  <input
-                                    id="city"
-                                    name="city"
-                                    className="form-control"
-                                    value={city_name}
-                                    disabled
-                                  />
+                                  <p><span className="paragraph-label-text">City</span>{city_name}</p>
                                 </div>
-                              </div>
-                            ) : (
-                              <></>
-                            )}
-                            {zip ? (
-                              <div className="col-xl-4 col-md-6 mb-3">
+                              ) : (
+                                <></>
+                              )}
+                              {/* zip */}
+                              {zip ? (
                                 <div className="form-group">
-                                  <label
-                                    className="form-label common-btn-font"
-                                    htmlFor="zip"
-                                  >
-                                    Zip
-                                  </label>
-                                  <input
-                                    type="text"
-                                    id="zip"
-                                    name="zip"
-                                    value={zip}
-                                    disabled
-                                    className="form-control"
-                                  ></input>
+                                  <p><span className="paragraph-label-text">Zip</span>{zip}</p>
                                 </div>
-                              </div>
-                            ) : (
-                              <></>
-                            )}
+                              ) : (
+                                <></>
+                              )}
+                            </div>
                           </div>
-                          <hr />
+                          {/* Updating button */}
                           <div className="row justify-content-end pt-2">
                             <div className="col-xl-2 col-12">
                               <button
@@ -1657,7 +1557,7 @@ const ViewEditDeleteProperties = () => {
                                       {/* <td>{property_number}</td> */}
                                       {/* <td>{property_type}</td> */}
                                       <td className="text-capitalize">{user_name}</td>
-                                      <td>{transformDateFormat(added_date)} </td>
+                                      <td>{propertyDateFormat(added_date)} </td>
                                       <td>
                                         <button
                                           onClick={() => {

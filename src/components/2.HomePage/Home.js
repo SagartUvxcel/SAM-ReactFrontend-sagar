@@ -264,6 +264,9 @@ function Home() {
             {/* 5 select boxes */}
             <div className="d-flex justify-content-center ">
               <div className="row five-box-row mt-lg-5 mt-md-0">
+              {/* <div className="row">
+                <p>Search property</p>
+              </div> */}
               {/* states */}
                 <div className="col-lg-3 col-md-4 col-12">
                   <div className="inner-box">

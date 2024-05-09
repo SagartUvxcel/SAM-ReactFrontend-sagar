@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import Layout from "../1.CommonLayout/Layout";
 import CommonSpinner from "../../CommonSpinner";
-import { transformDateFormat } from "../../CommonFunctions";
+import { propertyDateFormat } from "../../CommonFunctions";
 import { w3cwebsocket as WebSocket } from "websocket";
 import { v4 as uuid } from "uuid";
 import Pagination from "../../Pagination";
@@ -614,7 +614,7 @@ const typeMessageFunction =(e)=>{
                                   <td>{property_number}</td>
                                   <td>{property_type}</td>
                                   <td>{user_name}</td>
-                                  <td>{transformDateFormat(added_date)} </td>
+                                  <td>{propertyDateFormat(added_date)} </td>
                                   <td>
                                     <button
                                       onClick={() => {
@@ -689,7 +689,7 @@ const typeMessageFunction =(e)=>{
                                   <td>{property_number}</td>
                                   <td>{property_type}</td>
                                   <td>{user_name}</td>
-                                  <td>{transformDateFormat(added_date)} </td>
+                                  <td>{propertyDateFormat(added_date)} </td>
                                   <td>
                                     <button
                                       onClick={() => {
@@ -779,7 +779,7 @@ const typeMessageFunction =(e)=>{
                                 <td>{property_number}</td>
                                 <td>{property_type}</td>
                                 <td>{user_name}</td>
-                                <td>{transformDateFormat(added_date)} </td>
+                                <td>{propertyDateFormat(added_date)} </td>
                                 <td>
                                   <button
                                     onClick={() => {

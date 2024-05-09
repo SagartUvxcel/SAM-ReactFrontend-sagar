@@ -1416,7 +1416,7 @@ const ViewSearchResults = () => {
                                     <i className="bi bi-currency-rupee"></i>
                                     {`${(
                                       parseInt(range.split("-")[0]) / 10000000
-                                    ).toFixed(2)} Cr.`}
+                                    ).toFixed(2)} `}<small className="text-muted">Cr.</small>
                                   </span>
                                   <span className="mx-2 common-btn-font">
                                     -
@@ -1425,7 +1425,7 @@ const ViewSearchResults = () => {
                                     <i className="bi bi-currency-rupee"></i>
                                     {`${(
                                       parseInt(range.split("-")[1]) / 10000000
-                                    ).toFixed(2)} Cr.`}
+                                    ).toFixed(2)} `}<small className="text-muted">Cr.</small>
                                   </span>
                                 </div>
                               ) : (

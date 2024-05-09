@@ -32,7 +32,7 @@ export const makeFirstPageActive = () => {
   if (allPageItems) {
     allPageItems.forEach((i) => {
       if (i.textContent === "1") {
-        i.click(); 
+        i.click();
       }
     });
   }
@@ -45,7 +45,7 @@ export const checkLoginSession = async (token) => {
     let res = await axios.get(`/sam/v1/user-registration/logout`, {
       headers: { Authorization: token },
     });
-    if (res.data === "Session expired or invalid user") {
+    if (res.data === "Session expired or invalid user") { 
       localStorage.removeItem("data");
       localStorage.removeItem("remainingTime");
       localStorage.removeItem("notificationRefresh");
@@ -63,6 +63,19 @@ export const transformDateFormat = (dateString) => {
   const year = date.getUTCFullYear();
   let formattedDate = `${year}-${month}-${day}`;
   return formattedDate;
+};
+
+export const propertyDateFormat = (dateString) => {
+  if (!dateString) return "Not Available";
+  const date = new Date(dateString);
+  // Adjusting the date to local time zone
+  const localDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+  const options = { day: "2-digit", month: "short", year: "numeric" };
+  const formattedDate = localDate.toLocaleDateString("en-IN", options); 
+  // remove - from date
+  const finalDate=formattedDate.replace(/-/g, " "); 
+  return finalDate;
+ 
 };
 
 export const openInNewTab = (path) => {

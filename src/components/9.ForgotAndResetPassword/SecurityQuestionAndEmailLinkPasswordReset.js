@@ -267,7 +267,7 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
             if (res.data.status === 0) {
               setLoading(false);
               e.target.reset();
-              toast.success("Password Saved Successfully !");
+              toast.success("Password Saved Successfully !"); 
               localStorage.removeItem("token");
               goTo("/login");
             } else {
@@ -338,7 +338,7 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
       {showLoader ? <>
         <Loader />
       </> :
-        <section className="forgot-password section-padding min-100vh">
+        <section className="forgot-password-security-question section-padding min-100vh">
           <div className="container wrapper">
             <div
               className={`row justify-content-lg-between justify-content-center ${mainSectionDisplay}`}

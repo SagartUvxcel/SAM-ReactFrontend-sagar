@@ -9,6 +9,9 @@ function Header() {
   if (data) {
     isBank = data.isBank;
   }
+
+  const [uploadDocumentPage, setUploadDocumentPage] = useState(false);
+
   // This useState will store data from localStorage such as login-status, role and email of user.
   const [allUseStates, setAllUseStates] = useState({
     loginStatus: false,
@@ -33,7 +36,7 @@ function Header() {
 
   // Save status of login.
   const setStatusOfLogin = async () => {
-    if (!window.location.href.includes("/login")) {
+    if (!window.location.href.includes("/login")) { 
       localStorage.removeItem("userSession");
     }
 
@@ -53,6 +56,16 @@ function Header() {
     }
   };
 
+  // location url path selection 
+  const pathLocation = () => {
+    const path = window.location.pathname;
+    if (path.includes("/property/single-property-documents-upload")) {
+      setUploadDocumentPage(true);
+    } else {
+
+    }
+  }
+
   useEffect(() => {
     if (data) {
       setAllUseStates({
@@ -62,6 +75,7 @@ function Header() {
         userId: data.userId,
         isBank: data.isBank,
       });
+      pathLocation();
     }
     setStatusOfLogin();
     // eslint-disable-next-line
@@ -109,7 +123,7 @@ function Header() {
             <ul className="navbar-nav ms-auto">
               {/* Home */}
               <li>
-                <NavLink to="/" className={`nav-link ${roleId !== 2 && roleId !== 6 ? "" : "d-none"}`}>
+                <NavLink to="/" className={`nav-link ${roleId !== 2 && roleId !== 6 && !uploadDocumentPage ? "" : "d-none"}`}>
                   <i className="bi bi-house me-2 text-light"></i>
                   Home
                 </NavLink>
@@ -129,7 +143,7 @@ function Header() {
                 </NavLink>
               </li>
               {/* Enquiries */}
-              <li className={`nav-item ps-md-2 ${loginStatus && roleId !== 1 && roleId !== 6 ? "" : "d-none"}`}>
+              <li className={`nav-item ps-md-2 ${loginStatus && roleId !== 1 && roleId !== 6 && !uploadDocumentPage ? "" : "d-none"}`}>
                 <NavLink to="/user-enquiries" className="nav-link">
                   <i className="bi bi-chat-text me-2 text-light"></i>
                   Enquiries
@@ -143,7 +157,7 @@ function Header() {
                 </span>
               </li>
               {/* If user is loggedIn then show these  Bank Registration links in dropdown */}
-              {roleId === 1 && isBank === false ? (
+              {roleId === 1 && isBank === false && !uploadDocumentPage ? (
                 <li>
                   <NavLink to="/bank-registration-link" className="nav-link">
                     <i className="bi bi-bank2 me-2 text-light"></i>
@@ -166,7 +180,7 @@ function Header() {
               )}
 
               {/* If user is not loggedIn then show these logOut links in dropdown */}
-              <li className="nav-item dropdown ps-md-2 d-md-block d-none">
+              {!uploadDocumentPage ? <li className="nav-item dropdown ps-md-2 d-md-block d-none">
                 <span
                   className="nav-link"
                   id="navbarDropdown"
@@ -182,7 +196,7 @@ function Header() {
                 >
                   <CommonNavLinks allUseStates={allUseStates} logOut={logOut} />
                 </ul>
-              </li>
+              </li> : ""}
               <div className="d-md-none">
                 <CommonNavLinks allUseStates={allUseStates} logOut={logOut} />
               </div>

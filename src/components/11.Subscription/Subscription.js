@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react"; 
+import React, { useEffect, useRef, useState } from "react";
 import Layout from "../1.CommonLayout/Layout";
 import { NavLink } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
@@ -6,11 +6,11 @@ import axios from "axios";
 import CommonSpinner from "../../CommonSpinner";
 import SubscriptionPage_access_denied_svg from "../../images/SubscriptionPage_access_denied_svg.svg";
 import "./CardElementStyles.css";
-import { transformDateFormat } from "../../CommonFunctions";
+import { propertyDateFormat } from "../../CommonFunctions";
 
 let authHeaders = "";
 let isLogin = false;
-let planStatus = false; 
+let planStatus = false;
 
 const Subscription = () => {
   const navigate = useNavigate();
@@ -19,7 +19,7 @@ const Subscription = () => {
   if (data) {
     authHeaders = { Authorization: data.loginToken };
     isLogin = data.isLoggedIn;
-    planStatus = updatedSubscriptionStatus ? updatedSubscriptionStatus : data.subscription_status; 
+    planStatus = updatedSubscriptionStatus ? updatedSubscriptionStatus : data.subscription_status;
   }
 
   // subscription Plans
@@ -36,7 +36,7 @@ const Subscription = () => {
         .get("/sam/v1/customer-registration/auth/subscription-plans", {
           headers: authHeaders,
         })
-        .then((response) => { 
+        .then((response) => {
           const plansRes = response.data;
           if (plansRes) {
             setPlans(plansRes);
@@ -44,7 +44,7 @@ const Subscription = () => {
             handleActiveColumn(1);
           }
         });
-    } catch (error) { 
+    } catch (error) {
       setLoading(false);
     }
   };
@@ -98,14 +98,14 @@ const Subscription = () => {
 
   // destructing
   const {
-    basicHalfYearly, 
-    advancedHalfYearly, 
+    basicHalfYearly,
+    advancedHalfYearly,
   } = individualPlanDetails;
 
   // passing subscription data plans details on payment page
   const onSubscribeClick = () => {
     const sensitiveData = selectedPlan;
-    navigate("/subscription/payment", { state: { sensitiveData } }); 
+    navigate("/subscription/payment", { state: { sensitiveData } });
   };
 
   // passing subscription data plans details on payment page
@@ -114,7 +114,7 @@ const Subscription = () => {
       handleActiveColumn(1);
     } else if (e.name === "Advanced plan") {
       handleActiveColumn(2);
-    } else { 
+    } else {
     }
   }
 
@@ -152,18 +152,18 @@ const Subscription = () => {
       });
     }
   };
- 
+
   useEffect(() => {
     if (plans) {
       const basicPlanDetails = plans.filter(plan => plan.plan_id === 1)[0];
-      setSelectedPlan(basicPlanDetails); 
+      setSelectedPlan(basicPlanDetails);
     }
 
   }, [basicHalfYearly, advancedHalfYearly, plans]);
 
   // useEffect for axios
   useEffect(() => {
-    handleActiveColumn(1); 
+    handleActiveColumn(1);
     if (isLogin) {
       setLoading(true);
       if (planStatus) {
@@ -204,7 +204,7 @@ const Subscription = () => {
                         <div className="form-group row mb-0">
                           <label className="col-form-label form-label fw-bold col-sm-3">Current Plan</label>
                           <div className="col-sm-8 d-flex align-items-center justify-content-between flex-wrap">
-                            <div className="flex">{activePlans ? activePlans.plan_name : ""}</div> 
+                            <div className="flex">{activePlans ? activePlans.plan_name : ""}</div>
                           </div>
                         </div>
                       </div>
@@ -221,15 +221,12 @@ const Subscription = () => {
                         <div className="form-group row mb-0">
                           <label className="col-form-label form-label fw-bold col-sm-3">End Date</label>
                           <div className="col-sm-8 d-flex align-items-center justify-content-between flex-wrap">
-                            <p className="mb-1"> {activePlans ? transformDateFormat(activePlans.end_date)
-                              .split("-")
-                              .reverse()
-                              .join("-") : ""}</p>
+                            <p className="mb-1"> {activePlans ? propertyDateFormat(activePlans.end_date) : ""}</p>
                           </div>
                         </div>
                       </div>
                       <div className="list-group-item">
-                        <div className="form-group row mb-0"> 
+                        <div className="form-group row mb-0">
                           <div className="col-sm-8 text-center">
                             <button type="button" onClick={(e) => upGradePlansBtn(e)} className="btn btn-primary">{activePlans.billing_cycle === "free trial" ? "Activate Plan" : "Upgrade Plan"}</button>
                           </div>
@@ -384,7 +381,7 @@ const Subscription = () => {
                                   </span>
                                   <h4 className={`plan-title mb-4 fw-bold text-uppercase ${plan.billing_cycle === "free trial" ? "card-text-1" : ""} ${plan.billing_cycle === "half yearly" ? "card-text-2" : ""} ${plan.billing_cycle === "annual" ? "card-text-3" : ""}`}>{plan.name === "Basic plan" && plan.billing_cycle === "free trial" ? "Free" : plan.name.replace(' plan', '')}</h4>
                                   <h4 className="fw-bold plan-price">
-                                    {plan.billing_cycle === "free trial" ? <sup>&#8377;</sup> : <><sup>&#8377;</sup><sup>&#8377;</sup><sup>&#8377;</sup><sup>&#8377;</sup></>} 
+                                    {plan.billing_cycle === "free trial" ? <sup>&#8377;</sup> : <><sup>&#8377;</sup><sup>&#8377;</sup><sup>&#8377;</sup><sup>&#8377;</sup></>}
                                     <span className="fs-5"> / {plan.billing_cycle === "free trial" ? "7 Days" : ""}{plan.billing_cycle === "half yearly" ? "6 Months" : ""}{plan.billing_cycle === "annual" ? "Year" : ""}</span>
                                   </h4>
                                 </button>
@@ -422,10 +419,10 @@ const Subscription = () => {
                   <img src={SubscriptionPage_access_denied_svg} alt="" className="login-img" />
                 </div>
                 <div className="col-lg-7 col-xl-4 col-md-7 order-lg-2 order-1 mt-4">
-                  {/* if user not Login */} 
+                  {/* if user not Login */}
                   <h1 className="text-center text-orange">
                     You don't have access to this page
-                  </h1> 
+                  </h1>
                   <div className="mt-5 row justify-content-center align-items-center subscription-access-denied-page-btn m-auto">
                     <NavLink
                       to="/login"
@@ -444,7 +441,7 @@ const Subscription = () => {
                       {" "}
                       Register{" "}
                     </NavLink>
-                  </div> 
+                  </div>
                 </div>
               </div>
             </div>

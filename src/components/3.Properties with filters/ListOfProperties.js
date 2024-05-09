@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import CommonSpinner from "../../CommonSpinner";
 import {
   changeActiveSortStyle,
-  transformDateFormat,
+  propertyDateFormat,
 } from "../../CommonFunctions";
 import CryptoJS from "crypto-js";
 
@@ -134,7 +134,7 @@ const ListOfProperties = () => {
           if (res.data.msg === 0) {
             toast.success("Message sent successfully");
           } else if (res.data.msg === 3) {
-            toast.error("Invalid emailID");
+            // toast.error("Invalid emailID");
           } else {
             toast.error("Internal server error");
           }
@@ -396,7 +396,7 @@ const ListOfProperties = () => {
                                         {(
                                           parseInt(market_price) / 10000000
                                         ).toFixed(2)}{" "}
-                                        Cr.
+                                        <small className="text-muted">Cr.</small>
                                       </div>
                                     </div>
                                     {/* Ready Reckoner Price */}
@@ -413,7 +413,7 @@ const ListOfProperties = () => {
                                           parseInt(ready_reckoner_price) /
                                           10000000
                                         ).toFixed(2)}{" "}
-                                        Cr.
+                                        <small className="text-muted">Cr.</small>
                                       </div>
                                     </div>
                                     {/* Reserved Price */}
@@ -429,7 +429,7 @@ const ListOfProperties = () => {
                                         {(
                                           parseInt(expected_price) / 10000000
                                         ).toFixed(2)}{" "}
-                                        Cr.
+                                        <small className="text-muted">Cr.</small>
                                       </div>
                                     </div>
                                     {/* Saleable Area */}
@@ -441,7 +441,7 @@ const ListOfProperties = () => {
                                         Saleable Area
                                       </small>
                                       <div className="common-btn-font">
-                                        {saleable_area}
+                                        {saleable_area} <small className="text-muted">sqft</small>
                                       </div>
                                     </div>
                                     {/* Carpet Area */}
@@ -453,7 +453,7 @@ const ListOfProperties = () => {
                                         Carpet Area
                                       </small>
                                       <div className="common-btn-font">
-                                        {carpet_area}
+                                        {carpet_area} <small className="text-muted">sqft</small>
                                       </div>
                                     </div>
                                     {/* Is Available For Sale? */}
@@ -482,14 +482,7 @@ const ListOfProperties = () => {
                                         Completion Date
                                       </small>
                                       <div className="common-btn-font">
-                                        {completion_date
-                                          ? transformDateFormat(
-                                            completion_date
-                                          )
-                                            .split("-")
-                                            .reverse()
-                                            .join("-")
-                                          : "Not Available"}
+                                        {completion_date ? propertyDateFormat(completion_date) : "Not Available"}
                                       </div>
                                     </div>
                                     {/* Purchase Date */}
@@ -501,12 +494,7 @@ const ListOfProperties = () => {
                                         Purchase Date
                                       </small>
                                       <div className="common-btn-font">
-                                        {purchase_date
-                                          ? transformDateFormat(purchase_date)
-                                            .split("-")
-                                            .reverse()
-                                            .join("-")
-                                          : "Not Available"}
+                                        {purchase_date ? propertyDateFormat(purchase_date) : "Not Available"}
                                       </div>
                                     </div>
                                     {/* Mortgage Date */}
@@ -518,12 +506,7 @@ const ListOfProperties = () => {
                                         Mortgage Date
                                       </small>
                                       <div className="common-btn-font">
-                                        {mortgage_date
-                                          ? transformDateFormat(mortgage_date)
-                                            .split("-")
-                                            .reverse()
-                                            .join("-")
-                                          : "Not Available"}
+                                        {mortgage_date ? propertyDateFormat(mortgage_date) : "Not Available"}
                                       </div>
                                     </div>
                                     {/* Title clear property */}

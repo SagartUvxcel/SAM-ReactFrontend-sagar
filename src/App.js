@@ -43,6 +43,7 @@ import ProtectedPages from "./components/ProtectedPages";
 import ProtectSetPasswordPage from "./components/ProtectSetPasswordPage"; 
 import { ToastContainer, toast } from "react-toastify";
 import ManageUsers from "./Admin/User/ManageUsers";
+import BankBranchClosePage from "./Admin/Bank/BankBranchClosePage";
 import { useEffect } from "react"; 
  
  
@@ -61,6 +62,7 @@ function App() {
   useEffect(() => {
     const interval = setInterval(async () => {
       const data = JSON.parse(localStorage.getItem("data"));
+      const upload_doc_page = JSON.parse(localStorage.getItem("upload-doc-page"));
       if (data) {
         try {
           let res = await axios.get(`/sam/v1/user-registration/logout`, {
@@ -68,7 +70,7 @@ function App() {
           }); 
           if (res.data !== "Session expired or invalid user") {
             let remainingTime = parseInt(res.data.TimeRemaining); 
-            if (remainingTime > 5) {
+            if (remainingTime > 5) { 
               localStorage.removeItem("remainingTime");
             }
             if (remainingTime === 4) {
@@ -79,12 +81,20 @@ function App() {
                 localStorage.setItem("remainingTime", 5);
               }
             }
-          } else {
+            if(remainingTime === 1){
+              localStorage.removeItem("upload-doc-page");
+            }
+          } else { 
             localStorage.setItem("userSession", "invalid");
+            localStorage.removeItem("data");
             goTo("/login");
           }
         } catch (error) { 
-          localStorage.removeItem("data");
+          console.log("hiiiii");
+          console.log(error);
+          if(!upload_doc_page && error.response.data==="Session expired or invalid user"){ 
+            localStorage.removeItem("data");
+        }
           localStorage.removeItem("remainingTime");
           localStorage.removeItem("notificationRefresh");
           localStorage.removeItem("updatedSubscriptionStatus");
@@ -268,6 +278,16 @@ function App() {
             element={
               <AdminProtected>
                 <ManageUsers key={"Branch User"} userType={3} />
+              </AdminProtected>
+            }
+          />
+
+          <Route
+            path={`${roleId === 6 ? "/bank" : "/admin"
+              }/users/branch-users/change-user-branch`}
+            element={
+              <AdminProtected>
+                <BankBranchClosePage key={"Change User Branch"} userType={3} />
               </AdminProtected>
             }
           />

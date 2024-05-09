@@ -83,8 +83,7 @@ const Registration = () => {
   // useState to store each field's data from form.
   const [formData, setFormData] = useState({
     contact_details: {
-      user_type: "Individual User",
-      role_id: 2,
+      user_type: "Individual User", 
     },
   });
 
@@ -151,6 +150,7 @@ const Registration = () => {
   // Function will run on click of save button of address
   const onAddressFormSubmit = (e) => {
     e.preventDefault();
+    console.log(flat_number,building_name, society_name, plot_number,locality,landmark);
     let valuesArray = [
       flat_number ? `Flat No: ${flat_number}` : "",
       building_name ? `Building Name: ${building_name}` : "",
@@ -264,7 +264,7 @@ const Registration = () => {
     } else if (name === "last_name") {
       setFormData({ ...formData, [name]: value });
     } else if (name === "aadhar_number") {
-      setFormData({ ...formData, [name]: parseInt(value) });
+      setFormData({ ...formData, [name]: value });
       // Aadhaar frontend validation.
       let aadhaarFormat = /^[2-9]{1}[0-9]{3}[0-9]{4}[0-9]{4}$/;
       if (aadhaarFormat.test(value)) {
@@ -494,7 +494,7 @@ const Registration = () => {
 
   // This will run onchange of input field.
   const onInputChange = async (e) => {
-    const { name, value, style } = e.target;
+    const { name, value, style } = e.target; 
     if (name === "aadhar_number") {
       setValidationDetails({
         ...validationDetails,
@@ -534,7 +534,7 @@ const Registration = () => {
           [name]: parseInt(value),
         },
       });
-    } else if (name === "building_name") {
+    } else if (name === "building_name") { 
       setValues(name, value);
       setFormData({
         ...formData,
@@ -673,6 +673,8 @@ const Registration = () => {
       });
     } else {
       setLoading(true);
+      
+      console.log(formData);
       try {
         await axios
           .post(`/sam/v1/customer-registration/individual-customer`, formData)
@@ -730,6 +732,7 @@ const Registration = () => {
       });
     } else { 
       setLoading(true);
+      console.log(formData);
       try {
         await axios
           .post(`/sam/v1/customer-registration/org-customer`, formData)
@@ -1130,7 +1133,7 @@ const Registration = () => {
                     <div className="form-group mb-3 custom-class-form-div"> 
                       <input
                         id="building_name"
-                        name="c"
+                        name="building_name"
                         type="text"
                         className="form-control custom-input "
                         onChange={onInputChange}

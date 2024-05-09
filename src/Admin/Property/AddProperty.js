@@ -391,7 +391,7 @@ const AddProperty = () => {
                             <hr />
                             {/* Row 1 - Basic Details */}
                             <div className="row mb-3">
-                              <div className="col-12">
+                              <div className="col-12 mb-2">
                                 <h5 className="fw-bold heading-text-primary">
                                   Basic details
                                 </h5>
@@ -424,7 +424,7 @@ const AddProperty = () => {
                                       <></>
                                     )}
                                   </select>
-                                  <label className="px-2" htmlFor="type_id" onClick={() => handleClick('type_id')} >Property type<span className="text-danger">*</span></label>
+                                  <label className="px-2" htmlFor="type_id" onClick={() => handleClick('type_id')} >Property Type<span className="text-danger">*</span></label>
                                 </div>
                               </div>
                               {/* Property Number */}
@@ -484,7 +484,7 @@ const AddProperty = () => {
                                       required
                                       disabled
                                     />}
-                                  <label className="px-2" htmlFor="bank" onClick={() => handleClick('bank')} >Bank<span className="text-danger">*</span></label>
+                                  <label className={`px-2 ${activeBank.bank_name ? "active":""}`} htmlFor="bank" onClick={() => handleClick('bank')} >Bank<span className="text-danger">*</span></label>
                                 </div>
                               </div>
                               {/* branch */}
@@ -529,7 +529,7 @@ const AddProperty = () => {
                                       required
                                       disabled
                                     />}
-                                  <label className="px-2" htmlFor="bank_branch_id" onClick={() => handleClick('bank_branch_id')} >Branch<span className="text-danger">*</span></label>
+                                  <label className="px-2 active" htmlFor="bank_branch_id" onClick={() => handleClick('bank_branch_id')} >Branch<span className="text-danger">*</span></label>
                                 </div>
                               </div>
                               {/* Title clear Property */}
@@ -548,7 +548,7 @@ const AddProperty = () => {
                                     <option value="1">Yes</option>
                                     <option value="0">No</option>
                                   </select>
-                                  <label className="px-2" htmlFor="title_clear_property" onClick={() => handleClick('title_clear_property')} >Title clear Property<span className="text-danger">*</span></label>
+                                  <label className="px-2" htmlFor="title_clear_property" onClick={() => handleClick('title_clear_property')} >Title Clear Property<span className="text-danger">*</span></label>
                                 </div>
                               </div>
                               {/* Territory */}
@@ -570,7 +570,7 @@ const AddProperty = () => {
                             </div>
                             {/* Row 2 - Area Details*/}
                             <div className="row mb-3">
-                              <div className="col-12">
+                              <div className="col-12 mb-2">
                                 <h5 className="fw-bold heading-text-primary">Area</h5>
                               </div>
                               {/* Saleable area */}
@@ -586,7 +586,7 @@ const AddProperty = () => {
                                     onFocus={handleFocus}
                                     required
                                   />
-                                  <label className="px-2" htmlFor="saleable_area" onClick={() => handleClick('saleable_area')} >Saleable area (sq. ft.)<span className="text-danger">*</span></label>
+                                  <label className="px-2" htmlFor="saleable_area" onClick={() => handleClick('saleable_area')} >Saleable Area (sq. ft.)<span className="text-danger">*</span></label>
                                 </div>
                               </div>
                               {/* Carpet area (sq. ft.) */}
@@ -603,7 +603,7 @@ const AddProperty = () => {
                                     onFocus={handleFocus}
                                     required
                                   />
-                                  <label className="px-2" htmlFor="carpet_area" onClick={() => handleClick('carpet_area')} >Carpet area (sq. ft.)<span className="text-danger">*</span></label>
+                                  <label className="px-2" htmlFor="carpet_area" onClick={() => handleClick('carpet_area')} >Carpet Area (sq. ft.)<span className="text-danger">*</span></label>
                                   <span
                                     className={`text-danger ${areaValidationMessage ? "" : "d-none"
                                       }`}
@@ -615,7 +615,7 @@ const AddProperty = () => {
                             </div>
                             {/* Row 3 - Pricing Details */}
                             <div className="row mb-3">
-                              <div className="col-12">
+                              <div className="col-12 mb-2">
                                 <h5 className="fw-bold heading-text-primary">Pricing</h5>
                               </div>
                               {/* Market price (Rs.) */}
@@ -631,7 +631,7 @@ const AddProperty = () => {
                                     onFocus={handleFocus}
                                     required
                                   />
-                                  <label className="px-2" htmlFor="market_price" onClick={() => handleClick('market_price')} >Market price (Rs.)<span className="text-danger">*</span></label>
+                                  <label className="px-2" htmlFor="market_price" onClick={() => handleClick('market_price')} >Market Price (Rs.)<span className="text-danger">*</span></label>
                                 </div>
                               </div>
                               {/* Ready reckoner price (Rs.) */}
@@ -647,7 +647,7 @@ const AddProperty = () => {
                                     onFocus={handleFocus}
                                     required
                                   />
-                                  <label className="px-2" htmlFor="ready_reckoner_price" onClick={() => handleClick('ready_reckoner_price')} >Ready reckoner price (Rs.)<span className="text-danger">*</span></label>
+                                  <label className="px-2" htmlFor="ready_reckoner_price" onClick={() => handleClick('ready_reckoner_price')} >Ready reckoner Price (Rs.)<span className="text-danger">*</span></label>
                                 </div>
                               </div>
                               {/* Reserved Price (Rs.) */}
@@ -685,7 +685,7 @@ const AddProperty = () => {
                             </div>
                             {/* Row 4 - Dates & Availability Details */}
                             <div className="row mb-3">
-                              <div className="col-12">
+                              <div className="col-12 mb-2">
                                 <h5 className="fw-bold heading-text-primary">
                                   Dates & Availability
                                 </h5>
@@ -704,7 +704,7 @@ const AddProperty = () => {
                                     placeholder=" "
                                     required
                                   />
-                                  <label className="px-2" htmlFor="completion_date" onClick={() => handleClick('completion_date')} > Completion date<span className="text-danger">*</span></label>
+                                  <label className="px-2" htmlFor="completion_date" onClick={() => handleClick('completion_date')} > Completion Date<span className="text-danger">*</span></label>
                                 </div>
                               </div>
                               {/* Purchase date */}
@@ -720,7 +720,7 @@ const AddProperty = () => {
                                     onFocus={handleFocus}
                                     required
                                   />
-                                  <label className="px-2" htmlFor="purchase_date" onClick={() => handleClick('purchase_date')} >  Purchase date<span className="text-danger">*</span></label>
+                                  <label className="px-2" htmlFor="purchase_date" onClick={() => handleClick('purchase_date')} >  Purchase Date<span className="text-danger">*</span></label>
                                 </div>
                               </div>
                               {/* Mortgage date */}
@@ -736,7 +736,7 @@ const AddProperty = () => {
                                     onFocus={handleFocus}
                                     required
                                   />
-                                  <label className="px-2" htmlFor="mortgage_date" onClick={() => handleClick('mortgage_date')} >Mortgage date<span className="text-danger">*</span></label>
+                                  <label className="px-2" htmlFor="mortgage_date" onClick={() => handleClick('mortgage_date')} >Mortgage Date<span className="text-danger">*</span></label>
                                 </div>
                               </div>
                               {/* Available for sale? */}
@@ -760,13 +760,13 @@ const AddProperty = () => {
                                     </option>
                                     <option value="0">No</option>
                                   </select>
-                                  <label className="px-2" htmlFor="is_available_for_sale" onClick={() => handleClick('is_available_for_sale')} >Available for sale?<span className="text-danger">*</span></label>
+                                  <label className="px-2" htmlFor="is_available_for_sale" onClick={() => handleClick('is_available_for_sale')} >Available For Sale?<span className="text-danger">*</span></label>
                                 </div>
                               </div>
                             </div>
                             {/* Row 5 - Address Details */}
                             <div className="row">
-                              <div className="col-12">
+                              <div className="col-12 mb-2">
                                 <h5 className="fw-bold heading-text-primary">Address</h5>
                               </div>
                               {/* Flat No. */}
@@ -957,7 +957,7 @@ const AddProperty = () => {
                             </div>
                             {/* Add property button */}
                             <div className="row text-end">
-                              <div className="col-12">
+                              <div className="col-12 mt-2">
                                 <button type="submit" className="btn btn-primary">
                                   Add
                                 </button>

@@ -4,9 +4,9 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { checkLoginSession, rootTitle, calculateDays } from "../../CommonFunctions";
 import Layout from "../1.CommonLayout/Layout";
-import CommonSpinner from "../../CommonSpinner"; 
+import CommonSpinner from "../../CommonSpinner";
 
-let authHeaders = ""; 
+let authHeaders = "";
 let planStatus = false;
 let planEndDate = "";
 
@@ -25,17 +25,16 @@ const EditUserDetails = () => {
   const {
     user_type,
     mobile_number,
-    locality,
-    address,
+    locality, 
     city,
     state_name,
     zip,
     email,
-     building_name, 
+    building_name,
     flat_number,
     landmark,
     plot_number,
-    society_name, 
+    society_name,
   } = commonUserDetails;
 
   const [orgUserDetails, setOrgUserDetails] = useState({});
@@ -99,11 +98,11 @@ const EditUserDetails = () => {
   const updatedSubscriptionStatus = localStorage.getItem("updatedSubscriptionStatus");
 
   if (data) {
-    authHeaders = { Authorization: data.loginToken }; 
+    authHeaders = { Authorization: data.loginToken };
     planStatus = updatedSubscriptionStatus ? updatedSubscriptionStatus : data.subscription_status;
     planEndDate = data.subscription_end_date;
   }
- 
+
   // Function will get the data of user whose details are to be edited.
   const getUserToEdit = async () => {
     if (data) {
@@ -113,7 +112,7 @@ const EditUserDetails = () => {
           .get(`/sam/v1/user-registration/auth/${userId}`, {
             headers: authHeaders,
           })
-          .then(async (res) => { 
+          .then(async (res) => {
             console.log(res.data);
             const { individual_user, org_user, user_details } = res.data;
             if (individual_user) {
@@ -155,7 +154,7 @@ const EditUserDetails = () => {
               state_name,
               state_id,
               zip,
-              email_address, 
+              email_address,
               building_name,
               contact_number,
               flat_number,
@@ -163,7 +162,7 @@ const EditUserDetails = () => {
               plot_number,
               society_name,
               user_id
-            } = user_details; 
+            } = user_details;
             setUserType(user_type);
             setIdOfState(parseInt(state_id));
             setCommonUserDetails({
@@ -262,16 +261,16 @@ const EditUserDetails = () => {
     } else if (name === "city") {
       setCommonUserDetails({ ...commonUserDetails, [name]: value });
     } else if (name === "locality") {
-      setCommonUserDetails({ ...commonUserDetails, address: value });
-    }else if (name === "flat_number") {
       setCommonUserDetails({ ...commonUserDetails, [name]: value });
-    }else if (name === "building_name") {
+    } else if (name === "flat_number") {
+      setCommonUserDetails({ ...commonUserDetails, [name]: parseInt(value) });
+    } else if (name === "building_name") {
       setCommonUserDetails({ ...commonUserDetails, [name]: value });
-    }else if (name === "plot_number") {
+    } else if (name === "plot_number") {
+      setCommonUserDetails({ ...commonUserDetails, [name]: parseInt(value) });
+    } else if (name === "society_name") {
       setCommonUserDetails({ ...commonUserDetails, [name]: value });
-    }else if (name === "society_name") {
-      setCommonUserDetails({ ...commonUserDetails, [name]: value });
-    }else if (name === "landmark") {
+    } else if (name === "landmark") {
       setCommonUserDetails({ ...commonUserDetails, [name]: value });
     }
   };
@@ -364,25 +363,24 @@ const EditUserDetails = () => {
   const updateDetails = async (e) => {
     e.preventDefault();
     const dataToPost = {
-      address: address,
-      locality: address,
+      locality: locality,
       city: city,
       zip: zip,
       state: state_name,
       email: email,
-      building_name: building_name, 
+      building_name: building_name,
       flat_number: flat_number,
       landmark: landmark,
       plot_number: plot_number,
       society_name: society_name,
-    }; 
+    };
     setUpdateBtnLoading(true);
     try {
       await axios
         .post(`/sam/v1/customer-registration/auth/edit-details`, dataToPost, {
           headers: authHeaders,
         })
-        .then((res) => { 
+        .then((res) => {
           if (res.data.status === 0) {
             setUpdateBtnLoading(false);
             toast.success("Details Updated Successfully");
@@ -413,7 +411,7 @@ const EditUserDetails = () => {
       calculateDays(planEndDate);
       setDaysCount(calculateDays(planEndDate));
     }
-// eslint-disable-next-line
+    // eslint-disable-next-line
   }, [planEndDate])
 
   useEffect(() => {
@@ -637,10 +635,10 @@ const EditUserDetails = () => {
                         </h6>
                       </div>
                       {/* flat_number */}
-                      <div className="col-xl-3 col-lg-3 col-md-4  col-12">
+                      <div className={`col-xl-3 col-lg-3 col-md-4  col-12 ${flat_number === "" && isReadOnly === true ? "d-none" : ""}`}>
                         <div className="form-group mb-3">
                           <label htmlFor="flat_number" className="form-label">
-                          Flat Number
+                            Flat Number
                           </label>
                           <input
                             onChange={onInputChange}
@@ -648,16 +646,17 @@ const EditUserDetails = () => {
                             type="text"
                             className={`form-control ${editClassName}`}
                             id="flat_number"
-                            defaultValue={flat_number}
+                            defaultValue={flat_number === "" ? "" : flat_number}
                             readOnly={isReadOnly}
                             required
                           />
                         </div>
                       </div>
-                      {/* building_name */}<div className="col-xl-3 col-lg-3 col-md-4  col-12">
+                      {/* building_name */}
+                      <div className={`col-xl-3 col-lg-3 col-md-4  col-12 ${building_name === "" && isReadOnly === true ? "d-none" : ""}`}>
                         <div className="form-group mb-3">
                           <label htmlFor="building_name" className="form-label">
-                          Building Name
+                            Building Name
                           </label>
                           <input
                             onChange={onInputChange}
@@ -665,17 +664,17 @@ const EditUserDetails = () => {
                             type="text"
                             className={`form-control ${editClassName}`}
                             id="building_name"
-                            defaultValue={building_name}
+                            defaultValue={building_name === "" ? "" : building_name}
                             readOnly={isReadOnly}
                             required
                           />
                         </div>
-                      </div> 
+                      </div>
                       {/* society_name */}
-                      <div className="col-xl-3 col-lg-3 col-md-4  col-12">
+                      <div className={`col-xl-3 col-lg-3 col-md-4  col-12 ${society_name === "" && isReadOnly === true ? "d-none" : ""}`}>
                         <div className="form-group mb-3">
                           <label htmlFor="society_name" className="form-label">
-                          Society Name
+                            Society Name
                           </label>
                           <input
                             onChange={onInputChange}
@@ -683,17 +682,17 @@ const EditUserDetails = () => {
                             type="text"
                             className={`form-control ${editClassName}`}
                             id="society_name"
-                            defaultValue={society_name}
+                            defaultValue={society_name === "" ? "" : society_name}
                             readOnly={isReadOnly}
                             required
                           />
                         </div>
                       </div>
                       {/* plot_number */}
-                      <div className="col-xl-3 col-lg-3 col-md-4  col-12">
+                      <div className={`col-xl-3 col-lg-3 col-md-4  col-12 ${plot_number === "" && isReadOnly === true ? "d-none" : ""}`}>
                         <div className="form-group mb-3">
                           <label htmlFor="plot_number" className="form-label">
-                          Plot Number
+                            Plot Number
                           </label>
                           <input
                             onChange={onInputChange}
@@ -701,7 +700,7 @@ const EditUserDetails = () => {
                             type="text"
                             className={`form-control ${editClassName}`}
                             id="plot_number"
-                            defaultValue={plot_number}
+                            defaultValue={plot_number === "" ? "" : plot_number}
                             readOnly={isReadOnly}
                             required
                           />
@@ -711,7 +710,7 @@ const EditUserDetails = () => {
                       <div className="col-xl-3 col-lg-3 col-md-4  col-12">
                         <div className="form-group mb-3">
                           <label htmlFor="Landmark" className="form-label">
-                          Landmark
+                            Landmark
                           </label>
                           <input
                             onChange={onInputChange}

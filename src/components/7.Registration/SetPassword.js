@@ -150,7 +150,7 @@ const handleClick = (inputId) => {
             if (res.data.status === 0) {
               setLoading(false);
               e.target.reset();
-              toast.success("Password Saved Successfully !");
+              toast.success("Password Saved Successfully !"); 
               localStorage.removeItem("token");
               goTo("/login");
             } else {

@@ -35,7 +35,7 @@ const SinglePropertyDocumentsUpload = () => {
   // if local storage single Property Success 
   const fromAddPropertyPage = localStorage.getItem("singlePropertySuccess");
   const showPropertySuccessMsg = () => {
-    if (fromAddPropertyPage === "true") {
+    if (fromAddPropertyPage === "true") { 
       toast.success("Property added successfully");
       localStorage.removeItem("singlePropertySuccess");
     }
@@ -245,11 +245,11 @@ const SinglePropertyDocumentsUpload = () => {
       tempChunkSize = size - (temp - chunkSize);
     }
     const data = readerEvent.target.result.split(",")[1];
-    const fileName=file.name;
-    const totalChunks=Math.ceil(size / chunkSize);
-    const chunkNumber=currentChunkIndexOfImage + 1;
+    const fileName = file.name;
+    const totalChunks = Math.ceil(size / chunkSize);
+    const chunkNumber = currentChunkIndexOfImage + 1;
     const detailsToPost = {
-      upload_id: uniqueId, 
+      upload_id: uniqueId,
       property_number: currentPropertyNumber,
       chunk_number: chunkNumber,
       total_chunks: totalChunks,
@@ -378,11 +378,17 @@ const SinglePropertyDocumentsUpload = () => {
     // eslint-disable-next-line
   }, []);
 
+  const onBackToPropertyBtnClick = () => {    
+    // Close current tab
+    window.close();
+  };
+
+
+
   return (
     <Layout>
       <div className="container-fluid skyblue-bg" onLoad={showPropertySuccessMsg()}>
         <div className="row min-100vh position-relative justify-content-center">
-          {/* <AdminSideBar /> */}
           <div className="col-11 wrapper mt-md-0">
             <section className="upload-documents-wrapper mt-5">
               <div className="container-fluid">
@@ -396,19 +402,22 @@ const SinglePropertyDocumentsUpload = () => {
                       </span>
                     </h6>
                   </div>
-                  <div className="col-md-6">
-                    <div
-                      className={`login-alert alert alert-${alertClr} alert-dismissible show d-flex align-items-center mb-0 ${alertVisible ? "" : "d-none"
-                        }`}
-                      role="alert"
-                    >
-                      <small className="fw-bold">{alertMsg}</small>
-                      <i
-                        onClick={() => setAlertDetails({ alertVisible: false })}
-                        className="bi bi-x login-alert-close-btn close"
-                      ></i>
-                    </div>
+                  <div className="col-md-6 text-end">
+                    <button className="btn btn-outline-primary" onClick={onBackToPropertyBtnClick}><i className="bi bi-arrow-left"></i>Back</button>
                   </div>
+                </div>
+                {/* alert msg if size is more than 25 mb */}
+                <div
+                  className={`login-alert alert alert-${alertClr} alert-dismissible show d-flex align-items-center mb-0 ${alertVisible ? "" : "d-none"
+                    }`}
+                  role="alert"
+                >
+                  <small className="fw-bold">{alertMsg}</small>
+                  <i
+                    onClick={() => setAlertDetails({ alertVisible: false })}
+                    className="bi bi-x login-alert-close-btn close"
+                  ></i>
+
                 </div>
 
                 <div className="row mb-4">
@@ -653,7 +662,7 @@ const SinglePropertyDocumentsUpload = () => {
                           onClick={onResetBtnClick}
                           disabled={imageLoading ? true : false}
                         >
-                          <i className="bi bi-x-lg"></i>
+                          Clear
                         </button>
                       </div>
                     </div>

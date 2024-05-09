@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { NavLink } from "react-router-dom";
 import DocViewer, { DocViewerRenderers } from "@cyntler/react-doc-viewer";
 import axios from "axios";
-import { transformDateFormat } from "../../CommonFunctions";
+import { propertyDateFormat } from "../../CommonFunctions";
 import CommonSpinner from "../../CommonSpinner";
 import { toast } from "react-toastify";
 import * as XLSX from "xlsx";
@@ -76,6 +76,7 @@ const ViewProperty = ({
     property_number,
     property_id,
     society_name,
+    building_name,
     plot_no,
     flat_no,
     locality,
@@ -117,7 +118,7 @@ const ViewProperty = ({
     const extractedContent = Object.keys(zip.files).map((fileName) => fileName);
     setZipExtractedContent(extractedContent);
   };
-// get Chunks Of Documents
+  // get Chunks Of Documents
   const getChunksOfDocuments = async (documentId, propertyId) => {
     setDocumentLoading(true);
     let dataToPost = {
@@ -276,6 +277,7 @@ const ViewProperty = ({
         <div className="container-fluid border p-3">
           <div className="row ">
             <div className="col-xl-5">
+              {/* image slider */}
               <div
                 id="carouselExampleIndicators"
                 className="carousel slide"
@@ -351,7 +353,7 @@ const ViewProperty = ({
               </div>
               <div className="container-fluid p-0">
                 <div className="row mt-3">
-                {/* Property Number */}
+                  {/* Property Number */}
                   {property_number ? (
                     <div className="col-6">
                       <div className="card p-2 text-center border-primary border-2 border">
@@ -364,6 +366,7 @@ const ViewProperty = ({
                   ) : (
                     <></>
                   )}
+                  {/* document section */}
                   <div className="col-12 mt-3">
                     <div className="card p-2 text-center border-primary border-2 border position-relative">
                       {propertyDocumentsList ? (
@@ -522,9 +525,11 @@ const ViewProperty = ({
             </div>
             <div className="col-xl-7 mt-xl-0 mt-4 property-details">
               <div className="container-fluid">
+                {/* Address details */}
                 <div className="row">
                   {flat_no ||
                     plot_no ||
+                    building_name ||
                     society_name ||
                     locality ||
                     city_name ||
@@ -539,7 +544,7 @@ const ViewProperty = ({
                   ) : (
                     <></>
                   )}
-
+                  {/* flat_no */}
                   {flat_no ? (
                     <div className="col-md-4 col-6">
                       <small className="text-muted">Flat Number</small>
@@ -548,7 +553,7 @@ const ViewProperty = ({
                   ) : (
                     <></>
                   )}
-
+                  {/* Plot Number */}
                   {plot_no ? (
                     <div className="col-md-4 col-6">
                       <small className="text-muted">Plot Number</small>
@@ -557,7 +562,16 @@ const ViewProperty = ({
                   ) : (
                     <></>
                   )}
-
+                  {/* building_name */}
+                  {building_name ? (
+                    <div className="col-md-4 col-6">
+                      <small className="text-muted">Building Name</small>
+                      <h5 className="mt-1">{building_name}</h5>
+                    </div>
+                  ) : (
+                    <></>
+                  )}
+                  {/* society_name */}
                   {society_name ? (
                     <div className="col-md-4 col-6">
                       <small className="text-muted">Society Name</small>
@@ -566,7 +580,7 @@ const ViewProperty = ({
                   ) : (
                     <></>
                   )}
-
+                  {/* locality */}
                   {locality ? (
                     <div className="col-md-4 col-6">
                       <small className="text-muted">Locality</small>
@@ -575,7 +589,7 @@ const ViewProperty = ({
                   ) : (
                     <></>
                   )}
-
+                  {/* city_name */}
                   {city_name ? (
                     <div className="col-md-4 col-6">
                       <small className="text-muted">City</small>
@@ -584,7 +598,7 @@ const ViewProperty = ({
                   ) : (
                     <></>
                   )}
-
+                  {/* state_name */}
                   {state_name ? (
                     <div className="col-md-4 col-6">
                       <small className="text-muted">State</small>
@@ -593,7 +607,7 @@ const ViewProperty = ({
                   ) : (
                     <></>
                   )}
-
+                  {/* zip */}
                   {zip ? (
                     <div className="col-md-4 col-6">
                       <small className="text-muted">Zip</small>
@@ -602,6 +616,7 @@ const ViewProperty = ({
                   ) : (
                     <></>
                   )}
+                  {/* area details */}
                   {saleable_area || carpet_area ? (
                     <>
                       <div className="col-12">
@@ -617,22 +632,25 @@ const ViewProperty = ({
                   ) : (
                     <></>
                   )}
+                  {/* saleable_area */}
                   {saleable_area ? (
                     <div className="col-md-4 col-6">
                       <small className="text-muted">Saleable Area</small>
-                      <h5 className="mt-1">{saleable_area}</h5>
+                      <h5 className="mt-1">{saleable_area} <small className="text-muted">sqft</small></h5>
                     </div>
                   ) : (
                     <></>
                   )}
+                  {/* carpet_area */}
                   {carpet_area ? (
                     <div className="col-md-4 col-6">
                       <small className="text-muted">Carpet Area</small>
-                      <h5 className="mt-1">{carpet_area}</h5>
+                      <h5 className="mt-1">{carpet_area} <small className="text-muted">sqft</small></h5>
                     </div>
                   ) : (
                     <></>
                   )}
+                  {/* completion_date/ purchase_date/ mortgage_date*/}
                   {completion_date || purchase_date || mortgage_date ? (
                     <>
                       <div className="col-12">
@@ -648,45 +666,40 @@ const ViewProperty = ({
                   ) : (
                     <></>
                   )}
+                  {/* completion_date */}
                   {completion_date ? (
                     <div className="col-md-4 col-6">
                       <small className="text-muted">Completion Date</small>
                       <h5 className="mt-1">
-                        {transformDateFormat(completion_date)
-                          .split("-")
-                          .reverse()
-                          .join("-")}
+                        {propertyDateFormat(completion_date)}
                       </h5>
                     </div>
                   ) : (
                     <></>
                   )}
+                  {/* purchase_date */}
                   {purchase_date ? (
                     <div className="col-md-4 col-6">
                       <small className="text-muted">Purchase Date</small>
                       <h5 className="mt-1">
-                        {transformDateFormat(purchase_date)
-                          .split("-")
-                          .reverse()
-                          .join("-")}
+                        {propertyDateFormat(purchase_date)}
                       </h5>
                     </div>
                   ) : (
                     <></>
                   )}
+                  {/* mortgage_date */}
                   {mortgage_date ? (
                     <div className="col-md-4 col-6">
                       <small className="text-muted">Mortgage Date</small>
                       <h5 className="mt-1">
-                        {transformDateFormat(mortgage_date)
-                          .split("-")
-                          .reverse()
-                          .join("-")}
+                        {propertyDateFormat(mortgage_date)}
                       </h5>
                     </div>
                   ) : (
                     <></>
                   )}
+                  {/* price details */}
                   {market_price ||
                     ready_reckoner_price ||
                     expected_price ||
@@ -705,39 +718,43 @@ const ViewProperty = ({
                   ) : (
                     <></>
                   )}
+                  {/* market_price */}
                   {market_price ? (
                     <div className="col-md-4 col-6">
                       <small className="text-muted">Market Price</small>
                       <h5 className="mt-1">
                         <i className="bi bi-currency-rupee"></i>
-                        {(market_price / 10000000).toFixed(2)} Cr.
+                        {(market_price / 10000000).toFixed(2)} <small className="text-muted">Cr.</small>
                       </h5>
                     </div>
                   ) : (
                     <></>
                   )}
+                  {/* ready_reckoner_price */}
                   {ready_reckoner_price ? (
                     <div className="col-md-4 col-6">
                       <small className="text-muted">Ready Reckoner Price</small>
                       <h5 className="mt-1">
                         <i className="bi bi-currency-rupee"></i>
-                        {(ready_reckoner_price / 10000000).toFixed(2)} Cr.
+                        {(ready_reckoner_price / 10000000).toFixed(2)} <small className="text-muted">Cr.</small>
                       </h5>
                     </div>
                   ) : (
                     <></>
                   )}
+                  {/* expected_price */}
                   {expected_price ? (
                     <div className="col-md-4 col-6">
                       <small className="text-muted">Reserved Price</small>
                       <h5 className="mt-1">
                         <i className="bi bi-currency-rupee"></i>
-                        {(expected_price / 10000000).toFixed(2)} Cr.
+                        {(expected_price / 10000000).toFixed(2)} <small className="text-muted">Cr.</small>
                       </h5>
                     </div>
                   ) : (
                     <></>
                   )}
+                  {/* available status details */}
                   {is_sold || is_available_for_sale ? (
                     <>
                       <div className="col-12">
@@ -753,6 +770,7 @@ const ViewProperty = ({
                   ) : (
                     <></>
                   )}
+                  {/* /is_available_for_sale */}
                   {is_available_for_sale ? (
                     <div className="col-md-4">
                       <small className="text-muted">
@@ -765,7 +783,7 @@ const ViewProperty = ({
                   ) : (
                     <></>
                   )}
-
+                  {/* other details */}
                   {branch_name ||
                     territory ||
                     title_clear_property ||
@@ -784,6 +802,7 @@ const ViewProperty = ({
                   ) : (
                     <></>
                   )}
+                  {/* /branch_name */}
                   {branch_name ? (
                     <div className="col-md-6">
                       <small className="text-muted">Branch</small>
@@ -792,6 +811,7 @@ const ViewProperty = ({
                   ) : (
                     <></>
                   )}
+                  {/* territory */}
                   {territory ? (
                     <div className="col-md-6">
                       <small className="text-muted">Territory</small>
@@ -814,6 +834,7 @@ const ViewProperty = ({
         </div>
       </section>
 
+      {/* document view Modal */}
       <div
         className="modal fade"
         id="documentModal"
@@ -967,6 +988,7 @@ const ViewProperty = ({
         </div>
       </div>
 
+      {/* confirm Delete Document Modal */}
       <div
         className="modal fade"
         id="confirmDeleteDocumentModal"
