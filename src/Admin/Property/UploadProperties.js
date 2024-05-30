@@ -6,7 +6,7 @@ import Layout from "../../components/1.CommonLayout/Layout";
 import { rootTitle } from "../../CommonFunctions";
 import axios from "axios";
 import { toast } from "react-toastify";
-import sampleCSVFile  from "./SampleBulkFile.csv";
+import sampleCSVFile from "./SampleBulkFile.csv";
 import { v4 as uuid } from "uuid";
 import BreadCrumb from "../BreadCrumb";
 
@@ -165,22 +165,28 @@ const UploadProperties = () => {
           if (isLastChunk) {
             if (res.data.msg === 0) {
               toast.success("File uploaded successfully");
+              console.log(res.data);
               reloadPage();
             } else {
               let arr = [];
+              console.log(res.data);
               res.data.forEach((data) => {
                 arr.push(data.property_number);
               });
               let duplicateProperties = arr.join(", ");
               let customErrorMessage = "";
+              let errorMsgFromDatabase=res.data[0].error;
               if (arr.length > 1) {
-                customErrorMessage = `Failed to upload properties with property numbers ${duplicateProperties}`;
+                customErrorMessage = `Failed to upload properties with property numbers ${duplicateProperties}.
+                Please create new file for uploading ${errorMsgFromDatabase==="Branch not found" ? `${errorMsgFromDatabase} properties`:errorMsgFromDatabase}. `;
+
               } else {
-                customErrorMessage = `Failed to upload property with property number ${duplicateProperties}`;
+                customErrorMessage = `Failed to upload property with property number ${duplicateProperties}. 
+                Please create new file for uploading ${errorMsgFromDatabase==="Branch not found" ? `${errorMsgFromDatabase} properties`:errorMsgFromDatabase}. `;
               }
               setErrorModalDetails({
                 errorModalOpen: true,
-                errorHeading:  res.data[0].error,
+                errorHeading: res.data[0].error,
                 errorMessage: customErrorMessage,
               });
               window.scrollTo(0, 0);
@@ -270,15 +276,15 @@ const UploadProperties = () => {
           <div className="col-xl-10 col-lg-9 col-md-8">
 
             <div className="d-flex justify-content-between align-items-center mt-2">
-            <BreadCrumb />
-                <a
-                  className="btn btn-primary text-white sample-file-download-btn me-4"
-                  href={sampleCSVFile}
-                  download="SampleBulkFile.csv"
-                >
-                   Sample Bulk File <i className="bi bi-download"> </i>
-                </a>
-              </div>
+              <BreadCrumb />
+              <a
+                className="btn btn-primary text-white sample-file-download-btn me-4"
+                href={sampleCSVFile}
+                download="SampleBulkFile.csv"
+              >
+                Sample Bulk File <i className="bi bi-download"> </i>
+              </a>
+            </div>
 
             <div className="container-fluid mt-4">
               <div className="row justify-content-center">
@@ -294,9 +300,8 @@ const UploadProperties = () => {
                         e.preventDefault();
                       }}
                       onDrop={(e) => handleDrop(e)}
-                      className={`py-3 upload-file-inner-wrapper ${
-                        dropzoneActive ? "active" : ""
-                      }`}
+                      className={`py-3 upload-file-inner-wrapper ${dropzoneActive ? "active" : ""
+                        }`}
                     >
                       <div className="text-center fs-3 fw-bold">
                         Choose a file or drag it here
@@ -364,7 +369,7 @@ const UploadProperties = () => {
                   <div
                     className={`text-end mt-3 bg-light  save-cancel-btn-div ${tableDisplayClass}`}
                   >
-                  {/* Save */}
+                    {/* Save */}
                     <button
                       className="btn btn-success me-2"
                       onClick={postChunksToDataBase}

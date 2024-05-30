@@ -154,6 +154,18 @@ const OffcanvasBody = ({ canvasNumber, propertiesLinkDisabled, isBank, roleId })
             </div>
           </div>
         </li> : ""}
+         {/* subscription facility */}
+         {roleId === 1 ?  <li className="nav-item">
+          <NavLink
+            className="nav-link admin-home-link sidebar-link"
+            to={`/subscription-facility`}
+          >
+            <span className="mx-2">
+            <i className="bi bi-calendar2-check-fill"></i>
+            </span>
+            Subscription
+          </NavLink>
+        </li>:""}
 
         <hr className="text-white" />
       </ul>

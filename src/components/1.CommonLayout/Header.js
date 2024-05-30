@@ -4,10 +4,13 @@ import CommonNavLinks from "./CommonNavLinks";
 import { checkLoginSession } from "../../CommonFunctions";
 
 let isBank = false;
+let subscription_plan_id = 0;
+
 function Header() {
   const data = JSON.parse(localStorage.getItem("data"));
   if (data) {
     isBank = data.isBank;
+    subscription_plan_id = data.subscription_plan_id;
   }
 
   const [uploadDocumentPage, setUploadDocumentPage] = useState(false);
@@ -36,7 +39,7 @@ function Header() {
 
   // Save status of login.
   const setStatusOfLogin = async () => {
-    if (!window.location.href.includes("/login")) { 
+    if (!window.location.href.includes("/login")) {
       localStorage.removeItem("userSession");
     }
 
@@ -143,12 +146,12 @@ function Header() {
                 </NavLink>
               </li>
               {/* Enquiries */}
-              <li className={`nav-item ps-md-2 ${loginStatus && roleId !== 1 && roleId !== 6 && !uploadDocumentPage ? "" : "d-none"}`}>
+              {(subscription_plan_id !== 0 || roleId === 2) && (loginStatus && roleId !== 1 && roleId !== 6) ? <li className={`nav-item ps-md-2 ${loginStatus && roleId !== 1 && roleId !== 6 && !uploadDocumentPage ? "" : "d-none"}`}>
                 <NavLink to="/user-enquiries" className="nav-link">
                   <i className="bi bi-chat-text me-2 text-light"></i>
                   Enquiries
                 </NavLink>
-              </li>
+              </li> : ""}
               {/* userEmail */}
               <li className={`nav-item ps-md-2 ${loginStatus ? "" : "d-none"}`}>
                 <span className="nav-link">

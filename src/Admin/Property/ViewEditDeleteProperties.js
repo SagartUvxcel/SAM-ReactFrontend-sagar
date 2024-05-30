@@ -392,6 +392,7 @@ const ViewEditDeleteProperties = () => {
       const { data } = await axios.post(`/sam/v1/property/auth/update-property`, formData, {
         headers: authHeader,
       })
+      console.log(data);
       if (data.status === 0) {
         toast.success("Property updated successfully");
         setUpdateBtnLoading(false);
@@ -419,9 +420,7 @@ const ViewEditDeleteProperties = () => {
         `/sam/v1/property/single-property/${propertyId}`,
         { headers: authHeader }
       );
-      const currentPropertyData = currentPropertyRes.data
-
-      console.log(currentPropertyData);
+      const currentPropertyData = currentPropertyRes.data;
       const {
         type_id,
         completion_date,
@@ -876,7 +875,6 @@ const ViewEditDeleteProperties = () => {
   }, [newComingMessage, enquiryId])
 
 
-
   return (
     <Layout>
       <div className="container-fluid section-padding">
@@ -937,6 +935,7 @@ const ViewEditDeleteProperties = () => {
                                   alt=""
                                 />
                                 <div className="card-body">
+                                  {/* category */}
                                   {category ? (
                                     <div className="text-capitalize">
                                       <span>Type: </span>
@@ -947,6 +946,7 @@ const ViewEditDeleteProperties = () => {
                                   ) : (
                                     <></>
                                   )}
+                                  {/* city_name */}
                                   {city_name ? (
                                     <div className="text-capitalize">
                                       <span>Location: </span>
@@ -957,14 +957,14 @@ const ViewEditDeleteProperties = () => {
                                   ) : (
                                     <></>
                                   )}
+                                  {/* market_value */}
                                   {market_value ? (
                                     <div className="text-capitalize">
                                       <span>Market Price: </span>
                                       <span className="common-btn-font">
                                         <i className="bi bi-currency-rupee"></i>
-                                        {`${(
-                                          parseInt(market_value) / 10000000
-                                        ).toFixed(2)} `}<small className="text-muted">Cr.</small>
+                                        {parseInt(market_value) >= 10000000 ? `${(parseInt(market_value) / 10000000).toFixed(2)}` : `${(parseInt(market_value) / 100000).toFixed(1)}`}
+                                        <small className="text-muted">{parseInt(market_value) >= 10000000 ? " Cr." : " Lac"}</small>
                                       </span>
                                     </div>
                                   ) : (
@@ -975,9 +975,8 @@ const ViewEditDeleteProperties = () => {
                                       <span>Reserved Price: </span>
                                       <span className="common-btn-font">
                                         <i className="bi bi-currency-rupee"></i>
-                                        {`${(
-                                          parseInt(expected_price) / 10000000
-                                        ).toFixed(2)} `}<small className="text-muted">Cr.</small>
+                                        {parseInt(expected_price) >= 10000000 ? `${(parseInt(expected_price) / 10000000).toFixed(2)}` : `${(parseInt(expected_price) / 100000).toFixed(1)}`}
+                                        <small className="text-muted">{parseInt(expected_price) >= 10000000 ? " Cr." : " Lac"}</small>
                                       </span>
                                     </div>
                                   ) : (
@@ -1031,7 +1030,7 @@ const ViewEditDeleteProperties = () => {
                                         localStorage.setItem(
                                           "upload-doc-page",
                                           JSON.stringify({
-                                            status:"open"
+                                            status: "open"
                                           })
                                         );
                                       }}

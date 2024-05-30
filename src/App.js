@@ -23,6 +23,7 @@ import ViewEnquiryLists from "./components/10.User Enquiries/ViewEnquiryLists";
 import Subscription from "./components/11.Subscription/Subscription";
 import UpgradeSubscriptionPage from "./components/11.Subscription/UpgradeSubscriptionPage";
 import PaymentInformation from "./components/11.Subscription/PaymentInformation";
+import StripePaymentForm from "./components/11.Subscription/StripePaymentForm";
 import CommonSubscriptionNotificationMsg from "./components/11.Subscription/CommonSubscriptionNotificationMsg";
 import ProtectedForLoggedInUser from "./components/ProtectedForLoggedInUser";
 import EnquiryProtected from "./components/EnquiryProtected";
@@ -35,18 +36,18 @@ import ViewEditDeleteProperties from "./Admin/Property/ViewEditDeleteProperties"
 import ViewProperty from "./Admin/Property/ViewProperty";
 import UploadProperties from "./Admin/Property/UploadProperties";
 import AddProperty from "./Admin/Property/AddProperty";
+import AddSubscriptionFacility from "./Admin/AddSubscriptionFacility";
 import AdminProtected from "./components/AdminProtected";
 import UserProtected from "./components/UserProtected";
 import AccessDeniedPage from "./components/AccessDeniedPage";
 import SinglePropertyDocumentsUpload from "./Admin/Property/SinglePropertyDocumentsUpload";
 import ProtectedPages from "./components/ProtectedPages";
-import ProtectSetPasswordPage from "./components/ProtectSetPasswordPage"; 
+import ProtectSetPasswordPage from "./components/ProtectSetPasswordPage";
 import { ToastContainer, toast } from "react-toastify";
 import ManageUsers from "./Admin/User/ManageUsers";
 import BankBranchClosePage from "./Admin/Bank/BankBranchClosePage";
-import { useEffect } from "react"; 
- 
- 
+import { useEffect } from "react";
+
 let isBank = false;
 let roleId = "";
 function App() {
@@ -67,10 +68,10 @@ function App() {
         try {
           let res = await axios.get(`/sam/v1/user-registration/logout`, {
             headers: { Authorization: data.loginToken },
-          }); 
+          });
           if (res.data !== "Session expired or invalid user") {
-            let remainingTime = parseInt(res.data.TimeRemaining); 
-            if (remainingTime > 5) { 
+            let remainingTime = parseInt(res.data.TimeRemaining);
+            if (remainingTime > 5) {
               localStorage.removeItem("remainingTime");
             }
             if (remainingTime === 4) {
@@ -81,20 +82,18 @@ function App() {
                 localStorage.setItem("remainingTime", 5);
               }
             }
-            if(remainingTime === 1){
+            if (remainingTime === 1) {
               localStorage.removeItem("upload-doc-page");
             }
-          } else { 
+          } else {
             localStorage.setItem("userSession", "invalid");
             localStorage.removeItem("data");
             goTo("/login");
           }
-        } catch (error) { 
-          console.log("hiiiii");
-          console.log(error);
-          if(!upload_doc_page && error.response.data==="Session expired or invalid user"){ 
+        } catch (error) {
+          if (!upload_doc_page && error.response?.data === "Session expired or invalid user") {
             localStorage.removeItem("data");
-        }
+          }
           localStorage.removeItem("remainingTime");
           localStorage.removeItem("notificationRefresh");
           localStorage.removeItem("updatedSubscriptionStatus");
@@ -194,7 +193,6 @@ function App() {
 
           <Route path="/forgot-password/*" element={<ForgotPassword />} />
           <Route path="/inactive-account/*" element={<InactiveUserEmailVerification />} />
-
           <Route path="/forgot-password/password-reset/*" element={<SecurityQuestionAndEmailLinkPasswordReset />} />
 
           <Route
@@ -236,6 +234,14 @@ function App() {
             element={
               <AdminProtected>
                 <BankRegistrationLinkPage />
+              </AdminProtected>
+            }
+          />
+          <Route
+            path={`/subscription-facility`}
+            element={
+              <AdminProtected>
+                <AddSubscriptionFacility />
               </AdminProtected>
             }
           />
@@ -330,7 +336,7 @@ function App() {
           } />
           <Route path="/subscription/payment" element={
             <UserProtected>
-              <PaymentInformation />
+              <StripePaymentForm />
             </UserProtected>} />
 
           <Route path="*" element={<PageNotFound />} />

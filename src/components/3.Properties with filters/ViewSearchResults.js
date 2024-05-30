@@ -9,6 +9,7 @@ import CryptoJS from "crypto-js";
 
 let authHeaders = "";
 let isLogin = false;
+let subscription_plan_id = 0;
 
 const ViewSearchResults = () => {
 
@@ -22,6 +23,7 @@ const ViewSearchResults = () => {
   if (data) {
     authHeaders = { Authorization: data.loginToken };
     isLogin = data.isLoggedIn;
+    subscription_plan_id = data.subscription_plan_id;
   }
   const [batch_size, setBatch_size] = useState(4);
   const [dataFromHome, setDataFromHome] = useState(null);
@@ -72,14 +74,14 @@ const ViewSearchResults = () => {
 
   // show Updated MinMax Price Rage
   const showUpdatedMinMaxPriceRage = () => {
+    console.log(dataToPost.min_price);
+    console.log(dataToPost.max_price);
     if (dataToPost && dataToPost.max_price && dataToPost.min_price) {
-      let minPriceToDisplay = `${(
-        parseInt(dataToPost && dataToPost.min_price) / 10000000
-      ).toFixed(2)} Cr.`;
+      let minPriceToDisplay = `${parseInt(dataToPost && dataToPost.min_price) >= 10000000 ? `${(parseInt(dataToPost && dataToPost.min_price) / 10000000).toFixed(2)
+        } ` : `${(parseInt(dataToPost && dataToPost.min_price) / 100000)} `} ${parseInt(dataToPost.min_price) >= 10000000 ? " Cr." : " Lac"}`;
 
-      let maxPriceToDisplay = `${(
-        parseInt(dataToPost.max_price) / 10000000
-      ).toFixed(2)} Cr.`;
+      let maxPriceToDisplay = `${parseInt(dataToPost.max_price) >= 10000000 ? `${(parseInt(dataToPost.max_price) / 10000000).toFixed(2)} ` : `${(parseInt(dataToPost.max_price) / 100000)} `} ${parseInt(dataToPost.max_price) >= 10000000 ? " Cr." : " Lac"}`;
+
 
       let minPrices = document.querySelectorAll(".min-price-display");
       let maxPrices = document.querySelectorAll(".max-price-display");
@@ -114,15 +116,17 @@ const ViewSearchResults = () => {
       await axios.post(isLogin ? apis.authSearchAPI : apis.searchAPI, dataForTotalCount, {
         headers: authHeaders,
       }).then((res) => {
+        console.log(res.data);
         if (res.data) {
           setPageCount(Math.ceil(res.data.length / batch_size));
         }
       });
-
+console.log(dataToPost);
       // Post data and get Searched result from response.
       await axios.post(apis.searchAPI, dataToPost).then((res) => {
         // Store Searched results into propertyData useState.
         if (res.data !== null) {
+          console.log(res.data);
           setPropertyData(res.data);
           setLoading(false);
           setTimeout(() => {
@@ -503,6 +507,7 @@ const ViewSearchResults = () => {
 
   const navigateToReceiver = (data) => {
     // Use navigate with the encoded data in URL parameters
+    console.log(data);
     const secretKey = "my_secret_key";
     // Encoding (Encryption)
     const encodedData = CryptoJS.AES.encrypt(
@@ -677,7 +682,7 @@ const ViewSearchResults = () => {
                 <hr className="mt-3 mb-2" />
               </div>
               {/* More Filters */}
-              {isLogin ?
+              {isLogin && (subscription_plan_id === 4 || subscription_plan_id === 5) ?
                 <div className="container-fluid px-3">
                   <form className="row " ref={moreFiltersForm}>
                     {/* Price */}
@@ -1056,7 +1061,7 @@ const ViewSearchResults = () => {
               </select>
             </div>
             {/* More Filters */}
-            {isLogin ? <div className="col-md-2 col-12 mt-3 mt-md-0">
+            {isLogin && (subscription_plan_id === 4 || subscription_plan_id === 5) ? <div className="col-md-2 col-12 mt-3 mt-md-0">
               <div className="dropdown ">
                 <div
                   className="form-select"
@@ -1343,7 +1348,7 @@ const ViewSearchResults = () => {
               </button>
             </div>
           </div>
-          {/* list Wrapper */} 
+          {/* list Wrapper */}
           <div className="property-wrapper">
             <div className="container-fluid display-on-search py-3">
               <div className="row">
@@ -1365,8 +1370,7 @@ const ViewSearchResults = () => {
                       city_name,
                       city_id,
                       range,
-                    } = property;
-
+                    } = property; 
                     return (
                       <div className="col-xl-3 col-lg-4 col-md-6" key={Index}>
                         <div className="property-card-wrapper">
@@ -1408,25 +1412,24 @@ const ViewSearchResults = () => {
                               ) : (
                                 <></>
                               )}
-
                               {range ? (
                                 <div className="text-capitalize">
                                   <span>Range: </span>
                                   <span className="common-btn-font min-price-display">
                                     <i className="bi bi-currency-rupee"></i>
-                                    {`${(
-                                      parseInt(range.split("-")[0]) / 10000000
-                                    ).toFixed(2)} `}<small className="text-muted">Cr.</small>
+                                    {(parseInt(range.split("-")[0], 10)) >= 10000000 ? `${(parseInt(range.split("-")[0], 10) / 10000000).toFixed(2)}` : `${(parseInt(range.split("-")[0], 10) / 100000)}`}<small className="text-muted">{parseInt(range.split("-")[0], 10) >= 10000000 ? " Cr." : " Lac"}</small>
                                   </span>
                                   <span className="mx-2 common-btn-font">
                                     -
                                   </span>
                                   <span className="common-btn-font max-price-display">
                                     <i className="bi bi-currency-rupee"></i>
-                                    {`${(
-                                      parseInt(range.split("-")[1]) / 10000000
-                                    ).toFixed(2)} `}<small className="text-muted">Cr.</small>
+                                    {(parseInt(range.split("-")[1], 10)) >= 10000000 ? `${(parseInt(range.split("-")[1], 10) / 10000000).toFixed(2)}` : `${(parseInt(range.split("-")[1], 10) / 100000)}`}
+                                    <small className="text-muted">
+                                      {parseInt(range.split("-")[1], 10) >= 10000000 ? " Cr." : "  Lac"}
+                                    </small>
                                   </span>
+
                                 </div>
                               ) : (
                                 <></>
@@ -1444,12 +1447,14 @@ const ViewSearchResults = () => {
                                         type_id: dataToPost.type_id
                                           ? dataToPost.type_id
                                           : type_id,
-                                        min_price: dataToPost.min_price
-                                          ? dataToPost.min_price
-                                          : range.split("-")[0],
-                                        max_price: dataToPost.max_price
-                                          ? dataToPost.max_price
-                                          : range.split("-")[1],
+                                        min_price:
+                                          // dataToPost.min_price
+                                          //   ? dataToPost.min_price : 
+                                          range.split("-")[0],
+                                        max_price:
+                                          // dataToPost.max_price
+                                          //   ? dataToPost.max_price: 
+                                          range.split("-")[1],
                                       });
 
                                     }}

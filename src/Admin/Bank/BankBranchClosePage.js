@@ -13,7 +13,7 @@ import {
 
 let accountStatus = 0;
 let initial_page_number = 1;
-const records_per_page = 5;
+const records_per_page = 20;
 let authHeader = "";
 let roleId = "";
 
@@ -151,8 +151,8 @@ const BankBranchClosePage = ({ userType }) => {
         }
     }
 
-    // on Form Submit
-    const onFormSubmit = async (e) => {
+    // on Branch Details Form Submit
+    const onBranchDetailsFormSubmit = async (e) => {
         e.preventDefault(); 
         try {
             await axios
@@ -177,7 +177,7 @@ const BankBranchClosePage = ({ userType }) => {
         }
     }
 
-    // on Form Submit
+    // on Change Branch FormSubmit
     const onChangeBranchFormSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -215,7 +215,7 @@ const BankBranchClosePage = ({ userType }) => {
             setLoading(false);
         }
     }
-    // on Form Submit
+    // on Form Submit Close Branch
     const onCloseBranchFunction = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -295,7 +295,7 @@ const BankBranchClosePage = ({ userType }) => {
                                     <div className="container-fluid">
                                         <div className="row justify-content-center">
                                             <div className="col-xl-12">
-                                                <form onSubmit={onFormSubmit} className="card p-xl-2">
+                                                <form onSubmit={onBranchDetailsFormSubmit} className="card p-xl-2">
                                                     <div className="card-body">
                                                         <h4 className="fw-bold">Branch Details</h4>
                                                         <hr />
@@ -431,7 +431,7 @@ const BankBranchClosePage = ({ userType }) => {
                                                                 </div>
                                                             </div>
                                                             {/* property list */}
-                                                            <div className="table-wrapper table-bordered mt-4">
+                                                            <div className="table-wrapper table-bordered mt-4 property-list-table-container">
                                                                 <label>
                                                                     <input
                                                                         type="checkbox"

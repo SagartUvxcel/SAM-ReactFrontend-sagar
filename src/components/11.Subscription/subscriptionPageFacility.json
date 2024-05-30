@@ -1,0 +1,47 @@
+[
+  {
+    "title": "Gain access to a comprehensive property document list.",
+    "basic": true,
+    "advanced": true
+  },
+  {
+    "title": "Easily sort properties to find the perfect match.",
+    "basic": true,
+    "advanced": true
+  },
+  {
+    "title": "Download property pictures hassle-free.",
+    "basic": true,
+    "advanced": true
+  },
+  {
+    "title": "Receive real-time support through live chat for any inquiries.",
+    "basic": true,
+    "advanced": true
+  },
+  {
+    "title": "Enjoy reliable email support for subscription expiration alerts and updates on new offerings.",
+    "basic": true,
+    "advanced": true
+  },
+  {
+    "title": "Advanced property search with more filtering options.",
+    "basic": false,
+    "advanced": true
+  },
+  {
+    "title": "View and download property documents directly from the platform.",
+    "basic": false,
+    "advanced": true
+  },
+  {
+    "title": "Stay informed with weekly email alerts tailored to your preferences.",
+    "basic": false,
+    "advanced": true
+  },
+  {
+    "title": "Updates on newly added properties and personalized recommendations based on your browsing history.",
+    "basic": false,
+    "advanced": true
+  }
+]

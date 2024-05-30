@@ -101,6 +101,17 @@ input[type="date"]:in-range::-webkit-datetime-edit-text {
   background-color: var(--bs-btn-bg-color) !important;
 }
 
+.btn-primary:hover {
+  background-color: var(--bs-btn-link-color) !important;
+}
+
+.btn-outline-primary {
+  --bs-btn-color: #0557a8 !important;
+  --bs-btn-border-color: #0557a8 !important; 
+  --bs-btn-hover-bg: #064090 !important;
+  --bs-btn-hover-border-color: #053d8d !important;
+}
+
 .form-control:focus,
 .border-primary {
   border-color: var(--bs-input-border-color) !important;
@@ -114,6 +125,16 @@ a {
   color: white !important;
 }
 
+.pagination {
+  --bs-pagination-focus-box-shadow: none !important;
+}
+
+.active>.page-link, .page-link.active {
+  z-index: 3;
+  color: var(--bs-pagination-active-color);
+  background-color: #053d8d !important;
+  border-color: #063c8c !important;
+}
 .enquiry-section .btn {
   border: 1px solid var(--primary-color) !important;
 }
@@ -1647,6 +1668,26 @@ input:-webkit-autofill:active {
 }
 
 /* subscription end */
+
+/* close branch css start */
+
+.property-list-table-container{
+  max-height: 350px; /* Adjust as needed */
+  overflow-y: auto ;
+}
+
+/* close branch css end */
+
+
+
+/* list-of-properties css start */
+
+.list-of-properties .carousel-inner .carousel-item{
+ height: 215px;
+}
+
+/* list-of-properties css end */
+
 
 /* Media Queries */
 

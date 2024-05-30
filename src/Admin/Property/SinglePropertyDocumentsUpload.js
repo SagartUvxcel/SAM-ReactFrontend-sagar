@@ -35,14 +35,14 @@ const SinglePropertyDocumentsUpload = () => {
   // if local storage single Property Success 
   const fromAddPropertyPage = localStorage.getItem("singlePropertySuccess");
   const showPropertySuccessMsg = () => {
-    if (fromAddPropertyPage === "true") { 
+    if (fromAddPropertyPage === "true") {
       toast.success("Property added successfully");
       localStorage.removeItem("singlePropertySuccess");
     }
   };
   const [categoriesLoading, setCategoriesLoading] = useState(false);
   const [currentPropertyNumber, setCurrentPropertyNumber] = useState("");
-  const [totalSizeOfDocuments, setTotalSizeOfDocuments] = useState(null);
+  const [totalSizeOfDocuments, setTotalSizeOfDocuments] = useState(null); 
   const [imageFiles, setImageFiles] = useState([]);
   const [savedImageFiles, setSavedImageFiles] = useState([]);
   const [currentImageFileIndex, setCurrentImageFileIndex] = useState(null);
@@ -74,6 +74,7 @@ const SinglePropertyDocumentsUpload = () => {
     documentsInfo;
   let otherCategoryId = null;
 
+  // document categories fetching from database
   const getCategoriesFromDB = async () => {
     setCategoriesLoading(true);
     try {
@@ -83,14 +84,16 @@ const SinglePropertyDocumentsUpload = () => {
         })
         .then((res) => {
           setAllCategoriesFromDB(res.data);
+          console.log(res.data);
           setCategoriesLoading(false);
         });
     } catch (error) {
       setCategoriesLoading(false);
     }
 
-  };
+  }; 
 
+  // on Save Other Category Click
   const onSaveOtherCategoryClick = (e) => {
     e.preventDefault();
     let otherCategoryValue = otherCategoryInputRef.current.value.trim();
@@ -272,8 +275,8 @@ const SinglePropertyDocumentsUpload = () => {
             if (res.data.msg === 0) {
               if (currentImageFileIndex === savedImageFiles.length - 1) {
                 setImageLoading(false);
-                toast.success("File uploaded successfully");
                 reloadPage();
+                toast.success("File uploaded successfully");
               }
             } else {
               setImageLoading(false);
@@ -372,17 +375,17 @@ const SinglePropertyDocumentsUpload = () => {
       setCurrentPropertyNumber(propertyData.number);
       checkCanUploadNewDocument(propertyData.id);
       if (data) {
-        getCategoriesFromDB();
+        getCategoriesFromDB(); 
       }
     }
     // eslint-disable-next-line
   }, []);
 
-  const onBackToPropertyBtnClick = () => {    
+  const onBackToPropertyBtnClick = () => {
     // Close current tab
     window.close();
   };
-
+ 
 
 
   return (
@@ -461,7 +464,7 @@ const SinglePropertyDocumentsUpload = () => {
                                       type="radio"
                                       name="category_id"
                                       id="category_id"
-                                      value={category.category_id}
+                                      value={category.category_id} 
                                     />
                                     <label
                                       className="form-check-label"

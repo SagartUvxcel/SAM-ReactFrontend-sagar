@@ -288,19 +288,19 @@ input:checked + .slider:before {
 #success_tic .close {
   opacity: 1;
   position: absolute;
-  right: 0px;
+  right: 10px;
   font-size: 30px;
   padding: 3px 15px;
   margin-bottom: 10px;
   line-height: none;
   background: white;
 }
-#success_tic .subscribe-list h4 {
+#success_tic .subscribe-list h5 {
   color: orange;
 }
 #success_tic .checkmark-circle {
-  width: 150px;
-  height: 150px;
+  width: 115px;
+  height: 115px;
   position: relative;
   display: inline-block;
   vertical-align: top;
@@ -363,6 +363,12 @@ input:checked + .slider:before {
   top: 65px;
   position: absolute;
 }
+
+.subscription-facility-box{
+  max-height: 180px; /* Adjust as needed */
+  overflow-y: auto ;
+}
+
 
 @-webkit-keyframes checkmark {
   0% {

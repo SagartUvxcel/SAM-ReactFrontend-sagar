@@ -3,10 +3,11 @@ import Layout from "../1.CommonLayout/Layout";
 import { NavLink } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { SubscriptionFacilityFetching } from "./SubscriptionFacilityFetching";
 
 let authHeaders = "";
 let isLogin = false;
-let planStatus = false; 
+let planStatus = false;
 
 const UpgradeSubscriptionPage = () => {
   const navigate = useNavigate();
@@ -17,23 +18,24 @@ const UpgradeSubscriptionPage = () => {
   if (data) {
     authHeaders = { Authorization: data.loginToken };
     isLogin = data.isLoggedIn;
-    planStatus = updatedSubscriptionStatus ? updatedSubscriptionStatus : data.subscription_status; 
+    planStatus = updatedSubscriptionStatus ? updatedSubscriptionStatus : data.subscription_status;
   }
 
   // subscription Plans
   const [plans, setPlans] = useState(); //all subriction plans
   const [planToDisable, setPlanToDisable] = useState(); //all active plans
   const [selectedPlan, setSelectedPlan] = useState({ plan_id: "" });
+  const [subscriptionFacilitiesList, setSubscriptionFacilitiesList] = useState([]);
   const [planCardDisable, setPlanCardDisable] = useState({
     basicCardDisable: false,
     advancedCardDisable: false,
   });
-  const [disabledIndex, setDisabledIndex] = useState(-1);  
+  const [disabledIndex, setDisabledIndex] = useState(-1);
 
   const [plansOnCard, setPlansOnCard] = useState({
     basicPlanOnCard: null,
     advancedPlanOnCard: null,
-  }); 
+  });
 
   // handle Active Current Plan
   const handleActiveCurrentPlan = (cycle) => {
@@ -69,7 +71,7 @@ const UpgradeSubscriptionPage = () => {
             }
           }
         }
-      } else { 
+      } else {
         setPlanCardDisable({
           basicCardDisable: false,
           advancedCardDisable: false,
@@ -105,8 +107,14 @@ const UpgradeSubscriptionPage = () => {
             setPlans(plansValue);
           }
         });
-    } catch (error) { 
+    } catch (error) {
     }
+  };
+
+  // fetching facility details from database
+  const fetchFacilityData = async () => {
+    const details = await SubscriptionFacilityFetching(); 
+    setSubscriptionFacilitiesList(details);
   };
 
   // get Subscription Plans Details from database
@@ -119,11 +127,11 @@ const UpgradeSubscriptionPage = () => {
         })
         .then((response) => {
           const activePlansRes = response.data;
-          if (activePlansRes) { 
+          if (activePlansRes) {
             setPlanToDisable(activePlansRes);
           }
         });
-    } catch (error) { 
+    } catch (error) {
     }
   };
 
@@ -147,14 +155,14 @@ const UpgradeSubscriptionPage = () => {
 
   // destructing
   const {
-    basicHalfYearly, 
-    advancedHalfYearly, 
+    basicHalfYearly,
+    advancedHalfYearly,
   } = individualPlanDetails;
- 
+
   // passing subscription data plans details on payment page
   const onSubscribeClick = () => {
     const sensitiveData = selectedPlan;
-    navigate("/subscription/payment", { state: { sensitiveData } }); 
+    navigate("/subscription/payment", { state: { sensitiveData } });
   };
 
   // selected subscription table
@@ -192,9 +200,9 @@ const UpgradeSubscriptionPage = () => {
       handleActiveColumn(1);
     } else if (e.name === "Advanced plan") {
       handleActiveColumn(2);
-    } else { 
+    } else {
     }
-  } 
+  }
 
   useEffect(() => {
     setPlansOnCard({
@@ -204,9 +212,10 @@ const UpgradeSubscriptionPage = () => {
   }, [basicHalfYearly, advancedHalfYearly, plans]);
 
   // useEffect for axios
-  useEffect(() => { 
+  useEffect(() => {
     if (isLogin) {
       getSubscriptionPlansDetails();
+      fetchFacilityData();
       if (planStatus) {
         getActivePlansDetails();
       }
@@ -214,10 +223,10 @@ const UpgradeSubscriptionPage = () => {
     // eslint-disable-next-line
   }, [planStatus]);
 
-useEffect(() => {
-  setPlanCardDisable({...planCardDisable});
-  // eslint-disable-next-line
-}, [])
+  useEffect(() => {
+    setPlanCardDisable({ ...planCardDisable });
+    // eslint-disable-next-line
+  }, [])
 
 
   return (
@@ -228,19 +237,7 @@ useEffect(() => {
           <>
             <div className="container-fluid wrapper">
               <h1 className="text-center">Subscription</h1>
-
-              <div className="text-center text-muted">
-                <span>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                  Deleniti, nobis.
-                </span>
-                <br />
-                <span>
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                </span>
-              </div>
-
-
+              {/* subscription container */}
               <div className="container mt-5">
                 <div className="row justify-content-center">
                   <div className="col-xl-8">
@@ -252,105 +249,26 @@ useEffect(() => {
                       >
                         <thead>
                           <tr>
-                            <th></th>
+                            <th className="text-start">Title</th>
                             <th className="basic">BASIC</th>
                             <th className="standard">ADVANCED</th>
                           </tr>
                         </thead>
                         <tbody>
-                          <tr>
-                            <td className="text-start">
-                              Lorem ipsum dolor sit amet consectetur adipisicing
-                              elit.
-                            </td>
-                            <td className="basic">
-                              <i className="bi bi-check-circle-fill text-success"></i>
-                            </td>
-                            <td className="standard">
-                              <i className="bi bi-check-circle-fill text-success"></i>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="text-start">
-                              Lorem ipsum dolor sit amet consectetur
-                              adipisicing.
-                            </td>
-                            <td className="basic">
-                              <i className="bi bi-check-circle-fill text-success"></i>
-                            </td>
-                            <td className="standard">
-                              <i className="bi bi-check-circle-fill text-success"></i>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="text-start">
-                              Lorem ipsum dolor sit.
-                            </td>
-                            <td className="basic">
-                              <i className="bi bi-check-circle-fill text-success"></i>
-                            </td>
-                            <td className="standard">
-                              <i className="bi bi-check-circle-fill text-success"></i>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="text-start">
-                              Lorem ipsum dolor sit amet consectetur adipisicing
-                              elit. Lorem ipsum dolor sit.
-                            </td>
-                            <td className="basic">
-                              <i className="bi bi-check-circle-fill text-success"></i>
-                            </td>
-                            <td className="standard">
-                              <i className="bi bi-check-circle-fill text-success"></i>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="text-start">
-                              Lorem ipsum dolor sit amet consectetur.
-                            </td>
-                            <td className="basic">
-                              <i className="bi bi-x-circle-fill text-danger"></i>
-                            </td>
-                            <td className="standard">
-                              <i className="bi bi-check-circle-fill text-success"></i>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="text-start">
-                              Lorem ipsum dolor sit amet consectetur adipisicing
-                              elit. Lorem, ipsum.
-                            </td>
-                            <td className="basic">
-                              <i className="bi bi-x-circle-fill text-danger"></i>
-                            </td>
-                            <td className="standard">
-                              <i className="bi bi-check-circle-fill text-success"></i>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="text-start">
-                              Lorem ipsum dolor sit amet consectetur adipisicing
-                              elit.
-                            </td>
-                            <td className="basic">
-                              <i className="bi bi-x-circle-fill text-danger"></i>
-                            </td>
-                            <td className="standard">
-                              <i className="bi bi-check-circle-fill text-success"></i>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="text-start">
-                              Lorem ipsum dolor sit elit.
-                            </td>
-                            <td className="basic">
-                              <i className="bi bi-x-circle-fill text-danger"></i>
-                            </td>
-                            <td className="standard">
-                              <i className="bi bi-check-circle-fill text-success"></i>
-                            </td>
-                          </tr>
+                          {subscriptionFacilitiesList.map((subscriptionList, index) => {
+                            return (
+                              <tr key={index}>
+                                <td className="text-start">{subscriptionList.title}
+                                </td>
+                                <td className="basic">
+                                  <i className={`bi ${subscriptionList.basic ? "bi-check-circle-fill text-success" : "bi-x-circle-fill text-danger"}`}></i>
+                                </td>
+                                <td className="standard">
+                                  <i className={`bi ${subscriptionList.advanced ? "bi-check-circle-fill text-success" : "bi-x-circle-fill text-danger"}`}></i>
+                                </td>
+                              </tr>
+                            )
+                          })}
                         </tbody>
                       </table>
                     </div>
@@ -360,10 +278,10 @@ useEffect(() => {
                         {plans && plans.map((plan, Index) => {
                           return (
                             <>
-                              <button key={Index} className={`upgradePackages  border-0 mb-4 mt-4 mb-md-0 plan-card-${Index + 1} position-relative plan-header-wrapper 
+                              <button key={plan.plan_id} className={`upgradePackages  border-0 mb-4 mt-4 mb-md-0 plan-card-${Index + 1} position-relative plan-header-wrapper 
                             ${selectedPlan.plan_id === plan.plan_id ? "packagesBox-shadow " : ""} 
                             ${plan.plan_id === disabledIndex ? "disabled" : ""}`}
-                                
+
                                 disabled={plan.plan_id === disabledIndex}
                                 onClick={() => {
                                   onCardBtnClick(plan, Index);
@@ -377,7 +295,7 @@ useEffect(() => {
                                 </span>
                                 <h4 className={`plan-title mb-4 fw-bold text-uppercase ${plan.billing_cycle === "half yearly" ? "card-text-2" : ""} ${plan.billing_cycle === "annual" ? "card-text-3" : ""}`}>{plan.name.replace(' plan', '')}</h4>
                                 <h5 className="fw-bold plan-price">
-                                  <sup>&#8377;</sup> <sup>&#8377;</sup> <sup>&#8377;</sup> <sup>&#8377;</sup> 
+                                  <sup>&#8377;</sup> <sup>&#8377;</sup> <sup>&#8377;</sup> <sup>&#8377;</sup>
                                   <span className="fs-5"> / {plan.billing_cycle === "half yearly" ? "6 Months" : ""}{plan.billing_cycle === "annual" ? "Year" : ""}</span>
                                 </h5>
                               </button>
@@ -402,7 +320,7 @@ useEffect(() => {
                             : "Basic"}
                           <i className="bi bi-chevron-right"></i>
                         </button>
-                      </div> 
+                      </div>
                     </div>
                   </div>
                 </div>

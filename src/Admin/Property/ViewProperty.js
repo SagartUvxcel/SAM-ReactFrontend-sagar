@@ -12,6 +12,7 @@ let cnt = 0;
 let authHeader = "";
 let roleId = "";
 let isBank = false;
+
 const ViewProperty = ({
   selectedProperty,
   propertyDocumentsList,
@@ -724,7 +725,8 @@ const ViewProperty = ({
                       <small className="text-muted">Market Price</small>
                       <h5 className="mt-1">
                         <i className="bi bi-currency-rupee"></i>
-                        {(market_price / 10000000).toFixed(2)} <small className="text-muted">Cr.</small>
+                        {parseInt(market_price) >= 10000000 ? `${(parseInt(market_price) / 10000000).toFixed(2)}` : `${(parseInt(market_price) / 100000).toFixed(1)}`}
+                        <small className="text-muted">{parseInt(market_price) >= 10000000 ? " Cr." : " Lac"}</small>
                       </h5>
                     </div>
                   ) : (
@@ -736,7 +738,8 @@ const ViewProperty = ({
                       <small className="text-muted">Ready Reckoner Price</small>
                       <h5 className="mt-1">
                         <i className="bi bi-currency-rupee"></i>
-                        {(ready_reckoner_price / 10000000).toFixed(2)} <small className="text-muted">Cr.</small>
+                        {parseInt(ready_reckoner_price) >= 10000000 ? `${(parseInt(ready_reckoner_price) / 10000000).toFixed(2)}` : `${(parseInt(ready_reckoner_price) / 100000).toFixed(1)}`}
+                        <small className="text-muted">{parseInt(ready_reckoner_price) >= 10000000 ? " Cr." : " Lac"}</small>
                       </h5>
                     </div>
                   ) : (
@@ -747,8 +750,9 @@ const ViewProperty = ({
                     <div className="col-md-4 col-6">
                       <small className="text-muted">Reserved Price</small>
                       <h5 className="mt-1">
-                        <i className="bi bi-currency-rupee"></i>
-                        {(expected_price / 10000000).toFixed(2)} <small className="text-muted">Cr.</small>
+                        <i className="bi bi-currency-rupee"></i> 
+                        {parseInt(expected_price) >= 10000000 ? `${(parseInt(expected_price) / 10000000).toFixed(2)}` : `${(parseInt(expected_price) / 100000).toFixed(1)}`}
+                        <small className="text-muted">{parseInt(expected_price) >= 10000000 ? " Cr." : " Lac"}</small>
                       </h5>
                     </div>
                   ) : (

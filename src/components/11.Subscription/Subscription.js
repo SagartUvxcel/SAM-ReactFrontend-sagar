@@ -7,6 +7,7 @@ import CommonSpinner from "../../CommonSpinner";
 import SubscriptionPage_access_denied_svg from "../../images/SubscriptionPage_access_denied_svg.svg";
 import "./CardElementStyles.css";
 import { propertyDateFormat } from "../../CommonFunctions";
+import { SubscriptionFacilityFetching } from "./SubscriptionFacilityFetching";
 
 let authHeaders = "";
 let isLogin = false;
@@ -21,12 +22,12 @@ const Subscription = () => {
     isLogin = data.isLoggedIn;
     planStatus = updatedSubscriptionStatus ? updatedSubscriptionStatus : data.subscription_status;
   }
-
   // subscription Plans
   const [loading, setLoading] = useState(false);
   const [plans, setPlans] = useState(); //all subscription plans
   const [activePlans, setActivePlans] = useState(); //active subscription plans
   const [selectedPlan, setSelectedPlan] = useState({ plan_id: "" });
+  const [subscriptionFacilitiesList, setSubscriptionFacilitiesList] = useState([]);
 
   // get Subscription Plans Details from database
   const getSubscriptionPlansDetails = async () => {
@@ -49,6 +50,14 @@ const Subscription = () => {
     }
   };
 
+  // fetching facility details from database
+  const fetchFacilityData = async () => {
+    const details = await SubscriptionFacilityFetching();
+    console.log(details);
+    setSubscriptionFacilitiesList(details);
+    setLoading(false);
+  };
+
   // get Subscription Plans Details from database
   const getActivePlansDetails = async () => {
     try {
@@ -67,12 +76,14 @@ const Subscription = () => {
             navigate("/subscription/upgrade-plan");
           } else {
             getSubscriptionPlansDetails();
+            fetchFacilityData();
           }
         });
     } catch (error) {
 
       if (error.response.data.error === "No subscription found") {
         getSubscriptionPlansDetails();
+        fetchFacilityData();
       }
       setLoading(false);
     }
@@ -171,6 +182,8 @@ const Subscription = () => {
       } else {
         getActivePlansDetails();
         getSubscriptionPlansDetails();
+        fetchFacilityData();
+
       }
     }
     // eslint-disable-next-line
@@ -198,6 +211,7 @@ const Subscription = () => {
                 </div>
               ) : activePlans ? (
                 <>
+                  {/* active plan details */}
                   <div className="card active-plans-details-card m-auto mt-5">
                     <div className="list-group list-group-fit  d-flex  justify-content-between">
                       <div className="list-group-item bg-0">
@@ -237,16 +251,7 @@ const Subscription = () => {
                 </>
               ) : (
                 <>
-                  <div className="text-center text-muted ">
-                    <span>
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                      Deleniti, nobis.
-                    </span>
-                    <br />
-                    <span>
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    </span>
-                  </div>
+                  {/* subscription page details */}
                   <div className="container mt-3">
                     <div className="row justify-content-center">
                       <div className="col-xl-10">
@@ -258,105 +263,26 @@ const Subscription = () => {
                           >
                             <thead>
                               <tr>
-                                <th></th>
+                                <th className="text-start">Title</th>
                                 <th className="basic">BASIC</th>
                                 <th className="standard">ADVANCED</th>
                               </tr>
                             </thead>
                             <tbody>
-                              <tr>
-                                <td className="text-start">
-                                  Lorem ipsum dolor sit amet consectetur adipisicing
-                                  elit.
-                                </td>
-                                <td className="basic">
-                                  <i className="bi bi-check-circle-fill text-success"></i>
-                                </td>
-                                <td className="standard">
-                                  <i className="bi bi-check-circle-fill text-success"></i>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td className="text-start">
-                                  Lorem ipsum dolor sit amet consectetur
-                                  adipisicing.
-                                </td>
-                                <td className="basic">
-                                  <i className="bi bi-check-circle-fill text-success"></i>
-                                </td>
-                                <td className="standard">
-                                  <i className="bi bi-check-circle-fill text-success"></i>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td className="text-start">
-                                  Lorem ipsum dolor sit.
-                                </td>
-                                <td className="basic">
-                                  <i className="bi bi-check-circle-fill text-success"></i>
-                                </td>
-                                <td className="standard">
-                                  <i className="bi bi-check-circle-fill text-success"></i>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td className="text-start">
-                                  Lorem ipsum dolor sit amet consectetur adipisicing
-                                  elit. Lorem ipsum dolor sit.
-                                </td>
-                                <td className="basic">
-                                  <i className="bi bi-check-circle-fill text-success"></i>
-                                </td>
-                                <td className="standard">
-                                  <i className="bi bi-check-circle-fill text-success"></i>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td className="text-start">
-                                  Lorem ipsum dolor sit amet consectetur.
-                                </td>
-                                <td className="basic">
-                                  <i className="bi bi-x-circle-fill text-danger"></i>
-                                </td>
-                                <td className="standard">
-                                  <i className="bi bi-check-circle-fill text-success"></i>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td className="text-start">
-                                  Lorem ipsum dolor sit amet consectetur adipisicing
-                                  elit. Lorem, ipsum.
-                                </td>
-                                <td className="basic">
-                                  <i className="bi bi-x-circle-fill text-danger"></i>
-                                </td>
-                                <td className="standard">
-                                  <i className="bi bi-check-circle-fill text-success"></i>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td className="text-start">
-                                  Lorem ipsum dolor sit amet consectetur adipisicing
-                                  elit.
-                                </td>
-                                <td className="basic">
-                                  <i className="bi bi-x-circle-fill text-danger"></i>
-                                </td>
-                                <td className="standard">
-                                  <i className="bi bi-check-circle-fill text-success"></i>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td className="text-start">
-                                  Lorem ipsum dolor sit elit.
-                                </td>
-                                <td className="basic">
-                                  <i className="bi bi-x-circle-fill text-danger"></i>
-                                </td>
-                                <td className="standard">
-                                  <i className="bi bi-check-circle-fill text-success"></i>
-                                </td>
-                              </tr>
+                              {subscriptionFacilitiesList.map((subscriptionList, index) => {
+                                return (
+                                  <tr key={index}>
+                                    <td className="text-start">{subscriptionList.title}
+                                    </td>
+                                    <td className="basic">
+                                      <i className={`bi ${subscriptionList.basic ? "bi-check-circle-fill text-success" : "bi-x-circle-fill text-danger"}`}></i>
+                                    </td>
+                                    <td className="standard">
+                                      <i className={`bi ${subscriptionList.advanced ? "bi-check-circle-fill text-success" : "bi-x-circle-fill text-danger"}`}></i>
+                                    </td>
+                                  </tr>
+                                )
+                              })}
                             </tbody>
                           </table>
                         </div>
@@ -372,8 +298,6 @@ const Subscription = () => {
                                     setSelectedPlan(plan);
                                   }}
                                 >
-
-
                                   <span
                                     className={`position-absolute top-0 start-100 translate-middle badge  bg-success ${selectedPlan.plan_id === plan.plan_id ? "" : "d-none"} `}
                                   >

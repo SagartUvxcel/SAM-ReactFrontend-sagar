@@ -5,10 +5,9 @@ import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { SubscriptionFacilityFetching } from "./SubscriptionFacilityFetching";
 
-
-
-let authHeaders = ""; 
+let authHeaders = "";
 let planStatus = false;
 let email = "";
 
@@ -23,7 +22,7 @@ export const PaymentInformation = () => {
   const updatedSubscriptionStatus = localStorage.getItem("updatedSubscriptionStatus");
 
   if (data) {
-    authHeaders = { Authorization: data.loginToken }; 
+    authHeaders = { Authorization: data.loginToken };
     planStatus = updatedSubscriptionStatus ? updatedSubscriptionStatus : data.subscription_status;
     email = data.user;
   }
@@ -34,6 +33,10 @@ export const PaymentInformation = () => {
   const [subscribeBtnLoading, setSubscribeBtnLoading] = useState(false);
   const [perBillingCycleName, setPerBillingCycleName] = useState("");
   const [paymentModal, setPaymentModal] = useState(false);
+  const [subscriptionFacilitiesList, setSubscriptionFacilitiesList] = useState([]);
+  const [advancedTrueList, setAdvancedTrueList] = useState([]);
+  const [basicTrueList, setBasicTrueList] = useState([]);
+  const [facilityListState, setFacilityListState] = useState([]);
 
   const cardElementOptions = {
     style: {
@@ -67,9 +70,14 @@ export const PaymentInformation = () => {
     }
   }
 
+  // fetching facility details from database
+  const fetchFacilityData = async () => {
+    const details = await SubscriptionFacilityFetching();
+    setSubscriptionFacilitiesList(details);
+  };
+
   // pay button function
   const handleSubmit = async (event) => {
-
     event.preventDefault();
     setSubscribeBtnLoading(true);
     if (!stripe || !elements) {
@@ -80,7 +88,7 @@ export const PaymentInformation = () => {
     const { token, error } = await stripe.createToken(cardElement);
 
     if (error) {
-      setCardErrorMsg(error.message); 
+      setCardErrorMsg(error.message);
       setSubscribeBtnLoading(false);
       return;
     } else {
@@ -94,7 +102,7 @@ export const PaymentInformation = () => {
       amount: parseFloat(planDetails.price),
       billing_cycle: planDetails.billing_cycle,
       email: email,
-    } 
+    }
 
     // API url
     let urlSub = `/sam/v1/customer-registration/auth/${planStatus === true ? "upgrade-subscription" : "subscribe-user"}`;
@@ -102,21 +110,31 @@ export const PaymentInformation = () => {
       const response = await axios.post(urlSub, dataToPost, { headers: authHeaders });
       if (response.data) {
         if (response.data.status === 0) {
+          let facilityList = []
+          if (planDetails.name === "Basic plan") {
+            facilityList = basicTrueList;
+
+          } else {
+            facilityList = advancedTrueList;
+          }
+          setFacilityListState(facilityList)
           setPaymentModal(true);
           setSubscribeBtnLoading(false);
           resetCardFormInputs();
           setCardErrorMsg(null);
-          localStorage.setItem("updatedSubscriptionStatus", true);
+          localStorage.setItem("updatedSubscriptionStatus", true); data.subscription_plan_id = planDetails.plan_id;
+          localStorage.setItem("data", JSON.stringify(data));
         } else {
           setSubscribeBtnLoading(false);
         }
       }
       // Handle success or error response from backend
-    } catch (error) { 
+    } catch (error) {
       setSubscribeBtnLoading(false);
     }
   };
 
+  // modal close function
   const onModalCloseClickFunction = () => {
     setPaymentModal(false);
     navigate("/");
@@ -134,17 +152,19 @@ export const PaymentInformation = () => {
       billing_cycle: planDetails.billing_cycle,
       plan_name: planDetails.name,
       email: email,
-    } 
+    }
 
     try {
       const response = await axios.post("/sam/v1/customer-registration/auth/subscribe-user", dataToPost, { headers: authHeaders });
       if (response.data) {
-        if (response.data.status === 0) { 
+        if (response.data.status === 0) {
           setSubscribeBtnLoading(false);
           toast.success("Your Free Trial Started...")
           resetCardFormInputs();
           setCardErrorMsg(null);
           localStorage.setItem("updatedSubscriptionStatus", true);
+          data.subscription_plan_id = planDetails.plan_id;
+          localStorage.setItem("data", JSON.stringify(data));
           setTimeout(() => {
             navigate("/");
           }, 500);
@@ -153,7 +173,7 @@ export const PaymentInformation = () => {
         }
       }
       // Handle success or error response from backend
-    } catch (error) { 
+    } catch (error) {
       setSubscribeBtnLoading(false);
     }
 
@@ -170,21 +190,33 @@ export const PaymentInformation = () => {
     }
   }
 
-
-
-  useEffect(() => { 
+  useEffect(() => {
     if (dataFromSubscriptionPage) {
       displayBillingCycleName();
     }
     // eslint-disable-next-line
   }, [dataFromSubscriptionPage])
 
-  useEffect(() => { 
-    if(dataFromSubscriptionPage){
+  useEffect(() => {
+    if (dataFromSubscriptionPage) {
       setPlanDetails(dataFromSubscriptionPage ? dataFromSubscriptionPage : null)
+      fetchFacilityData();
+
     }
     // eslint-disable-next-line
   }, [])
+
+  useEffect(() => {
+    if (subscriptionFacilitiesList !== null) {
+      const basicTrue = subscriptionFacilitiesList.filter(item => item.basic === true);
+      const advancedTrue = subscriptionFacilitiesList.filter(item => item.advanced === true);
+      setBasicTrueList(basicTrue);
+      setAdvancedTrueList(advancedTrue);
+    } else {
+      fetchFacilityData();
+    }
+    // eslint-disable-next-line
+  }, [subscriptionFacilitiesList])
 
   // on page load
   window.onload = () => { navigate("/subscription"); }
@@ -206,12 +238,12 @@ export const PaymentInformation = () => {
                       </div>
                       <div className="subscription-div d-flex justify-content-between border-bottom py-1 align-items-center">
                         <h6 className="py-2 mb-0">{planDetails ? planDetails.name : ""}</h6>
-                        <p className=" text-secondary p-0 mb-0"><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup> 
+                        <p className=" text-secondary p-0 mb-0"><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup>
                           {perBillingCycleName}  </p>
                       </div>
                       <div className="subscription-div d-flex justify-content-between py-1 align-items-center">
                         <h6 className=" py-2 mb-0">Total</h6>
-                        <p className=" text-secondary p-0 mb-0 "><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup> 
+                        <p className=" text-secondary p-0 mb-0 "><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup>
                           {perBillingCycleName}</p>
                       </div>
                     </div>
@@ -241,7 +273,6 @@ export const PaymentInformation = () => {
                           <h6 className="my-0 ms-3 ">Card</h6>
                         </div>
                       </div>
-
                       <form onSubmit={handleSubmit} id="paymentForm">
                         <CardElement options={cardElementOptions} />
                         <div className={`text-danger text-start mt-1 ${cardErrorMsg ? "" : "d-none"}`}>{cardErrorMsg}</div>
@@ -260,6 +291,7 @@ export const PaymentInformation = () => {
                           ) : (
                             "Subscribe"
                           )}</button>
+                          {subscribeBtnLoading ? <p className="mt-2 text-danger">Please do not hit the back button or refresh the page while we process your transaction.</p> : ""}
                         </div>
                       </form>
                     </div>
@@ -276,37 +308,35 @@ export const PaymentInformation = () => {
               aria-hidden="true"
               style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
             >
-              <div className="modal-dialog modal-dialog-centered">
+              <div className="modal-dialog modal-dialog-centered ">
 
                 {/* <!-- Modal content--> */}
                 <div className="modal-content">
                   <button className="close border-0 " onClick={onModalCloseClickFunction} data-dismiss="modal">&times;</button>
                   <div className="page-body">
                     <div className="head">
+                      <h1 className="checkmark-circle-heading">
+                        <div className="checkmark-circle">
+                          <div className="background"></div>
+                          <div className="checkmark draw"></div>
+                        </div>
+                      </h1>
                       <h3 className="mb-3">Payment Successful </h3>
-
                     </div>
 
-                    <h1 className="checkmark-circle-heading">
-                      <div className="checkmark-circle">
-                        <div className="background"></div>
-                        <div className="checkmark draw"></div>
-                      </div>
-                    </h1>
+
 
                     <div className=" subscribe-list text-center">
-                      <h4 className="my-3 color-orange color-red m-5">Congratulations, Your Plan has been activated.</h4>
-                      <h4 className="my-3 color-orange color-red m-5">Enjoy your Subscription.</h4>
+                      <h5 className="my-3 text-orange m-5">Congratulations, Your Plan has been activated.</h5>
+                      <h5 className="my-3 text-orange m-5">Enjoy your Subscription.</h5>
 
                     </div>
-                    <div className=" d-flex justify-content-center">
+                    <div className=" subscription-facility-box d-flex justify-content-center overflow-y">
                       <ul className="list-style-none ">
-                        <li className="my-1 d-flex align-items-center "><i className="bi bi-check2 fs-5 text-success me-2"></i>   Lorem ipsum dolor sit amet consectetur adipisicing elit.</li>
-                        <li className="my-1 d-flex align-items-center "><i className="bi bi-check2 fs-5 text-success me-2"></i>Lorem ipsum dolor sit amet consectetur adipisicing elit.</li>
-                        <li className="my-1 d-flex align-items-center "><i className="bi bi-check2 fs-5 text-success me-2"></i>Lorem ipsum dolor sit amet consectetur adipisicing elit.</li>
-                        <li className="my-1 d-flex align-items-center "><i className="bi bi-check2 fs-5 text-success me-2"></i>Lorem ipsum dolor sit amet consectetur adipisicing elit.</li>
-                        <li className="my-1 d-flex align-items-center "><i className="bi bi-check2 fs-5 text-success me-2"></i>Lorem ipsum dolor sit amet consectetur adipisicing elit.</li>
-
+                        {facilityListState.map((data, index) => {
+                          return (
+                            <li key={index} className="my-1 d-flex align-items-center "><i className="bi bi-check2 fs-5 text-success me-2"></i> {data.title}</li>)
+                        })}
                       </ul>
                     </div>
 

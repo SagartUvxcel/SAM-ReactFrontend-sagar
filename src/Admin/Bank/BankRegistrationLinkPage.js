@@ -86,8 +86,8 @@ const BankRegistrationLinkPage = () => {
                     ...validationDetails,
                     emailValidationMessage: "",
                 });
-                // style.borderColor = "";
-                setFormData({ ...formData, [name]: value });
+                // style.borderColor = "";                
+                // setFormData({ ...formData, [name]: value });
 
             } else {
                 setValidationDetails({
@@ -167,11 +167,8 @@ const BankRegistrationLinkPage = () => {
             e.target.nextSibling.classList.remove('active');
         }
         if (name === "email") {
-            setFormData({
-                ...formData,
-                contact_details: { ...formData.contact_details, [name]: value },
-            });
             // If input field is email then post its value to api for validating.
+
             try {
                 await axios
                     .post(
@@ -186,18 +183,21 @@ const BankRegistrationLinkPage = () => {
                                 emailValidationMessage: "Email id already exists.",
                             });
                             style.borderColor = "red";
+                            setFormData({ ...formData, [name]: "" });
                         } else if (!emailFormat.test(value)) {
                             setValidationDetails({
                                 ...validationDetails,
                                 emailValidationMessage: "Invalid email Id.",
                             });
                             style.borderColor = "red";
+                            setFormData({ ...formData, [name]: "" });
                         } else {
                             setValidationDetails({
                                 ...validationDetails,
                                 emailValidationMessage: "",
                             });
                             style.borderColor = "";
+                            setFormData({ ...formData, [name]: value });
                         }
                     });
             } catch (error) {
@@ -216,25 +216,33 @@ const BankRegistrationLinkPage = () => {
     const onFormSubmit = async (e) => {
         e.preventDefault();
         const dataToPost = { ...formData, "bank_name": `${formData.bank_name === "other" && bankSelected === 0 ? otherBankName : formData.bank_name}` }
-        setLoading(true);
-        try {
-            await axios.post(`/sam/v1/bank-registration/auth/branch/token`, dataToPost, {
-                headers: authHeader
-            })
-                .then((res) => {
-                    if (res.data.status === 0) {
-                        setLoading(false);
-                        setFormData({});
-                        toast.success("Send Registration Link Successfully !");
-                        e.target.reset();
-                    } else {
-                        setLoading(false);
-                        toast.warning("Internal server error");
-                    }
-                });
-        } catch (error) {
-            setLoading(false);
-            toast.error(error.response.data.error);
+        
+        if ((formData.email && formData.email.value === "") || !formData.email) {
+            setValidationDetails({
+                ...validationDetails,
+                emailValidationMessage: "Invalid email Id.",
+            });
+        } else {
+            setLoading(true);
+            try {
+                await axios.post(`/sam/v1/bank-registration/auth/branch/token`, dataToPost, {
+                    headers: authHeader
+                })
+                    .then((res) => {
+                        if (res.data.status === 0) {
+                            setLoading(false);
+                            setFormData({});
+                            toast.success("Send Registration Link Successfully !");
+                            e.target.reset();
+                        } else {
+                            setLoading(false);
+                            toast.warning("Internal server error");
+                        }
+                    });
+            } catch (error) {
+                setLoading(false);
+                toast.error(error.response.data.error);
+            }
         }
     }
 
@@ -319,7 +327,7 @@ const BankRegistrationLinkPage = () => {
                                                         className="form-select custom-input  form-bank-select ps-3"
                                                         onChange={onInputChange}
                                                         onBlur={onInputBlur}
-                                                        onFocus={handleFocus} 
+                                                        onFocus={handleFocus}
                                                         value={formData.bank_name}
                                                         required
                                                     >
@@ -359,15 +367,15 @@ const BankRegistrationLinkPage = () => {
                                             </div>
                                             {/* Email */}
                                             <div className="col-xl-6 col-md-6 mt-3 mt-xl-0 mb-3">
-                                                <div className="form-group d-flex align-items-center flex-wrap custom-class-form-div"> 
+                                                <div className="form-group d-flex align-items-center flex-wrap custom-class-form-div">
                                                     <input
                                                         onChange={onInputChange}
                                                         onBlur={onInputBlur}
-                                                        onFocus={handleFocus} 
+                                                        onFocus={handleFocus}
                                                         type="email"
                                                         name="email"
                                                         className="form-control custom-input form-bank-select "
-                                                        id="email" 
+                                                        id="email"
                                                         required
                                                     />
                                                     <label className="ps-0" htmlFor="email" onClick={() => handleClick('email')} >Email<span className="text-danger">*</span></label>
@@ -390,7 +398,7 @@ const BankRegistrationLinkPage = () => {
                                                         type="submit"
                                                         className={`btn btn-primary text-center  md-w-50 common-btn-font ${(emailValidationMessage && emailValidationMessage.length > 0) ||
                                                             (bankNameValidationMessage
-                                                                && bankNameValidationMessage.length > 0) || (formData.bank_name > 0 && formData.email > 0) ? "disabled" : ""} `}
+                                                                && bankNameValidationMessage.length > 0) || (formData.bank_name <= 0 && formData.email <= 0) ? "disabled" : ""} `}
                                                     >{loading ? (
                                                         <>
                                                             <span
@@ -419,14 +427,14 @@ const BankRegistrationLinkPage = () => {
                                         <div className="row bank-type-row flex-wrap">
                                             {/* Bank Name */}
                                             <div className="col-xl-6 col-md-6 mt-3 mt-xl-0 mb-3">
-                                                <div className="form-group d-flex align-items-center flex-wrap custom-class-form-div"> 
-                                                    <select 
+                                                <div className="form-group d-flex align-items-center flex-wrap custom-class-form-div">
+                                                    <select
                                                         name="bank_name"
                                                         id="bank_name"
                                                         className="form-select custom-input  form-bank-select ps-3"
                                                         onChange={onInputChange}
                                                         onBlur={onInputBlur}
-                                                        onFocus={handleFocus}  
+                                                        onFocus={handleFocus}
                                                         value={formData.bank_name}
                                                         required
                                                     >
@@ -453,14 +461,14 @@ const BankRegistrationLinkPage = () => {
                                             </div>
                                             {/* Branch Name */}
                                             <div className="col-xl-6 col-md-6 mt-3 mt-xl-0 mb-3">
-                                                <div className="form-group d-flex align-items-center flex-wrap custom-class-form-div"> 
+                                                <div className="form-group d-flex align-items-center flex-wrap custom-class-form-div">
                                                     <input
                                                         onChange={onInputChange}
                                                         onBlur={onInputBlur}
-                                                        onFocus={handleFocus} 
+                                                        onFocus={handleFocus}
                                                         name="branch_name"
                                                         id="branch_name"
-                                                        type="text" 
+                                                        type="text"
                                                         className="form-control custom-input form-bank-select "
                                                         required
                                                     />
@@ -475,14 +483,14 @@ const BankRegistrationLinkPage = () => {
                                             </div>
                                             {/* Branch Code */}
                                             <div className="col-xl-6 col-md-6 mt-3 mt-xl-0 mb-3">
-                                                <div className="form-group d-flex align-items-center flex-wrap custom-class-form-div"> 
+                                                <div className="form-group d-flex align-items-center flex-wrap custom-class-form-div">
                                                     <input
                                                         onChange={onInputChange}
                                                         onBlur={onInputBlur}
-                                                        onFocus={handleFocus} 
+                                                        onFocus={handleFocus}
                                                         name="branch_code"
                                                         id="branch_code"
-                                                        type="text" 
+                                                        type="text"
                                                         className="form-control custom-input form-bank-select "
                                                         required
                                                     />
@@ -498,14 +506,14 @@ const BankRegistrationLinkPage = () => {
                                             </div>
                                             {/* IFSC code */}
                                             <div className="col-xl-6 col-md-6 mt-3 mt-xl-0 mb-3">
-                                                <div className="form-group d-flex align-items-center flex-wrap custom-class-form-div"> 
+                                                <div className="form-group d-flex align-items-center flex-wrap custom-class-form-div">
                                                     <input
                                                         onChange={onInputChange}
                                                         onBlur={onInputBlur}
-                                                        onFocus={handleFocus} 
+                                                        onFocus={handleFocus}
                                                         name="ifsc_code"
                                                         id="ifsc_code"
-                                                        type="text" 
+                                                        type="text"
                                                         className="form-control custom-input form-bank-select "
                                                         required
                                                     />
@@ -521,14 +529,14 @@ const BankRegistrationLinkPage = () => {
                                             </div>
                                             {/* Branch SFTP */}
                                             <div className="col-xl-6 col-md-6 mt-3 mt-xl-0 mb-3">
-                                                <div className="form-group d-flex align-items-center flex-wrap custom-class-form-div"> 
+                                                <div className="form-group d-flex align-items-center flex-wrap custom-class-form-div">
                                                     <input
                                                         onChange={onInputChange}
                                                         onBlur={onInputBlur}
-                                                        onFocus={handleFocus} 
+                                                        onFocus={handleFocus}
                                                         name="branch_sftp"
                                                         id="branch_sftp"
-                                                        type="text" 
+                                                        type="text"
                                                         className="form-control custom-input form-bank-select "
                                                         required
                                                     />
@@ -544,15 +552,15 @@ const BankRegistrationLinkPage = () => {
                                             </div>
                                             {/* Email */}
                                             <div className="col-xl-6 col-md-6 mt-3 mt-xl-0 mb-3">
-                                                <div className="form-group d-flex align-items-center flex-wrap custom-class-form-div"> 
+                                                <div className="form-group d-flex align-items-center flex-wrap custom-class-form-div">
                                                     <input
                                                         onChange={onInputChange}
                                                         onBlur={onInputBlur}
-                                                        onFocus={handleFocus} 
+                                                        onFocus={handleFocus}
                                                         type="email"
                                                         name="email"
                                                         className="form-control custom-input form-bank-select "
-                                                        id="email" 
+                                                        id="email"
                                                         required
                                                     />
                                                     <label className="ps-0" htmlFor="email" onClick={() => handleClick('email')} >Email<span className="text-danger">*</span></label>
