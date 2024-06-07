@@ -201,11 +201,19 @@ const BankRegistrationPage = () => {
                 ...formData,
                 contact_details: { ...formData.contact_details, [name]: parseInt(value) },
             });
-        } else if (name === "city") {
-            setFormData({
-                ...formData,
-                contact_details: { ...formData.contact_details, [name]: parseInt(value) },
-            });
+        } else if (name === "city") { 
+            if (value !== "") {
+                setFormData({
+                    ...formData,
+                    contact_details: { ...formData.contact_details, [name]: parseInt(value) },
+                });
+            } else {
+                setFormData({
+                    ...formData,
+                    contact_details: { ...formData.contact_details, [name]: value },
+                });
+            }
+
         } else if (name === "society_name") {
             setFormData({
                 ...formData,
@@ -270,10 +278,9 @@ const BankRegistrationPage = () => {
                 setFormData({ ...formData, [name]: value });
             }
         }
-    };
-
+    }; 
     // Function to store address Details in a useState => addressDetails
-    const setValues = (name, value) => {
+    const setValues = (name, value) => { 
         setAddressDetails({ ...addressDetails, [name]: value });
     };
 
@@ -291,7 +298,6 @@ const BankRegistrationPage = () => {
             `City: ${city}`,
             `Zip Code: ${zip}`,
         ];
-
         let mainArray = [];
         for (let i of valuesArray) {
             if (i !== "") {
@@ -582,13 +588,24 @@ const BankRegistrationPage = () => {
                     stateName = getStateName.innerText;
                     setValues(name, stateName);
                 }
-                setFormData({
-                    ...formData,
-                    contact_details: {
-                        ...formData.contact_details,
-                        [name]: parseInt(value),
-                    },
-                });
+                if (value !== "") {
+                    setFormData({
+                        ...formData,
+                        contact_details: {
+                            ...formData.contact_details,
+                            [name]: parseInt(value),
+                        },
+                    });
+                } else {
+                    setValues(name, stateName);
+                    setFormData({
+                        ...formData,
+                        contact_details: {
+                            ...formData.contact_details,
+                            [name]: value,
+                        },
+                    });
+                }
                 const allCities = await axios.post(`/sam/v1/property/by-city`, {
                     state_id: parseInt(value),
                 });
@@ -600,21 +617,35 @@ const BankRegistrationPage = () => {
                     zipValidationByState(String(zip), parseInt(value));
                 }
             }
-        } else if (name === "city") {
+        } else if (name === "city") { 
             let cityName = "";
             let getCityName = document.getElementById(`city-name-${value}`);
             if (getCityName) {
                 cityName = getCityName.innerText;
+                console.log(cityName);
                 setValues(name, cityName);
             }
-            setFormData({
-                ...formData,
-                contact_details: {
-                    ...formData.contact_details,
-                    [name]: parseInt(value),
-                    address: cityName,
-                },
-            });
+            if (value !== "") {
+                setFormData({
+                    ...formData,
+                    contact_details: {
+                        ...formData.contact_details,
+                        [name]: parseInt(value),
+                        address: cityName,
+                    },
+                });
+            } else {
+                setValues(name, cityName);
+                setFormData({
+                    ...formData,
+                    contact_details: {
+                        ...formData.contact_details,
+                        [name]: value,
+                        address: cityName,
+                    },
+                });
+            }
+
         }
     };
 
@@ -1193,7 +1224,7 @@ const BankRegistrationPage = () => {
                                                         className={`btn btn-primary ${locality &&
                                                             landmark &&
                                                             state &&
-                                                            city &&
+                                                            city  &&
                                                             zip &&
                                                             zipCodeValidationColor !== "danger"
                                                             ? ""
@@ -1228,9 +1259,7 @@ const BankRegistrationPage = () => {
                         </>
                         }
                     </section>
-                </>
-
-
+                </> 
             }
         </Layout >
     )

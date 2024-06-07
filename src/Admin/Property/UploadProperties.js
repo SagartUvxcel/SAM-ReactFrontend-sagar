@@ -182,7 +182,7 @@ const UploadProperties = () => {
 
               } else {
                 customErrorMessage = `Failed to upload property with property number ${duplicateProperties}. 
-                Please create new file for uploading ${errorMsgFromDatabase==="Branch not found" ? `${errorMsgFromDatabase} properties`:errorMsgFromDatabase}. `;
+                Please create new file for uploading ${errorMsgFromDatabase==="Branch not found" ? `${errorMsgFromDatabase.toLowerCase()} properties`:errorMsgFromDatabase.toLowerCase()} with updated details. `;
               }
               setErrorModalDetails({
                 errorModalOpen: true,

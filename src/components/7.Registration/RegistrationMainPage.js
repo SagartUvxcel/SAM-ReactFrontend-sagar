@@ -17,12 +17,12 @@ const Registration = () => {
   const deselectStateInput = useRef();
 
   // handle Focus
-  const handleFocus = (e) => { 
+  const handleFocus = (e) => {
     e.target.nextSibling.classList.add('active');
   };
 
   // handle Click
-  const handleClick = (inputId) => { 
+  const handleClick = (inputId) => {
     const input = document.getElementById(inputId);
     input.focus();
   };
@@ -60,7 +60,7 @@ const Registration = () => {
     society_name,
     plot_number,
     locality,
-    landmark, 
+    landmark,
     state,
     city,
     zip,
@@ -83,7 +83,7 @@ const Registration = () => {
   // useState to store each field's data from form.
   const [formData, setFormData] = useState({
     contact_details: {
-      user_type: "Individual User", 
+      user_type: "Individual User",
     },
   });
 
@@ -150,7 +150,7 @@ const Registration = () => {
   // Function will run on click of save button of address
   const onAddressFormSubmit = (e) => {
     e.preventDefault();
-    console.log(flat_number,building_name, society_name, plot_number,locality,landmark);
+    console.log(flat_number, building_name, society_name, plot_number, locality, landmark);
     let valuesArray = [
       flat_number ? `Flat No: ${flat_number}` : "",
       building_name ? `Building Name: ${building_name}` : "",
@@ -178,8 +178,8 @@ const Registration = () => {
 
   // Function to validate zipCodes.
   const zipValidationByState = async (zipValue, stateId) => {
-    
-    let zipCodeValue=zipValue; 
+
+    let zipCodeValue = zipValue;
     await axios
       .post(`/sam/v1/customer-registration/zipcode-validation`, {
         zipcode: zipCodeValue,
@@ -442,7 +442,7 @@ const Registration = () => {
         mobileValidationMessage: "Invalid Mobile Number Entered.",
       });
     } else {
-      if (finalValue) { 
+      if (finalValue) {
         validateMobileFromBackend(finalValue);
       }
     }
@@ -457,7 +457,7 @@ const Registration = () => {
   };
 
   // validate Mobile From Backend
-  const validateMobileFromBackend = async (mobileValue) => { 
+  const validateMobileFromBackend = async (mobileValue) => {
     try {
       await axios
         .post(
@@ -494,7 +494,7 @@ const Registration = () => {
 
   // This will run onchange of input field.
   const onInputChange = async (e) => {
-    const { name, value, style } = e.target; 
+    const { name, value, style } = e.target;
     if (name === "aadhar_number") {
       setValidationDetails({
         ...validationDetails,
@@ -534,7 +534,7 @@ const Registration = () => {
           [name]: parseInt(value),
         },
       });
-    } else if (name === "building_name") { 
+    } else if (name === "building_name") {
       setValues(name, value);
       setFormData({
         ...formData,
@@ -571,7 +571,7 @@ const Registration = () => {
           ...formData.contact_details,
           [name]: value,
         },
-      }); 
+      });
     } else if (name === "zip") {
       setFormData({
         ...formData,
@@ -626,13 +626,24 @@ const Registration = () => {
         cityName = getCityName.innerText;
         setValues(name, cityName);
       }
-      setFormData({
-        ...formData,
-        contact_details: {
-          ...formData.contact_details,
-          [name]: parseInt(value), 
-        },
-      });
+      if (value !== "") {
+        setFormData({
+          ...formData,
+          contact_details: {
+            ...formData.contact_details,
+            [name]: parseInt(value),
+          },
+        });
+      } else {
+        setValues(name, cityName);
+        setFormData({
+          ...formData,
+          contact_details: {
+            ...formData.contact_details,
+            [name]: value,
+          },
+        });
+      }
     } else if (name === "landline_number") {
       if (landlineNumberRegularExp.test(value) || value.length === 0) {
         setValidationDetails({
@@ -652,7 +663,7 @@ const Registration = () => {
   };
 
   // Function will run after Individual Form submit button is clicked.
-  const onIndividualFormSubmit = async (e) => { 
+  const onIndividualFormSubmit = async (e) => {
     e.preventDefault();
     const fieldsToDelete = [
       "organization_type",
@@ -673,7 +684,7 @@ const Registration = () => {
       });
     } else {
       setLoading(true);
-      
+
       console.log(formData);
       try {
         await axios
@@ -730,7 +741,7 @@ const Registration = () => {
         alertMsg: "Please fill the address details",
         alertClr: "danger",
       });
-    } else { 
+    } else {
       setLoading(true);
       console.log(formData);
       try {
@@ -838,7 +849,7 @@ const Registration = () => {
                     >
                       <div className="col-lg-12">
                         {/* Full Name */}
-                        <div className="row fullNameRow mb-2"> 
+                        <div className="row fullNameRow mb-2">
                           <div className="col-lg-4 mb-lg-0 my-md-2 my-4 custom-class-form-div">
                             <input
                               onChange={onInputChange}
@@ -846,7 +857,7 @@ const Registration = () => {
                               onFocus={handleFocus}
                               name="first_name"
                               type="text"
-                              id="first_name" 
+                              id="first_name"
                               className="form-control custom-input "
                               required
                             />
@@ -860,7 +871,7 @@ const Registration = () => {
                               onFocus={handleFocus}
                               name="middle_name"
                               type="text"
-                              id="middle_name" 
+                              id="middle_name"
                               className="form-control custom-input "
                               required
                             />
@@ -873,7 +884,7 @@ const Registration = () => {
                               id="last_name"
                               onFocus={handleFocus}
                               name="last_name"
-                              type="text" 
+                              type="text"
                               className="form-control custom-input "
                               required
                             />
@@ -881,7 +892,7 @@ const Registration = () => {
                           </div>
                         </div>
                         {/* Aadhaar Pan */}
-                        <div className="row aadhaarPanRow mt-2"> 
+                        <div className="row aadhaarPanRow mt-2">
                           <div className="col-lg-4 mb-lg-0 my-md-2 my-4 custom-class-form-div">
                             <input
                               onChange={onInputChange}
@@ -889,7 +900,7 @@ const Registration = () => {
                               onFocus={handleFocus}
                               name="aadhar_number"
                               type="Number"
-                              id="aadhar_number" 
+                              id="aadhar_number"
                               required
                               className="form-control custom-input "
                             />
@@ -907,7 +918,7 @@ const Registration = () => {
                                 (Please enter 12 digit aadhar number)
                               </small>
                             </span>
-                          </div> 
+                          </div>
                           <div className="col-lg-4 mb-lg-0 my-md-2 my-4 custom-class-form-div">
                             <input
                               onChange={onInputChange}
@@ -915,7 +926,7 @@ const Registration = () => {
                               onFocus={handleFocus}
                               name="pan_number"
                               id="pan_number"
-                              type="text" 
+                              type="text"
                               required
                               className="form-control text-uppercase custom-input"
                             />
@@ -958,7 +969,7 @@ const Registration = () => {
                       className={`row ${organizationDisplay} OrganizationForm`}
                     >
                       <div className="col-lg-12">
-                        <div className="row organization-type-row align-items-center"> 
+                        <div className="row organization-type-row align-items-center">
                           <div className="col-lg-4 mb-lg-0 my-md-2 my-4 custom-class-form-div">
                             <select
                               onBlur={onInputBlur}
@@ -983,19 +994,19 @@ const Registration = () => {
                               <option value="Limited">Limited</option>
                             </select>
                             <label className="px-2" htmlFor="organization_type" onClick={() => handleClick('organization_type')} >Select Organization Type<span className="text-danger">*</span></label>
-                          </div> 
+                          </div>
                           <div className="col-lg-4 mb-lg-0 my-md-2 my-4 custom-class-form-div">
                             <input
                               onBlur={onInputBlur}
                               onFocus={handleFocus}
                               name="company_name"
                               id="company_name"
-                              type="text" 
+                              type="text"
                               className="form-control custom-input"
                               required
                             />
-                          <label className="px-2" htmlFor="company_name" onClick={() => handleClick('company_name')} >Organization Name<span className="text-danger">*</span></label>
-                          </div> 
+                            <label className="px-2" htmlFor="company_name" onClick={() => handleClick('company_name')} >Organization Name<span className="text-danger">*</span></label>
+                          </div>
                           <div className="col-lg-4 mb-lg-0 my-md-2 my-4 custom-class-form-div">
                             <input
                               onChange={onInputChange}
@@ -1003,11 +1014,11 @@ const Registration = () => {
                               onFocus={handleFocus}
                               name="gst_number"
                               id="gst_number"
-                              type="text" 
+                              type="text"
                               className="form-control text-uppercase  custom-input"
                               required
                             />
-                             <label className="px-2" htmlFor="gst_number" onClick={() => handleClick('gst_number')} >GST Number<span className="text-danger">*</span></label>
+                            <label className="px-2" htmlFor="gst_number" onClick={() => handleClick('gst_number')} >GST Number<span className="text-danger">*</span></label>
                             <span
                               className={`pe-1 ${gstValidationMessage ? "text-danger" : "d-none"
                                 }`}
@@ -1018,7 +1029,7 @@ const Registration = () => {
                         </div>
 
                         {/* TAN & CIN */}
-                        <div className="row  mt-lg-3 mt-2 align-items-center" > 
+                        <div className="row  mt-lg-3 mt-2 align-items-center" >
                           <div className="col-lg-4 mb-lg-0 my-md-2 my-4 custom-class-form-div">
                             <input
                               onChange={onInputChange}
@@ -1026,18 +1037,18 @@ const Registration = () => {
                               onFocus={handleFocus}
                               name="tan_number"
                               id="tan_number"
-                              type="text" 
+                              type="text"
                               className="form-control text-uppercase  custom-input"
                               required
                             />
-                             <label className="px-2" htmlFor="tan_number" onClick={() => handleClick('tan_number')} >TAN Number<span className="text-danger">*</span></label>
+                            <label className="px-2" htmlFor="tan_number" onClick={() => handleClick('tan_number')} >TAN Number<span className="text-danger">*</span></label>
                             <span
                               className={`pe-1 ${tanValidationMessage ? "text-danger" : "d-none"
                                 }`}
                             >
                               {tanValidationMessage}
                             </span>
-                          </div> 
+                          </div>
                           <div className="col-lg-4 mb-lg-0 my-md-2 my-4 custom-class-form-div">
                             <input
                               onChange={onInputChange}
@@ -1045,7 +1056,7 @@ const Registration = () => {
                               onFocus={handleFocus}
                               name="cin_number"
                               id="cin_number"
-                              type="text" 
+                              type="text"
                               className="form-control text-uppercase  custom-input"
                               required
                             />
@@ -1074,7 +1085,7 @@ const Registration = () => {
                     </form>
 
                   </div>
-                </div> 
+                </div>
 
                 {/* Already registered? */}
                 <small className="token-verify-link ">
@@ -1115,7 +1126,7 @@ const Registration = () => {
                 <div className="row">
                   {/* Flat Number */}
                   <div className="col-md-6 my-md-2 my-4">
-                    <div className="form-group mb-3 custom-class-form-div"> 
+                    <div className="form-group mb-3 custom-class-form-div">
                       <input
                         id="flat_number"
                         name="flat_number"
@@ -1123,14 +1134,14 @@ const Registration = () => {
                         className="form-control custom-input "
                         onChange={onInputChange}
                         onBlur={onInputBlur}
-                        onFocus={handleFocus} 
+                        onFocus={handleFocus}
                       />
                       <label className="px-2" htmlFor="flat_number" onClick={() => handleClick('flat_number')} >Flat Number  </label>
                     </div>
                   </div>
                   {/* Building Name */}
                   <div className="col-md-6 my-md-2 my-4">
-                    <div className="form-group mb-3 custom-class-form-div"> 
+                    <div className="form-group mb-3 custom-class-form-div">
                       <input
                         id="building_name"
                         name="building_name"
@@ -1138,14 +1149,14 @@ const Registration = () => {
                         className="form-control custom-input "
                         onChange={onInputChange}
                         onBlur={onInputBlur}
-                        onFocus={handleFocus} 
+                        onFocus={handleFocus}
                       />
                       <label className="px-2" htmlFor="building_name" onClick={() => handleClick('building_name')} >Building Name  </label>
                     </div>
                   </div>
                   {/* Society Name */}
                   <div className="col-md-6 my-md-2 my-4">
-                    <div className="form-group mb-3 custom-class-form-div"> 
+                    <div className="form-group mb-3 custom-class-form-div">
                       <input
                         id="society_name"
                         name="society_name"
@@ -1153,7 +1164,7 @@ const Registration = () => {
                         className="form-control custom-input "
                         onChange={onInputChange}
                         onBlur={onInputBlur}
-                        onFocus={handleFocus} 
+                        onFocus={handleFocus}
                       />
 
                       <label className="px-2" htmlFor="society_name" onClick={() => handleClick('society_name')} >Society Name  </label>
@@ -1161,7 +1172,7 @@ const Registration = () => {
                   </div>
                   {/*  Plot Number */}
                   <div className="col-md-6 my-md-2 my-4">
-                    <div className="form-group mb-3 custom-class-form-div"> 
+                    <div className="form-group mb-3 custom-class-form-div">
                       <input
                         id="plot_number"
                         name="plot_number"
@@ -1169,7 +1180,7 @@ const Registration = () => {
                         className="form-control custom-input "
                         onChange={onInputChange}
                         onBlur={onInputBlur}
-                        onFocus={handleFocus} 
+                        onFocus={handleFocus}
                       />
 
                       <label className="px-2" htmlFor="plot_number" onClick={() => handleClick('plot_number')} > Plot Number  </label>
@@ -1177,7 +1188,7 @@ const Registration = () => {
                   </div>
                   {/* Locality */}
                   <div className="col-md-6 my-md-2 my-4">
-                    <div className="form-group mb-3 custom-class-form-div"> 
+                    <div className="form-group mb-3 custom-class-form-div">
                       <input
                         onBlur={onInputBlur}
                         id="locality"
@@ -1185,14 +1196,14 @@ const Registration = () => {
                         type="text"
                         className="form-control custom-input "
                         onChange={onInputChange}
-                        onFocus={handleFocus} 
+                        onFocus={handleFocus}
                       />
                       <label className="px-2" htmlFor="locality" onClick={() => handleClick('locality')} >Locality<span className="text-danger">*</span></label>
                     </div>
                   </div>
                   {/* Landmark */}
                   <div className="col-md-6 my-md-2 my-4">
-                    <div className="form-group mb-3 custom-class-form-div"> 
+                    <div className="form-group mb-3 custom-class-form-div">
                       <input
                         id="landmark"
                         name="landmark"
@@ -1200,14 +1211,14 @@ const Registration = () => {
                         className="form-control custom-input "
                         onChange={onInputChange}
                         onBlur={onInputBlur}
-                        onFocus={handleFocus} 
+                        onFocus={handleFocus}
                       />
                       <label className="px-2" htmlFor="landmark" onClick={() => handleClick('landmark')} >Landmark <span className="text-danger">*</span></label>
                     </div>
                   </div>
                   {/* State */}
                   <div className="col-md-6 my-md-2 my-4">
-                    <div className="form-group mb-3 custom-class-form-div"> 
+                    <div className="form-group mb-3 custom-class-form-div">
                       <select
                         onChange={onInputChange}
                         onFocus={handleFocus}
@@ -1215,7 +1226,7 @@ const Registration = () => {
                         id="state"
                         name="state"
                         type="text"
-                        className="form-select custom-input" 
+                        className="form-select custom-input"
                       >
 
                         <option
@@ -1243,7 +1254,7 @@ const Registration = () => {
                   </div>
                   {/* City */}
                   <div className={`col-md-6 my-md-2 my-4 ${cityVisibilityClass}`}>
-                    <div className="form-group mb-3 custom-class-form-div"> 
+                    <div className="form-group mb-3 custom-class-form-div">
                       <select
                         onChange={onInputChange}
                         onFocus={handleFocus}
@@ -1251,7 +1262,7 @@ const Registration = () => {
                         id="city"
                         name="city"
                         type="text"
-                        className="form-select custom-input" 
+                        className="form-select custom-input"
                       >
                         <option
                           id="selectedCity"
@@ -1279,13 +1290,13 @@ const Registration = () => {
                   </div>
                   {/* ZIP Code */}
                   <div className="col-md-6 my-md-2 my-4">
-                    <div className="form-group mb-3 custom-class-form-div"> 
+                    <div className="form-group mb-3 custom-class-form-div">
                       <input
                         type="text"
                         onChange={onInputChange}
                         onFocus={handleFocus}
                         id="zip"
-                        onBlur={onInputBlur} 
+                        onBlur={onInputBlur}
                         name="zip"
                         className={`form-control custom-input border-${zipCodeValidationColor}`}
                       />
@@ -1300,7 +1311,7 @@ const Registration = () => {
                     </div>
                   </div>
                   <div className="modal-footer justify-content-between">
-                  <p className='text-secondary'>All fields marked with an asterisk (<span className="text-danger fw-bold">*</span>) are mandatory.</p>
+                    <p className='text-secondary'>All fields marked with an asterisk (<span className="text-danger fw-bold">*</span>) are mandatory.</p>
                     <button
                       onClick={onAddressFormSubmit}
                       className={`btn btn-primary ${locality &&

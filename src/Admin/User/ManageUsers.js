@@ -644,12 +644,14 @@ const ManageUsers = ({ userType }) => {
                     </table>
                   </div>
                   <div className="container mt-4">
-                    {pageCount > 1 ? <div className="row">
+                    {pageCount > 1 ? 
+                    <div className="row">
                       <Pagination
                         handlePageClick={handlePageClick}
                         pageCount={pageCount}
                       />
-                    </div> : ""}
+                    </div> 
+                    : ""}
                   </div>
                 </>
               )}
@@ -660,7 +662,7 @@ const ManageUsers = ({ userType }) => {
           <div
             className={`col-xl-10 col-lg-9 col-md-8 users-admin ${viewCurrentUserSectionClass}`}
           >
-            <BreadCrumb
+            <BreadCrumb 
               typeOfUser={user_type}
               emailOfCurrentUser={email_address}
               setDisplayClassesOfMainSections={setDisplayClassesOfMainSections}
@@ -731,10 +733,7 @@ const ManageUsers = ({ userType }) => {
                             </span>
 
                             <div className={`form-group ${classOnEditClick}`}>
-                              {roles && roles.map((data, Index) => {
-                                console.log(data);
-                                console.log(roleId);
-                                console.log(defaultRoleIds[0]);
+                              {roles && roles.map((data, Index) => { 
                                 if (roleId === 6 && (data.id === 3 || data.id === 1)) {
                                   return null;
                                 }

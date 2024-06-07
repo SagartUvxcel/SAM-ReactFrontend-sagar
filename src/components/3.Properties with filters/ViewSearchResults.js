@@ -73,9 +73,7 @@ const ViewSearchResults = () => {
   };
 
   // show Updated MinMax Price Rage
-  const showUpdatedMinMaxPriceRage = () => {
-    console.log(dataToPost.min_price);
-    console.log(dataToPost.max_price);
+  const showUpdatedMinMaxPriceRage = () => { 
     if (dataToPost && dataToPost.max_price && dataToPost.min_price) {
       let minPriceToDisplay = `${parseInt(dataToPost && dataToPost.min_price) >= 10000000 ? `${(parseInt(dataToPost && dataToPost.min_price) / 10000000).toFixed(2)
         } ` : `${(parseInt(dataToPost && dataToPost.min_price) / 100000)} `} ${parseInt(dataToPost.min_price) >= 10000000 ? " Cr." : " Lac"}`;
@@ -116,21 +114,22 @@ const ViewSearchResults = () => {
       await axios.post(isLogin ? apis.authSearchAPI : apis.searchAPI, dataForTotalCount, {
         headers: authHeaders,
       }).then((res) => {
-        console.log(res.data);
+        console.log(res.data); 
         if (res.data) {
           setPageCount(Math.ceil(res.data.length / batch_size));
         }
-      });
-console.log(dataToPost);
+      }); 
+
       // Post data and get Searched result from response.
       await axios.post(apis.searchAPI, dataToPost).then((res) => {
         // Store Searched results into propertyData useState.
-        if (res.data !== null) {
-          console.log(res.data);
+        
+        console.log(res.data); 
+        if (res.data !== null) { 
           setPropertyData(res.data);
           setLoading(false);
           setTimeout(() => {
-            showUpdatedMinMaxPriceRage();
+            // showUpdatedMinMaxPriceRage();
           }, 1000);
           paginationRef.current.classList.remove("d-none");
         } else {
@@ -506,8 +505,7 @@ console.log(dataToPost);
   };
 
   const navigateToReceiver = (data) => {
-    // Use navigate with the encoded data in URL parameters
-    console.log(data);
+    // Use navigate with the encoded data in URL parameters 
     const secretKey = "my_secret_key";
     // Encoding (Encryption)
     const encodedData = CryptoJS.AES.encrypt(

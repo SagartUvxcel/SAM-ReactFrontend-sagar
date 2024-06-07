@@ -53,6 +53,7 @@ const ListOfProperties = () => {
     assetCategory: "",
     banks: "",
   });
+  const [banks, setBanks] = useState([]);
   const [srcOfFile, setSrcOfFile] = useState(null);
   const [currentPropertyId, setCurrentPropertyId] = useState(null);
   const [fileExtension, setFileExtension] = useState(null);
@@ -111,6 +112,9 @@ const ListOfProperties = () => {
         headers: authHeaders,
       });
       let propertyDetails = res.data;
+      console.log(propertyDetails);
+      const bankRes = await axios.get(`/sam/v1/property/by-bank`);
+      setBanks(bankRes.data);
       setSelectedPropertyResults(propertyDetails);
       localStorage.setItem("defaultResultsOfProperties", JSON.stringify(propertyDetails));
       setCurrentAllPropertiesDetails(propertyDetails);
@@ -188,55 +192,6 @@ const ListOfProperties = () => {
     } catch (error) {
       toast.error("Internal server error");
     }
-  };
-
-  // get ListOfProperty Documents from API
-  const getListOfPropertyDocuments = async (id) => {
-    setPropertyImages([]);
-    setViewDocumentModalLoading(true);
-    try {
-      const propertyDocsListRes = await axios.get(
-        `/sam/v1/property/auth/property_document_list/${id}`,
-        { headers: authHeaders }
-      );
-      const documentDetails = propertyDocsListRes.data;
-      if (documentDetails !== null) {
-        // Filter the documents array to exclude items with category_id of 16
-        const { filteredDocuments, filteredImages } = documentDetails.reduce((acc, document) => {
-          if (document.category_id === 16) {
-            acc.filteredImages.push(document);
-          } else {
-            acc.filteredDocuments.push(document);
-          }
-          return acc;
-        }, { filteredDocuments: [], filteredImages: [] });
-
-        setPropertyDocumentsList(filteredDocuments);
-
-        if (filteredImages.length !== 0) {
-          const results = [];
-          for (const doc of filteredImages) {
-            const result = await getChunksOfImages(doc.document_id, id);
-            if (result) {
-              results.push({ ...doc, ...result });
-            } else {
-              results.push({ ...doc, error: "Failed to process document" });
-            }
-          }
-          setPropertyImages(results);
-        }
-
-        setCurrentPropertyId(id);
-        setViewDocumentModalLoading(false);
-      } else {
-        setPropertyDocumentsList([]);
-        setViewDocumentModalLoading(false);
-      }
-    } catch (error) {
-      console.log(error);
-      setViewDocumentModalLoading(false);
-    }
-
   };
 
   // get List Of Property Documents from API
@@ -385,15 +340,13 @@ const ListOfProperties = () => {
 
   // get Chunks Of Images
   const viewImagesBtnFunction = async (propertyId) => {
+    setPropertyImages([]);
     setCurrentPropertyViewImagesId(propertyId);
     setCallViewImagesFunction(false);
     if (imageFetchLoading) {
       setViewImagesModalLoading(true);
     } else {
-      setPropertyImages([]);
       const imagesList = selectedPropertyResults.filter(property => property.property_id === propertyId);
-
-      console.log(imagesList[0].propertyImages);
       setPropertyImages(imagesList[0].propertyImages);
       setViewImagesModalLoading(false);
       setCurrentPropertyViewImagesId(null);
@@ -450,10 +403,10 @@ const ListOfProperties = () => {
 
             let dataString = fileTypesObj[fileExtension] || "";
             let originalBase64 = window.btoa(combinedBinaryFormatOfChunks);
-            const base64Data = originalBase64;
-            const base64Response = await fetch(`${dataString}${base64Data}`);
-            const blob = await base64Response.blob();
-            const url = URL.createObjectURL(blob);
+            const base64Data = originalBase64; 
+            const base64Response = await fetch(`${dataString}${base64Data}`); 
+            const blob = await base64Response.blob(); 
+            const url = URL.createObjectURL(blob); 
 
             if (fileExtension === "xlsx" || fileExtension === "xls") {
               fetchExcelFilesData(url);
@@ -494,68 +447,24 @@ const ListOfProperties = () => {
   // download file from  database
   const downloadFileFunction = async (document_id, currentPropertyId) => {
     setDocumentLoading(true);
-    let dataToPost = {
-      document_id: document_id,
-      property_id: currentPropertyId,
-      chunk_number: cnt,
-      chunk_size: 1024 * 1204 * 25,
-    };
-    try {
-      await axios
-        .post(`/sam/v1/property/auth/property-docs`, dataToPost, {
-          headers: authHeaders,
-        })
-        .then(async (res) => {
-          if (s1 !== res.data.data) {
-            s1 += res.data.data;
-            combinedBinaryFormatOfChunks += window.atob(res.data.data);
-            if (res.data.last_chunk !== true) {
-              cnt += 1;
-              getChunksOfDocuments();
-            } else {
-              setFileName(res.data.file_name);
-              let fileNameValue = res.data.file_name;
-              let extensionArr = res.data.file_name.split(".");
-              let fileExtension = extensionArr[extensionArr.length - 1];
-              setFileExtension(fileExtension);
-              if (fileTypesObj[fileExtension]) {
-                dataString = fileTypesObj[fileExtension];
-              } else {
-                dataString = "";
-              }
-              let originalBase64 = window.btoa(combinedBinaryFormatOfChunks);
-              const base64Data = originalBase64;
-              const base64Response = await fetch(`${dataString}${base64Data}`);
-              const blob = await base64Response.blob();
-              const url = URL.createObjectURL(blob);
-              setSrcOfFile(url);
-              if (fileExtension === "xlsx" || fileExtension === "xls") {
-                fetchExcelFilesData(url);
-              } else if (fileExtension === "zip") {
-                fetchZipFileData(url);
-              }
-              const link = document.createElement('a');
-              link.href = url;
-              link.setAttribute('download', fileNameValue);
-
-              // Simulate click on the link to start download
-              document.body.appendChild(link);
-              link.click();
-
-              // Clean up
-              link.parentNode.removeChild(link);
-              window.URL.revokeObjectURL(url);
-              setDocumentLoading(false);
-            }
-          }
-        });
-    } catch (error) {
-      setDocumentLoading(false);
+    let result = {};
+    if (document_id && currentPropertyId) {
+      result = await getChunksOfImages(document_id, currentPropertyId);
     }
+    const link = document.createElement('a');
+    link.href = result.srcOfFile;
+    link.setAttribute('download', result.fileName);
 
+    // Simulate click on the link to start download
+    document.body.appendChild(link);
+    link.click();
 
+    // Clean up
+    link.parentNode.removeChild(link);
+    window.URL.revokeObjectURL(result.srcOfFile);
+    setDocumentLoading(false);
+  };
 
-  }
   // display property Images on selection specific image
   const displayImage = (fileNameData, fileExtensionData, urlData) => {
     setDocumentLoading(true);
@@ -569,6 +478,23 @@ const ListOfProperties = () => {
       toast.error("No Image Found!")
     }
 
+  }
+
+  // download All Images Btn Click function
+  const downloadAllImagesBtnClick = async (propertyImagesList) => {
+    propertyImagesList.forEach((file) => {
+      const link = document.createElement('a');
+      link.href = file.srcOfFile;
+      link.setAttribute('download', file.fileName);
+
+      // Simulate click on the link to start download
+      document.body.appendChild(link);
+      link.click();
+
+      // Clean up
+      link.parentNode.removeChild(link);
+      // window.URL.revokeObjectURL(file.srcOfFile);
+    })
   }
 
   useEffect(() => {
@@ -600,6 +526,11 @@ const ListOfProperties = () => {
     // eslint-disable-next-line
   }, [callViewImagesFunction, callViewDocumentFunction]);
 
+  // Close current tab
+  const onClickBackToSearchPropertiesPage = () => {
+    window.close();
+  };
+
   return (
     <Layout>
       <section className="list-of-properties section-padding min-100vh">
@@ -617,13 +548,17 @@ const ListOfProperties = () => {
         ) :
           <div className="container-fluid ">
             {/*  Sort by */}
-            {subscription_plan_id !== 0 ? <div className={`row justify-content-end pt-2 ${selectedPropertyResults === null ? "d-none" : ""}`} >
-              <div className="property-sort-box">
+            <div className={`row justify-content-between pt-2 ${selectedPropertyResults === null ? "d-none" : ""}`} >
+              <div className="col-4 text-start ms-md-1">
+                <button className="btn btn-sm btn-outline-primary" onClick={onClickBackToSearchPropertiesPage}><i className="bi bi-arrow-left"></i>Back</button>
+              </div>
+
+              {subscription_plan_id !== 0 ? <div className="property-sort-box">
                 <div className="dropdown">
                   <div
                     data-bs-toggle="dropdown"
                     aria-expanded="false"
-                    className="form-select"
+                    className="form-select form-select-sm"
                   >
                     {/* Sort by */}
                     <div
@@ -689,9 +624,10 @@ const ListOfProperties = () => {
                     </li>
                   </ul>
                 </div>
-              </div>
-            </div> : ""}
+              </div> : ""}
+            </div>
 
+            <hr className="my-2" />
             {/* details page */}
             <div className={`row ${subscription_plan_id === 0 ? "mt-3" : ""}`}>
               <div className="card px-3 border-0">
@@ -710,8 +646,8 @@ const ListOfProperties = () => {
                       </div>
                     ) : (selectedPropertyResults.map((property, Index) => {
                       const {
-                        property_id,
-                        document_id: { Int64: documentId, Valid: isDocumentIdValid },
+                        property_id, 
+                        sales_doc_id: { Int64: sales_docId, Valid: isSalesDocIdValid },
                         type_name,
                         market_price,
                         ready_reckoner_price,
@@ -731,8 +667,10 @@ const ListOfProperties = () => {
                         zip,
                         state_name,
                         territory,
-                        title_clear_property,
+                        title_clear_property, 
+                        bank_id,
                       } = property;
+                      let bankDetails = banks.filter(bank => bank.bank_id === parseInt(bank_id))[0];
                       return (
                         <div key={Index} className="p-0">
                           <div className="p-0 fw-bold h4 heading-text-primary">
@@ -853,8 +791,8 @@ const ListOfProperties = () => {
                                           Market Price
                                         </small>
                                         <div className="common-btn-font">
-                                          <i className="bi bi-currency-rupee"></i> 
-                                          {parseInt(market_price) >= 10000000 ? `${(parseInt(market_price) / 10000000).toFixed(2)}` : `${(parseInt(market_price) / 100000).toFixed(1)  }`}
+                                          <i className="bi bi-currency-rupee"></i>
+                                          {parseInt(market_price) >= 10000000 ? `${(parseInt(market_price) / 10000000).toFixed(2)}` : `${(parseInt(market_price) / 100000).toFixed(1)}`}
                                           <small className="text-muted">{parseInt(market_price) >= 10000000 ? " Cr." : " Lac"}</small>
                                         </div>
                                       </div>
@@ -867,8 +805,8 @@ const ListOfProperties = () => {
                                           Ready Reckoner Price
                                         </small>
                                         <div className="common-btn-font">
-                                          <i className="bi bi-currency-rupee"></i> 
-                                          {parseInt(ready_reckoner_price) >= 10000000 ? `${(parseInt(ready_reckoner_price) / 10000000).toFixed(2)}` : `${(parseInt(ready_reckoner_price) / 100000).toFixed(1) }`}
+                                          <i className="bi bi-currency-rupee"></i>
+                                          {parseInt(ready_reckoner_price) >= 10000000 ? `${(parseInt(ready_reckoner_price) / 10000000).toFixed(2)}` : `${(parseInt(ready_reckoner_price) / 100000).toFixed(1)}`}
                                           <small className="text-muted">{parseInt(ready_reckoner_price) >= 10000000 ? " Cr." : " Lac"}</small>
                                         </div>
                                       </div>
@@ -881,8 +819,8 @@ const ListOfProperties = () => {
                                           Reserved Price
                                         </small>
                                         <div className="common-btn-font">
-                                          <i className="bi bi-currency-rupee"></i> 
-                                          {parseInt(expected_price) >= 10000000 ? `${(parseInt(expected_price) / 10000000).toFixed(2)}` : `${(parseInt(expected_price) / 100000).toFixed(1) }`}
+                                          <i className="bi bi-currency-rupee"></i>
+                                          {parseInt(expected_price) >= 10000000 ? `${(parseInt(expected_price) / 10000000).toFixed(2)}` : `${(parseInt(expected_price) / 100000).toFixed(1)}`}
                                           <small className="text-muted">{parseInt(expected_price) >= 10000000 ? " Cr." : " Lac"}</small>
                                         </div>
                                       </div>
@@ -989,22 +927,34 @@ const ListOfProperties = () => {
                                           {territory}
                                         </div>
                                       </div>
+                                      {/* branch_name */}
+                                      <div
+                                        className={`col-xl-3 col-lg-4 col-6 mt-xl-4 mt-3 ${bankDetails.bank_name ? "" : "d-none"
+                                          }`}
+                                      >
+                                        <small className="text-muted">
+                                          Bank Name
+                                        </small>
+                                        <div className="common-btn-font text-capitalize">
+                                          {bankDetails.bank_name}
+                                        </div>
+                                      </div>
                                       {/* Sale certificate */}
                                       <div className="col-xl-3 col-lg-4 col-6 mt-xl-4 mt-3">
                                         <small className="text-muted">
                                           Sale certificate
                                         </small>
-                                        <div className="common-btn-font mt-2">
-                                          {isDocumentIdValid ?
+                                        <div className="common-btn-font ">
+                                          {isSalesDocIdValid ?
                                             <button
-                                              className="btn btn-sm btn-outline-primary "
-                                              onClick={() => getChunksOfDocuments(documentId, property_id)}
+                                              className="btn btn-sm btn-outline-primary mt-1"
+                                              onClick={() => getChunksOfDocuments(sales_docId, property_id)}
                                               data-bs-toggle="modal"
                                               data-bs-target="#documentModal"
                                             >
                                               View
                                             </button>
-                                            : <small className="">Not Available</small>
+                                            : "Not Available"
                                           }
                                         </div>
                                       </div>
@@ -1018,7 +968,7 @@ const ListOfProperties = () => {
                                           >
                                             Document List
                                           </small>
-                                          <div className="common-btn-font mt-2">
+                                          <div className="common-btn-font mt-1">
                                             <button
                                               data-bs-toggle="modal"
                                               data-bs-target="#documentListModal"
@@ -1038,11 +988,10 @@ const ListOfProperties = () => {
                                         >
                                           <small
                                             className="text-muted"
-                                          // style={{ visibility: "hidden" }}
                                           >
                                             For More Details
                                           </small>
-                                          <div className="common-btn-font mt-2">
+                                          <div className="common-btn-font mt-1">
                                             <button
                                               data-bs-toggle="modal"
                                               data-bs-target="#commentModal"
@@ -1111,8 +1060,8 @@ const ListOfProperties = () => {
         <div className="modal-dialog modal-dialog-centered">
           <div className="modal-content" >
             {/* document section */}
-            <div className="col-12 mt-3">
-              <div className="row ms-2">
+            <div className="col-12 p-3">
+              <div className="row ">
                 <div className="d-flex justify-content-between">
                   <span className="fw-bold">
                     <i className="bi bi-file-earmark pe-2"></i>
@@ -1120,14 +1069,14 @@ const ListOfProperties = () => {
                   </span>
                   <button
                     type="button"
-                    className="btn-close me-3"
+                    className="btn-close btn-sm "
                     data-bs-dismiss="modal"
                     aria-label="Close"
                     title="Close"
                   ></button>
                 </div>
               </div>
-              <hr className="m-2"/>
+              <hr className="my-2" />
               {viewDocumentModalLoading ? (
                 <div
                   className="d-flex align-items-center justify-content-center"
@@ -1174,6 +1123,7 @@ const ListOfProperties = () => {
                                         </button>
                                       </div>
                                     </td>
+                                    {/*download  */}
                                     <td>
                                       <button
                                         className="btn btn-sm btn-primary me-4"
@@ -1192,13 +1142,10 @@ const ListOfProperties = () => {
                       </table>
                     </div>
                   </div>
-                ) : (
-                  <>
-                    <div className="text-muted">
-                      No documents available.
-                    </div>
-                  </>
-                )}
+                ) :
+                  <div className="text-muted">
+                    No documents available.
+                  </div>}
               </>
               )}
             </div>
@@ -1228,7 +1175,6 @@ const ListOfProperties = () => {
                     : ""}
               </h5>
               <div className="d-flex align-items-center">
-                {/* <button className="btn me-2 btn-outline-primary text-white">Make Default</button> */}
                 {subscription_plan_id !== 0 &&
                   <a
                     className="btn btn-light me-4"
@@ -1429,23 +1375,37 @@ const ListOfProperties = () => {
         <div className="modal-dialog modal-dialog-centered  modal-lg">
           <div className="modal-content">
             <div className="col-12 p-3">
-              <div className="row ms-2">
+              <div className="row" >
                 {/* title and close button */}
                 <div className="d-flex justify-content-between">
                   <span className="fw-bold">
                     <i className="bi bi-file-earmark pe-2"></i>
                     Images
                   </span>
-                  <button
-                    type="button"
-                    className="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Close"
-                    title="Close"
-                  ></button>
+                  <div className="d-flex align-items-center">
+                    {/* Download ALL */}
+                    {subscription_plan_id !== 0 && !viewImagesModalLoading ? <>
+                      {propertyImages && <button
+                        className="btn btn-sm btn-primary text-white me-4"
+                        onClick={() => downloadAllImagesBtnClick(propertyImages)}
+                        title="Download"
+                      >
+                        Download ALL
+                      </button>}
+                    </>
+                      : ""}
+                    {/* close button */}
+                    <button
+                      type="button"
+                      className="btn-close btn-sm"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                      title="Close"
+                    ></button>
+                  </div>
                 </div>
               </div>
-              <hr />
+              <hr className="my-2" />
               {viewImagesModalLoading ? (
                 <div
                   className="d-flex justify-content-center align-items-center"

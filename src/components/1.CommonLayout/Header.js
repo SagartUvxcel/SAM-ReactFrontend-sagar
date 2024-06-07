@@ -12,9 +12,6 @@ function Header() {
     isBank = data.isBank;
     subscription_plan_id = data.subscription_plan_id;
   }
-
-  const [uploadDocumentPage, setUploadDocumentPage] = useState(false);
-
   // This useState will store data from localStorage such as login-status, role and email of user.
   const [allUseStates, setAllUseStates] = useState({
     loginStatus: false,
@@ -22,8 +19,8 @@ function Header() {
     userEmail: "",
     userId: null,
   });
-
   const { loginStatus, userEmail, roleId } = allUseStates;
+  const [uploadDocumentPage, setUploadDocumentPage] = useState(false);
 
   // To navigate to particular route.
   const goTo = useNavigate();
@@ -62,10 +59,13 @@ function Header() {
   // location url path selection 
   const pathLocation = () => {
     const path = window.location.pathname;
+    const hrefPath = window.location.href;
     if (path.includes("/property/single-property-documents-upload")) {
       setUploadDocumentPage(true);
-    } else {
-
+    }
+    const fixedPart = "/list-of-properties?data=";
+    if (hrefPath.includes(fixedPart)) {
+      setUploadDocumentPage(true);
     }
   }
 
@@ -171,7 +171,7 @@ function Header() {
                 ""
               )}
               {/* If user is loggedIn then show these Subscribe links in dropdown */}
-              {(roleId === 3 && isBank === false) || loginStatus === false ? (
+              {(roleId === 3 && isBank === false && !uploadDocumentPage) || loginStatus === false ? (
                 <li>
                   <NavLink to="/subscription" className="nav-link">
                     <i className="bi bi-wallet2 me-2 text-light"></i>

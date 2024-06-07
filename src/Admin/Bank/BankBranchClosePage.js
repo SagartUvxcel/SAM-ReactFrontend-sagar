@@ -1,8 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import Layout from "../../components/1.CommonLayout/Layout";
 import AdminSideBar from "../AdminSideBar";
-import CommonSpinner from "../../CommonSpinner";
-import Pagination from "../../Pagination";
+import CommonSpinner from "../../CommonSpinner"; 
 import { toast } from "react-toastify";
 import { useNavigate, useLocation } from "react-router-dom"
 import axios from "axios";

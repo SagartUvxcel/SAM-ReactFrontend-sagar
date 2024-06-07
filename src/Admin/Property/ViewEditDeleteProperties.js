@@ -47,6 +47,7 @@ const ViewEditDeleteProperties = () => {
   const modalBodyRef = useRef(null);
   const [selectedProperty, setSelectedProperty] = useState([]);
   const [propertyDocumentsList, setPropertyDocumentsList] = useState([]);
+  const [propertyImagesList, setPropertyImagesList] = useState([]);
   const [pageCount, setPageCount] = useState(0);
   const paginationRef = useRef();
   const [messages, setMessages] = useState(null);
@@ -83,8 +84,8 @@ const ViewEditDeleteProperties = () => {
         { headers: authHeader }
       );
       if (propertiesRes.data !== null && propertiesRes.data.length > 0) {
-        paginationRef.current.classList.remove("d-none");
-        setProperties(propertiesRes.data);
+        paginationRef.current.classList.remove("d-none"); 
+        setProperties(propertiesRes.data); 
       } else {
         paginationRef.current.classList.add("d-none");
       }
@@ -204,19 +205,132 @@ const ViewEditDeleteProperties = () => {
     const currentPropertyRes = await axios.get(
       `/sam/v1/property/single-property/${id}`,
       { headers: authHeader }
-    );
+    ); 
     setSelectedProperty(currentPropertyRes.data);
     getListOfPropertyDocuments(id);
   };
 
   // get ListOfProperty Documents from API
   const getListOfPropertyDocuments = async (id) => {
-    const propertyDocsListRes = await axios.get(
+    setPropertyDocumentsList([])
+    setPropertyImagesList([])
+    const propertyDocsListResData = await axios.get(
       `/sam/v1/property/auth/property_document_list/${id}`,
       { headers: authHeader }
     );
-    setPropertyDocumentsList(propertyDocsListRes.data);
+    let propertyDocsListRes = propertyDocsListResData.data;
+    setPropertyDocumentsList(propertyDocsListRes); 
     setViewSinglePropertyPageLoading(false);
+    if (propertyDocsListRes !== null) {
+      let filteredImages = propertyDocsListRes.filter((data) => data.category_id === 16)
+      if (filteredImages !== null) {
+        if (filteredImages.length !== 0) {
+          const results = [];
+          for (const doc of filteredImages) {
+            const result = await getChunksOfImages(doc.document_id, id);
+            if (result) {
+              results.push({ ...doc, ...result });
+            } else {
+              results.push({ ...doc, error: "Failed to process document" });
+            }
+          }
+          setPropertyImagesList(results)
+        }
+      }
+    }
+    setViewSinglePropertyPageLoading(false);
+  }; 
+  // all file types
+  let fileTypesObj = {
+    pdf: "data:application/pdf;base64,",
+    docx: "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,",
+    xlsx: "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,",
+    xls: "data:application/vnd.ms-excel;base64,",
+    zip: "data:application/zip;base64,",
+    rar: "data:application/x-rar-compressed;base64,",
+    jpg: "data:image/jpg;base64,",
+    jpeg: "data:image/jpeg;base64,",
+    png: "data:image/png;base64,",
+    txt: "data:text/plain;base64,",
+    mp4: "data:video/mp4;base64,",
+    mp3: "data:audio/mpeg;base64,",
+    wav: "data:audio/wav;base64,",
+  }; 
+  const [imageUrls, setImageUrls] = useState({});
+  const [imageUrlsLoading, setImageUrlsLoading] = useState(false);
+
+  // fetch Image Urls
+  useEffect(() => {
+    const fetchImageUrls = async () => {
+      setImageUrlsLoading(true);
+      const urls = {};
+      for (const property of properties) {
+        const { default_image_id, property_id } = property;
+        if (default_image_id.Int64 !== 0) {
+          const url = await getDefaultImageUrl(default_image_id.Int64, property_id);
+          urls[property_id] = url;
+        }
+      }
+      setImageUrls(urls);
+      setImageUrlsLoading(false);
+    };
+
+    fetchImageUrls();
+    
+    // eslint-disable-next-line
+  }, [properties]);
+
+  // get Default ImageUrl
+  const getDefaultImageUrl = async (documentId, propertyId) => {
+    const defaultImageDetails = await getChunksOfImages(documentId, propertyId); 
+    return defaultImageDetails.srcOfFile
+  }
+
+  // get Chunks Of Images
+  const getChunksOfImages = async (documentId, propertyId) => {
+    let s1 = '';
+    let cnt = 0;
+    let combinedBinaryFormatOfChunks = '';
+
+    const fetchChunks = async () => {
+      let dataToPost = {
+        document_id: documentId,
+        property_id: propertyId,
+        chunk_number: cnt,
+        chunk_size: 1024 * 1024 * 25,
+      };
+
+      try {
+        const res = await axios.post(`/sam/v1/property/auth/property-docs`, dataToPost, {
+          headers: authHeader,
+        });
+        if (s1 !== res.data.data) {
+          s1 += res.data.data;
+          combinedBinaryFormatOfChunks += window.atob(res.data.data);
+
+          if (res.data.last_chunk !== true) {
+            cnt += 1;
+            return await fetchChunks(); // Recursive call with await
+          } else {
+            const fileName = res.data.file_name;
+            let extensionArr = res.data.file_name.split(".");
+            let fileExtension = extensionArr[extensionArr.length - 1];
+
+            let dataString = fileTypesObj[fileExtension] || "";
+            let originalBase64 = window.btoa(combinedBinaryFormatOfChunks);
+            const base64Data = originalBase64;
+            const base64Response = await fetch(`${dataString}${base64Data}`);
+            const blob = await base64Response.blob();
+            const url = URL.createObjectURL(blob);
+            return { fileName, fileExtension, srcOfFile: url };
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching document chunks:", error);
+        return null; // Return null in case of error
+      }
+    };
+    return await fetchChunks();
   };
 
   // back ToAll Properties Page button
@@ -249,7 +363,6 @@ const ViewEditDeleteProperties = () => {
     carpet_area,
     property_number,
     property_id,
-    is_sold,
     territory,
   } = formData;
 
@@ -263,15 +376,11 @@ const ViewEditDeleteProperties = () => {
     landmark,
     zip,
   } = formData.address_details;
-
-  const [banks, setBanks] = useState([]);
+ 
   const [enquiryList, setEnquiryList] = useState([]);
-  const [activeBank, setActiveBank] = useState({});
-  const [bankBranches, setBankBranches] = useState([]);
-  const [activeBranch, setActiveBranch] = useState({});
+  const [activeBank, setActiveBank] = useState({});  
   const notSoldCheckRef = useRef();
-  const [mainPageLoading, setMainPageLoading] = useState(false);
-  const [pathLocation, setPathLocation] = useState("");
+  const [mainPageLoading, setMainPageLoading] = useState(false); 
   const [selectedPropertyNumberForEnquiry, setSelectedPropertyNumberForEnquiry] = useState(null);
   const [selectedPropertyTypeForEnquiry, setSelectedPropertyTypeForEnquiry] = useState(null);
   const [sortOptionText, setSortOptionText] = useState("up");
@@ -319,16 +428,7 @@ const ViewEditDeleteProperties = () => {
   // on Input Change
   const onInputChange = async (e) => {
     const { name, value } = e.target;
-    if (name === "bank") {
-      if (value) {
-        const branchRes = await axios.get(
-          `/sam/v1/property/auth/bank-branches/${value}`,
-          {
-            headers: authHeader,
-          }
-        );
-        setBankBranches(branchRes.data);
-      }
+    if (name === "bank") { 
     } else if (name === "bank_branch_id") {
       commonFnToSaveFormData(name, parseInt(value));
     } else if (name === "market_price") {
@@ -391,8 +491,7 @@ const ViewEditDeleteProperties = () => {
     try {
       const { data } = await axios.post(`/sam/v1/property/auth/update-property`, formData, {
         headers: authHeader,
-      })
-      console.log(data);
+      }) 
       if (data.status === 0) {
         toast.success("Property updated successfully");
         setUpdateBtnLoading(false);
@@ -420,7 +519,7 @@ const ViewEditDeleteProperties = () => {
         `/sam/v1/property/single-property/${propertyId}`,
         { headers: authHeader }
       );
-      const currentPropertyData = currentPropertyRes.data;
+      const currentPropertyData = currentPropertyRes.data; 
       const {
         type_id,
         completion_date,
@@ -493,20 +592,9 @@ const ViewEditDeleteProperties = () => {
         });
       }
       // Get details from api.
-      const bankRes = await axios.get(`/sam/v1/property/by-bank`);
-      setBanks(bankRes.data);
+      const bankRes = await axios.get(`/sam/v1/property/by-bank`); 
       let bankData = bankRes.data
-      const activeBankDetails = bankData.filter(bank => bank.bank_id === (bank_Id ? bank_Id : parseInt(bank_id)))[0]
-
-      let branchIDFromProperty = parseInt(bank_branch_id);
-      const branchRes = await axios.get(`/sam/v1/property/auth/bank-branches/${bank_id}`, {
-        headers: authHeader,
-      });
-      if (isBank) {
-        const branchResData = branchRes.data;
-        const activeBranchDetails = branchResData.filter(branch => branch.branch_id === branchIDFromProperty)[0]
-        setActiveBranch(activeBranchDetails);
-      }
+      const activeBankDetails = bankData.filter(bank => bank.bank_id === (bank_Id ? bank_Id : parseInt(bank_id)))[0] 
       setActiveBank(activeBankDetails);
 
       allPropertiesPageRef.current.classList.add("d-none");
@@ -561,8 +649,7 @@ const ViewEditDeleteProperties = () => {
         const EnquiryRes = await axios.get(`/sam/v1/property/auth/property-enquiries/${propertyId}`, {
           headers: authHeader,
         })
-        const dataValue = EnquiryRes.data;
-        console.log(dataValue);
+        const dataValue = EnquiryRes.data; 
         setEnquiryList(dataValue);
         setTempEnquiryList(dataValue);
         setMainPageLoading(false);
@@ -590,25 +677,7 @@ const ViewEditDeleteProperties = () => {
     // To make default bank selected in bank select box
     let defaultBank = document.getElementById(`bank-${bank_id}`);
     if (defaultBank) {
-      defaultBank.selected = true;
-      try {
-        const branchRes = await axios.get(
-          `/sam/v1/property/auth/bank-branches/${defaultBank.value}`,
-          {
-            headers: authHeader,
-          }
-        );
-        setBankBranches(branchRes.data);
-        console.log(branchRes.data);
-      } catch (error) {
-      }
-      const branchRes = await axios.get(
-        `/sam/v1/property/auth/bank-branches/${defaultBank.value}`,
-        {
-          headers: authHeader,
-        }
-      );
-      setBankBranches(branchRes.data);
+      defaultBank.selected = true;  
 
       // Set default value for branch and make it selected in branch select box
       let defaultBranch = document.getElementById(`branch-${bank_branch_id}`);
@@ -810,12 +879,7 @@ const ViewEditDeleteProperties = () => {
           getPropertiesFromApi();
         }
       });
-    }
-    if (window.location.pathname) {
-      const currentPagePath = window.location.pathname;
-      const firstPathSegment = currentPagePath.split('/')[1];
-      setPathLocation(firstPathSegment);
-    }
+    } 
     // eslint-disable-next-line
   }, []);
 
@@ -923,6 +987,7 @@ const ViewEditDeleteProperties = () => {
                           expected_price,
                           property_id,
                           property_number,
+                          default_image_id,
                         } = property;
                         return (
                           <div className="col-xl-3 col-md-6" key={Index}>
@@ -931,7 +996,8 @@ const ViewEditDeleteProperties = () => {
                                 <div className="top-line"></div>
                                 <img
                                   className="card-img-top"
-                                  src="/images2.jpg"
+                                  // src="/images2.jpg"
+                                  src={default_image_id.Int64 !== 0 ? `${!imageUrlsLoading ? imageUrls[property_id] : "/images2.jpg"}` : "/images2.jpg"}
                                   alt=""
                                 />
                                 <div className="card-body">
@@ -1111,6 +1177,7 @@ const ViewEditDeleteProperties = () => {
                       <ViewProperty
                         selectedProperty={selectedProperty}
                         propertyDocumentsList={propertyDocumentsList}
+                        propertyImagesList={propertyImagesList}
                         setPropertyDocumentsList={setPropertyDocumentsList}
                         getListOfPropertyDocuments={getListOfPropertyDocuments}
                       />
@@ -1585,8 +1652,8 @@ const ViewEditDeleteProperties = () => {
               </section>
             </>
           </div>
-        </div>
-      </div>
+        </div >
+      </div >
       {/* Modal */}
       <div
         className="modal fade"
@@ -1644,7 +1711,7 @@ const ViewEditDeleteProperties = () => {
       </div>
 
       {/*enquiry chat modal */}
-      <div
+      <div div
         className="modal fade"
         id="enquiryChatModal"
         tabIndex="-1"
@@ -1767,8 +1834,8 @@ const ViewEditDeleteProperties = () => {
             </form>
           </div>
         </div>
-      </div>
-    </Layout>
+      </div >
+    </Layout >
   );
 };
 

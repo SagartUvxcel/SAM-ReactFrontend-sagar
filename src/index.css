@@ -107,7 +107,7 @@ input[type="date"]:in-range::-webkit-datetime-edit-text {
 
 .btn-outline-primary {
   --bs-btn-color: #0557a8 !important;
-  --bs-btn-border-color: #0557a8 !important; 
+  --bs-btn-border-color: #0557a8 !important;
   --bs-btn-hover-bg: #064090 !important;
   --bs-btn-hover-border-color: #053d8d !important;
 }
@@ -129,7 +129,8 @@ a {
   --bs-pagination-focus-box-shadow: none !important;
 }
 
-.active>.page-link, .page-link.active {
+.active > .page-link,
+.page-link.active {
   z-index: 3;
   color: var(--bs-pagination-active-color);
   background-color: #053d8d !important;
@@ -156,6 +157,7 @@ a {
 
 .common-btn-font {
   font-weight: 500 !important;
+  font-size: 0.875em !important;
 }
 
 .active > .page-link:hover {
@@ -204,14 +206,13 @@ small {
 }
 
 .modal-body .custom-class-form-div > label,
-.bank-registration-link-page .custom-class-form-div > label{
+.bank-registration-link-page .custom-class-form-div > label {
   padding-left: 0.5rem !important;
 }
 
 .add-property-wrapper .custom-class-form-div > label {
   padding-left: 1rem !important;
 }
-
 
 .custom-class-form-div input:not([type]):focus:not([readonly]) + label,
 .custom-class-form-div
@@ -278,7 +279,7 @@ textarea.materialize-textarea:focus:not([readonly]) + label {
 
 .login-wrapper .custom-class-form-div .active {
   font-size: 0.8rem;
-  transform: translateY(-50%);
+  transform: translateY(-65%);
   background-color: white;
   margin-left: 2.6rem !important;
   padding-left: 0.5rem !important;
@@ -286,7 +287,7 @@ textarea.materialize-textarea:focus:not([readonly]) + label {
 
 .custom-class-form-div .active {
   font-size: 0.8rem;
-  transform: translateY(-50%);
+  transform: translateY(-65%);
   background-color: white;
   margin-left: 1.2rem !important;
   padding-left: 0.5rem !important;
@@ -303,7 +304,7 @@ textarea.materialize-textarea:focus:not([readonly]) + label {
 .add-property-wrapper .custom-class-form-div .active,
 .forgot-password-security-question .custom-class-form-div .active {
   font-size: 0.8rem;
-  transform: translateY(-50%);
+  transform: translateY(-65%);
   margin-left: 0.7rem !important;
   padding-left: 0.2rem !important;
   padding-right: 0.2rem !important;
@@ -311,7 +312,7 @@ textarea.materialize-textarea:focus:not([readonly]) + label {
 
 .custom-class-form-div.active ~ label:not(.label-icon) {
   font-size: 0.8rem;
-  transform: translateY(-50%);
+  transform: translateY(-65%);
 }
 
 .react-tel-input .flag-dropdown {
@@ -435,12 +436,6 @@ input:-webkit-autofill:active {
 .navbar {
   background: var(--navbar-bg);
   transition: 0.3s ease-in-out;
-}
-
-.navbar.navbar-lightBg {
-  /* background: var(--primary-color);
-   */
-  /* background: #5857579a; */
 }
 
 .header-scrolled {
@@ -1393,6 +1388,10 @@ input:-webkit-autofill:active {
   background-color: var(--primary-color-hover);
 }
 
+.viewPropertyCarousel {
+  height: 210px !important;
+}
+
 /* FileDisplayer.css */
 
 .file-icon {
@@ -1671,23 +1670,20 @@ input:-webkit-autofill:active {
 
 /* close branch css start */
 
-.property-list-table-container{
+.property-list-table-container {
   max-height: 350px; /* Adjust as needed */
-  overflow-y: auto ;
+  overflow-y: auto;
 }
 
 /* close branch css end */
 
-
-
 /* list-of-properties css start */
 
-.list-of-properties .carousel-inner .carousel-item{
- height: 215px;
+.list-of-properties .carousel-inner .carousel-item {
+  height: 215px;
 }
 
 /* list-of-properties css end */
-
 
 /* Media Queries */
 
@@ -1868,6 +1864,9 @@ input:-webkit-autofill:active {
     transition: 0.3s ease-in-out;
     color: var(--secondary-color) !important;
   }
+  .viewPropertyCarousel {
+    height: 260px !important;
+  }
 }
 
 @media screen and (max-width: 1280px) {
@@ -1897,6 +1896,12 @@ input:-webkit-autofill:active {
     color: white;
     background-color: var(--primary-color-hover);
   }
+  
+
+  .viewPropertyCarousel {
+    height: 310px !important;
+  }
+
 }
 
 @media screen and (max-width: 992px) {
@@ -2082,6 +2087,14 @@ input:-webkit-autofill:active {
 
   .paragraph-label-text {
     width: 100%;
-    margin-bottom: 0.6rem;
+  }
+/* 
+  .viewPropertyCarousel {
+    height: 210px !important;
+  } */
+}
+@media screen and (max-width: 767px) {
+  .viewPropertyCarousel {
+    height: 220px !important;
   }
 }

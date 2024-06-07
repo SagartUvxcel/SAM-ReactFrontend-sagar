@@ -16,6 +16,7 @@ let isBank = false;
 const ViewProperty = ({
   selectedProperty,
   propertyDocumentsList,
+  propertyImagesList,
   setPropertyDocumentsList,
   getListOfPropertyDocuments,
 }) => {
@@ -24,7 +25,9 @@ const ViewProperty = ({
     isBank = data.isBank;
     roleId = data.roleId;
   }
+  const [propertyImagesListState, setPropertyImagesListState] = useState(propertyImagesList);
   const [srcOfFile, setSrcOfFile] = useState(null);
+  const [defaultStatus, setDefaultStatus] = useState(0);
   const [fileExtension, setFileExtension] = useState(null);
   const [documentLoading, setDocumentLoading] = useState(false);
   const [
@@ -35,6 +38,7 @@ const ViewProperty = ({
   const confirmDeleteDocumentInputRef = useRef();
   const [excelData, setExcelData] = useState(null);
   const [selectAll, setSelectAll] = useState(false);
+  const [currentViewImage, setCurrentViewImage] = useState(null);
   const [zipExtractedContent, setZipExtractedContent] = useState([]);
   if (data) {
     authHeader = { Authorization: data.loginToken };
@@ -271,6 +275,64 @@ const ViewProperty = ({
     setConfirmDeleteDocumentBtnDisabled(true);
   };
 
+  // display property Images on selection specific image
+  const displayImage = (fileNameData, fileExtensionData, urlData) => {
+    setDocumentLoading(true);
+    if (urlData) {
+      setFileName(fileNameData);
+      setFileExtension(fileExtensionData);
+      setSrcOfFile(urlData);
+      setDocumentLoading(false);
+    } else {
+      setDocumentLoading(false);
+      toast.error("No Image Found!")
+    }
+
+  }
+
+  // make Image Default function
+  const makeImageDefault = async (property_id) => {
+
+    const updatedDocuments = propertyImagesListState.map(doc => {
+      if (doc.Default === 1) {
+        return { ...doc, Default: 0 }; // Change the Default value to 1
+      }
+      return doc;
+    });
+    // update useState after 
+    if (updatedDocuments) {
+      const updatedDefaultDocuments = updatedDocuments.map(doc => {
+        if (doc.document_id === currentViewImage.document_id) {
+          return { ...doc, Default: 1 }; // Change the Default value to 1
+        }
+        return doc;
+      });
+      setPropertyImagesListState(updatedDefaultDocuments);
+    }
+    //   data to post
+    const dataToPost = {
+      property_id: property_id,
+      documents_id: currentViewImage.document_id
+    }
+
+    try {
+      const res = await axios.post("/sam/v1/property/auth/update-image-documents-default", dataToPost, { headers: authHeader })
+      if (res.data.status === 0) {
+        setDefaultStatus(1);
+        toast.success("Image defaulted successfully.")
+      } else {
+        toast.error("Internal server error")
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    setPropertyImagesListState(propertyImagesList)
+  }, [propertyImagesList])
+
+
   return (
     <>
       <section className="admin-edit-property mb-5">
@@ -280,12 +342,23 @@ const ViewProperty = ({
             <div className="col-xl-5">
               {/* image slider */}
               <div
-                id="carouselExampleIndicators"
+                id="carouselExampleIndicators" 
                 className="carousel slide"
                 data-bs-ride="carousel"
               >
                 <div className="carousel-indicators property-slider-indicators">
-                  <button
+                  {propertyImagesListState &&
+                    propertyImagesListState.map((image, index) => (
+                      <button
+                        key={index}
+                        type="button"
+                        data-bs-target={`#carouselExampleIndicators-${image.document_id}`}
+                        data-bs-slide-to={index}
+                        className={index === 0 ? "active" : ""}
+                        aria-current={index === 0 ? "true" : "false"}
+                        aria-label={`Slide ${index + 1}`}
+                      ></button>
+                    ))}{/* <button
                     type="button"
                     data-bs-target="#carouselExampleIndicators"
                     data-bs-slide-to="0"
@@ -304,30 +377,36 @@ const ViewProperty = ({
                     data-bs-target="#carouselExampleIndicators"
                     data-bs-slide-to="2"
                     aria-label="Slide 3"
-                  ></button>
+                  ></button> */}
                 </div>
-                <div className="carousel-inner">
-                  <div className="carousel-item active" data-bs-interval="2000">
-                    <img
-                      src="/images2.jpg"
-                      className="d-block w-100"
-                      alt="..."
-                    />
-                  </div>
-                  <div className="carousel-item" data-bs-interval="2000">
-                    <img
-                      src="/images2.jpg"
-                      className="d-block w-100"
-                      alt="..."
-                    />
-                  </div>
-                  <div className="carousel-item">
-                    <img
-                      src="/images2.jpg"
-                      className="d-block w-100"
-                      alt="..."
-                    />
-                  </div>
+                <div className="carousel-inner  ">
+                  {propertyImagesListState && propertyImagesListState.length !== 0 ?
+                    propertyImagesListState.map((image, index) => {
+                      return (<div
+                        key={index}
+                        className={`carousel-item viewPropertyCarousel ${index === 0 ? "active" : ""}`}
+                        data-bs-interval="2000"
+                      >
+                        <img
+                          src={image.srcOfFile}
+                          className="d-block w-100 h-100"
+                          style={{ objectFit: "fill" }}
+                          alt={image.fileName}
+                        />
+                      </div>
+                      )
+                    }) :
+                    <div
+                      className={`carousel-item viewPropertyCarousel active`}
+                      data-bs-interval="2000"
+                    >
+                      <img
+                        src="/images2.jpg"
+                        className="d-block w-100"
+                        alt="..."
+                      />
+                    </div>
+                  }
                 </div>
                 <button
                   className="carousel-control-prev"
@@ -355,21 +434,33 @@ const ViewProperty = ({
               <div className="container-fluid p-0">
                 <div className="row mt-3">
                   {/* Property Number */}
-                  {property_number ? (
-                    <div className="col-6">
-                      <div className="card p-2 text-center border-primary border-2 border">
-                        <small className="text-muted">Property Number</small>
-                        <small className="common-btn-font">
-                          {property_number}
-                        </small>
+                  <div className="col-6">
+                    {property_number ? (
+                      <div className="card p-2 text-start border-primary border-1 border">
+                        <span><small className="text-muted">Property Number</small>: <span className="common-btn-font">{property_number}</span></span>
                       </div>
+                    ) : (
+                      <></>
+                    )}
+                  </div>
+
+                  {/* View Images button */}
+                  <div className="text-end col-6">
+                    <div className="card  text-start  border-1 border">
+                      <button
+                        data-bs-toggle="modal"
+                        data-bs-target="#viewImageModal"
+                        className="btn btn-sm btn-primary p-2 "
+                      // onClick={() => viewImagesBtnFunction(property_id)}
+                      >
+                        View Images <i className="bi bi-arrow-right"></i>
+                      </button>
                     </div>
-                  ) : (
-                    <></>
-                  )}
+                  </div>
+
                   {/* document section */}
                   <div className="col-12 mt-3">
-                    <div className="card p-2 text-center border-primary border-2 border position-relative">
+                    <div className="card p-2 text-center border-primary border-1 border position-relative">
                       {propertyDocumentsList ? (
                         <>
                           <div
@@ -549,7 +640,7 @@ const ViewProperty = ({
                   {flat_no ? (
                     <div className="col-md-4 col-6">
                       <small className="text-muted">Flat Number</small>
-                      <h5 className="mt-1">{flat_no}</h5>
+                      <h5 className="mt-1 common-btn-font">{flat_no}</h5>
                     </div>
                   ) : (
                     <></>
@@ -558,7 +649,7 @@ const ViewProperty = ({
                   {plot_no ? (
                     <div className="col-md-4 col-6">
                       <small className="text-muted">Plot Number</small>
-                      <h5 className="mt-1">{plot_no}</h5>
+                      <h5 className="mt-1 common-btn-font">{plot_no}</h5>
                     </div>
                   ) : (
                     <></>
@@ -567,7 +658,7 @@ const ViewProperty = ({
                   {building_name ? (
                     <div className="col-md-4 col-6">
                       <small className="text-muted">Building Name</small>
-                      <h5 className="mt-1">{building_name}</h5>
+                      <h5 className="mt-1 common-btn-font">{building_name}</h5>
                     </div>
                   ) : (
                     <></>
@@ -576,7 +667,7 @@ const ViewProperty = ({
                   {society_name ? (
                     <div className="col-md-4 col-6">
                       <small className="text-muted">Society Name</small>
-                      <h5 className="mt-1">{society_name}</h5>
+                      <h5 className="mt-1 common-btn-font">{society_name}</h5>
                     </div>
                   ) : (
                     <></>
@@ -585,7 +676,7 @@ const ViewProperty = ({
                   {locality ? (
                     <div className="col-md-4 col-6">
                       <small className="text-muted">Locality</small>
-                      <h5 className="mt-1">{locality}</h5>
+                      <h5 className="mt-1 common-btn-font">{locality}</h5>
                     </div>
                   ) : (
                     <></>
@@ -594,7 +685,7 @@ const ViewProperty = ({
                   {city_name ? (
                     <div className="col-md-4 col-6">
                       <small className="text-muted">City</small>
-                      <h5 className="mt-1">{city_name}</h5>
+                      <h5 className="mt-1 common-btn-font">{city_name}</h5>
                     </div>
                   ) : (
                     <></>
@@ -603,7 +694,7 @@ const ViewProperty = ({
                   {state_name ? (
                     <div className="col-md-4 col-6">
                       <small className="text-muted">State</small>
-                      <h5 className="mt-1">{state_name}</h5>
+                      <h5 className="mt-1 common-btn-font">{state_name}</h5>
                     </div>
                   ) : (
                     <></>
@@ -612,7 +703,7 @@ const ViewProperty = ({
                   {zip ? (
                     <div className="col-md-4 col-6">
                       <small className="text-muted">Zip</small>
-                      <h5 className="mt-1">{zip}</h5>
+                      <h5 className="mt-1 common-btn-font">{zip}</h5>
                     </div>
                   ) : (
                     <></>
@@ -637,7 +728,7 @@ const ViewProperty = ({
                   {saleable_area ? (
                     <div className="col-md-4 col-6">
                       <small className="text-muted">Saleable Area</small>
-                      <h5 className="mt-1">{saleable_area} <small className="text-muted">sqft</small></h5>
+                      <h5 className="mt-1 common-btn-font">{saleable_area} <small className="text-muted">sqft</small></h5>
                     </div>
                   ) : (
                     <></>
@@ -646,7 +737,7 @@ const ViewProperty = ({
                   {carpet_area ? (
                     <div className="col-md-4 col-6">
                       <small className="text-muted">Carpet Area</small>
-                      <h5 className="mt-1">{carpet_area} <small className="text-muted">sqft</small></h5>
+                      <h5 className="mt-1 common-btn-font">{carpet_area} <small className="text-muted">sqft</small></h5>
                     </div>
                   ) : (
                     <></>
@@ -671,7 +762,7 @@ const ViewProperty = ({
                   {completion_date ? (
                     <div className="col-md-4 col-6">
                       <small className="text-muted">Completion Date</small>
-                      <h5 className="mt-1">
+                      <h5 className="mt-1 common-btn-font">
                         {propertyDateFormat(completion_date)}
                       </h5>
                     </div>
@@ -682,7 +773,7 @@ const ViewProperty = ({
                   {purchase_date ? (
                     <div className="col-md-4 col-6">
                       <small className="text-muted">Purchase Date</small>
-                      <h5 className="mt-1">
+                      <h5 className="mt-1 common-btn-font">
                         {propertyDateFormat(purchase_date)}
                       </h5>
                     </div>
@@ -693,7 +784,7 @@ const ViewProperty = ({
                   {mortgage_date ? (
                     <div className="col-md-4 col-6">
                       <small className="text-muted">Mortgage Date</small>
-                      <h5 className="mt-1">
+                      <h5 className="mt-1 common-btn-font">
                         {propertyDateFormat(mortgage_date)}
                       </h5>
                     </div>
@@ -723,7 +814,7 @@ const ViewProperty = ({
                   {market_price ? (
                     <div className="col-md-4 col-6">
                       <small className="text-muted">Market Price</small>
-                      <h5 className="mt-1">
+                      <h5 className="mt-1 common-btn-font">
                         <i className="bi bi-currency-rupee"></i>
                         {parseInt(market_price) >= 10000000 ? `${(parseInt(market_price) / 10000000).toFixed(2)}` : `${(parseInt(market_price) / 100000).toFixed(1)}`}
                         <small className="text-muted">{parseInt(market_price) >= 10000000 ? " Cr." : " Lac"}</small>
@@ -736,7 +827,7 @@ const ViewProperty = ({
                   {ready_reckoner_price ? (
                     <div className="col-md-4 col-6">
                       <small className="text-muted">Ready Reckoner Price</small>
-                      <h5 className="mt-1">
+                      <h5 className="mt-1 common-btn-font">
                         <i className="bi bi-currency-rupee"></i>
                         {parseInt(ready_reckoner_price) >= 10000000 ? `${(parseInt(ready_reckoner_price) / 10000000).toFixed(2)}` : `${(parseInt(ready_reckoner_price) / 100000).toFixed(1)}`}
                         <small className="text-muted">{parseInt(ready_reckoner_price) >= 10000000 ? " Cr." : " Lac"}</small>
@@ -749,8 +840,8 @@ const ViewProperty = ({
                   {expected_price ? (
                     <div className="col-md-4 col-6">
                       <small className="text-muted">Reserved Price</small>
-                      <h5 className="mt-1">
-                        <i className="bi bi-currency-rupee"></i> 
+                      <h5 className="mt-1 common-btn-font">
+                        <i className="bi bi-currency-rupee"></i>
                         {parseInt(expected_price) >= 10000000 ? `${(parseInt(expected_price) / 10000000).toFixed(2)}` : `${(parseInt(expected_price) / 100000).toFixed(1)}`}
                         <small className="text-muted">{parseInt(expected_price) >= 10000000 ? " Cr." : " Lac"}</small>
                       </h5>
@@ -780,7 +871,7 @@ const ViewProperty = ({
                       <small className="text-muted">
                         Is Available For Sale?
                       </small>
-                      <h5 className="mt-1 text-capitalize">
+                      <h5 className="mt-1 common-btn-font text-capitalize">
                         {is_available_for_sale === "1" ? "Yes" : "No"}
                       </h5>
                     </div>
@@ -810,7 +901,7 @@ const ViewProperty = ({
                   {branch_name ? (
                     <div className="col-md-6">
                       <small className="text-muted">Branch</small>
-                      <h5 className="mt-1 text-capitalize">{branch_name}</h5>
+                      <h5 className="mt-1 common-btn-font text-capitalize">{branch_name}</h5>
                     </div>
                   ) : (
                     <></>
@@ -819,15 +910,15 @@ const ViewProperty = ({
                   {territory ? (
                     <div className="col-md-6">
                       <small className="text-muted">Territory</small>
-                      <h5 className="mt-1 text-capitalize">{territory}</h5>
+                      <h5 className="mt-1 common-btn-font text-capitalize">{territory}</h5>
                     </div>
                   ) : (
                     <></>
                   )}
-
+                  {/* Title clear property */}
                   <div className="col-md-6 mt-2">
                     <small className="text-muted">Title clear property</small>
-                    <h5 className="mt-1 text-capitalize">
+                    <h5 className="mt-1 common-btn-font text-capitalize">
                       {title_clear_property === "yes" ? "Yes" : "No"}
                     </h5>
                   </div>
@@ -1049,6 +1140,242 @@ const ViewProperty = ({
           </div>
         </div>
       </div>
+
+      {/* Images List modal */}
+      <div
+        className="modal fade list-of-properties-view-Image-Modal"
+        id="viewImageModal"
+        tabIndex="-1"
+        aria-labelledby="viewImageModalLabel"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog modal-dialog-centered  modal-lg">
+          <div className="modal-content">
+            <div className="col-12 p-3">
+              <div className="row" >
+                {/* title and close button */}
+                <div className="d-flex justify-content-between">
+                  <span className="fw-bold">
+                    <i className="bi bi-file-earmark pe-2"></i>
+                    Images
+                  </span>
+                  <div className="d-flex align-items-center">
+                    {/* close button */}
+                    <button
+                      type="button"
+                      className="btn-close btn-sm"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                      title="Close"
+                    ></button>
+                  </div>
+                </div>
+              </div>
+              <hr className="my-2" />
+              {/* {viewImagesModalLoading ? (
+                <div
+                  className="d-flex justify-content-center align-items-center"
+                >
+                  <CommonSpinner
+                    spinnerColor="primary"
+                    spinnerType="grow"
+                  />
+                </div>
+              ) : */}
+              <div className="gallery">
+                {propertyImagesListState.length !== 0 ? propertyImagesListState.map((image, index) => {
+                  return (
+                    <div key={index} className="gallery-item"
+                    >
+                      <button
+                        onClick={() => {
+                          displayImage(image.fileName, image.fileExtension, image.srcOfFile);
+                          setDefaultStatus(image.Default);
+                          setCurrentViewImage(image)
+                        }}
+                        data-bs-toggle="modal"
+                        data-bs-target="#imageViewModal"
+                        className="btn btn-sm h-100"
+                      >
+                        <img src={image.srcOfFile} alt={image.fileName} className="gallery-image h-100" title={image.fileName} />
+                      </button>
+                    </div>
+                  )
+                }) :
+                  <div className="text-muted">
+                    No Images available.
+                  </div>}
+              </div>
+              {/* } */}
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      {/* Image view Modal */}
+      <div
+        className="modal fade"
+        id="imageViewModal"
+        tabIndex="-1"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog modal-fullscreen">
+          <div className="modal-content">
+            <div
+              className="modal-header text-white justify-content-between"
+              style={{ background: "var(--bg-gradient-blue)" }}
+            >
+              {/* image name */}
+              <h5 className="modal-title" id="exampleModalLabel">
+                {documentLoading
+                  ? "Loading file name..."
+                  : fileName
+                    ? fileName
+                    : ""}
+              </h5>
+              <div className="d-flex align-items-center">
+                {/*  Make Default */}
+                {defaultStatus === 0 ?
+                  <button
+                    className="btn btn-light me-4"
+                    onClick={() => makeImageDefault(property_id)}
+                  >
+                    Make Default
+                  </button>
+                  : <button
+                    className="btn btn-light me-4"
+                  >
+                    Default
+                  </button>}
+                {/* close */}
+                <i
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                  className="bi bi-x-lg text-white"
+                ></i>
+              </div>
+            </div>
+            <div className="modal-body">
+              <div className="container-fluid">
+                <div className="row justify-content-center">
+                  <div className="col-12 p-0 min-100vh text-center">
+                    {documentLoading ? (
+                      <div
+                        className="d-flex justify-content-center align-items-center"
+                        style={{ minHeight: "45vh" }}
+                      >
+                        <CommonSpinner
+                          spinnerColor="primary"
+                          spinnerType="grow"
+                        />
+                      </div>
+                    ) : srcOfFile ? (
+                      isImageFile(fileExtension) ? (
+                        <>
+                          <img
+                            src={srcOfFile}
+                            className="img-fluid"
+                            alt="property"
+                            style={{ objectFit: "contain" }}
+                          />
+                        </>
+                      ) : isAudioVideoFile(fileExtension) ? (
+                        <div>
+                          <iframe
+                            src={srcOfFile}
+                            title="Base64 Content"
+                            width="100%"
+                            height="500px"
+                          />
+                        </div>
+                      ) : fileExtension === "zip" ? (
+                        <div className="container-fluid">
+                          <div className="row mt-4">
+                            {zipExtractedContent &&
+                              zipExtractedContent.map((item, index) => (
+                                <div
+                                  key={index}
+                                  className="col-lg-2 col-md-4 col-6 mb-4"
+                                >
+                                  <div className="d-flex flex-column align-items-center justify-content-center">
+                                    <div className="file-icon d-flex justify-content-center align-items-center">
+                                      <i className="bi bi-file-earmark-fill text-white fs-1"></i>
+                                    </div>
+                                    <div className="file-name">{item}</div>
+                                  </div>
+                                </div>
+                              ))}
+                          </div>
+                        </div>
+                      ) : fileExtension === "xlsx" ||
+                        fileExtension === "xls" ? (
+                        <div style={{ overflow: "auto", maxHeight: "80vh" }}>
+                          <table className="table table-bordered table-striped">
+                            <thead style={{ position: "sticky", top: "0" }}>
+                              <tr>
+                                {excelData &&
+                                  excelData[0].map(
+                                    (headerCell, headerIndex) => (
+                                      <th
+                                        className="bg-secondary text-white"
+                                        key={headerIndex}
+                                      >
+                                        {headerCell}
+                                      </th>
+                                    )
+                                  )}
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {excelData &&
+                                excelData.slice(1).map(
+                                  (
+                                    row,
+                                    rowIndex // Start from index 1 to skip header row
+                                  ) => (
+                                    <tr key={rowIndex}>
+                                      {row.map((cell, cellIndex) => (
+                                        <td key={cellIndex}>{cell}</td>
+                                      ))}
+                                    </tr>
+                                  )
+                                )}
+                            </tbody>
+                          </table>
+                        </div>
+                      ) : fileExtension === "" ? (
+                        <></>
+                      ) : fileExtension === "txt" || fileExtension === "pdf" ? (
+                        <>
+                          <DocViewer
+                            documents={[{ uri: srcOfFile }]}
+                            pluginRenderers={DocViewerRenderers}
+                          />
+                        </>
+                      ) : (
+                        <div className="wrapper">
+                          <h1 className="text-center heading-text-primary">
+                            No Renderer for this file type
+                          </h1>
+                          <span className="text-muted">
+                            You can download the file using download button
+                          </span>
+                        </div>
+                      )
+                    ) : (
+                      <></>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
     </>
   );
 };

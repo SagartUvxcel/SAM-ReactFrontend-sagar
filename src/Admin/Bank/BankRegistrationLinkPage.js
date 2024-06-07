@@ -81,82 +81,110 @@ const BankRegistrationLinkPage = () => {
                 setOtherBankName('');
             }
         } else if (name === "email") {
-            if (emailRegularExp.test(value) || value.length === 0) {
-                setValidationDetails({
-                    ...validationDetails,
-                    emailValidationMessage: "",
-                });
-                // style.borderColor = "";                
-                // setFormData({ ...formData, [name]: value });
-
-            } else {
+            if (!emailRegularExp.test(value) || value.trim().length === 0) {
                 setValidationDetails({
                     ...validationDetails,
                     emailValidationMessage: "Invalid Email ID Entered",
                 });
                 style.borderColor = "red";
+            } else {
+                try {
+                    await axios
+                        .post(
+                            `/sam/v1/customer-registration/email-validation`,
+                            JSON.stringify({ email: value })
+                        )
+                        .then((res) => {
+                            var emailFormat = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
+                            if (res.data.status === 1) {
+                                setValidationDetails({
+                                    ...validationDetails,
+                                    emailValidationMessage: "Email id already exists.",
+                                });
+                                style.borderColor = "red";
+                                // setFormData({ ...formData, [name]: "" });
+                            } else if (!emailFormat.test(value)) {
+                                setValidationDetails({
+                                    ...validationDetails,
+                                    emailValidationMessage: "Invalid email Id.",
+                                });
+                                style.borderColor = "red";
+                                // setFormData({ ...formData, [name]: "" });
+                            } else {
+                                setValidationDetails({
+                                    ...validationDetails,
+                                    emailValidationMessage: "",
+                                });
+                                style.borderColor = "";
+                                setFormData({ ...formData, [name]: value });
+                            }
+                        });
+                } catch (error) {
+                    toast.error("Server error while validating email");
+                }
             }
 
         } else if (name === "branch_name") {
-            if (branchNameRegularExp.test(value) || value.length === 0) {
+            if (!branchNameRegularExp.test(value) || value.trim().length === 0) {
+                setValidationDetails({
+                    ...validationDetails,
+                    branchNameValidationMessage: "Invalid Branch Name Entered",
+                });
+                style.borderColor = "red";
+            } else {
                 setValidationDetails({
                     ...validationDetails,
                     branchNameValidationMessage: "",
                 });
                 style.borderColor = "";
                 setFormData({ ...formData, [name]: value });
-            } else {
+            }
+        } else if (name === "branch_code") {
+            if (!branchCodeRegularExp.test(value) || value.trim().length === 0) {
                 setValidationDetails({
                     ...validationDetails,
-                    branchNameValidationMessage: "Invalid Branch Name Entered",
+                    branchCodeValidationMessage: "Invalid Branch code Entered",
                 });
                 style.borderColor = "red";
-            }
-
-        } else if (name === "branch_code") {
-            if (branchCodeRegularExp.test(value) || value.length === 0) {
+            } else {
                 setValidationDetails({
                     ...validationDetails,
                     branchCodeValidationMessage: "",
                 });
                 style.borderColor = "";
                 setFormData({ ...formData, [name]: value });
-            } else {
-                setValidationDetails({
-                    ...validationDetails,
-                    branchCodeValidationMessage: "Invalid Branch code Entered",
-                });
-                style.borderColor = "red";
+
             }
         } else if (name === "ifsc_code") {
-            if (ifscCodeRegularExp.test(value) || value.length === 0) {
+            if (!ifscCodeRegularExp.test(value) || value.trim().length === 0) {
+                setValidationDetails({
+                    ...validationDetails,
+                    ifscCodeValidationMessage: "Invalid IFSC code Entered",
+                });
+                style.borderColor = "red";
+            } else {
                 setValidationDetails({
                     ...validationDetails,
                     ifscCodeValidationMessage: "",
                 });
                 style.borderColor = "";
                 setFormData({ ...formData, [name]: value });
-            } else {
-                setValidationDetails({
-                    ...validationDetails,
-                    ifscCodeValidationMessage: "Invalid IFSC code Entered",
-                });
-                style.borderColor = "red";
+
             }
         } else if (name === "branch_sftp") {
-            if (branchSftpRegularExp.test(value) || value.length === 0) {
+            if (!branchSftpRegularExp.test(value) || value.trim().length === 0) {
+                setValidationDetails({
+                    ...validationDetails,
+                    branchSftpValidationMessage: "Invalid SFTP code Entered",
+                });
+                style.borderColor = "red";
+            } else {
                 setValidationDetails({
                     ...validationDetails,
                     branchSftpValidationMessage: "",
                 });
                 style.borderColor = "";
                 setFormData({ ...formData, [name]: value });
-            } else {
-                setValidationDetails({
-                    ...validationDetails,
-                    branchSftpValidationMessage: "Invalid SFTP code Entered",
-                });
-                style.borderColor = "red";
             }
         }
     }
@@ -216,7 +244,7 @@ const BankRegistrationLinkPage = () => {
     const onFormSubmit = async (e) => {
         e.preventDefault();
         const dataToPost = { ...formData, "bank_name": `${formData.bank_name === "other" && bankSelected === 0 ? otherBankName : formData.bank_name}` }
-        
+
         if ((formData.email && formData.email.value === "") || !formData.email) {
             setValidationDetails({
                 ...validationDetails,
@@ -326,7 +354,6 @@ const BankRegistrationLinkPage = () => {
                                                         name="bank_name"
                                                         className="form-select custom-input  form-bank-select ps-3"
                                                         onChange={onInputChange}
-                                                        onBlur={onInputBlur}
                                                         onFocus={handleFocus}
                                                         value={formData.bank_name}
                                                         required

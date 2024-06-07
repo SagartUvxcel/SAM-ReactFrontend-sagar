@@ -42,7 +42,7 @@ const SinglePropertyDocumentsUpload = () => {
   };
   const [categoriesLoading, setCategoriesLoading] = useState(false);
   const [currentPropertyNumber, setCurrentPropertyNumber] = useState("");
-  const [totalSizeOfDocuments, setTotalSizeOfDocuments] = useState(null); 
+  const [totalSizeOfDocuments, setTotalSizeOfDocuments] = useState(null);
   const [imageFiles, setImageFiles] = useState([]);
   const [savedImageFiles, setSavedImageFiles] = useState([]);
   const [currentImageFileIndex, setCurrentImageFileIndex] = useState(null);
@@ -83,15 +83,14 @@ const SinglePropertyDocumentsUpload = () => {
           headers: authHeader,
         })
         .then((res) => {
-          setAllCategoriesFromDB(res.data);
-          console.log(res.data);
+          setAllCategoriesFromDB(res.data); 
           setCategoriesLoading(false);
         });
     } catch (error) {
       setCategoriesLoading(false);
     }
 
-  }; 
+  };
 
   // on Save Other Category Click
   const onSaveOtherCategoryClick = (e) => {
@@ -275,8 +274,8 @@ const SinglePropertyDocumentsUpload = () => {
             if (res.data.msg === 0) {
               if (currentImageFileIndex === savedImageFiles.length - 1) {
                 setImageLoading(false);
-                reloadPage();
                 toast.success("File uploaded successfully");
+                reloadPage();
               }
             } else {
               setImageLoading(false);
@@ -288,7 +287,9 @@ const SinglePropertyDocumentsUpload = () => {
     } catch (error) {
       if (isLastChunk) {
         setImageLoading(false);
-        toast.error("Internal server error");
+        console.log(error);
+        let err =error.response.data.error
+        toast.error(err.charAt(0).toUpperCase() + err.slice(1).toLowerCase());
         reloadPage();
       }
     }
@@ -375,18 +376,16 @@ const SinglePropertyDocumentsUpload = () => {
       setCurrentPropertyNumber(propertyData.number);
       checkCanUploadNewDocument(propertyData.id);
       if (data) {
-        getCategoriesFromDB(); 
+        getCategoriesFromDB();
       }
     }
     // eslint-disable-next-line
   }, []);
 
+  // Close current tab
   const onBackToPropertyBtnClick = () => {
-    // Close current tab
     window.close();
   };
- 
-
 
   return (
     <Layout>
@@ -406,7 +405,7 @@ const SinglePropertyDocumentsUpload = () => {
                     </h6>
                   </div>
                   <div className="col-md-6 text-end">
-                    <button className="btn btn-outline-primary" onClick={onBackToPropertyBtnClick}><i className="bi bi-arrow-left"></i>Back</button>
+                    <button className="btn btn-sm btn-outline-primary" onClick={onBackToPropertyBtnClick}><i className="bi bi-arrow-left"></i>Back</button>
                   </div>
                 </div>
                 {/* alert msg if size is more than 25 mb */}
@@ -464,7 +463,7 @@ const SinglePropertyDocumentsUpload = () => {
                                       type="radio"
                                       name="category_id"
                                       id="category_id"
-                                      value={category.category_id} 
+                                      value={category.category_id}
                                     />
                                     <label
                                       className="form-check-label"
