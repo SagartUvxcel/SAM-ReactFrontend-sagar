@@ -358,26 +358,7 @@ const ViewProperty = ({
                         aria-current={index === 0 ? "true" : "false"}
                         aria-label={`Slide ${index + 1}`}
                       ></button>
-                    ))}{/* <button
-                    type="button"
-                    data-bs-target="#carouselExampleIndicators"
-                    data-bs-slide-to="0"
-                    className="active"
-                    aria-current="true"
-                    aria-label="Slide 1"
-                  ></button>
-                  <button
-                    type="button"
-                    data-bs-target="#carouselExampleIndicators"
-                    data-bs-slide-to="1"
-                    aria-label="Slide 2"
-                  ></button>
-                  <button
-                    type="button"
-                    data-bs-target="#carouselExampleIndicators"
-                    data-bs-slide-to="2"
-                    aria-label="Slide 3"
-                  ></button> */}
+                    ))} 
                 </div>
                 <div className="carousel-inner  ">
                   {propertyImagesListState && propertyImagesListState.length !== 0 ?
@@ -390,7 +371,7 @@ const ViewProperty = ({
                         <img
                           src={image.srcOfFile}
                           className="d-block w-100 h-100"
-                          style={{ objectFit: "fill" }}
+                          style={{ objectFit: "cover" }}
                           alt={image.fileName}
                         />
                       </div>

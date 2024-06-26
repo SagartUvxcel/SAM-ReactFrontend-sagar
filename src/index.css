@@ -691,6 +691,11 @@ input:-webkit-autofill:active {
   padding: 1rem 0 !important;
 }
 
+.admin-property-card-wrapper .admin-property-image {
+  height: 177px;
+  object-fit: cover !important;
+}
+
 /* Home about Us */
 
 .about-home-link {
@@ -1680,7 +1685,7 @@ input:-webkit-autofill:active {
 /* list-of-properties css start */
 
 .list-of-properties .carousel-inner .carousel-item {
-  height: 215px;
+  height: 240px;
 }
 
 /* list-of-properties css end */
@@ -1775,6 +1780,13 @@ input:-webkit-autofill:active {
   .page-not-found-wrapper,
   .access-denied-wrapper {
     padding: 235px 0 0 0;
+  }
+}
+
+@media (min-width: 1199px) {
+  .admin-property-card-wrapper .admin-property-image {
+    height: 177px;
+    object-fit: cover !important;
   }
 }
 
@@ -1897,9 +1909,13 @@ input:-webkit-autofill:active {
     background-color: var(--primary-color-hover);
   }
   
-
   .viewPropertyCarousel {
-    height: 310px !important;
+    height: 240px !important;
+  }
+
+  .admin-property-card-wrapper .admin-property-image {
+    height: 200px;
+    object-fit: cover !important;
   }
 
 }
@@ -1952,6 +1968,11 @@ input:-webkit-autofill:active {
 
   .admin-users-wrapper .table-wrapper {
     overflow-x: scroll;
+  }
+
+  .admin-property-card-wrapper .admin-property-image {
+    height: 177px;
+    object-fit: cover !important;
   }
 }
 
@@ -2088,13 +2109,19 @@ input:-webkit-autofill:active {
   .paragraph-label-text {
     width: 100%;
   }
-/* 
-  .viewPropertyCarousel {
-    height: 210px !important;
-  } */
-}
-@media screen and (max-width: 767px) {
+
+  .admin-property-card-wrapper .admin-property-image {
+    height: 360px;
+    object-fit: cover !important;
+  }
+
   .viewPropertyCarousel {
     height: 220px !important;
   }
+}
+@media screen and (max-width: 435px) {
+  .admin-property-card-wrapper .admin-property-image {
+    height: 260px;
+    object-fit: cover !important;
+}
 }

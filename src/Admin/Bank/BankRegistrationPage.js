@@ -946,7 +946,7 @@ const BankRegistrationPage = () => {
                                                             {/* SAM T & C */}
                                                             <div className="row register-links mt-5 align-items-center ">
                                                                 <div className="col-lg-4">
-                                                                    <NavLink to="/register">SAM Terms and Conditions</NavLink>
+                                                                    <NavLink to="/">SAM Terms and Conditions</NavLink>
                                                                 </div>
                                                             </div>
                                                             {/* Agree T & C */}

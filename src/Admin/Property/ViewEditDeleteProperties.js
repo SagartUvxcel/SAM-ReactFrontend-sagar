@@ -266,7 +266,7 @@ const ViewEditDeleteProperties = () => {
       const urls = {};
       for (const property of properties) {
         const { default_image_id, property_id } = property;
-        if (default_image_id.Int64 !== 0) {
+        if (default_image_id && default_image_id.Int64 !== 0) {
           const url = await getDefaultImageUrl(default_image_id.Int64, property_id);
           urls[property_id] = url;
         }
@@ -866,7 +866,7 @@ const ViewEditDeleteProperties = () => {
 
   //connect To WebSocket
   const connectToWebSocket = () => {
-    const newSocket = new WebSocket("ws://localhost:3000/ws");
+    const newSocket = new WebSocket("ws://13.234.136.8:4002/ws");
     setSocket(newSocket);
   };
   useEffect(() => {
@@ -980,6 +980,7 @@ const ViewEditDeleteProperties = () => {
                     <div className="row">
                       {/* all-properties mapping */}
                       {properties.map((property, Index) => {
+                        console.log(property)
                         const {
                           category,
                           city_name,
@@ -987,7 +988,7 @@ const ViewEditDeleteProperties = () => {
                           expected_price,
                           property_id,
                           property_number,
-                          default_image_id,
+                          default_image_id:{ Int64: imageDocId, Valid: isImageDocIdValid },
                         } = property;
                         return (
                           <div className="col-xl-3 col-md-6" key={Index}>
@@ -995,9 +996,9 @@ const ViewEditDeleteProperties = () => {
                               <div className="card mb-4">
                                 <div className="top-line"></div>
                                 <img
-                                  className="card-img-top"
+                                  className="card-img-top admin-property-image"
                                   // src="/images2.jpg"
-                                  src={default_image_id.Int64 !== 0 ? `${!imageUrlsLoading ? imageUrls[property_id] : "/images2.jpg"}` : "/images2.jpg"}
+                                  src={imageDocId && imageDocId !== 0 ? `${!imageUrlsLoading ? imageUrls[property_id] : "/images2.jpg"}` : "/images2.jpg"}
                                   alt=""
                                 />
                                 <div className="card-body">

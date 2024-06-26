@@ -384,7 +384,7 @@ const BankBranchClosePage = ({ userType }) => {
                                             <div className="col-xl-12">
                                                 <form onSubmit={onChangeBranchFormSubmit} className="card p-xl-2">
                                                     <div className="card-body">
-                                                        <h4 className="fw-bold">Change Properties Branch</h4>
+                                                        <h4 className="fw-bold">Move properties to other branch</h4>
                                                         <hr />
                                                         {/* Row 1 - Basic Details */}
                                                         <div className="row mb-2">

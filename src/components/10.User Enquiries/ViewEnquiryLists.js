@@ -422,19 +422,24 @@ const typeMessageFunction =(e)=>{
 
   //connect To WebSocket
   const connectToWebSocket = () => {
-    const newSocket = new WebSocket("ws://localhost:3000/ws");
+    const newSocket = new WebSocket("ws://13.234.136.8:4002/ws");
+    console.log(newSocket);
     setSocket(newSocket);
   };
+
 
   useEffect(() => {
     if (socket) {
       socket.onopen = () => {
+        console.log("web socket connected");
       };
 
       socket.onclose = (event) => {
+        console.log("web socket disconnected");
       };
 
       socket.onmessage = (event) => {
+        console.log("msg received");
         try {
           const receivedMessage = JSON.parse(event.data);
           const { message_type } = receivedMessage;

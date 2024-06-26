@@ -505,6 +505,8 @@ const ViewSearchResults = () => {
   };
 
   const navigateToReceiver = (data) => {
+    
+    console.log(data);
     // Use navigate with the encoded data in URL parameters 
     const secretKey = "my_secret_key";
     // Encoding (Encryption)
@@ -1369,6 +1371,7 @@ const ViewSearchResults = () => {
                       city_id,
                       range,
                     } = property; 
+                   console.log(range)
                     return (
                       <div className="col-xl-3 col-lg-4 col-md-6" key={Index}>
                         <div className="property-card-wrapper">

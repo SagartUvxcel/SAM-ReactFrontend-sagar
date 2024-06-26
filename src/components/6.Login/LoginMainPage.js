@@ -268,8 +268,8 @@ const LoginMainPage = () => {
                   </button>
                 </div>
                 <hr />
-                <div className="d-flex justify-content-between">
-                  <div className="">
+                <div className="d-flex  justify-content-between">
+                  <div className="pe-3">
                     <small className="fw-bold">
                       <NavLink
                         className="ps-1 text-decoration-none"
@@ -278,9 +278,9 @@ const LoginMainPage = () => {
                         Forgot password?
                       </NavLink>
                     </small>
-                  </div>
+                  </div> 
                   <div className="">
-                    <small className="register-link text-end fw-bold">
+                    <small className="register-link text-end fw-bold ps-1">
                       Not Registered ?
                       <NavLink className="ps-1" to="/register">
                         Click here.
@@ -289,7 +289,7 @@ const LoginMainPage = () => {
                     </small>
                   </div>
                 </div>
-                <div className="mt-2 ps-1 text-end">
+                <div className="md-mt-2 ps-1 md-text-end ms-text-start">
                   <small className="register-link text-end fw-bold">
                     To active your account
                     <NavLink to="/inactive-account" className="fw-bold ps-1">

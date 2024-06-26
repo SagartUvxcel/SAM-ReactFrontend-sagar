@@ -28,7 +28,7 @@ const ListOfProperties = () => {
   const data = queryParams.get("data");
   const dataFromParams = JSON.parse(
     CryptoJS.AES.decrypt(data, secretKey).toString(CryptoJS.enc.Utf8)
-  );
+  ); 
   const localData = JSON.parse(localStorage.getItem("data"));
   if (localData) {
     authHeaders = { Authorization: localData.loginToken };
@@ -107,6 +107,7 @@ const ListOfProperties = () => {
     setPageLoading(true);
     delete dataFromParams.batch_number;
     delete dataFromParams.batch_size;
+    console.log(dataFromParams);
     try {
       const res = await axios.post(`/sam/v1/property/auth/view-properties`, dataFromParams, {
         headers: authHeaders,
@@ -403,10 +404,10 @@ const ListOfProperties = () => {
 
             let dataString = fileTypesObj[fileExtension] || "";
             let originalBase64 = window.btoa(combinedBinaryFormatOfChunks);
-            const base64Data = originalBase64; 
-            const base64Response = await fetch(`${dataString}${base64Data}`); 
-            const blob = await base64Response.blob(); 
-            const url = URL.createObjectURL(blob); 
+            const base64Data = originalBase64;
+            const base64Response = await fetch(`${dataString}${base64Data}`);
+            const blob = await base64Response.blob();
+            const url = URL.createObjectURL(blob);
 
             if (fileExtension === "xlsx" || fileExtension === "xls") {
               fetchExcelFilesData(url);
@@ -646,8 +647,8 @@ const ListOfProperties = () => {
                       </div>
                     ) : (selectedPropertyResults.map((property, Index) => {
                       const {
-                        property_id, 
-                        sales_doc_id: { Int64: sales_docId, Valid: isSalesDocIdValid },
+                        property_id,
+                        sales_doc_id: { Int64: salesDocId, Valid: isSalesDocIdValid },
                         type_name,
                         market_price,
                         ready_reckoner_price,
@@ -667,9 +668,9 @@ const ListOfProperties = () => {
                         zip,
                         state_name,
                         territory,
-                        title_clear_property, 
+                        title_clear_property,
                         bank_id,
-                      } = property;
+                      } = property; 
                       let bankDetails = banks.filter(bank => bank.bank_id === parseInt(bank_id))[0];
                       return (
                         <div key={Index} className="p-0">
@@ -716,7 +717,7 @@ const ListOfProperties = () => {
                                           >
                                             <img
                                               src={image.srcOfFile}
-                                              className="d-block w-100"
+                                              className="d-block w-100 h-100"
                                               alt={image.fileName}
                                             />
                                           </div>
@@ -727,7 +728,7 @@ const ListOfProperties = () => {
                                         >
                                           <img
                                             src="/images2.jpg"
-                                            className="d-block w-100"
+                                            className="d-block w-100 "
                                             alt="..."
                                           />
                                         </div>
@@ -948,7 +949,7 @@ const ListOfProperties = () => {
                                           {isSalesDocIdValid ?
                                             <button
                                               className="btn btn-sm btn-outline-primary mt-1"
-                                              onClick={() => getChunksOfDocuments(sales_docId, property_id)}
+                                              onClick={() => getChunksOfDocuments(salesDocId, property_id)}
                                               data-bs-toggle="modal"
                                               data-bs-target="#documentModal"
                                             >

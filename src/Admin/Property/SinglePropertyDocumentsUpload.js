@@ -188,31 +188,66 @@ const SinglePropertyDocumentsUpload = () => {
   // handle Image File Change
   const handleImageFileChange = (e) => {
     e.preventDefault();
-    if (e.target.files[0]) {
-      let arrForExtension = e.target.files[0].name.split(".");
-      let currentFileExtension = arrForExtension[arrForExtension.length - 1];
-      let size = parseFloat((e.target.files[0].size / 1024 / 1024).toFixed(2));
-      let currentTotalSize = size + totalSizeOfDocuments;
-      if (currentTotalSize <= 25) {
-        setAlertDetails({ alertVisible: false });
-        if (allowedExtensions.length > 0) {
-          if (allowedExtensions.includes(currentFileExtension)) {
-            setSavedImageFiles([...imageFiles, ...e.target.files]);
-          } else {
-            toast.error("File not allowed with this extension");
-            e.target.value = "";
-          }
+    console.log(e.target.files);
+    // if (e.target.files[0]) {
+    //   let arrForExtension = e.target.files[0].name.split(".");
+    //   let currentFileExtension = arrForExtension[arrForExtension.length - 1];
+    //   let size = parseFloat((e.target.files[0].size / 1024 / 1024).toFixed(2));
+    //   let currentTotalSize = size + totalSizeOfDocuments;
+    //   if (currentTotalSize <= 25) {
+    //     setAlertDetails({ alertVisible: false });
+    //     if (allowedExtensions.length > 0) {
+    //       if (allowedExtensions.includes(currentFileExtension)) {
+    //         setSavedImageFiles([...imageFiles, ...e.target.files]);
+    //       } else {
+    //         toast.error("File not allowed with this extension");
+    //         e.target.value = "";
+    //       }
+    //     }
+    //   } else {
+    //     onResetBtnClick();
+    //     setAlertDetails({
+    //       alertVisible: true,
+    //       alertMsg:
+    //         "Document Size Limit Exceeded: Combined document size must not exceed 25 MB. Please remove unnecessary documents and try again.",
+    //       alertClr: "warning",
+    //     });
+    //   }
+    // }
+
+    const files = Array.from(e.target.files);
+    console.log(files);
+    let currentTotalSize = totalSizeOfDocuments;
+
+    for (let i = 0; i < files.length; i++) {
+        let arrForExtension = files[i].name.split(".");
+        let currentFileExtension = arrForExtension[arrForExtension.length - 1];
+        let size = parseFloat((files[i].size / 1024 / 1024).toFixed(2));
+        currentTotalSize += size;
+
+        if (currentTotalSize <= 25) {
+            setAlertDetails({ alertVisible: false });
+            if (allowedExtensions.length > 0) {
+                if (allowedExtensions.includes(currentFileExtension)) {
+                  console.log(files[i])
+                    setSavedImageFiles(prevFiles => [...prevFiles, files[i]]);
+                } else {
+                    toast.error("File not allowed with this extension");
+                    e.target.value = "";
+                }
+            }
+        } else {
+            onResetBtnClick();
+            setAlertDetails({
+                alertVisible: true,
+                alertMsg:
+                    "Document Size Limit Exceeded: Combined document size must not exceed 25 MB. Please remove unnecessary documents and try again.",
+                alertClr: "warning",
+            });
+            break;
         }
-      } else {
-        onResetBtnClick();
-        setAlertDetails({
-          alertVisible: true,
-          alertMsg:
-            "Document Size Limit Exceeded: Combined document size must not exceed 25 MB. Please remove unnecessary documents and try again.",
-          alertClr: "warning",
-        });
-      }
     }
+
   };
 
   // reload Page
@@ -226,6 +261,7 @@ const SinglePropertyDocumentsUpload = () => {
   const readAndUploadCurrentImageChunk = () => {
     const reader = new FileReader();
     const file = imageFiles[currentImageFileIndex];
+    console.log(file);
     if (!file) {
       return;
     }
@@ -349,6 +385,7 @@ const SinglePropertyDocumentsUpload = () => {
   const postImages = (e) => {
     e.preventDefault();
     setImageLoading(true);
+    console.log(savedImageFiles);
     setImageFiles(savedImageFiles);
   };
 
@@ -576,6 +613,7 @@ const SinglePropertyDocumentsUpload = () => {
                         disabled={
                           category_text !== defaultCategoryText ? false : true
                         }
+                        multiple
                       />
 
                       <OverlayTrigger
