@@ -15,6 +15,7 @@ const InactiveUserDetails = () => {
   const deselectStateInput = useRef();
   const [inactiveUserToken, setInactiveUserToken] = useState("");
   const [updateBtnLoading, setUpdateBtnLoading] = useState(false);
+  const updatedCountry = localStorage.getItem("location");
 
   const [displayInactiveUserDetailsPage, setDisplayInactiveUserDetailsPage] = useState({
     display: false,
@@ -37,8 +38,11 @@ const InactiveUserDetails = () => {
   const [states, setStates] = useState([]);
   // Function to get all states from api.
   const getAllSates = async () => {
+
+    const countryId = updatedCountry === "india" ? 1 : 11;
+    const postData = { "country_id": countryId }
     try {
-      const allStates = await axios.get(`/sam/v1/property/by-state`);
+      const allStates = await axios.post(`/sam/v1/property/by-state`, postData);
       setStates(allStates.data);
     } catch (error) { }
   };
@@ -261,9 +265,10 @@ const InactiveUserDetails = () => {
           citiesByState: cityByState.data,
           cityVisibilityClass: "",
         });
-
+        const countryId = updatedCountry === "india" ? 1 : 11;
+        const postData = { "country_id": countryId }
         // Get States from api.
-        const allStates = await axios.get(`/sam/v1/property/by-state`);
+        const allStates = await axios.post(`/sam/v1/property/by-state`, postData);
         setAllUseStates({
           ...allUseStates,
           citiesFromApi: cityByState.data,
@@ -390,13 +395,13 @@ const InactiveUserDetails = () => {
       let getCityName = document.getElementById(`city-name-${value}`);
       if (getCityName) {
         cityName = getCityName.innerText;
-        setValues("city_name", cityName); 
+        setValues("city_name", cityName);
       }
       setFormData({
         ...formData,
         contact_details: {
           ...formData.contact_details,
-          [name]: parseInt(value), 
+          [name]: parseInt(value),
         },
       });
     }
@@ -831,7 +836,7 @@ const InactiveUserDetails = () => {
                                     htmlFor="flat_number"
                                     className="form-label common-btn-font"
                                   >
-                                    Flat Number 
+                                    Flat Number
                                   </label>
                                   <input
                                     id="flat_number"
@@ -852,7 +857,7 @@ const InactiveUserDetails = () => {
                                     className="form-label common-btn-font"
                                   >
                                     Building Name
-                                    
+
                                   </label>
                                   <input
                                     id="building_name"
@@ -873,7 +878,7 @@ const InactiveUserDetails = () => {
                                     className="form-label common-btn-font"
                                   >
                                     Society Name
-                                    
+
                                   </label>
                                   <input
                                     id="society_name"
@@ -894,7 +899,7 @@ const InactiveUserDetails = () => {
                                     htmlFor="plot_number"
                                     className="form-label common-btn-font"
                                   >
-                                    Plot Number 
+                                    Plot Number
                                   </label>
                                   <input
                                     id="plot_number"
@@ -1008,7 +1013,7 @@ const InactiveUserDetails = () => {
                                     type="text"
                                     className="form-select"
                                     placeholder="city"
-                                    value={formData.contact_details.city} 
+                                    value={formData.contact_details.city}
                                   >
                                     <option
                                       id="selectedCity"

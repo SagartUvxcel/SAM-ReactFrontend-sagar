@@ -17,7 +17,7 @@ export const PaymentInformation = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dataFromSubscriptionPage = location.state ? location.state.sensitiveData : null;
-
+  const updatedCountry = localStorage.getItem("location");
   const data = JSON.parse(localStorage.getItem("data"));
   const updatedSubscriptionStatus = localStorage.getItem("updatedSubscriptionStatus");
 
@@ -238,12 +238,18 @@ export const PaymentInformation = () => {
                       </div>
                       <div className="subscription-div d-flex justify-content-between border-bottom py-1 align-items-center">
                         <h6 className="py-2 mb-0">{planDetails ? planDetails.name : ""}</h6>
-                        <p className=" text-secondary p-0 mb-0"><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup>
+                        <p className=" text-secondary p-0 mb-0">
+                          {updatedCountry && updatedCountry === "malaysia" ? (
+                            <small className="fs-5 top-0">RM </small>
+                          ) : (<><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup></>)}
                           {perBillingCycleName}  </p>
                       </div>
                       <div className="subscription-div d-flex justify-content-between py-1 align-items-center">
                         <h6 className=" py-2 mb-0">Total</h6>
-                        <p className=" text-secondary p-0 mb-0 "><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup>
+                        <p className=" text-secondary p-0 mb-0 ">
+                        {updatedCountry && updatedCountry === "malaysia" ? (
+                            <small className="fs-5 top-0">RM </small>
+                          ) : (<><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup><sup className="fs-5 top-0">&#8377;</sup></>)}
                           {perBillingCycleName}</p>
                       </div>
                     </div>

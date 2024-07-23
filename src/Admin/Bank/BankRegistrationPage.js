@@ -27,6 +27,7 @@ const BankRegistrationPage = () => {
     const goTo = useNavigate();
     const deselectStateInput = useRef();
     const navigate = useNavigate();
+    const updatedCountry = localStorage.getItem("location");
 
     // on input focus
     const handleFocus = (e) => {
@@ -160,8 +161,10 @@ const BankRegistrationPage = () => {
 
     // Function to get all states from api so that we can map states in select state field.
     const getAllSates = async () => {
+        const countryId = updatedCountry === "india" ? 1 : 11;
+        const postData = { "country_id": countryId }
         try {
-            const allStates = await axios.get(`/sam/v1/property/by-state`);
+            const allStates = await axios.post(`/sam/v1/property/by-state`, postData);
             setStates(allStates.data);
         } catch (error) { }
     };

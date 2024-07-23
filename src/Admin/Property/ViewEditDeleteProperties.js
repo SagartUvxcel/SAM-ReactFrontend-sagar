@@ -12,10 +12,12 @@ import BreadCrumb from "../BreadCrumb";
 import CommonSpinner from "../../CommonSpinner";
 import Pagination from "../../Pagination";
 import ViewProperty from "./ViewProperty";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { toggleClassOfNextPrevPageItems } from "../../CommonFunctions";
 import { v4 as uuid } from "uuid";
+import convertCurrency from "../../components/1.CommonLayout/currencyConverter";
+import { propertyMaxArea, propertyMaxPrices, propertyMinArea, propertyMinPrices } from "../../components/1.CommonLayout/propertyCommonDetails"
 
 
 let authHeader = "";
@@ -25,31 +27,40 @@ let branch_Id = "";
 let propertiesPerPage = 4;
 let initial_batch_number = 1;
 let isBank = false;
+let isLogin = false;
 
 
 const ViewEditDeleteProperties = () => {
-  const data = JSON.parse(localStorage.getItem("data"));
-  if (data) {
-    authHeader = { Authorization: data.loginToken };
-    isBank = data.isBank;
-    roleId = data.roleId;
-    bank_Id = data.bank_id;
-    branch_Id = data.branch_Id;
-  }
 
-  const [properties, setProperties] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [updateBtnLoading, setUpdateBtnLoading] = useState(false);
+  const navigate = useNavigate();
+  const moreFiltersForm = useRef();
+  const paginationRef = useRef();
+  const confirmDeletePropertyInputRef = useRef();
   const allPropertiesPageRef = useRef();
   const viewCurrentPropertyRef = useRef();
   const editPropertyRef = useRef();
   const enquiriesPageRef = useRef();
   const modalBodyRef = useRef(null);
+  const notSoldCheckRef = useRef();
+
+  const data = JSON.parse(localStorage.getItem("data"));
+  if (data) {
+    authHeader = { Authorization: data.loginToken };
+    isLogin = data.isLoggedIn;
+    isBank = data.isBank;
+    roleId = data.roleId;
+    bank_Id = data.bank_id;
+    branch_Id = data.branch_Id;
+  }
+  const updatedCountry = localStorage.getItem("location");
+  const countryId = updatedCountry === "india" ? 1 : 11;
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [updateBtnLoading, setUpdateBtnLoading] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState([]);
   const [propertyDocumentsList, setPropertyDocumentsList] = useState([]);
   const [propertyImagesList, setPropertyImagesList] = useState([]);
   const [pageCount, setPageCount] = useState(0);
-  const paginationRef = useRef();
   const [messages, setMessages] = useState(null);
 
 
@@ -58,14 +69,59 @@ const ViewEditDeleteProperties = () => {
   const [totalPropertyCount, setTotalPropertyCount] = useState(0);
   const [currentPageNumber, setCurrentPageNumber] = useState(1);
   const [storedDataToPost, setStoredDataToPost] = useState({});
-  const [
-    confirmDeletePropertyBtnDisabled,
-    setConfirmDeletePropertyBtnDisabled,
-  ] = useState(true);
-  const confirmDeletePropertyInputRef = useRef();
+  const [confirmDeletePropertyBtnDisabled, setConfirmDeletePropertyBtnDisabled] = useState(true);
+  const [batch_size, setBatch_size] = useState(4);
+  const [propertyData, setPropertyData] = useState([]);
+  const [searchFields, setSearchFields] = useState({
+    states: "",
+    cities: "",
+    assetCategory: "",
+    banks: "",
+  });
+  const { states, assetCategory, cities, banks } = searchFields;
+  const [dataToPost, setDataToPost] = useState([]);
+  const [searchBtnDisabled, setSearchBtnDisabled] = useState(true);
+  const [bankBoxDisable, setBankBoxDisable] = useState(false);
+
+  useEffect(() => {
+    if (dataToPost && Object.keys(dataToPost).length > 0) {
+      setSearchBtnDisabled(false);
+    } else {
+      setSearchBtnDisabled(true);
+    }
+  }, [dataToPost]);
+
+  // It will fetch all states, banks, assets from api and will map those values to respective select fields.
+  const getSearchDetails = async () => {
+    let apis = {
+      stateAPI: `/sam/v1/property/by-state`,
+      bankAPI: `/sam/v1/property/by-bank`,
+      categoryAPI: `/sam/v1/property/by-category`,
+    };
+
+    const postData = { "country_id": countryId }
+    try {
+      // Get all states from api.
+      // const allStates = await axios.get(apis.stateAPI);
+      const allStates = await axios.post(apis.stateAPI, postData);
+      // Get all banks from api.
+      const allBanks = await axios.post(apis.bankAPI, postData);
+      // Get all asset Categories from api.
+      const assetCategories = await axios.get(apis.categoryAPI);
+
+      // store states, banks and asset categories into searchFields useState.
+      setSearchFields({
+        ...searchFields,
+        states: allStates.data,
+        banks: allBanks.data,
+        assetCategory: assetCategories.data,
+      });
+    } catch (error) { }
+  };
 
   // get Properties From Api
   const getPropertiesFromApi = async () => {
+
     // Hide pagination while loading.
     if (paginationRef.current) {
       paginationRef.current.classList.add("d-none");
@@ -73,6 +129,11 @@ const ViewEditDeleteProperties = () => {
     let dataToPost = {
       batch_number: initial_batch_number,
       batch_size: propertiesPerPage,
+      country_id: countryId,
+    };
+
+    let postDataForPropertyCount = {
+      country_id: countryId,
     };
 
     setStoredDataToPost(dataToPost);
@@ -84,13 +145,13 @@ const ViewEditDeleteProperties = () => {
         { headers: authHeader }
       );
       if (propertiesRes.data !== null && propertiesRes.data.length > 0) {
-        paginationRef.current.classList.remove("d-none"); 
-        setProperties(propertiesRes.data); 
+        paginationRef.current.classList.remove("d-none");
+        setProperties(propertiesRes.data);
       } else {
         paginationRef.current.classList.add("d-none");
       }
-      const propertyCountRes = await axios.get(
-        `/sam/v1/property/auth/property-count`,
+      const propertyCountRes = await axios.post(
+        `/sam/v1/property/auth/property-count`, postDataForPropertyCount,
         { headers: authHeader }
       );
       let arr = propertyCountRes.data;
@@ -105,15 +166,358 @@ const ViewEditDeleteProperties = () => {
       if (propertyCountRes.data) {
         setPageCount(totalPages);
       }
-
-
       setLoading(false);
-
     } catch (error) {
-
       setLoading(false);
     }
   };
+
+  // get all property data
+  const getPropertyData = async () => {
+    setLoading(true);
+    paginationRef.current.classList.add("d-none");
+    window.scrollTo(0, 0);
+    let apis = {
+      searchAPI: `/sam/v1/property/count-category`,
+      authSearchAPI: `/sam/v1/property/auth/count-category`,
+    };
+    let dataForTotalCount = {
+      ...dataToPost,
+      batch_size: 1000,
+      batch_number: 1,
+      country_id: countryId,
+    };
+    try {
+      // This api is only for getting all the records and count length of array of properties so that we can decide page numbers for pagination.
+      console.log(dataForTotalCount);
+
+      await axios.post(`/sam/v1/property/auth/property-count`, dataForTotalCount, {
+        headers: authHeader,
+      }).then((res) => {
+        console.log(res.data);
+        if (res.data) {
+          let totalCount = 0;
+          let arr = res.data;
+
+          arr && arr.forEach((type) => {
+            totalCount += type.count;
+          });
+          console.log(batch_size);
+          setPageCount(Math.ceil(totalCount / batch_size));
+        }
+      });
+
+      const postData = {
+        ...dataToPost,
+        batch_number: 1,
+        batch_size: 4,
+        country_id: countryId,
+      }
+      console.log(postData);
+      // Post data and get Searched result from response.
+      await axios.post(`/sam/v1/property/auth/all-properties`, postData, {
+        headers: authHeader,
+      }).then((res) => {
+        // Store Searched results into propertyData useState.
+        console.log(res.data);
+        if (res.data !== null) {
+          setProperties(res.data);
+          setLoading(false);
+          paginationRef.current.classList.remove("d-none");
+        } else {
+          paginationRef.current.classList.add("d-none");
+          setLoading(false);
+          setProperties(null);
+        }
+      });
+    } catch (error) {
+      toast.error("Internal server error");
+      setLoading(false);
+    }
+  };
+
+
+  // This function will run on change of input fields.
+  const onFieldsChange = async (e) => {
+    let apis = {
+      cityAPI: `/sam/v1/property/by-city`,
+      addressAPI: `/sam/v1/property/by-address`,
+    };
+    const { name, value } = e.target;
+    if (name === "states") {
+      // Store state id ( if available ) into dataToPost useState (It is required for search functionality).
+      if (value) {
+        setDataToPost({ ...dataToPost, state_id: parseInt(value) });
+      } else {
+        delete dataToPost.state_id;
+        delete dataToPost.city_id;
+        setDataToPost({ ...dataToPost });
+      }
+      // If input is state then post selected state id to api for getting cities based on selected state.
+      const cityByState = await axios.post(apis.cityAPI, {
+        state_id: parseInt(value),
+      });
+      // Store cities data into searchField useState.
+      setSearchFields({ ...searchFields, cities: cityByState.data });
+    } else if (name === "cities") {
+      // Store city id ( if available ) into dataToPost useState (It is required for search functionality).
+      if (value) {
+        setDataToPost({ ...dataToPost, city_id: parseInt(value) });
+      } else {
+        delete dataToPost.city_id;
+      }
+    } else if (name === "asset") {
+      // Store asset type id ( if available ) into dataToPost useState (It is required for search functionality).
+      if (value) {
+        setDataToPost({ ...dataToPost, type_id: parseInt(value) });
+      } else {
+        delete dataToPost.type_id;
+        setDataToPost({ ...dataToPost });
+      }
+    } else if (name === "bank") {
+      // Store bank id ( if available ) into dataToPost useState (It is required for search functionality).
+      if (value) {
+        setDataToPost({ ...dataToPost, bank_id: parseInt(value) });
+      } else {
+        delete dataToPost.bank_id;
+        setDataToPost({ ...dataToPost });
+      }
+    }
+  };
+
+  const minPrice = "100000";
+  const minArea = "100";
+
+  const [filtersCount, setFiltersCount] = useState(0);
+  const [priceFilterSelected, setPriceFilterSelected] = useState(false);
+  const [areaFilterSelected, setAreaFilterSelected] = useState(false);
+  const [titleClearFilterSelected, setTitleClearFilterSelected] =
+    useState(false);
+  const [ageFilterSelected, setAgeFilterSelected] = useState(false);
+  const [territoryFilterSelected, setTerritoryFilterSelected] = useState(false);
+  const [latestAddedFilterSelected, setLatestAddedFilterSelected] = useState(false);
+
+  // manage More Filters Count
+  const manageMoreFiltersCount = (filterName) => {
+    if (filterName) {
+      setFiltersCount(filtersCount + 1);
+    } else {
+      setFiltersCount(filtersCount === 0 ? 0 : filtersCount - 1);
+    }
+  };
+
+  let moreFiltersKeys = [
+    "min_price",
+    "max_price",
+    "min_area",
+    "max_area",
+    "age",
+    "title_clear_property",
+    "territory",
+    "latest_added_properties",
+  ];
+
+  // reset filter btn function
+  const resetFilters = () => {
+    moreFiltersForm.current.reset();
+    moreFiltersKeys.forEach((key) => {
+      delete dataToPost[key];
+    });
+    setPriceFilterSelected(false);
+    setAgeFilterSelected(false);
+    setTerritoryFilterSelected(false);
+    setAreaFilterSelected(false);
+    setTitleClearFilterSelected(false);
+    setLatestAddedFilterSelected(false);
+    setFiltersCount(0);
+    getPropertyData();
+  };
+
+
+  useEffect(() => {
+    manageMoreFiltersCount(priceFilterSelected);
+    // eslint-disable-next-line
+  }, [priceFilterSelected]);
+
+  useEffect(() => {
+    manageMoreFiltersCount(areaFilterSelected);
+    // eslint-disable-next-line
+  }, [areaFilterSelected]);
+
+  useEffect(() => {
+    manageMoreFiltersCount(titleClearFilterSelected);
+    // eslint-disable-next-line
+  }, [titleClearFilterSelected]);
+
+  useEffect(() => {
+    manageMoreFiltersCount(ageFilterSelected);
+    // eslint-disable-next-line
+  }, [ageFilterSelected]);
+
+  useEffect(() => {
+    manageMoreFiltersCount(territoryFilterSelected);
+    // eslint-disable-next-line
+  }, [territoryFilterSelected]);
+
+  useEffect(() => {
+    manageMoreFiltersCount(latestAddedFilterSelected);
+    // eslint-disable-next-line
+  }, [latestAddedFilterSelected]);
+  // on more filter input change
+  const onMoreFiltersInputChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "min_price") {
+      if (value) {
+        setPriceFilterSelected(true);
+        let allOptions = document.querySelectorAll(".max-price-options");
+        allOptions.forEach((option) => {
+          if (parseInt(value) >= parseInt(option.value)) {
+            option.setAttribute("disabled", true);
+            option.nextElementSibling.selected = true;
+            setDataToPost({
+              ...dataToPost,
+              [name]: value,
+              max_price: option.nextElementSibling.value,
+            });
+          } else {
+            option.removeAttribute("disabled");
+          }
+        });
+      } else {
+        delete dataToPost.min_price;
+        delete dataToPost.max_price;
+        setDataToPost({ ...dataToPost });
+        setPriceFilterSelected(false);
+        let allOptions = document.querySelectorAll(".max-price-options");
+        allOptions.forEach((option) => {
+          option.removeAttribute("disabled");
+          if (!option.value) {
+            option.selected = true;
+          }
+        });
+      }
+    } else if (name === "max_price") {
+      if (value) {
+        setPriceFilterSelected(true);
+        if (dataToPost.min_price) {
+          setDataToPost({ ...dataToPost, [name]: value });
+        } else {
+          setDataToPost({ ...dataToPost, [name]: value, min_price: minPrice });
+        }
+      } else {
+        delete dataToPost.min_price;
+        delete dataToPost.max_price;
+        setDataToPost({ ...dataToPost });
+        setPriceFilterSelected(false);
+        let allOptions = document.querySelectorAll(".min-price-options");
+        allOptions.forEach((option) => {
+          if (!option.value) {
+            option.selected = true;
+          }
+        });
+        let allOptions2 = document.querySelectorAll(".max-price-options");
+        allOptions2.forEach((option) => {
+          option.removeAttribute("disabled");
+        });
+      }
+    } else if (name === "min_area") {
+      if (value) {
+        setAreaFilterSelected(true);
+        let allOptions = document.querySelectorAll(".max-carpet-area-options");
+        allOptions.forEach((option) => {
+          if (parseInt(value) >= parseInt(option.value)) {
+            option.setAttribute("disabled", true);
+            option.nextElementSibling.selected = true;
+            setDataToPost({
+              ...dataToPost,
+              [name]: value,
+              max_area: option.nextElementSibling.value,
+            });
+          } else {
+            option.removeAttribute("disabled");
+          }
+        });
+      } else {
+        let allOptions = document.querySelectorAll(".max-carpet-area-options");
+        allOptions.forEach((option) => {
+          option.removeAttribute("disabled");
+          if (!option.value) {
+            option.selected = true;
+          }
+        });
+        delete dataToPost.min_area;
+        delete dataToPost.max_area;
+        setDataToPost({ ...dataToPost });
+        setAreaFilterSelected(false);
+      }
+    } else if (name === "max_area") {
+      if (value) {
+        setAreaFilterSelected(true);
+        if (dataToPost.min_area) {
+          setDataToPost({ ...dataToPost, [name]: value });
+        } else {
+          setDataToPost({ ...dataToPost, [name]: value, min_area: minArea });
+        }
+      } else {
+        delete dataToPost.min_area;
+        delete dataToPost.max_area;
+        setDataToPost({ ...dataToPost });
+        setAreaFilterSelected(false);
+        let allOptions = document.querySelectorAll(".min-carpet-area-options");
+        allOptions.forEach((option) => {
+          if (!option.value) {
+            option.selected = true;
+          }
+        });
+        let allOptions2 = document.querySelectorAll(".max-carpet-area-options");
+        allOptions2.forEach((option) => {
+          option.removeAttribute("disabled");
+        });
+      }
+    } else if (name === "age") {
+      if (value) {
+        setAgeFilterSelected(true);
+        setDataToPost({ ...dataToPost, [name]: parseInt(value) });
+      } else {
+        delete dataToPost.age;
+        setDataToPost({ ...dataToPost });
+        setAgeFilterSelected(false);
+      }
+    } else if (name === "title_clear_property") {
+      if (value) {
+        setTitleClearFilterSelected(true);
+        setDataToPost({ ...dataToPost, [name]: value });
+      } else {
+        delete dataToPost.title_clear_property;
+        setDataToPost({ ...dataToPost });
+        setTitleClearFilterSelected(false);
+      }
+    } else if (name === "territory") {
+      if (value) {
+        setTerritoryFilterSelected(true);
+        setDataToPost({ ...dataToPost, [name]: value });
+      } else {
+        delete dataToPost.territory;
+        setDataToPost({ ...dataToPost });
+        setTerritoryFilterSelected(false);
+      }
+    } else if (name === "latest_added_properties") {
+      if (value) {
+        setLatestAddedFilterSelected(true);
+        setDataToPost({ ...dataToPost, [name]: parseInt(value) });
+      } else {
+        delete dataToPost.latest_added_properties;
+        setDataToPost({ ...dataToPost });
+        setLatestAddedFilterSelected(false);
+      }
+    }
+  };
+
+
+
+
+
+
 
   // toggleActivePageClass
   const toggleActivePageClass = (activePage) => {
@@ -143,6 +547,7 @@ const ViewEditDeleteProperties = () => {
     const dataToPost = {
       batch_number: currentPage,
       batch_size: propertiesPerPage,
+      country_id: countryId,
     };
     setStoredDataToPost(dataToPost);
     const propertiesRes = await axios.post(
@@ -205,7 +610,7 @@ const ViewEditDeleteProperties = () => {
     const currentPropertyRes = await axios.get(
       `/sam/v1/property/single-property/${id}`,
       { headers: authHeader }
-    ); 
+    );
     setSelectedProperty(currentPropertyRes.data);
     getListOfPropertyDocuments(id);
   };
@@ -214,12 +619,14 @@ const ViewEditDeleteProperties = () => {
   const getListOfPropertyDocuments = async (id) => {
     setPropertyDocumentsList([])
     setPropertyImagesList([])
+    console.log(id);
     const propertyDocsListResData = await axios.get(
       `/sam/v1/property/auth/property_document_list/${id}`,
       { headers: authHeader }
     );
     let propertyDocsListRes = propertyDocsListResData.data;
-    setPropertyDocumentsList(propertyDocsListRes); 
+    console.log(propertyDocsListResData);
+    setPropertyDocumentsList(propertyDocsListRes);
     setViewSinglePropertyPageLoading(false);
     if (propertyDocsListRes !== null) {
       let filteredImages = propertyDocsListRes.filter((data) => data.category_id === 16)
@@ -239,7 +646,7 @@ const ViewEditDeleteProperties = () => {
       }
     }
     setViewSinglePropertyPageLoading(false);
-  }; 
+  };
   // all file types
   let fileTypesObj = {
     pdf: "data:application/pdf;base64,",
@@ -255,7 +662,7 @@ const ViewEditDeleteProperties = () => {
     mp4: "data:video/mp4;base64,",
     mp3: "data:audio/mpeg;base64,",
     wav: "data:audio/wav;base64,",
-  }; 
+  };
   const [imageUrls, setImageUrls] = useState({});
   const [imageUrlsLoading, setImageUrlsLoading] = useState(false);
 
@@ -274,15 +681,16 @@ const ViewEditDeleteProperties = () => {
       setImageUrls(urls);
       setImageUrlsLoading(false);
     };
+    if (properties !== null) {
+      fetchImageUrls();
+    }
 
-    fetchImageUrls();
-    
     // eslint-disable-next-line
   }, [properties]);
 
   // get Default ImageUrl
   const getDefaultImageUrl = async (documentId, propertyId) => {
-    const defaultImageDetails = await getChunksOfImages(documentId, propertyId); 
+    const defaultImageDetails = await getChunksOfImages(documentId, propertyId);
     return defaultImageDetails.srcOfFile
   }
 
@@ -335,9 +743,13 @@ const ViewEditDeleteProperties = () => {
 
   // back ToAll Properties Page button
   const backToAllPropertiesPage = async () => {
+    const sendingData = {
+      ...storedDataToPost,
+      country_id: countryId,
+    }
     const propertiesRes = await axios.post(
       `/sam/v1/property/auth/all-properties`,
-      storedDataToPost,
+      sendingData,
       { headers: authHeader }
     );
     setProperties(propertiesRes.data);
@@ -376,11 +788,10 @@ const ViewEditDeleteProperties = () => {
     landmark,
     zip,
   } = formData.address_details;
- 
+
   const [enquiryList, setEnquiryList] = useState([]);
-  const [activeBank, setActiveBank] = useState({});  
-  const notSoldCheckRef = useRef();
-  const [mainPageLoading, setMainPageLoading] = useState(false); 
+  const [activeBank, setActiveBank] = useState({});
+  const [mainPageLoading, setMainPageLoading] = useState(false);
   const [selectedPropertyNumberForEnquiry, setSelectedPropertyNumberForEnquiry] = useState(null);
   const [selectedPropertyTypeForEnquiry, setSelectedPropertyTypeForEnquiry] = useState(null);
   const [sortOptionText, setSortOptionText] = useState("up");
@@ -428,7 +839,7 @@ const ViewEditDeleteProperties = () => {
   // on Input Change
   const onInputChange = async (e) => {
     const { name, value } = e.target;
-    if (name === "bank") { 
+    if (name === "bank") {
     } else if (name === "bank_branch_id") {
       commonFnToSaveFormData(name, parseInt(value));
     } else if (name === "market_price") {
@@ -491,7 +902,7 @@ const ViewEditDeleteProperties = () => {
     try {
       const { data } = await axios.post(`/sam/v1/property/auth/update-property`, formData, {
         headers: authHeader,
-      }) 
+      })
       if (data.status === 0) {
         toast.success("Property updated successfully");
         setUpdateBtnLoading(false);
@@ -519,7 +930,7 @@ const ViewEditDeleteProperties = () => {
         `/sam/v1/property/single-property/${propertyId}`,
         { headers: authHeader }
       );
-      const currentPropertyData = currentPropertyRes.data; 
+      const currentPropertyData = currentPropertyRes.data;
       const {
         type_id,
         completion_date,
@@ -591,10 +1002,11 @@ const ViewEditDeleteProperties = () => {
           },
         });
       }
-      // Get details from api.
-      const bankRes = await axios.get(`/sam/v1/property/by-bank`); 
+      // Get details from api. 
+      const postData = { "country_id": countryId }
+      const bankRes = await axios.post(`/sam/v1/property/by-bank`, postData);
       let bankData = bankRes.data
-      const activeBankDetails = bankData.filter(bank => bank.bank_id === (bank_Id ? bank_Id : parseInt(bank_id)))[0] 
+      const activeBankDetails = bankData.filter(bank => bank.bank_id === (bank_Id ? bank_Id : parseInt(bank_id)))[0]
       setActiveBank(activeBankDetails);
 
       allPropertiesPageRef.current.classList.add("d-none");
@@ -649,7 +1061,7 @@ const ViewEditDeleteProperties = () => {
         const EnquiryRes = await axios.get(`/sam/v1/property/auth/property-enquiries/${propertyId}`, {
           headers: authHeader,
         })
-        const dataValue = EnquiryRes.data; 
+        const dataValue = EnquiryRes.data;
         setEnquiryList(dataValue);
         setTempEnquiryList(dataValue);
         setMainPageLoading(false);
@@ -677,7 +1089,7 @@ const ViewEditDeleteProperties = () => {
     // To make default bank selected in bank select box
     let defaultBank = document.getElementById(`bank-${bank_id}`);
     if (defaultBank) {
-      defaultBank.selected = true;  
+      defaultBank.selected = true;
 
       // Set default value for branch and make it selected in branch select box
       let defaultBranch = document.getElementById(`branch-${bank_branch_id}`);
@@ -829,7 +1241,8 @@ const ViewEditDeleteProperties = () => {
       const dataToPost = {
         "batch_size": currentChatMassageSize,
         "batch_number": currentMassageBatch,
-        "enquiry_id": enquiryId
+        "enquiry_id": enquiryId,
+        "country_id": countryId
       }
       let res = await axios.post(
         `/sam/v1/property/auth/user/enquiry/property/`, dataToPost,
@@ -866,12 +1279,14 @@ const ViewEditDeleteProperties = () => {
 
   //connect To WebSocket
   const connectToWebSocket = () => {
-    const newSocket = new WebSocket("ws://13.234.136.8:4002/ws");
+    // const newSocket = new WebSocket("ws://13.234.136.8:4002/ws");
+    const newSocket = new WebSocket("ws://localhost:3000/ws");
     setSocket(newSocket);
   };
   useEffect(() => {
     rootTitle.textContent = "ADMIN - PROPERTIES";
     setCurrentChatMassageSize(25);
+    getSearchDetails();
     if (data) {
       setLoading(true);
       checkLoginSession(data.loginToken).then((res) => {
@@ -879,7 +1294,7 @@ const ViewEditDeleteProperties = () => {
           getPropertiesFromApi();
         }
       });
-    } 
+    }
     // eslint-disable-next-line
   }, []);
 
@@ -952,10 +1367,452 @@ const ViewEditDeleteProperties = () => {
             className="col-xl-10 col-lg-9 col-md-8"
             ref={allPropertiesPageRef}
           >
-            <BreadCrumb />
+            {/* breadCrumb and back button */}
+            <div className="row justify-content-between align-items-center">
+              <div className="col-md-6">
+                <BreadCrumb />
+              </div>
+              {/* /back button */}
+              <div className="col-md-6 text-end">
+                <button
+                  className="btn btn-sm btn-outline-primary"
+                  onClick={() => { navigate(`${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"}`) }}
+                >
+                  <i className="bi bi-arrow-left"></i> Back
+                </button>
+              </div>
+
+            </div>
+            {/* for desktop screen search bar */}
+            <div
+              className="row extra-filters-row filter-fullWindow justify-content-center align-items-center py-3 "
+            >
+              {/* State */}
+              <div className="col-md-2 col-12 mt-3 mt-md-0">
+                <select
+                  name="states"
+                  id="states"
+                  className="form-select"
+                  aria-label=".form-select-sm example"
+                  onChange={onFieldsChange}
+                  value={dataToPost && dataToPost.state_id}
+                >
+                  <option value="">State</option>
+                  {states ? (
+                    states.map((state, Index) => {
+                      let optionToSelectByDefault = document.getElementById(
+                        `stateFilter1-${state.state_id}`
+                      );
+                      if (dataToPost && dataToPost.state_id && optionToSelectByDefault) {
+                        if (dataToPost.state_id === state.state_id) {
+                          optionToSelectByDefault.selected = true;
+                        }
+                      }
+                      return (
+                        <option
+                          id={`stateFilter1-${state.state_id}`}
+                          key={Index}
+                          value={state.state_id}
+                        >
+                          {state.state_name}
+                        </option>
+                      );
+                    })
+                  ) : (
+                    <></>
+                  )}
+                </select>
+              </div>
+              {/* City */}
+              <div className="col-md-2 col-12 mt-3 mt-md-0">
+                <select
+                  name="cities"
+                  id="cities"
+                  className="form-select"
+                  aria-label=".form-select-sm example"
+                  onChange={onFieldsChange}
+                  value={dataToPost && dataToPost.city_id}
+                >
+                  <option value="">City</option>
+                  {cities
+                    ? cities.map((city, Index) => {
+                      let optionToSelectByDefault = document.getElementById(
+                        `cityFilter1-${city.city_id}`
+                      );
+                      if (dataToPost.city_id && optionToSelectByDefault) {
+                        if (dataToPost.city_id === city.city_id) {
+                          optionToSelectByDefault.selected = true;
+                        }
+                      }
+                      return (
+                        <option
+                          id={`cityFilter1-${city.city_id}`}
+                          key={Index}
+                          value={city.city_id}
+                        >
+                          {city.city_name}
+                        </option>
+                      );
+                    })
+                    : ""}
+                </select>
+              </div>
+              {/* Category */}
+              <div className="col-md-2 col-12 mt-3 mt-md-0">
+                <select
+                  name="asset"
+                  id="asset"
+                  className="form-select"
+                  aria-label=".form-select-sm example"
+                  onChange={onFieldsChange}
+                  value={dataToPost && dataToPost.type_id}
+                >
+                  <option value="">Category</option>
+                  {assetCategory
+                    ? assetCategory.map((category, Index) => {
+                      let optionToSelectByDefault = document.getElementById(
+                        `categoryFilter1-${category.type_id}`
+                      );
+                      if (dataToPost.type_id && optionToSelectByDefault) {
+                        if (dataToPost.type_id === category.type_id) {
+                          optionToSelectByDefault.selected = true;
+                        }
+                      }
+                      return (
+                        <option
+                          id={`categoryFilter1-${category.type_id}`}
+                          key={Index}
+                          value={category.type_id}
+                        >
+                          {category.type_name}
+                        </option>
+                      );
+                    })
+                    : ""}
+                </select>
+              </div>
+              {/* Bank */}
+              <div className="col-md-2 col-12 mt-3 mt-md-0">
+                <select
+                  name="bank"
+                  id="bank"
+                  className="form-select"
+                  aria-label=".form-select-sm example"
+                  onChange={onFieldsChange}
+                  disabled={bank_Id !== 0}
+                  value={dataToPost && bank_Id !== 0 ? bank_Id : dataToPost.bank_id}
+
+                >
+                  <option value="">Bank</option>
+                  {banks
+                    ? banks.map((bank, index) => { 
+                      return (
+                        <option key={index} value={bank_Id !== 0 ? bank_Id : bank.bank_id}>
+                          {bank.bank_name}
+                        </option>
+                      );
+                    })
+                    : ""}
+
+                </select>
+              </div>
+              {/* More Filters */}
+              {/* {isLogin ?  */}
+              <div className="col-md-2 col-12 mt-3 mt-md-0">
+                <div className="dropdown ">
+                  <div
+                    className="form-select"
+                    data-bs-toggle="dropdown"
+                    id="dropdownMenuButton2"
+                    aria-expanded="true"
+                  >
+                    <div
+                      value=""
+                      style={{
+                        overflow: "hidden",
+                        fontWeight: "normal",
+                        display: "block",
+                        whiteSpaceCollapse: "collapse",
+                        textWrap: "nowrap",
+                        minHeight: "1.2em",
+                        padding: "0px 2px 1px",
+                      }}
+                    >
+                      <span className="me-2 badge bg-dark">
+                        {filtersCount}
+                      </span>
+                      More Filters
+                    </div>
+                  </div>
+                  <ul
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                    className="dropdown-menu more-filters-dropdown-menu shadow"
+                    aria-labelledby="dropdownMenuButton2"
+                  >
+                    <div className="container-fluid p-3">
+                      <form className="row"
+                        ref={moreFiltersForm}
+                      >
+                        {/* Price */}
+                        <div className="col-12">
+                          <label
+                            htmlFor=""
+                            className="form-label common-btn-font"
+                          >
+                            Price ({countryId === 11 ? "RM" : <i className="bi bi-currency-rupee"></i>})
+                          </label>
+                        </div>
+                        {/* min_Price */}
+                        <div className="col-md-6 mb-3">
+                          <select
+                            id="min_price"
+                            name="min_price"
+                            className="form-select form-select-sm"
+                            aria-label=".form-select-sm example"
+                            onChange={onMoreFiltersInputChange}
+                            value={dataToPost && dataToPost.min_price}
+                          >
+                            <option className="min-price-options" value="">
+                              Min
+                            </option>
+                            {propertyMinPrices.map((price, Index) => {
+                              return (
+                                <option
+                                  className="min-price-options"
+                                  value={price}
+                                  key={Index}
+                                >
+                                  {countryId === 11 ? <>{convertCurrency(parseInt(price), "Malaysia", "RM", 0.0564)}<small className="text-muted fs-6"> RM </small></> : `${price}`}
+                                </option>
+                              );
+                            })}
+                          </select>
+                        </div>
+                        {/* max_Price */}
+                        <div className="col-md-6 mb-3">
+                          <select
+                            id="max_price"
+                            name="max_price"
+                            className="form-select form-select-sm"
+                            aria-label=".form-select-sm example"
+                            onChange={onMoreFiltersInputChange}
+                            value={dataToPost && dataToPost.max_price}
+                          >
+                            <option className="max-price-options" value="">
+                              Max
+                            </option>
+                            {propertyMaxPrices.map((price, Index) => {
+                              return (
+                                <option
+                                  className="max-price-options"
+                                  value={price}
+                                  key={Index}
+                                >
+                                  {countryId === 11 ? <>{convertCurrency(parseInt(price), "Malaysia", "RM", 0.0564)}<small className="text-muted fs-6"> RM </small></> : `${price}`}
+                                </option>
+                              );
+                            })}
+                          </select>
+                        </div>
+                        {/* hr */}
+                        <div className="col-12">
+                          <hr />
+                        </div>
+                        {/* Title clear property */}
+                        <div className="col-md-6 mb-3">
+                          <label
+                            htmlFor="title_clear_property"
+                            className="form-label common-btn-font"
+                          >
+                            Title clear property
+                          </label>
+                          <select
+                            id="title_clear_property"
+                            name="title_clear_property"
+                            className="form-select form-select-sm"
+                            aria-label=".form-select-sm example"
+                            onChange={onMoreFiltersInputChange}
+                            value={dataToPost && dataToPost.title_clear_property}
+                          >
+                            <option value=""></option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                          </select>
+                        </div>
+                        {/* Territory */}
+                        <div className="col-md-6 mb-3">
+                          <label
+                            htmlFor="territory"
+                            className="form-label common-btn-font"
+                          >
+                            Territory
+                          </label>
+                          <select
+                            id="territory"
+                            name="territory"
+                            className="form-select form-select-sm"
+                            aria-label=".form-select-sm example"
+                            onChange={onMoreFiltersInputChange}
+
+                            value={dataToPost && dataToPost.territory}
+                          >
+                            <option value=""></option>
+                            <option value="gram panchayat limit">
+                              Gram Panchayat Limit
+                            </option>
+                            <option value="corporate">Corporate limit</option>
+                          </select>
+                        </div>
+                        {/* hr */}
+                        <div className="col-12">
+                          <hr />
+                        </div>
+                        {/* Carpet Area */}
+                        <div className="col-12">
+                          <label
+                            htmlFor=""
+                            className="form-label common-btn-font"
+                          >
+                            Carpet Area ( sqft )
+                          </label>
+                        </div>
+                        {/* min_area */}
+                        <div className="col-md-6 mb-3">
+                          <select
+                            id="min_area"
+                            name="min_area"
+                            className="form-select form-select-sm"
+                            aria-label=".form-select-sm example"
+                            onChange={onMoreFiltersInputChange}
+                            value={dataToPost && dataToPost.min_area}
+                          >
+                            <option className="min-carpet-area-options" value="">
+                              Min
+                            </option>
+                            {propertyMinArea.map((area, Index) => {
+                              return (
+                                <option
+                                  className="min-carpet-area-options"
+                                  value={area}
+                                  key={Index}
+                                >
+                                  {area}
+                                </option>
+                              );
+                            })}
+                          </select>
+                        </div>
+                        {/* max_area */}
+                        <div className="col-md-6 mb-3">
+                          <select
+                            id="max_area"
+                            name="max_area"
+                            className="form-select form-select-sm"
+                            aria-label=".form-select-sm example"
+                            onChange={onMoreFiltersInputChange}
+                            value={dataToPost && dataToPost.max_area}
+                          >
+                            <option className="max-carpet-area-options" value="">
+                              Max
+                            </option>
+                            {propertyMaxArea.map((area, Index) => {
+                              return (
+                                <option
+                                  className="max-carpet-area-options"
+                                  value={area}
+                                  key={Index}
+                                >
+                                  {area}
+                                </option>
+                              );
+                            })}
+                          </select>
+                        </div>
+                        {/* hr */}
+                        <div className="col-12">
+                          <hr />
+                        </div>
+                        {/* Age of Property */}
+                        <div className="col-md-6 mb-3">
+                          <label
+                            htmlFor=""
+                            className="form-label common-btn-font"
+                          >
+                            Age of Property
+                          </label>
+                          <select
+                            id="age"
+                            name="age"
+                            className="form-select form-select-sm"
+                            aria-label=".form-select-sm example"
+                            onChange={onMoreFiltersInputChange}
+                            value={dataToPost && dataToPost.age}
+                          >
+                            <option value=""></option>
+                            <option value="1">Less than 1 year</option>
+                            <option value="3">Less than 3 years</option>
+                            <option value="5">Less than 5 years</option>
+                            <option value="10">Less than 10 years</option>
+                          </select>
+                        </div>
+                        {/* Last 10 days added property */}
+                        <div className="col-md-6 mb-3">
+                          <label
+                            htmlFor="latest_added_properties"
+                            className="form-label common-btn-font"
+                          >
+                            Latest added properties
+                          </label>
+
+                          <select
+                            id="latest_added_properties"
+                            name="latest_added_properties"
+                            className="form-select form-select-sm"
+                            aria-label=".form-select-sm example"
+                            onChange={onMoreFiltersInputChange}
+                            value={dataToPost && dataToPost.latest_added_properties}
+                          >
+                            <option value=""></option>
+                            <option value="10">Last 10 days</option>
+                            <option value="20">Last 20 days</option>
+                          </select>
+                        </div>
+                      </form>
+                    </div>
+                  </ul>
+                </div>
+              </div>
+              {/* : ""} */}
+              {/* searchBtn */}
+              <div className="col-md-1 col-12 my-3 my-md-0">
+                <button
+                  onClick={() => {
+                    getPropertyData();
+                  }}
+                  disabled={searchBtnDisabled}
+                  className="btn w-100 btn-primary text-center"
+                >
+                  <i className="bi bi-search"></i>
+                </button>
+              </div>
+              {/* Reset More Filters */}
+              <div
+                className={`col-12 text-center mt-md-3 ${filtersCount > 0 ? "" : "d-none"
+                  }`}
+              >
+                <button
+                  onClick={resetFilters}
+                  className="btn btn-secondary text-center"
+                >
+                  Reset More Filters
+                </button>
+              </div>
+            </div>
             <>
-              <h1 className="text-center heading-text-primary fw-bold">Properties</h1>
-              <hr />
+              {/* <h1 className="text-center heading-text-primary fw-bold">Properties</h1>
+              <hr /> */}
               {loading ? (
                 <div
                   className="d-flex justify-content-center align-items-center"
@@ -968,169 +1825,177 @@ const ViewEditDeleteProperties = () => {
                     spinnerType="grow"
                   />
                 </div>
-              ) : properties.length === 0 ? (
+              ) : properties === null || properties.length === 0 ? (
                 <div className="d-flex align-items-center justify-content-center mt-5">
                   <h3 className="fw-bold custom-heading-color">
                     No Properties Found !
                   </h3>
                 </div>
               ) : (
-                <section className="admin-view-all-properties">
-                  <div className="container-fluid">
-                    <div className="row">
-                      {/* all-properties mapping */}
-                      {properties.map((property, Index) => {
-                        console.log(property)
-                        const {
-                          category,
-                          city_name,
-                          market_value,
-                          expected_price,
-                          property_id,
-                          property_number,
-                          default_image_id:{ Int64: imageDocId, Valid: isImageDocIdValid },
-                        } = property;
-                        return (
-                          <div className="col-xl-3 col-md-6" key={Index}>
-                            <div className="admin-property-card-wrapper">
-                              <div className="card mb-4">
-                                <div className="top-line"></div>
-                                <img
-                                  className="card-img-top admin-property-image"
-                                  // src="/images2.jpg"
-                                  src={imageDocId && imageDocId !== 0 ? `${!imageUrlsLoading ? imageUrls[property_id] : "/images2.jpg"}` : "/images2.jpg"}
-                                  alt=""
-                                />
-                                <div className="card-body">
-                                  {/* category */}
-                                  {category ? (
-                                    <div className="text-capitalize">
-                                      <span>Type: </span>
-                                      <span className="common-btn-font">
-                                        {category}
-                                      </span>
+                <>
+
+
+                  {/* all property section */}
+                  <section className="admin-view-all-properties">
+                    <div className="container-fluid">
+                      <div className="row">
+                        {/* all-properties mapping */}
+                        {properties.map((property, Index) => {
+                          const {
+                            category,
+                            city_name,
+                            market_value,
+                            expected_price,
+                            property_id,
+                            property_number,
+                            default_image_id: { Int64: imageDocId, Valid: isImageDocIdValid },
+                          } = property;
+                          return (
+                            <div className="col-xl-3 col-md-6" key={Index}>
+                              <div className="admin-property-card-wrapper">
+                                <div className="card mb-4">
+                                  <div className="top-line"></div>
+                                  <img
+                                    className="card-img-top admin-property-image"
+                                    // src="/images2.jpg"
+                                    src={imageDocId && imageDocId !== 0 && isImageDocIdValid ? `${!imageUrlsLoading ? imageUrls[property_id] : "/images2.jpg"}` : "/images2.jpg"}
+                                    alt=""
+                                  />
+                                  <div className="card-body">
+                                    {/* category */}
+                                    {category ? (
+                                      <div className="text-capitalize">
+                                        <span>Type: </span>
+                                        <span className="common-btn-font">
+                                          {category}
+                                        </span>
+                                      </div>
+                                    ) : (
+                                      <></>
+                                    )}
+                                    {/* city_name */}
+                                    {city_name ? (
+                                      <div className="text-capitalize">
+                                        <span>Location: </span>
+                                        <span className="common-btn-font">
+                                          {city_name}
+                                        </span>
+                                      </div>
+                                    ) : (
+                                      <></>
+                                    )}
+                                    {/* market_value */}
+                                    {market_value ? (
+                                      <div className="text-capitalize">
+                                        <span>Market Price: </span>
+                                        <span className="common-btn-font">
+                                          {updatedCountry && updatedCountry === "malaysia" ? <>{convertCurrency(parseInt(market_value), "Malaysia", "RM", 0.0564)
+                                          } <small className="text-muted">RM </small></> : <>
+                                            <i className="bi bi-currency-rupee"></i>
+                                            {parseInt(market_value) >= 10000000 ? `${(parseInt(market_value) / 10000000).toFixed(2)}` : `${(parseInt(market_value) / 100000).toFixed(1)}`}
+                                            <small className="text-muted">{parseInt(market_value) >= 10000000 ? " Cr." : " Lac"}</small></>}
+                                        </span>
+                                      </div>
+                                    ) : (
+                                      <></>
+                                    )}
+                                    {expected_price ? (
+                                      <div className="text-capitalize">
+                                        <span>Reserved Price: </span>
+                                        <span className="common-btn-font">
+                                          {updatedCountry && updatedCountry === "malaysia" ? <>{convertCurrency(parseInt(expected_price), "Malaysia", "RM", 0.0564)
+                                          } <small className="text-muted">RM </small></> : <>
+                                            <i className="bi bi-currency-rupee"></i>
+                                            {parseInt(expected_price) >= 10000000 ? `${(parseInt(expected_price) / 10000000).toFixed(2)}` : `${(parseInt(expected_price) / 100000).toFixed(1)}`}
+                                            <small className="text-muted">{parseInt(expected_price) >= 10000000 ? " Cr." : " Lac"}</small></>}
+                                        </span>
+                                      </div>
+                                    ) : (
+                                      <></>
+                                    )}
+                                    <div className="mt-3 d-flex">
+                                      {/* view current property button */}
+                                      <button
+                                        onClick={() => {
+                                          viewCurrentProperty(property_id);
+                                        }}
+                                        className="btn btn-sm btn-outline-success property-button-wrapper"
+                                      >
+                                        <i className="bi bi-eye-fill"></i>
+                                      </button>
+                                      {/* Current property DataToUpdate button */}
+                                      <button
+                                        onClick={() => {
+                                          getCurrentPropertyDataToUpdate(
+                                            property_id
+                                          );
+                                        }}
+                                        className="mx-2 btn btn-sm btn-outline-primary property-button-wrapper"
+                                      >
+                                        <i className="bi bi-pencil-fill"></i>
+                                      </button>
+                                      {/* Delete Property button */}
+                                      <button
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#confirmDeletePropertyModal"
+                                        onClick={() => {
+                                          onDeletePropertyBtnClick(property_id);
+                                        }}
+                                        className="btn btn-sm btn-outline-danger property-button-wrapper"
+                                      >
+                                        <i className="bi bi-trash-fill"></i>
+                                      </button>
+                                      {/* single-property-documents-upload */}
+                                      <NavLink
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        onClick={() => {
+                                          // handleButtonClick()
+                                          localStorage.setItem(
+                                            "upload-doc",
+                                            JSON.stringify({
+                                              number: property_number,
+                                              id: property_id,
+                                            })
+                                          );
+                                          localStorage.setItem(
+                                            "upload-doc-page",
+                                            JSON.stringify({
+                                              status: "open"
+                                            })
+                                          );
+                                        }}
+                                        to={`${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"
+                                          }/property/single-property-documents-upload`}
+                                        className="btn btn-sm btn-outline-dark property-button-wrapper ms-2"
+                                      >
+                                        <i className="bi bi-upload"></i>
+                                      </NavLink>
+                                      {/* view current property enquiry details button */}
+                                      {isBank ? <button
+                                        onClick={() => {
+                                          getCurrentPropertyAllEnquires(
+                                            property_id, property_number, category
+                                          );
+                                          // getCurrentPropertyAllEnquires(
+                                          //   property_id, property_number, category
+                                          // );
+                                        }}
+                                        className="mx-2 btn btn-sm btn-outline-info property-button-wrapper"
+                                      >
+                                        <i className="bi bi-chat-text"></i>
+                                      </button> : <></>}
                                     </div>
-                                  ) : (
-                                    <></>
-                                  )}
-                                  {/* city_name */}
-                                  {city_name ? (
-                                    <div className="text-capitalize">
-                                      <span>Location: </span>
-                                      <span className="common-btn-font">
-                                        {city_name}
-                                      </span>
-                                    </div>
-                                  ) : (
-                                    <></>
-                                  )}
-                                  {/* market_value */}
-                                  {market_value ? (
-                                    <div className="text-capitalize">
-                                      <span>Market Price: </span>
-                                      <span className="common-btn-font">
-                                        <i className="bi bi-currency-rupee"></i>
-                                        {parseInt(market_value) >= 10000000 ? `${(parseInt(market_value) / 10000000).toFixed(2)}` : `${(parseInt(market_value) / 100000).toFixed(1)}`}
-                                        <small className="text-muted">{parseInt(market_value) >= 10000000 ? " Cr." : " Lac"}</small>
-                                      </span>
-                                    </div>
-                                  ) : (
-                                    <></>
-                                  )}
-                                  {expected_price ? (
-                                    <div className="text-capitalize">
-                                      <span>Reserved Price: </span>
-                                      <span className="common-btn-font">
-                                        <i className="bi bi-currency-rupee"></i>
-                                        {parseInt(expected_price) >= 10000000 ? `${(parseInt(expected_price) / 10000000).toFixed(2)}` : `${(parseInt(expected_price) / 100000).toFixed(1)}`}
-                                        <small className="text-muted">{parseInt(expected_price) >= 10000000 ? " Cr." : " Lac"}</small>
-                                      </span>
-                                    </div>
-                                  ) : (
-                                    <></>
-                                  )}
-                                  <div className="mt-3 d-flex">
-                                    {/* view current property button */}
-                                    <button
-                                      onClick={() => {
-                                        viewCurrentProperty(property_id);
-                                      }}
-                                      className="btn btn-sm btn-outline-success property-button-wrapper"
-                                    >
-                                      <i className="bi bi-eye-fill"></i>
-                                    </button>
-                                    {/* Current property DataToUpdate button */}
-                                    <button
-                                      onClick={() => {
-                                        getCurrentPropertyDataToUpdate(
-                                          property_id
-                                        );
-                                      }}
-                                      className="mx-2 btn btn-sm btn-outline-primary property-button-wrapper"
-                                    >
-                                      <i className="bi bi-pencil-fill"></i>
-                                    </button>
-                                    {/* Delete Property button */}
-                                    <button
-                                      data-bs-toggle="modal"
-                                      data-bs-target="#confirmDeletePropertyModal"
-                                      onClick={() => {
-                                        onDeletePropertyBtnClick(property_id);
-                                      }}
-                                      className="btn btn-sm btn-outline-danger property-button-wrapper"
-                                    >
-                                      <i className="bi bi-trash-fill"></i>
-                                    </button>
-                                    {/* single-property-documents-upload */}
-                                    <NavLink
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      onClick={() => {
-                                        // handleButtonClick()
-                                        localStorage.setItem(
-                                          "upload-doc",
-                                          JSON.stringify({
-                                            number: property_number,
-                                            id: property_id,
-                                          })
-                                        );
-                                        localStorage.setItem(
-                                          "upload-doc-page",
-                                          JSON.stringify({
-                                            status: "open"
-                                          })
-                                        );
-                                      }}
-                                      to={`${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"
-                                        }/property/single-property-documents-upload`}
-                                      className="btn btn-sm btn-outline-dark property-button-wrapper ms-2"
-                                    >
-                                      <i className="bi bi-upload"></i>
-                                    </NavLink>
-                                    {/* view current property enquiry details button */}
-                                    {isBank ? <button
-                                      onClick={() => {
-                                        getCurrentPropertyAllEnquires(
-                                          property_id, property_number, category
-                                        );
-                                        // getCurrentPropertyAllEnquires(
-                                        //   property_id, property_number, category
-                                        // );
-                                      }}
-                                      className="mx-2 btn btn-sm btn-outline-info property-button-wrapper"
-                                    >
-                                      <i className="bi bi-chat-text"></i>
-                                    </button> : <></>}
                                   </div>
                                 </div>
                               </div>
                             </div>
-                          </div>
-                        );
-                      })}
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
-                </section>
+                  </section>
+                </>
               )}
               <div className="container d-none" ref={paginationRef}>
                 {pageCount > 1 ? <div className="row">
@@ -1167,13 +2032,24 @@ const ViewEditDeleteProperties = () => {
                 ) : (
                   <div className="row">
                     <div className="card border-0">
-                      <div className="my-4">
-                        <button
-                          className="btn btn-sm btn-outline-primary"
-                          onClick={backToAllPropertiesPage}
-                        >
-                          <i className="bi bi-arrow-left"></i> Back
-                        </button>
+                      {/* breadCrumb and back button */}
+                      <div className="row justify-content-between align-items-center">
+                        <div className="col-md-6">
+                          <BreadCrumb
+                            isViewPropertyPageActive={true}
+                            backToAllPropertiesPage={backToAllPropertiesPage}
+                          />
+                        </div>
+                        {/* /back button */}
+                        <div className="col-md-6 text-end">
+                          <button
+                            className="btn btn-sm btn-outline-primary"
+                            onClick={backToAllPropertiesPage}
+                          >
+                            <i className="bi bi-arrow-left"></i> Back
+                          </button>
+                        </div>
+
                       </div>
                       <ViewProperty
                         selectedProperty={selectedProperty}
@@ -1194,349 +2070,370 @@ const ViewEditDeleteProperties = () => {
             className="col-xl-10 col-lg-9 col-md-8 d-none"
             ref={editPropertyRef}
           >
-            <>
-              <BreadCrumb
-                isUpdatePropertyPageActive={true}
-                backToAllPropertiesPage={backToAllPropertiesPage}
-              />
-              <section className="add-property-wrapper mb-4">
-                <div className="container-fluid">
-                  <div className="row justify-content-center">
-                    <div className="col-xl-12">
-                      <div
-                        className={`${mainPageLoading ? "" : "d-none"
-                          } d-flex align-items-center justify-content-center`}
-                        style={{ minHeight: "75vh" }}
-                      >
-                        <CommonSpinner
-                          spinnerColor="primary"
-                          height="5rem"
-                          width="5rem"
-                          spinnerType="grow"
+
+            <div className="row">
+              <div className="card border-0">
+                <section className="add-property-wrapper mb-4">
+                  <div className="container-fluid">
+                    {/* breadCrumb and back button */}
+                    <div className="row justify-content-between align-items-center">
+                      <div className="col-md-6">
+                        <BreadCrumb
+                          isUpdatePropertyPageActive={true}
+                          backToAllPropertiesPage={backToAllPropertiesPage}
                         />
                       </div>
+                      {/* /back button */}
+                      <div className="col-md-6 text-end">
+                        <button
+                          className="btn btn-sm btn-outline-primary"
+                          onClick={backToAllPropertiesPage}
+                        >
+                          <i className="bi bi-arrow-left"></i> Back
+                        </button>
+                      </div>
 
-                      <form
-                        onSubmit={onFormSubmit}
-                        className={`card p-xl-2 ${mainPageLoading ? "d-none" : ""
-                          }`}
-                      >
-                        <div className="card-body">
-                          <h4 className="fw-bold mb-4">Update Property</h4>
-                          <div className="row mb-3">
-                            <div className="col-12 d-md-flex justify-content-md-start">
-                              {/* Property ID */}
-                              <div>
-                                <button
-                                  type="button"
-                                  className="btn btn-primary"
-                                >
-                                  <span className="common-btn-font">
-                                    Property ID
-                                  </span>
-                                  <span className="badge bg-light heading-text-primary ms-2">
-                                    {property_id}
-                                  </span>
-                                </button>
-                              </div>
-                              {/* Property Number */}
-                              <div>
-                                <button
-                                  type="button"
-                                  className="btn btn-primary ms-md-2 mt-md-0 mt-3"
-                                >
-                                  <span className="common-btn-font">
-                                    Property Number
-                                  </span>
-                                  <span className="badge bg-light heading-text-primary ms-2">
-                                    {property_number}
-                                  </span>
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-
-                          <hr />
-                          {/* Row 1 - Basic Details */}
-                          <div className="row mb-3">
-                            <div className="col-12">
-                              <h5 className="fw-bold heading-text-primary mb-3">
-                                Basic details
-                              </h5>
-                            </div>
-                            <div className="col-md-6">
-
-                              {/* Property type */}
-                              {type_name ? (
-                                <div className="form-group">
-                                  <p><span className="paragraph-label-text">Property type</span>{type_name}</p>
-                                </div>
-                              ) : (
-                                <></>
-                              )}
-                              {/* Bank */}
-                              <div className="form-group">
-                                <p><span className="paragraph-label-text">Bank</span>{activeBank && activeBank.bank_name}
-                                </p>
-                              </div>
-                              {/* Branch */}
-                              <div className="form-group">
-                                <p><span className="paragraph-label-text">Branch</span>{formData.branch_name}
-                                </p>
-                              </div>
-
-
-                            </div>
-                            <div className="col-md-6">
-                              {/* Title clear Property */}
-                              <div className="form-group">
-                                <p><span className="paragraph-label-text"> Title clear Property</span>{formData.title_clear_property === 1 ? "Yes" : "No"}
-                                </p>
-                              </div>
-                              {/* territory */}
-                              <div className="form-group">
-                                {territory ? (
-                                  <p><span className="paragraph-label-text"> Territory</span>{territory}
-                                  </p>
-                                ) : (
-                                  <></>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                          <hr />
-                          {/* Row 2 - Area Details*/}
-                          <div className="row mb-3">
-                            <div className="col-12">
-                              <h5 className="fw-bold heading-text-primary mb-3">Area</h5>
-                            </div>
-                            {/* Saleable area (sq. ft.) */}
-                            <div className="col-md-6">
-                              <div className="form-group">
-                                {saleable_area ? (
-                                  <p><span className="paragraph-label-text">Saleable area</span>{saleable_area ? saleable_area : ""} <small className="text-muted">sqft</small></p>
-                                ) : (
-                                  <></>
-                                )}
-
-                              </div>
-                            </div>
-                            {/*  Carpet area (sq. ft.) */}
-                            <div className="col-md-6">
-                              <div className="form-group">
-                                {carpet_area ? (
-                                  <p><span className="paragraph-label-text"> Carpet area</span>{carpet_area ? carpet_area : ""} <small className="text-muted">sqft</small></p>
-                                ) : (
-                                  <></>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                          <hr />
-                          {/* Row 3 - Pricing Details */}
-                          <div className="row mb-3">
-                            <div className="col-12">
-                              <h5 className="fw-bold heading-text-primary mb-3">Pricing</h5>
-                            </div>
-                            {/* Market price (Rs.) */}
-                            <div className="col-xl-4 col-md-6">
-                              <div className="form-group custom-class-form-div">
-                                <input
-                                  className="form-control custom-input"
-                                  type="number"
-                                  id="market_price"
-                                  name="market_price"
-                                  defaultValue={market_price}
-                                  onChange={onInputChange}
-                                  onBlur={onInputBlur}
-                                  onFocus={handleFocus}
-                                  required
-                                />
-                                <label className="px-2 active" htmlFor="market_price" onClick={() => handleClick('market_price')} >Market price (Rs.)<span className="text-danger">*</span></label>
-                              </div>
-                            </div>
-                            {/* Ready reckoner price (Rs.) */}
-                            <div className="col-xl-4 col-md-6 mt-3 mt-md-0">
-                              <div className="form-group custom-class-form-div">
-                                <input
-                                  type="number"
-                                  id="ready_reckoner_price"
-                                  name="ready_reckoner_price"
-                                  className="form-control custom-input"
-                                  defaultValue={ready_reckoner_price}
-                                  onChange={onInputChange}
-                                  onBlur={onInputBlur}
-                                  onFocus={handleFocus}
-                                  required
-                                />
-                                <label className="px-2 active" htmlFor="ready_reckoner_price" onClick={() => handleClick('ready_reckoner_price')} >Ready reckoner price (Rs.)<span className="text-danger">*</span></label>
-                              </div>
-                            </div>
-                            {/* Reserved Price (Rs.) */}
-                            <div className="col-xl-4 col-md-6 mt-3 mt-xl-0">
-                              <div className="form-group custom-class-form-div">
-                                <input
-                                  type="number"
-                                  className="form-control custom-input"
-                                  id="expected_price"
-                                  name="expected_price"
-                                  defaultValue={expected_price}
-                                  onChange={onInputChange}
-                                  onBlur={onInputBlur}
-                                  onFocus={handleFocus}
-                                  required
-                                />
-                                <label className="px-2 active" htmlFor="expected_price" onClick={() => handleClick('expected_price')} >Reserved Price (Rs.)<span className="text-danger">*</span></label>
-                              </div>
-                            </div>
-                          </div>
-                          <hr />
-                          {/* Row 4 - Dates & Availability Details */}
-                          <div className="row mb-3">
-                            <div className="col-12">
-                              <h5 className="fw-bold heading-text-primary mb-3">
-                                Dates & Availability
-                              </h5>
-                            </div>
-                            <div className="col-md-6">
-                              {/* Completion date */}
-                              {completion_date ? (
-                                <div className="form-group">
-                                  <p><span className="paragraph-label-text">Completion date</span>{propertyDateFormat(completion_date)}</p>
-                                </div>
-                              ) : (
-                                <></>
-                              )}
-                              {/* Purchase date */}
-                              {purchase_date ? (
-                                <div className="form-group">
-                                  <p><span className="paragraph-label-text">Purchase date</span>{propertyDateFormat(purchase_date)}</p>
-                                </div>
-                              ) : (
-                                <></>
-                              )}
-                            </div>
-                            {/* Mortgage date */}
-                            <div className="col-md-6">
-                              <div className="form-group">
-                                <p><span className="paragraph-label-text">Mortgage date</span>{propertyDateFormat(mortgage_date)}</p>
-                              </div>
-                              {/* Available for sale? */}
-                              <div className="form-group">
-                                <p><span className="paragraph-label-text">Available for sale?</span>{formData.is_available_for_sale === 1 ? "Yes" : "No"}</p>
-                              </div>
-                            </div>
-
-                          </div>
-                          <hr />
-                          {/* Row 5 - Address Details */}
-                          <div className="row mb-3">
-                            <div className="col-12">
-                              <h5 className="fw-bold heading-text-primary">Address</h5>
-                            </div>
-                            <div className="col-md-6">
-                              {/* Flat No. */}
-                              {flat_number ? (
-                                <div className="form-group">
-                                  <p><span className="paragraph-label-text">Flat No.</span>{flat_number}</p>
-                                </div>
-                              ) : (
-                                <></>
-                              )}
-                              {/* Building Name */}
-                              {building_name ? (
-                                <div className="form-group">
-                                  <p><span className="paragraph-label-text">Building Name</span>{building_name}</p>
-                                </div>
-                              ) : (
-                                <></>
-                              )}
-                              {/* Society Name */}
-                              {society_name ? (
-                                <div className="form-group">
-                                  <p><span className="paragraph-label-text">Society Name</span>{society_name}</p>
-                                </div>
-                              ) : (
-                                <></>
-                              )}
-                              {/* Plot No. */}
-                              {plot_number ? (
-                                <div className="form-group">
-                                  <p><span className="paragraph-label-text">Plot No.</span>{plot_number}</p>
-                                </div>
-                              ) : (
-                                <></>
-                              )}
-                              {/* locality */}
-                              {locality ? (
-                                <div className="form-group">
-                                  <p><span className="paragraph-label-text">Locality</span>{locality}</p>
-                                </div>
-                              ) : (
-                                <></>
-                              )}
-                            </div>
-                            <div className=" col-md-6 ">
-                              {/* Landmark */}
-                              {landmark ? (
-                                <div className="form-group">
-                                  <p><span className="paragraph-label-text">Landmark</span>{landmark}</p>
-                                </div>
-                              ) : (
-                                <></>
-                              )}
-                              {/* State */}
-                              {state_name ? (
-                                <div className="form-group">
-                                  <p><span className="paragraph-label-text">State</span>{state_name}</p>
-                                </div>
-                              ) : (
-                                <></>
-                              )}
-                              {/* City */}
-                              {city_name ? (
-                                <div className="form-group">
-                                  <p><span className="paragraph-label-text">City</span>{city_name}</p>
-                                </div>
-                              ) : (
-                                <></>
-                              )}
-                              {/* zip */}
-                              {zip ? (
-                                <div className="form-group">
-                                  <p><span className="paragraph-label-text">Zip</span>{zip}</p>
-                                </div>
-                              ) : (
-                                <></>
-                              )}
-                            </div>
-                          </div>
-                          {/* Updating button */}
-                          <div className="row justify-content-end pt-2">
-                            <div className="col-xl-2 col-12">
-                              <button
-                                disabled={updateBtnLoading ? true : false}
-                                type="submit"
-                                className="btn btn-primary common-btn-font w-100"
-                              >
-                                {updateBtnLoading ? (
-                                  <>
-                                    <span className="spinner-grow spinner-grow-sm me-2"></span>
-                                    Updating...
-                                  </>
-                                ) : (
-                                  "Update"
-                                )}
-                              </button>
-                            </div>
-                          </div>
+                    </div>
+                    {/* details section */}
+                    <div className="row justify-content-center">
+                      <div className="col-xl-12">
+                        <div
+                          className={`${mainPageLoading ? "" : "d-none"
+                            } d-flex align-items-center justify-content-center`}
+                          style={{ minHeight: "75vh" }}
+                        >
+                          <CommonSpinner
+                            spinnerColor="primary"
+                            height="5rem"
+                            width="5rem"
+                            spinnerType="grow"
+                          />
                         </div>
-                      </form>
+
+                        <form
+                          onSubmit={onFormSubmit}
+                          className={`card p-xl-2 ${mainPageLoading ? "d-none" : ""
+                            }`}
+                        >
+                          <div className="card-body">
+                            <h4 className="fw-bold mb-4">Update Property</h4>
+                            <div className="row mb-3">
+                              <div className="col-12 d-md-flex justify-content-md-start">
+                                {/* Property ID */}
+                                <div>
+                                  <button
+                                    type="button"
+                                    className="btn btn-primary"
+                                  >
+                                    <span className="common-btn-font">
+                                      Property ID
+                                    </span>
+                                    <span className="badge bg-light heading-text-primary ms-2">
+                                      {property_id}
+                                    </span>
+                                  </button>
+                                </div>
+                                {/* Property Number */}
+                                <div>
+                                  <button
+                                    type="button"
+                                    className="btn btn-primary ms-md-2 mt-md-0 mt-3"
+                                  >
+                                    <span className="common-btn-font">
+                                      Property Number
+                                    </span>
+                                    <span className="badge bg-light heading-text-primary ms-2">
+                                      {property_number}
+                                    </span>
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+
+                            <hr />
+                            {/* Row 1 - Basic Details */}
+                            <div className="row mb-3">
+                              <div className="col-12">
+                                <h5 className="fw-bold heading-text-primary mb-3">
+                                  Basic details
+                                </h5>
+                              </div>
+                              <div className="col-md-6">
+
+                                {/* Property type */}
+                                {type_name ? (
+                                  <div className="form-group">
+                                    <p><span className="paragraph-label-text">Property type</span>{type_name}</p>
+                                  </div>
+                                ) : (
+                                  <></>
+                                )}
+                                {/* Bank */}
+                                <div className="form-group">
+                                  <p><span className="paragraph-label-text">Bank</span>
+                                    {activeBank && activeBank.bank_name}
+                                    {/* {formData.bank_name} */}
+                                  </p>
+                                </div>
+                                {/* Branch */}
+                                <div className="form-group">
+                                  <p><span className="paragraph-label-text">Branch</span>{formData.branch_name}
+                                  </p>
+                                </div>
+
+
+                              </div>
+                              <div className="col-md-6">
+                                {/* Title clear Property */}
+                                <div className="form-group">
+                                  <p><span className="paragraph-label-text"> Title clear Property</span>{formData.title_clear_property === 1 ? "Yes" : "No"}
+                                  </p>
+                                </div>
+                                {/* territory */}
+                                <div className="form-group">
+                                  {territory ? (
+                                    <p><span className="paragraph-label-text"> Territory</span>{territory}
+                                    </p>
+                                  ) : (
+                                    <></>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                            <hr />
+                            {/* Row 2 - Area Details*/}
+                            <div className="row mb-3">
+                              <div className="col-12">
+                                <h5 className="fw-bold heading-text-primary mb-3">Area</h5>
+                              </div>
+                              {/* Saleable area (sq. ft.) */}
+                              <div className="col-md-6">
+                                <div className="form-group">
+                                  {saleable_area ? (
+                                    <p><span className="paragraph-label-text">Saleable area</span>{saleable_area ? saleable_area : ""} <small className="text-muted">sqft</small></p>
+                                  ) : (
+                                    <></>
+                                  )}
+
+                                </div>
+                              </div>
+                              {/*  Carpet area (sq. ft.) */}
+                              <div className="col-md-6">
+                                <div className="form-group">
+                                  {carpet_area ? (
+                                    <p><span className="paragraph-label-text"> Carpet area</span>{carpet_area ? carpet_area : ""} <small className="text-muted">sqft</small></p>
+                                  ) : (
+                                    <></>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                            <hr />
+                            {/* Row 3 - Pricing Details */}
+                            <div className="row mb-3">
+                              <div className="col-12">
+                                <h5 className="fw-bold heading-text-primary mb-3">Pricing</h5>
+                              </div>
+                              {/* Market price (Rs.) */}
+                              <div className="col-xl-4 col-md-6">
+                                <div className="form-group custom-class-form-div">
+                                  <input
+                                    className="form-control custom-input"
+                                    type="number"
+                                    id="market_price"
+                                    name="market_price"
+                                    defaultValue={market_price}
+                                    onChange={onInputChange}
+                                    onBlur={onInputBlur}
+                                    onFocus={handleFocus}
+                                    required
+                                  />
+                                  <label className="px-2 active" htmlFor="market_price" onClick={() => handleClick('market_price')} >Market price (Rs.)<span className="text-danger">*</span></label>
+                                </div>
+                              </div>
+                              {/* Ready reckoner price (Rs.) */}
+                              <div className="col-xl-4 col-md-6 mt-3 mt-md-0">
+                                <div className="form-group custom-class-form-div">
+                                  <input
+                                    type="number"
+                                    id="ready_reckoner_price"
+                                    name="ready_reckoner_price"
+                                    className="form-control custom-input"
+                                    defaultValue={ready_reckoner_price}
+                                    onChange={onInputChange}
+                                    onBlur={onInputBlur}
+                                    onFocus={handleFocus}
+                                    required
+                                  />
+                                  <label className="px-2 active" htmlFor="ready_reckoner_price" onClick={() => handleClick('ready_reckoner_price')} >Ready reckoner price (Rs.)<span className="text-danger">*</span></label>
+                                </div>
+                              </div>
+                              {/* Reserved Price (Rs.) */}
+                              <div className="col-xl-4 col-md-6 mt-3 mt-xl-0">
+                                <div className="form-group custom-class-form-div">
+                                  <input
+                                    type="number"
+                                    className="form-control custom-input"
+                                    id="expected_price"
+                                    name="expected_price"
+                                    defaultValue={expected_price}
+                                    onChange={onInputChange}
+                                    onBlur={onInputBlur}
+                                    onFocus={handleFocus}
+                                    required
+                                  />
+                                  <label className="px-2 active" htmlFor="expected_price" onClick={() => handleClick('expected_price')} >Reserved Price (Rs.)<span className="text-danger">*</span></label>
+                                </div>
+                              </div>
+                            </div>
+                            <hr />
+                            {/* Row 4 - Dates & Availability Details */}
+                            <div className="row mb-3">
+                              <div className="col-12">
+                                <h5 className="fw-bold heading-text-primary mb-3">
+                                  Dates & Availability
+                                </h5>
+                              </div>
+                              <div className="col-md-6">
+                                {/* Completion date */}
+                                {completion_date ? (
+                                  <div className="form-group">
+                                    <p><span className="paragraph-label-text">Completion date</span>{propertyDateFormat(completion_date)}</p>
+                                  </div>
+                                ) : (
+                                  <></>
+                                )}
+                                {/* Purchase date */}
+                                {purchase_date ? (
+                                  <div className="form-group">
+                                    <p><span className="paragraph-label-text">Purchase date</span>{propertyDateFormat(purchase_date)}</p>
+                                  </div>
+                                ) : (
+                                  <></>
+                                )}
+                              </div>
+                              {/* Mortgage date */}
+                              <div className="col-md-6">
+                                <div className="form-group">
+                                  <p><span className="paragraph-label-text">Mortgage date</span>{propertyDateFormat(mortgage_date)}</p>
+                                </div>
+                                {/* Available for sale? */}
+                                <div className="form-group">
+                                  <p><span className="paragraph-label-text">Available for sale?</span>{formData.is_available_for_sale === 1 ? "Yes" : "No"}</p>
+                                </div>
+                              </div>
+
+                            </div>
+                            <hr />
+                            {/* Row 5 - Address Details */}
+                            <div className="row mb-3">
+                              <div className="col-12">
+                                <h5 className="fw-bold heading-text-primary">Address</h5>
+                              </div>
+                              <div className="col-md-6">
+                                {/* Flat No. */}
+                                {flat_number ? (
+                                  <div className="form-group">
+                                    <p><span className="paragraph-label-text">Flat No.</span>{flat_number}</p>
+                                  </div>
+                                ) : (
+                                  <></>
+                                )}
+                                {/* Building Name */}
+                                {building_name ? (
+                                  <div className="form-group">
+                                    <p><span className="paragraph-label-text">Building Name</span>{building_name}</p>
+                                  </div>
+                                ) : (
+                                  <></>
+                                )}
+                                {/* Society Name */}
+                                {society_name ? (
+                                  <div className="form-group">
+                                    <p><span className="paragraph-label-text">Society Name</span>{society_name}</p>
+                                  </div>
+                                ) : (
+                                  <></>
+                                )}
+                                {/* Plot No. */}
+                                {plot_number ? (
+                                  <div className="form-group">
+                                    <p><span className="paragraph-label-text">Plot No.</span>{plot_number}</p>
+                                  </div>
+                                ) : (
+                                  <></>
+                                )}
+                                {/* locality */}
+                                {locality ? (
+                                  <div className="form-group">
+                                    <p><span className="paragraph-label-text">Locality</span>{locality}</p>
+                                  </div>
+                                ) : (
+                                  <></>
+                                )}
+                              </div>
+                              <div className=" col-md-6 ">
+                                {/* Landmark */}
+                                {landmark ? (
+                                  <div className="form-group">
+                                    <p><span className="paragraph-label-text">Landmark</span>{landmark}</p>
+                                  </div>
+                                ) : (
+                                  <></>
+                                )}
+                                {/* State */}
+                                {state_name ? (
+                                  <div className="form-group">
+                                    <p><span className="paragraph-label-text">State</span>{state_name}</p>
+                                  </div>
+                                ) : (
+                                  <></>
+                                )}
+                                {/* City */}
+                                {city_name ? (
+                                  <div className="form-group">
+                                    <p><span className="paragraph-label-text">City</span>{city_name}</p>
+                                  </div>
+                                ) : (
+                                  <></>
+                                )}
+                                {/* zip */}
+                                {zip ? (
+                                  <div className="form-group">
+                                    <p><span className="paragraph-label-text">Zip</span>{zip}</p>
+                                  </div>
+                                ) : (
+                                  <></>
+                                )}
+                              </div>
+                            </div>
+                            {/* Updating button */}
+                            <div className="row justify-content-end pt-2">
+                              <div className="col-xl-2 col-12">
+                                <button
+                                  disabled={updateBtnLoading ? true : false}
+                                  type="submit"
+                                  className="btn btn-primary common-btn-font w-100"
+                                >
+                                  {updateBtnLoading ? (
+                                    <>
+                                      <span className="spinner-grow spinner-grow-sm me-2"></span>
+                                      Updating...
+                                    </>
+                                  ) : (
+                                    "Update"
+                                  )}
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </form>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </section>
-            </>
+                </section>
+              </div>
+            </div>
           </div>
 
           {/* enquiriesPageRef */}

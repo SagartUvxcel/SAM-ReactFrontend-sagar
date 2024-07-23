@@ -83,7 +83,7 @@ const SinglePropertyDocumentsUpload = () => {
           headers: authHeader,
         })
         .then((res) => {
-          setAllCategoriesFromDB(res.data); 
+          setAllCategoriesFromDB(res.data);
           setCategoriesLoading(false);
         });
     } catch (error) {
@@ -188,7 +188,6 @@ const SinglePropertyDocumentsUpload = () => {
   // handle Image File Change
   const handleImageFileChange = (e) => {
     e.preventDefault();
-    console.log(e.target.files);
     // if (e.target.files[0]) {
     //   let arrForExtension = e.target.files[0].name.split(".");
     //   let currentFileExtension = arrForExtension[arrForExtension.length - 1];
@@ -218,34 +217,33 @@ const SinglePropertyDocumentsUpload = () => {
     const files = Array.from(e.target.files);
     console.log(files);
     let currentTotalSize = totalSizeOfDocuments;
-
     for (let i = 0; i < files.length; i++) {
-        let arrForExtension = files[i].name.split(".");
-        let currentFileExtension = arrForExtension[arrForExtension.length - 1];
-        let size = parseFloat((files[i].size / 1024 / 1024).toFixed(2));
-        currentTotalSize += size;
+      let arrForExtension = files[i].name.split(".");
+      let currentFileExtension = arrForExtension[arrForExtension.length - 1];
+      let size = parseFloat((files[i].size / 1024 / 1024).toFixed(2));
+      currentTotalSize += size;
 
-        if (currentTotalSize <= 25) {
-            setAlertDetails({ alertVisible: false });
-            if (allowedExtensions.length > 0) {
-                if (allowedExtensions.includes(currentFileExtension)) {
-                  console.log(files[i])
-                    setSavedImageFiles(prevFiles => [...prevFiles, files[i]]);
-                } else {
-                    toast.error("File not allowed with this extension");
-                    e.target.value = "";
-                }
-            }
-        } else {
-            onResetBtnClick();
-            setAlertDetails({
-                alertVisible: true,
-                alertMsg:
-                    "Document Size Limit Exceeded: Combined document size must not exceed 25 MB. Please remove unnecessary documents and try again.",
-                alertClr: "warning",
-            });
-            break;
+      if (currentTotalSize <= 25) {
+        setAlertDetails({ alertVisible: false });
+        if (allowedExtensions.length > 0) {
+          if (allowedExtensions.includes(currentFileExtension)) {
+            console.log([...savedImageFiles, files[i]])
+            setSavedImageFiles(prevFiles => [...prevFiles, files[i]]);
+          } else {
+            toast.error("File not allowed with this extension");
+            e.target.value = "";
+          }
         }
+      } else {
+        onResetBtnClick();
+        setAlertDetails({
+          alertVisible: true,
+          alertMsg:
+            "Document Size Limit Exceeded: Combined document size must not exceed 25 MB. Please remove unnecessary documents and try again.",
+          alertClr: "warning",
+        });
+        break;
+      }
     }
 
   };
@@ -257,35 +255,169 @@ const SinglePropertyDocumentsUpload = () => {
     }, 4000);
   };
 
+  // // read And Upload Current Image Chunk
+  // const readAndUploadCurrentImageChunk = () => {
+  //   const reader = new FileReader();
+  //   const file = imageFiles[currentImageFileIndex];
+  //   console.log(file);
+  //   if (!file) {
+  //     return;
+  //   }
+  //   chunkSize = Math.round((file.size * 39) / 100);
+  //   const from = currentChunkIndexOfImage * chunkSize;
+  //   const to = from + chunkSize;
+  //   const blob = file.slice(from, to);
+  //   reader.onload = (e) => uploadImageChunk(e);
+  //   reader.readAsDataURL(blob);
+  // };
+
+  // // upload Image Chunk
+  // const uploadImageChunk = async (readerEvent) => {
+  //   const file = imageFiles[currentImageFileIndex];
+  //   const size = file.size;
+  //   let tempChunkSize = chunkSize;
+  //   temp += tempChunkSize;
+  //   if (temp > size) {
+  //     tempChunkSize = size - (temp - chunkSize);
+  //   }
+  //   const data = readerEvent.target.result.split(",")[1];
+  //   const fileName = file.name;
+  //   const totalChunks = Math.ceil(size / chunkSize);
+  //   const chunkNumber = currentChunkIndexOfImage + 1;
+  //   const detailsToPost = {
+  //     upload_id: uniqueId,
+  //     property_number: currentPropertyNumber,
+  //     chunk_number: chunkNumber,
+  //     total_chunks: totalChunks,
+  //     chunk_size: tempChunkSize,
+  //     total_file_size: size,
+  //     file_name: fileName,
+  //     category_id: category_id,
+  //     description: description,
+  //     data: data,
+  //   };
+  //   console.log(detailsToPost);
+  //   const chunks = Math.ceil(file.size / chunkSize) - 1;
+  //   const isLastChunk = currentChunkIndexOfImage === chunks;
+  //   try {
+  //     await axios
+  //       .post(`/sam/v1/property/auth/property-documents`, detailsToPost, {
+  //         headers: authHeader,
+  //       })
+  //       .then((res) => {
+  //         if (isLastChunk) {
+  //           if (res.data.msg === 0) {
+  //             if (currentImageFileIndex === savedImageFiles.length - 1) {
+  //               setImageLoading(false); 
+  //               toast.success("File uploaded successfully");
+  //               reloadPage();
+  //             }
+  //           } else {
+  //             setImageLoading(false);
+  //             toast.error("Error while uploading files");
+  //             reloadPage();
+  //           }
+  //         }
+  //       });
+  //   } catch (error) {
+  //     if (isLastChunk) {
+  //       setImageLoading(false);
+  //       console.log(error);
+  //       let err =error.response.data.error
+  //       toast.error(err.charAt(0).toUpperCase() + err.slice(1).toLowerCase());
+  //       reloadPage();
+  //     }
+  //   }
+  //   if (isLastChunk) {
+  //     setUniqueId(uuid());
+  //     setLastUploadedImageFileIndex(currentImageFileIndex);
+  //     setCurrentChunkIndexOfImage(null);
+  //   } else {
+  //     setCurrentChunkIndexOfImage(currentChunkIndexOfImage + 1);
+  //   }
+  // };
+
+  // // alertVisible useEffect
+  // useEffect(() => {
+  //   if (alertVisible) {
+  //     window.scrollTo(0, 0);
+  //   }
+  // }, [alertVisible]);
+
+  // useEffect(() => {
+  //   if (lastUploadedImageFileIndex === null) {
+  //     return;
+  //   }
+  //   console.log(lastUploadedImageFileIndex);
+  //   const isLastFile = lastUploadedImageFileIndex === imageFiles.length - 1;
+  //   const nextFileIndex = isLastFile ? null : currentImageFileIndex + 1;
+  //   setCurrentImageFileIndex(nextFileIndex);
+  //   // eslint-disable-next-line
+  // }, [lastUploadedImageFileIndex]);
+
+  // useEffect(() => {
+  //   if (imageFiles.length > 0) {
+  //     if (currentImageFileIndex === null) {
+  //       setCurrentImageFileIndex(
+  //         lastUploadedImageFileIndex === null
+  //           ? 0
+  //           : lastUploadedImageFileIndex + 1
+  //       );
+  //     }
+  //   }
+  //   // eslint-disable-next-line
+  // }, [imageFiles.length]);
+
+  // useEffect(() => {
+  //   if (currentImageFileIndex !== null) {
+  //     setCurrentChunkIndexOfImage(0);
+  //   }
+  // }, [currentImageFileIndex]);
+
+  // useEffect(() => {
+  //   console.log(currentChunkIndexOfImage);
+  //   if (currentChunkIndexOfImage !== null) {
+  //     readAndUploadCurrentImageChunk();
+  //   }
+  //   // eslint-disable-next-line
+  // }, [currentChunkIndexOfImage]);
+
+  // // post Images
+  // const postImages = (e) => {
+  //   e.preventDefault();
+  //   setImageLoading(true);
+  //   console.log(savedImageFiles);
+  //   setImageFiles(savedImageFiles);
+  // };
+
+
+
+  // new code 
+
   // read And Upload Current Image Chunk
-  const readAndUploadCurrentImageChunk = () => {
+  const readAndUploadCurrentImageChunk = (file, currentChunkIndex) => {
     const reader = new FileReader();
-    const file = imageFiles[currentImageFileIndex];
-    console.log(file);
-    if (!file) {
-      return;
-    }
     chunkSize = Math.round((file.size * 39) / 100);
-    const from = currentChunkIndexOfImage * chunkSize;
+    const from = currentChunkIndex * chunkSize;
     const to = from + chunkSize;
     const blob = file.slice(from, to);
-    reader.onload = (e) => uploadImageChunk(e);
+    reader.onload = (e) => uploadImageChunk(e, file, currentChunkIndex);
     reader.readAsDataURL(blob);
   };
 
   // upload Image Chunk
-  const uploadImageChunk = async (readerEvent) => {
-    const file = imageFiles[currentImageFileIndex];
+  const uploadImageChunk = async (readerEvent, file, currentChunkIndex) => {
+    console.log(readerEvent, file, currentChunkIndex);
     const size = file.size;
     let tempChunkSize = chunkSize;
-    temp += tempChunkSize;
-    if (temp > size) {
-      tempChunkSize = size - (temp - chunkSize);
+    let temp = (currentChunkIndex * chunkSize);
+    if (temp + chunkSize > size) {
+      tempChunkSize = size - temp;
     }
     const data = readerEvent.target.result.split(",")[1];
     const fileName = file.name;
     const totalChunks = Math.ceil(size / chunkSize);
-    const chunkNumber = currentChunkIndexOfImage + 1;
+    const chunkNumber = currentChunkIndex + 1;
     const detailsToPost = {
       upload_id: uniqueId,
       property_number: currentPropertyNumber,
@@ -298,96 +430,102 @@ const SinglePropertyDocumentsUpload = () => {
       description: description,
       data: data,
     };
+
     const chunks = Math.ceil(file.size / chunkSize) - 1;
-    const isLastChunk = currentChunkIndexOfImage === chunks;
+    const isLastChunk = currentChunkIndex === chunks;
+
     try {
-      await axios
-        .post(`/sam/v1/property/auth/property-documents`, detailsToPost, {
-          headers: authHeader,
-        })
-        .then((res) => {
-          if (isLastChunk) {
-            if (res.data.msg === 0) {
-              if (currentImageFileIndex === savedImageFiles.length - 1) {
-                setImageLoading(false);
-                toast.success("File uploaded successfully");
-                reloadPage();
-              }
-            } else {
+      await axios.post(`/sam/v1/property/auth/property-documents`, detailsToPost, {
+        headers: authHeader,
+      }).then((res) => {
+        if (isLastChunk) {
+          if (res.data.msg === 0) {
+            if (currentImageFileIndex === savedImageFiles.length - 1) {
               setImageLoading(false);
-              toast.error("Error while uploading files");
+              toast.success("All files uploaded successfully");
               reloadPage();
             }
+          } else {
+            setImageLoading(false);
+            toast.error("Error while uploading files");
+            reloadPage();
           }
-        });
+        }
+      });
     } catch (error) {
       if (isLastChunk) {
         setImageLoading(false);
         console.log(error);
-        let err =error.response.data.error
+        let err = error.response.data.error;
         toast.error(err.charAt(0).toUpperCase() + err.slice(1).toLowerCase());
         reloadPage();
       }
     }
+
     if (isLastChunk) {
       setUniqueId(uuid());
       setLastUploadedImageFileIndex(currentImageFileIndex);
       setCurrentChunkIndexOfImage(null);
     } else {
-      setCurrentChunkIndexOfImage(currentChunkIndexOfImage + 1);
+      readAndUploadCurrentImageChunk(file, currentChunkIndex + 1);
     }
   };
 
-  // alertVisible useEffect
+  // alertVisible
   useEffect(() => {
     if (alertVisible) {
       window.scrollTo(0, 0);
     }
+    // eslint-disable-next-line
   }, [alertVisible]);
 
+  // lastUploadedImageFileIndex
   useEffect(() => {
     if (lastUploadedImageFileIndex === null) {
       return;
     }
+    console.log(lastUploadedImageFileIndex);
     const isLastFile = lastUploadedImageFileIndex === imageFiles.length - 1;
     const nextFileIndex = isLastFile ? null : currentImageFileIndex + 1;
     setCurrentImageFileIndex(nextFileIndex);
     // eslint-disable-next-line
   }, [lastUploadedImageFileIndex]);
 
+  // imageFiles
   useEffect(() => {
     if (imageFiles.length > 0) {
       if (currentImageFileIndex === null) {
         setCurrentImageFileIndex(
-          lastUploadedImageFileIndex === null
-            ? 0
-            : lastUploadedImageFileIndex + 1
+          lastUploadedImageFileIndex === null ? 0 : lastUploadedImageFileIndex + 1
         );
       }
     }
     // eslint-disable-next-line
   }, [imageFiles.length]);
 
+  // currentImageFileIndex
   useEffect(() => {
     if (currentImageFileIndex !== null) {
-      setCurrentChunkIndexOfImage(0);
-    }
-  }, [currentImageFileIndex]);
-
-  useEffect(() => {
-    if (currentChunkIndexOfImage !== null) {
-      readAndUploadCurrentImageChunk();
+      readAndUploadCurrentImageChunk(imageFiles[currentImageFileIndex], 0);
     }
     // eslint-disable-next-line
-  }, [currentChunkIndexOfImage]);
+  }, [currentImageFileIndex]);
 
-  // post Images
+  // postImages
   const postImages = (e) => {
     e.preventDefault();
-    setImageLoading(true);
     console.log(savedImageFiles);
+    if (savedImageFiles.length > 5) {
+      toast.error("You cannot upload more than 5 documents at a time.");
+      setSavedImageFiles([])
+      return;
+    }
+    setImageLoading(true);
     setImageFiles(savedImageFiles);
   };
+
+
+
 
   // check Can Upload New Document
   const checkCanUploadNewDocument = async (id) => {
@@ -518,7 +656,7 @@ const SinglePropertyDocumentsUpload = () => {
                               <div className="form-check form-check-inline">
                                 <input
                                   className="form-check-input category-checks"
-                                  type="radio"
+                                  tuseStateype="radio"
                                   name="category_id"
                                   id="category_id"
                                   value={0}

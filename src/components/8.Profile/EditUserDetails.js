@@ -38,6 +38,7 @@ const EditUserDetails = () => {
   } = commonUserDetails;
 
   const [orgUserDetails, setOrgUserDetails] = useState({});
+  const updatedCountry = localStorage.getItem("location");
 
   const [updateBtnLoading, setUpdateBtnLoading] = useState(false);
   const [mainPageLoading, setMainPageLoading] = useState(false);
@@ -187,8 +188,10 @@ const EditUserDetails = () => {
             const cityByState = await axios.post(`/sam/v1/property/by-city`, {
               state_id: state_id,
             });
+            const countryId = updatedCountry === "india" ? 1 : 11;
+            const postData = { "country_id": countryId }
             // Get States from api.
-            const allStates = await axios.get(`/sam/v1/property/by-state`);
+            const allStates = await axios.post(`/sam/v1/property/by-state`, postData);
             setAllUseStates({
               ...allUseStates,
               citiesFromApi: cityByState.data,

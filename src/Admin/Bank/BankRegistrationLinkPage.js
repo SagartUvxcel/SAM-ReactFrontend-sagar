@@ -21,6 +21,7 @@ const BankRegistrationLinkPage = () => {
     if (data) {
         authHeader = { Authorization: data.loginToken };
     }
+    const updatedCountry = localStorage.getItem("location");
 
     const [banks, setBanks] = useState([]);
     const [bankSelected, setBankSelected] = useState(0);
@@ -44,7 +45,9 @@ const BankRegistrationLinkPage = () => {
 
     // get bank data from API
     const getDataFromApi = async () => {
-        const bankRes = await axios.get(`/sam/v1/property/by-bank`);
+        const countryId = updatedCountry === "india" ? 1 : 11;
+        const postData = { "country_id": countryId }
+        const bankRes = await axios.post(`/sam/v1/property/by-bank`, postData);
         setBanks(bankRes.data);
     };
 

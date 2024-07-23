@@ -16,6 +16,7 @@ const Registration = () => {
   const goTo = useNavigate();
   const deselectStateInput = useRef();
 
+  const updatedCountry = localStorage.getItem("location");
   // handle Focus
   const handleFocus = (e) => {
     e.target.nextSibling.classList.add('active');
@@ -45,10 +46,15 @@ const Registration = () => {
   const [states, setStates] = useState([]);
   // Function to get all states from api so that we can map states in select state field.
   const getAllSates = async () => {
+    const countryId = updatedCountry === "india" ? 1 : 11;
+    const postData = { "country_id": countryId }
     try {
-      const allStates = await axios.get(`/sam/v1/property/by-state`);
+      const allStates = await axios.post(`/sam/v1/property/by-state`, postData);
+      console.log(allStates.data);
       setStates(allStates.data);
-    } catch (error) { }
+    } catch (error) { 
+      console.log(error);
+    }
   };
 
   // useState to store address Details.

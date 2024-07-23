@@ -35,6 +35,7 @@ import BankRegistrationPage from "./Admin/Bank/BankRegistrationPage";
 import ViewEditDeleteProperties from "./Admin/Property/ViewEditDeleteProperties";
 import ViewProperty from "./Admin/Property/ViewProperty";
 import UploadProperties from "./Admin/Property/UploadProperties";
+import UploadPropertiesWithDocuments from "./Admin/Property/UploadPropertiesWithDocuments";
 import AddProperty from "./Admin/Property/AddProperty";
 import AddSubscriptionFacility from "./Admin/AddSubscriptionFacility";
 import AdminProtected from "./components/AdminProtected";
@@ -321,6 +322,14 @@ function App() {
             element={
               <AdminProtected>
                 <UploadProperties />
+              </AdminProtected>
+            }
+          />
+          <Route
+            path={`${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"}/property/upload-properties-with-documents`}
+            element={
+              <AdminProtected>
+                <UploadPropertiesWithDocuments />
               </AdminProtected>
             }
           />

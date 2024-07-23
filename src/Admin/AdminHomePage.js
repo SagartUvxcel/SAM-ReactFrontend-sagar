@@ -17,6 +17,7 @@ const AdminHomePage = () => {
   const navigate = useNavigate();
 
   CharJs.register(...registerables);
+  const updatedCountry = localStorage.getItem("location");
   const data = JSON.parse(localStorage.getItem("data"));
   if (data) {
     isBank = data.isBank;
@@ -185,12 +186,18 @@ const AdminHomePage = () => {
 
   // get Property Count From Api
   const getPropertyCountFromApi = async (authHeaders) => {
+    const country_id = updatedCountry === "india" ? 1 : 11;
+
+
+    let postDataForPropertyCount = {
+      country_id: country_id,
+    };
     try {
-      const propertyCountRes = await axios.get(
-        `sam/v1/property/auth/property-count`,
+      const propertyCountRes = await axios.post(
+        `sam/v1/property/auth/property-count`, postDataForPropertyCount,
         { headers: { Authorization: authHeaders } }
       );
-      let arr = propertyCountRes.data;
+      let arr = propertyCountRes.data; 
       let totalCount = 0;
       let labels = [];
       let labelWiseCount = [];

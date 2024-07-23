@@ -214,17 +214,17 @@ const ViewEnquiryLists = () => {
     return formattedDate;
   };
 
-// type message function
-const typeMessageFunction =(e)=>{
-  const {value}=e.target;
-   setNewMessage(value);
-}
+  // type message function
+  const typeMessageFunction = (e) => {
+    const { value } = e.target;
+    setNewMessage(value);
+  }
 
   // send chat Message
   const sendMessage = async (e) => {
     setSendReplyBtnLoading(true);
     e.preventDefault();
-    let enquiry_source= "email"
+    let enquiry_source = "email"
     let dataToPost = {
       property_id: propertyId,
       enquiry_source: enquiry_source,
@@ -301,11 +301,17 @@ const typeMessageFunction =(e)=>{
     return res.data;
   };
 
+  console.log(enquirySearchInputData);
   // search form  onchange
   const onSearchFormInputChange = (e) => {
     const { name, value } = e.target
     if (name === "search_input") {
-      setEnquirySearchInputData({ ...enquirySearchInputData, search_input: value })
+      if (value === "") {
+        getUserEnquiriesList();
+        setEnquirySearchInputData({ ...enquirySearchInputData, search_input: "" })
+      } else {
+        setEnquirySearchInputData({ ...enquirySearchInputData, search_input: value })
+      }
     } else if (name === "search_category") {
       setEnquirySearchInputData({ ...enquirySearchInputData, search_category: value })
     }
@@ -314,6 +320,12 @@ const typeMessageFunction =(e)=>{
   // search form submit
   const onSearchFormSubmit = async (e) => {
     e.preventDefault();
+    setPageLoading(true);
+
+    if (enquirySearchInputData.search_input === "") {
+      getUserEnquiriesList();
+      return
+    }
     let dataToPost = {
       enquiry_category: "All_Filter",
       batch_size: enquiryPerPage,
@@ -321,15 +333,17 @@ const typeMessageFunction =(e)=>{
       search_category: enquirySearchInputData.search_category,
       search_input: enquirySearchInputData.search_input
     };
+console.log(dataToPost);
 
-    setPageLoading(true);
     try {
       const resFromApi = await axios.post(`/sam/v1/property/auth/user/enquiry`, dataToPost, {
         headers: authHeader,
       });
+      console.log(resFromApi.data);
       if (resFromApi.data) {
         setEnquiryList(resFromApi.data.Enquiries);
         setPageLoading(false);
+        // setEnquirySearchInputData({ ...enquirySearchInputData, search_input: "" })
       } else {
         setPageLoading(false);
       }
@@ -422,7 +436,7 @@ const typeMessageFunction =(e)=>{
 
   //connect To WebSocket
   const connectToWebSocket = () => {
-    const newSocket = new WebSocket("ws://13.234.136.8:4002/ws");
+    const newSocket = new WebSocket("ws://localhost:3000/ws");
     console.log(newSocket);
     setSocket(newSocket);
   };
@@ -548,10 +562,14 @@ const typeMessageFunction =(e)=>{
                             name="search_input"
                             onChange={onSearchFormInputChange}
                             placeholder="Search"
-                            className="form-control w-100 rounded-0 search_input" />
+                            className="form-control w-100 rounded-0 search_input"
+                            value={enquirySearchInputData.search_input} />
                         </div>
                         <div className="input-field second-wrap">
-                          <select className="form-select form-select-sm h-100 rounded-0" name="search_category" onChange={onSearchFormInputChange} aria-label="Default select example">
+                          <select className="form-select form-select-sm h-100 rounded-0" name="search_category"
+                           onChange={onSearchFormInputChange} 
+                           value={enquirySearchInputData.search_category}
+                           aria-label="Default select example">
                             <option value="property_number" selected>Property Number</option>
                             <option value="username">User Name</option>
                           </select>

@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import CommonSpinner from "../../CommonSpinner";
 import Pagination from "../../Pagination";
 import CryptoJS from "crypto-js";
+import convertCurrency from '../1.CommonLayout/currencyConverter';
 
 let authHeaders = "";
 let isLogin = false;
@@ -25,6 +26,8 @@ const ViewSearchResults = () => {
     isLogin = data.isLoggedIn;
     subscription_plan_id = data.subscription_plan_id;
   }
+  const updatedCountry = localStorage.getItem("location");
+
   const [batch_size, setBatch_size] = useState(4);
   const [dataFromHome, setDataFromHome] = useState(null);
   const [dataToPost, setDataToPost] = useState([]);
@@ -47,11 +50,15 @@ const ViewSearchResults = () => {
       bankAPI: `/sam/v1/property/by-bank`,
       categoryAPI: `/sam/v1/property/by-category`,
     };
+
+    const countryId = updatedCountry === "india" ? 1 : 11;
+    const postData = { "country_id": countryId }
     try {
       // Get all states from api.
-      const allStates = await axios.get(apis.stateAPI);
+      // const allStates = await axios.get(apis.stateAPI);
+      const allStates = await axios.post(apis.stateAPI, postData); 
       // Get all banks from api.
-      const allBanks = await axios.get(apis.bankAPI);
+      const allBanks = await axios.post(apis.bankAPI, postData);
       // Get all asset Categories from api.
       const assetCategories = await axios.get(apis.categoryAPI);
 
@@ -73,7 +80,7 @@ const ViewSearchResults = () => {
   };
 
   // show Updated MinMax Price Rage
-  const showUpdatedMinMaxPriceRage = () => { 
+  const showUpdatedMinMaxPriceRage = () => {
     if (dataToPost && dataToPost.max_price && dataToPost.min_price) {
       let minPriceToDisplay = `${parseInt(dataToPost && dataToPost.min_price) >= 10000000 ? `${(parseInt(dataToPost && dataToPost.min_price) / 10000000).toFixed(2)
         } ` : `${(parseInt(dataToPost && dataToPost.min_price) / 100000)} `} ${parseInt(dataToPost.min_price) >= 10000000 ? " Cr." : " Lac"}`;
@@ -111,21 +118,23 @@ const ViewSearchResults = () => {
     };
     try {
       // This api is only for getting all the records and count length of array of properties so that we can decide page numbers for pagination.
+      console.log(dataForTotalCount);
       await axios.post(isLogin ? apis.authSearchAPI : apis.searchAPI, dataForTotalCount, {
         headers: authHeaders,
       }).then((res) => {
-        console.log(res.data); 
+        console.log(res.data);
         if (res.data) {
           setPageCount(Math.ceil(res.data.length / batch_size));
         }
-      }); 
+      });
 
+      console.log(dataToPost);
       // Post data and get Searched result from response.
       await axios.post(apis.searchAPI, dataToPost).then((res) => {
         // Store Searched results into propertyData useState.
-        
-        console.log(res.data); 
-        if (res.data !== null) { 
+
+        console.log(res.data);
+        if (res.data !== null) {
           setPropertyData(res.data);
           setLoading(false);
           setTimeout(() => {
@@ -262,6 +271,7 @@ const ViewSearchResults = () => {
   const [territoryFilterSelected, setTerritoryFilterSelected] = useState(false);
   const [latestAddedFilterSelected, setLatestAddedFilterSelected] = useState(false);
 
+  // manage More Filters Count
   const manageMoreFiltersCount = (filterName) => {
     if (filterName) {
       setFiltersCount(filtersCount + 1);
@@ -505,7 +515,7 @@ const ViewSearchResults = () => {
   };
 
   const navigateToReceiver = (data) => {
-    
+
     console.log(data);
     // Use navigate with the encoded data in URL parameters 
     const secretKey = "my_secret_key";
@@ -1370,8 +1380,8 @@ const ViewSearchResults = () => {
                       city_name,
                       city_id,
                       range,
-                    } = property; 
-                   console.log(range)
+                    } = property;
+                    console.log(range)
                     return (
                       <div className="col-xl-3 col-lg-4 col-md-6" key={Index}>
                         <div className="property-card-wrapper">
@@ -1417,18 +1427,23 @@ const ViewSearchResults = () => {
                                 <div className="text-capitalize">
                                   <span>Range: </span>
                                   <span className="common-btn-font min-price-display">
-                                    <i className="bi bi-currency-rupee"></i>
-                                    {(parseInt(range.split("-")[0], 10)) >= 10000000 ? `${(parseInt(range.split("-")[0], 10) / 10000000).toFixed(2)}` : `${(parseInt(range.split("-")[0], 10) / 100000)}`}<small className="text-muted">{parseInt(range.split("-")[0], 10) >= 10000000 ? " Cr." : " Lac"}</small>
+
+                                    {updatedCountry && updatedCountry === "malaysia" ? <>{convertCurrency((parseInt(range.split("-")[0], 10)), "Malaysia", "RM", 0.0564)
+                                    } <small className="text-muted">RM </small></> : <>
+                                      <i className="bi bi-currency-rupee"></i>
+                                      {(parseInt(range.split("-")[0], 10)) >= 10000000 ? `${(parseInt(range.split("-")[0], 10) / 10000000).toFixed(2)}` : `${(parseInt(range.split("-")[0], 10) / 100000)}`}<small className="text-muted">{parseInt(range.split("-")[0], 10) >= 10000000 ? " Cr." : " Lac"}</small></>}
                                   </span>
                                   <span className="mx-2 common-btn-font">
                                     -
                                   </span>
-                                  <span className="common-btn-font max-price-display">
+                                  <span className="common-btn-font max-price-display">{updatedCountry && updatedCountry === "malaysia" ? <>{convertCurrency((parseInt(range.split("-")[1], 10)), "Malaysia", "RM", 0.0564)
+                                  } <small className="text-muted">RM </small></> : <>
                                     <i className="bi bi-currency-rupee"></i>
                                     {(parseInt(range.split("-")[1], 10)) >= 10000000 ? `${(parseInt(range.split("-")[1], 10) / 10000000).toFixed(2)}` : `${(parseInt(range.split("-")[1], 10) / 100000)}`}
                                     <small className="text-muted">
                                       {parseInt(range.split("-")[1], 10) >= 10000000 ? " Cr." : "  Lac"}
                                     </small>
+                                  </>}
                                   </span>
 
                                 </div>

@@ -14,6 +14,7 @@ import CryptoJS from "crypto-js";
 import * as XLSX from "xlsx";
 import JSZip from "jszip";
 import "./Gallery.css";
+import convertCurrency from "../1.CommonLayout/currencyConverter";
 
 let authHeaders = "";
 let isBank = "";
@@ -25,7 +26,8 @@ const ListOfProperties = () => {
   const location = useLocation();
   const secretKey = "my_secret_key";
   const queryParams = new URLSearchParams(location.search);
-  const data = queryParams.get("data");
+  const data = queryParams.get("data");  
+  const updatedCountry = localStorage.getItem("location");
   const dataFromParams = JSON.parse(
     CryptoJS.AES.decrypt(data, secretKey).toString(CryptoJS.enc.Utf8)
   ); 
@@ -72,16 +74,20 @@ const ListOfProperties = () => {
 
   // It will fetch all states, banks, assets from api and will map those values to respective select fields.
   const getSearchDetails = async () => {
+
+    const countryId = updatedCountry === "india" ? 1 : 11;
+    const postData = { "country_id": countryId }
     let apis = {
       stateAPI: `/sam/v1/property/by-state`,
       bankAPI: `/sam/v1/property/by-bank`,
       categoryAPI: `/sam/v1/property/by-category`,
     };
+
     try {
       // Get all states from api.
-      const allStates = await axios.get(apis.stateAPI);
+      const allStates = await axios.post(apis.stateAPI, postData);
       // Get all banks from api.
-      const allBanks = await axios.get(apis.bankAPI);
+      const allBanks = await axios.post(apis.bankAPI, postData);
       // Get all asset Categories from api.
       const assetCategories = await axios.get(apis.categoryAPI);
       let cityByState = {};
@@ -108,13 +114,15 @@ const ListOfProperties = () => {
     delete dataFromParams.batch_number;
     delete dataFromParams.batch_size;
     console.log(dataFromParams);
+    const countryId = updatedCountry === "india" ? 1 : 11;
+    const postData = { "country_id": countryId }
     try {
       const res = await axios.post(`/sam/v1/property/auth/view-properties`, dataFromParams, {
         headers: authHeaders,
       });
       let propertyDetails = res.data;
       console.log(propertyDetails);
-      const bankRes = await axios.get(`/sam/v1/property/by-bank`);
+      const bankRes = await axios.post(`/sam/v1/property/by-bank`,postData);
       setBanks(bankRes.data);
       setSelectedPropertyResults(propertyDetails);
       localStorage.setItem("defaultResultsOfProperties", JSON.stringify(propertyDetails));
@@ -792,9 +800,12 @@ const ListOfProperties = () => {
                                           Market Price
                                         </small>
                                         <div className="common-btn-font">
+                                        {updatedCountry && updatedCountry === "malaysia" ? <>{convertCurrency(parseInt(market_price), "Malaysia", "RM", 0.0564)
+                                        } <small className="text-muted">RM </small></> : <>
                                           <i className="bi bi-currency-rupee"></i>
                                           {parseInt(market_price) >= 10000000 ? `${(parseInt(market_price) / 10000000).toFixed(2)}` : `${(parseInt(market_price) / 100000).toFixed(1)}`}
                                           <small className="text-muted">{parseInt(market_price) >= 10000000 ? " Cr." : " Lac"}</small>
+                                          </>}
                                         </div>
                                       </div>
                                       {/* Ready Reckoner Price */}
@@ -806,9 +817,11 @@ const ListOfProperties = () => {
                                           Ready Reckoner Price
                                         </small>
                                         <div className="common-btn-font">
+                                        {updatedCountry && updatedCountry === "malaysia" ? <>{convertCurrency(parseInt(ready_reckoner_price), "Malaysia", "RM", 0.0564)
+                                        } <small className="text-muted">RM </small></> : <>
                                           <i className="bi bi-currency-rupee"></i>
                                           {parseInt(ready_reckoner_price) >= 10000000 ? `${(parseInt(ready_reckoner_price) / 10000000).toFixed(2)}` : `${(parseInt(ready_reckoner_price) / 100000).toFixed(1)}`}
-                                          <small className="text-muted">{parseInt(ready_reckoner_price) >= 10000000 ? " Cr." : " Lac"}</small>
+                                          <small className="text-muted">{parseInt(ready_reckoner_price) >= 10000000 ? " Cr." : " Lac"}</small></>}
                                         </div>
                                       </div>
                                       {/* Reserved Price */}
@@ -820,9 +833,11 @@ const ListOfProperties = () => {
                                           Reserved Price
                                         </small>
                                         <div className="common-btn-font">
+                                        {updatedCountry && updatedCountry === "malaysia" ? <>{convertCurrency(parseInt(expected_price), "Malaysia", "RM", 0.0564)
+                                        } <small className="text-muted">RM </small></> : <>
                                           <i className="bi bi-currency-rupee"></i>
                                           {parseInt(expected_price) >= 10000000 ? `${(parseInt(expected_price) / 10000000).toFixed(2)}` : `${(parseInt(expected_price) / 100000).toFixed(1)}`}
-                                          <small className="text-muted">{parseInt(expected_price) >= 10000000 ? " Cr." : " Lac"}</small>
+                                          <small className="text-muted">{parseInt(expected_price) >= 10000000 ? " Cr." : " Lac"}</small></>}
                                         </div>
                                       </div>
                                       {/* Saleable Area */}

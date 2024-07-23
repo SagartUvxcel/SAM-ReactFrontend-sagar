@@ -15,6 +15,7 @@ let planStatus = false;
 
 const Subscription = () => {
   const navigate = useNavigate();
+  const updatedCountry = localStorage.getItem("location");
   const data = JSON.parse(localStorage.getItem("data"));
   const updatedSubscriptionStatus = localStorage.getItem("updatedSubscriptionStatus");
   if (data) {
@@ -305,7 +306,26 @@ const Subscription = () => {
                                   </span>
                                   <h4 className={`plan-title mb-4 fw-bold text-uppercase ${plan.billing_cycle === "free trial" ? "card-text-1" : ""} ${plan.billing_cycle === "half yearly" ? "card-text-2" : ""} ${plan.billing_cycle === "annual" ? "card-text-3" : ""}`}>{plan.name === "Basic plan" && plan.billing_cycle === "free trial" ? "Free" : plan.name.replace(' plan', '')}</h4>
                                   <h4 className="fw-bold plan-price">
-                                    {plan.billing_cycle === "free trial" ? <sup>&#8377;</sup> : <><sup>&#8377;</sup><sup>&#8377;</sup><sup>&#8377;</sup><sup>&#8377;</sup></>}
+                                    {plan.billing_cycle === "free trial" ? (
+                                      updatedCountry && updatedCountry === "malaysia" ? (
+                                        <small className="">RM </small>
+                                      ) : (
+                                        <sup>&#8377;</sup>
+                                      )
+                                    ) : (
+                                      updatedCountry && updatedCountry === "malaysia" ? (
+                                        <small className="">RM </small>
+                                      ) : (
+                                        <>
+                                          <sup>&#8377;</sup>
+                                          <sup>&#8377;</sup>
+                                          <sup>&#8377;</sup>
+                                          <sup>&#8377;</sup>
+                                        </>
+                                      )
+                                    )}
+
+
                                     <span className="fs-5"> / {plan.billing_cycle === "free trial" ? "7 Days" : ""}{plan.billing_cycle === "half yearly" ? "6 Months" : ""}{plan.billing_cycle === "annual" ? "Year" : ""}</span>
                                   </h4>
                                 </button>

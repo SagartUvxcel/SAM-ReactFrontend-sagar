@@ -78,6 +78,15 @@ const OffcanvasBody = ({ canvasNumber, propertiesLinkDisabled, isBank, roleId })
                     <i className="bi bi-upload me-2 text-light"></i>Bulk Upload
                   </NavLink>
                 </li>
+                <li className="nav-item">
+                  <NavLink
+                    className="nav-link sidebar-link"
+                    to={`${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"
+                      }/property/upload-properties-with-documents`}
+                  >
+                    <i className="bi bi-upload me-2 text-light"></i>Bulk Upload With Documents
+                  </NavLink>
+                </li>
               </ul>
             </div>
           </div>

@@ -58,10 +58,14 @@ const AddProperty = () => {
   const citySelectBoxRef = useRef();
   const notSoldCheckRef = useRef();
   const [pathLocation, setPathLocation] = useState("");
+  const updatedCountry = localStorage.getItem("location");
 
 
   // get category,bank, state details
   const getDataFromApi = async () => {
+
+    const countryId = updatedCountry === "india" ? 1 : 11;
+    const postData = { "country_id": countryId }
     try {
       // property category 
       const propertyCategoryRes = await axios.get(`/sam/v1/property/by-category`);
@@ -69,7 +73,7 @@ const AddProperty = () => {
         setPropertyCategories(propertyCategoryRes.data);
       }
       // bank
-      const bankRes = await axios.get(`/sam/v1/property/by-bank`);
+      const bankRes = await axios.post(`/sam/v1/property/by-bank`, postData);
       if (bankRes.data) {
         setBanks(bankRes.data);
       }
@@ -77,9 +81,8 @@ const AddProperty = () => {
       if (isBank) {
         getBankDetails(bankRes.data);
       }
-
       // states
-      const statesRes = await axios.get(`/sam/v1/property/by-state`);
+      const statesRes = await axios.post(`/sam/v1/property/by-state`, postData);
       if (statesRes.data) {
         setAllStates(statesRes.data);
       }
@@ -91,14 +94,16 @@ const AddProperty = () => {
     const propertyCategoryRes = await axios.get(`/sam/v1/property/by-category`);
 
     setPropertyCategories(propertyCategoryRes.data);
-    const bankRes = await axios.get(`/sam/v1/property/by-bank`);
+    const bankRes = await axios.post(`/sam/v1/property/by-bank`, postData);
+    console.log(bankRes);
     setBanks(bankRes.data);
-    const statesRes = await axios.get(`/sam/v1/property/by-state`);
+    const statesRes = await axios.post(`/sam/v1/property/by-state`, postData);
     setAllStates(statesRes.data);
   };
 
   // get bank Details
   const getBankDetails = async (bankData) => {
+    console.log(bankData, bank_Id);
     const activeBankDetails = bankData.filter(bank => bank.bank_id === bank_Id)[0]
     setActiveBank(activeBankDetails);
     const branchRes = await axios.get(`/sam/v1/property/auth/bank-branches/${bank_Id}`, {
@@ -280,9 +285,9 @@ const AddProperty = () => {
   };
 
   // on Form Submit
-  const onFormSubmit = async (e) => { 
+  const onFormSubmit = async (e) => {
     e.preventDefault();
-    let zipCodeValue=String(zip);
+    let zipCodeValue = String(zip);
     await axios
       .post(`/sam/v1/customer-registration/zipcode-validation`, {
         zipcode: zipCodeValue,
@@ -484,7 +489,7 @@ const AddProperty = () => {
                                       required
                                       disabled
                                     />}
-                                  <label className={`px-2 ${activeBank.bank_name ? "active":""}`} htmlFor="bank" onClick={() => handleClick('bank')} >Bank<span className="text-danger">*</span></label>
+                                  <label className={`px-2 ${activeBank.bank_name ? "active" : ""}`} htmlFor="bank" onClick={() => handleClick('bank')} >Bank<span className="text-danger">*</span></label>
                                 </div>
                               </div>
                               {/* branch */}
@@ -700,7 +705,7 @@ const AddProperty = () => {
                                     name="completion_date"
                                     onChange={onInputChange}
                                     onBlur={onInputBlur}
-                                    onFocus={handleFocus} 
+                                    onFocus={handleFocus}
                                     placeholder=" "
                                     required
                                   />
@@ -867,7 +872,7 @@ const AddProperty = () => {
                               </div>
                               {/* State */}
                               <div className="col-xl-4 col-md-6 mb-3">
-                                <div className="form-group custom-class-form-div"> 
+                                <div className="form-group custom-class-form-div">
                                   <select
                                     id="state"
                                     name="state"
@@ -901,7 +906,7 @@ const AddProperty = () => {
                                 className="col-xl-4 col-md-6 mb-3 d-none"
                                 ref={citySelectBoxRef}
                               >
-                                <div className="form-group custom-class-form-div"> 
+                                <div className="form-group custom-class-form-div">
                                   <select
                                     id="city"
                                     name="city"
@@ -932,7 +937,7 @@ const AddProperty = () => {
                               </div>
                               {/* Zip */}
                               <div className="col-xl-4 col-md-6 mb-3">
-                                <div className="form-group custom-class-form-div"> 
+                                <div className="form-group custom-class-form-div">
                                   <input
                                     type="text"
                                     onChange={onInputChange}

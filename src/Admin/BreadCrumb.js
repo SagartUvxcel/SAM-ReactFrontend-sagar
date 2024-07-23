@@ -12,6 +12,7 @@ const BreadCrumb = ({
   handlePageClick,
   currentPageNumber,
   isUpdatePropertyPageActive,
+  isViewPropertyPageActive,
   PropertyEnquiryPageActive,
   backToAllPropertiesPage,
 }) => {
@@ -167,6 +168,19 @@ const BreadCrumb = ({
                   </li>
                   <li className="breadcrumb-item text-secondary">
                     Update property
+                  </li>
+                </>
+              ) : isViewPropertyPageActive ? (
+                <>
+                  <li
+                    style={{ cursor: "pointer" }}
+                    className="breadcrumb-item"
+                    onClick={backToAllPropertiesPage}
+                  >
+                    Properties
+                  </li>
+                  <li className="breadcrumb-item text-secondary">
+                    View property
                   </li>
                 </>
               ) : PropertyEnquiryPageActive ? (

@@ -7,6 +7,7 @@ import CommonSpinner from "../../CommonSpinner";
 import { toast } from "react-toastify";
 import * as XLSX from "xlsx";
 import JSZip from "jszip";
+import convertCurrency from "../../components/1.CommonLayout/currencyConverter";
 
 let cnt = 0;
 let authHeader = "";
@@ -20,6 +21,7 @@ const ViewProperty = ({
   setPropertyDocumentsList,
   getListOfPropertyDocuments,
 }) => {
+  const updatedCountry = localStorage.getItem("location");
   const data = JSON.parse(localStorage.getItem("data"));
   if (data) {
     isBank = data.isBank;
@@ -796,9 +798,11 @@ const ViewProperty = ({
                     <div className="col-md-4 col-6">
                       <small className="text-muted">Market Price</small>
                       <h5 className="mt-1 common-btn-font">
+                      {updatedCountry && updatedCountry === "malaysia" ? <>{convertCurrency(parseInt(market_price), "Malaysia", "RM", 0.0564)
+                      } <small className="text-muted">RM </small></> : <>
                         <i className="bi bi-currency-rupee"></i>
                         {parseInt(market_price) >= 10000000 ? `${(parseInt(market_price) / 10000000).toFixed(2)}` : `${(parseInt(market_price) / 100000).toFixed(1)}`}
-                        <small className="text-muted">{parseInt(market_price) >= 10000000 ? " Cr." : " Lac"}</small>
+                        <small className="text-muted">{parseInt(market_price) >= 10000000 ? " Cr." : " Lac"}</small></>}
                       </h5>
                     </div>
                   ) : (
@@ -809,9 +813,11 @@ const ViewProperty = ({
                     <div className="col-md-4 col-6">
                       <small className="text-muted">Ready Reckoner Price</small>
                       <h5 className="mt-1 common-btn-font">
-                        <i className="bi bi-currency-rupee"></i>
+                      {updatedCountry && updatedCountry === "malaysia" ? <>{convertCurrency(parseInt(ready_reckoner_price), "Malaysia", "RM", 0.0564)
+                      } <small className="text-muted">RM </small></> : <>
+                      <i className="bi bi-currency-rupee"></i>
                         {parseInt(ready_reckoner_price) >= 10000000 ? `${(parseInt(ready_reckoner_price) / 10000000).toFixed(2)}` : `${(parseInt(ready_reckoner_price) / 100000).toFixed(1)}`}
-                        <small className="text-muted">{parseInt(ready_reckoner_price) >= 10000000 ? " Cr." : " Lac"}</small>
+                        <small className="text-muted">{parseInt(ready_reckoner_price) >= 10000000 ? " Cr." : " Lac"}</small></>}
                       </h5>
                     </div>
                   ) : (
@@ -822,9 +828,11 @@ const ViewProperty = ({
                     <div className="col-md-4 col-6">
                       <small className="text-muted">Reserved Price</small>
                       <h5 className="mt-1 common-btn-font">
-                        <i className="bi bi-currency-rupee"></i>
+                      {updatedCountry && updatedCountry === "malaysia" ? <>{convertCurrency(parseInt(expected_price), "Malaysia", "RM", 0.0564)
+                      } <small className="text-muted">RM </small></> : <>
+                      <i className="bi bi-currency-rupee"></i>
                         {parseInt(expected_price) >= 10000000 ? `${(parseInt(expected_price) / 10000000).toFixed(2)}` : `${(parseInt(expected_price) / 100000).toFixed(1)}`}
-                        <small className="text-muted">{parseInt(expected_price) >= 10000000 ? " Cr." : " Lac"}</small>
+                        <small className="text-muted">{parseInt(expected_price) >= 10000000 ? " Cr." : " Lac"}</small></>}
                       </h5>
                     </div>
                   ) : (

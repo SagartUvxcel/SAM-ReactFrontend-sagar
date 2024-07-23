@@ -479,10 +479,17 @@ input:-webkit-autofill:active {
   transition: 0.3s ease-in-out;
 }
 
-/* .main-nav-dropdown-menu {
-  border: 2px solid var(--primary-color-hover) !important;
-} */
+.header-wrapper .activeLocation {
+  color:var(--secondary-color) !important;  
+}
 
+.header-wrapper .locationList { 
+  cursor: pointer;
+}
+.header-wrapper .countryLocationDropDown .bi-caret-down::before {
+  vertical-align: -.225em !important;
+  margin-left: .3rem;
+}
 /* Home */
 
 .square {

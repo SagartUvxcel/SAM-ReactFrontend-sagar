@@ -13,6 +13,7 @@ const UpgradeSubscriptionPage = () => {
   const navigate = useNavigate();
 
   const data = JSON.parse(localStorage.getItem("data"));
+  const updatedCountry = localStorage.getItem("location");
   const updatedSubscriptionStatus = localStorage.getItem("updatedSubscriptionStatus");
 
   if (data) {
@@ -113,7 +114,7 @@ const UpgradeSubscriptionPage = () => {
 
   // fetching facility details from database
   const fetchFacilityData = async () => {
-    const details = await SubscriptionFacilityFetching(); 
+    const details = await SubscriptionFacilityFetching();
     setSubscriptionFacilitiesList(details);
   };
 
@@ -294,10 +295,12 @@ const UpgradeSubscriptionPage = () => {
                                   <i className="bi bi-check-circle-fill"></i>
                                 </span>
                                 <h4 className={`plan-title mb-4 fw-bold text-uppercase ${plan.billing_cycle === "half yearly" ? "card-text-2" : ""} ${plan.billing_cycle === "annual" ? "card-text-3" : ""}`}>{plan.name.replace(' plan', '')}</h4>
-                                <h5 className="fw-bold plan-price">
-                                  <sup>&#8377;</sup> <sup>&#8377;</sup> <sup>&#8377;</sup> <sup>&#8377;</sup>
+                                <h6 className="fw-bold plan-price">
+                                  {updatedCountry && updatedCountry === "malaysia" ? (
+                                    <small className="fs-5 top-0">RM </small>
+                                  ) : (<><sup>&#8377;</sup> <sup>&#8377;</sup> <sup>&#8377;</sup> <sup>&#8377;</sup></>)}
                                   <span className="fs-5"> / {plan.billing_cycle === "half yearly" ? "6 Months" : ""}{plan.billing_cycle === "annual" ? "Year" : ""}</span>
-                                </h5>
+                                </h6>
                               </button>
                             </>
 

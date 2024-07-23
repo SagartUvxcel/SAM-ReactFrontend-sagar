@@ -18,6 +18,7 @@ function Home() {
 
   const data = JSON.parse(localStorage.getItem("data"));
   const updatedSubscriptionStatus = localStorage.getItem("updatedSubscriptionStatus");
+  const updatedCountry = localStorage.getItem("location");
   if (data) {
     authHeader = { Authorization: data.loginToken };
     isLogin = data.isLoggedIn;
@@ -34,15 +35,15 @@ function Home() {
     banks: "",
   });
 
-  // useState to store values of each select box for search functionality.
+  // useState to store values of each select box for search functionality and Object destructuring.
   const [dataToPost, setDataToPost] = useState({
     batch_size: 4,
     batch_number: 1,
   });
-  // Object destructuring.
   const { states, assetCategory, cities } = searchFields;
 
   const [searchHistory, setSearchHistory] = useState([]);
+  const [currentCountry, setCurrentCountry] = useState(updatedCountry);
 
   // It will fetch all states, banks, assets from api and will map those values to respective select fields.
   const getSearchDetails = async () => {
@@ -51,11 +52,16 @@ function Home() {
       bankAPI: `/sam/v1/property/by-bank`,
       categoryAPI: `/sam/v1/property/by-category`,
     };
+    console.log(currentCountry);
+    const countryId = currentCountry === "india" ? 1 : 11;
+
+    const postData = { "country_id": countryId }
     try {
       // Get all states from api.
-      const allStates = await axios.get(apis.stateAPI);
+      // const allStates = await axios.get(apis.stateAPI);
+      const allStates = await axios.post(apis.stateAPI, postData);  
       // Get all banks from api.
-      const allBanks = await axios.get(apis.bankAPI);
+      const allBanks = await axios.post(apis.bankAPI, postData); 
       // Get all asset Categories from api.
       const assetCategories = await axios.get(apis.categoryAPI);
 
@@ -125,7 +131,7 @@ function Home() {
     }
   }
 
-  const [searchBtnDisabled, setSearchBtnDisabled] = useState(true); 
+  const [searchBtnDisabled, setSearchBtnDisabled] = useState(true);
 
   useEffect(() => {
     if (Object.keys(dataToPost).length > 2) {
@@ -219,13 +225,17 @@ function Home() {
     }
     // eslint-disable-next-line
   }, [isLogin, subscription_status]);
+ 
+  useEffect(() => { 
+  }, [currentCountry])
+
 
   return (
     <Layout>
       <section className="full-home-page-section skyblue-bg " ref={homePageRef} >
         <section className="home-wrapper min-100vh">
           <div className="container-fluid">
-          {/* History */}
+            {/* History */}
             <div className="d-flex justify-content-end mb-5  dropdown" >
               {isLogin && roleId === 3 ?
                 <div ref={historyBtnRef} className="col-md-2 searchHistoryDiv d-flex justify-content-center mt-2 " >
@@ -264,10 +274,10 @@ function Home() {
             {/* 5 select boxes */}
             <div className="d-flex justify-content-center ">
               <div className="row five-box-row mt-lg-5 mt-md-0">
-              {/* <div className="row">
+                {/* <div className="row">
                 <p>Search property</p>
               </div> */}
-              {/* states */}
+                {/* states */}
                 <div className="col-lg-3 col-md-4 col-12">
                   <div className="inner-box">
                     <label htmlFor="state">State</label>
@@ -281,7 +291,7 @@ function Home() {
                       >
                         <option value=""></option>
                         {states
-                          ? states.map((state, Index) => {
+                          ? states.map((state, Index) => { 
                             return (
                               <option key={Index} value={state.state_id}>
                                 {state.state_name}

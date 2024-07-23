@@ -88,8 +88,8 @@ const LoginMainPage = () => {
           JSON.stringify({ username: email, password: password })
         )
         .then((res) => {
-          const { email, token, role_id, user_id, is_bank, subscription_end_date, subscription_status, subscription_plan_id, bank_id, branch_id } = res.data.token;
           console.log(res.data);
+          const { email, token, role_id, user_id, is_bank, subscription_end_date, subscription_status, subscription_plan_id, bank_id, branch_id,country_id } = res.data.token; 
           let admin = null;
           let editor = null;
           let viewer = null;
@@ -128,6 +128,7 @@ const LoginMainPage = () => {
                 subscription_status: subscription_status,
                 subscription_end_date: subscription_end_date,
                 subscription_plan_id: subscription_plan_id,
+                country_id: country_id,
               })
             );
             setLoading(false);
