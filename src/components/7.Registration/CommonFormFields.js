@@ -14,17 +14,15 @@ const CommonFormFields = ({
   onMobileNumberInputChange,
   handleFocus,
   handleClick,
+  countryId,
 }) => {
   const { emailValidationMessage, mobileValidationMessage, landlineNumberValidationMessage, landlineNumberValidationColor } = validationDetails;
-  const { addressValue, labelValue, textAreaVisibility } = addressValues;
-
+  const { addressValue, labelValue, textAreaVisibility } = addressValues; 
   return (
     <>
-
-
       {/* Email */}
-      <div className="row emailRow mt-2 mb-2 align-items-center"> 
-        <div className="col-lg-4 mb-lg-0 my-md-2 my-4 custom-class-form-div">
+      <div className="row emailRow align-items-center">
+        <div className="col-lg-4 mb-4 custom-class-form-div">
           <input
             onChange={onInputChange}
             onBlur={onInputBlur}
@@ -32,7 +30,7 @@ const CommonFormFields = ({
             id="email"
             onFocus={handleFocus}
             type="email"
-            className="form-control custom-input" 
+            className="form-control custom-input"
             required
           />
           <label className="px-2" htmlFor="email" onClick={() => handleClick('email')} >Email <span className="text-danger">*</span> </label>
@@ -42,14 +40,14 @@ const CommonFormFields = ({
           >
             {emailValidationMessage}
           </span>
-        </div> 
-        <div className="col-lg-4 mb-lg-0 my-md-2 my-4 "> 
+        </div>
+        <div className="col-lg-4  mb-4 ">
           <PhoneInput
-            country={"in"} 
+            country={countryId}
             onBlur={(e) => onMobileNumberInputBlur(e)}
             onChange={onMobileNumberInputChange}
             onFocus={handleFocus}
-          /> 
+          />
           <span
             className={`pe-1 ${mobileValidationMessage ? "text-danger" : "d-none"
               }`}
@@ -58,15 +56,15 @@ const CommonFormFields = ({
           </span>
 
           <span className="form-text d-none"></span>
-        </div>   
-        <div className="col-lg-4 mb-lg-0 my-md-2 my-4 custom-class-form-div">
+        </div>
+        <div className="col-lg-4 mb-4 custom-class-form-div">
           <input
             onChange={onInputChange}
             onBlur={onInputBlur}
             name="landline_number"
             id="landline_number"
             type="Number"
-            onFocus={handleFocus} 
+            onFocus={handleFocus}
             className={`form-control custom-input border-${landlineNumberValidationColor}`}
           />
           <label className="px-2" htmlFor="landline_number" onClick={() => handleClick('landline_number')} >Landline (optional)</label>
@@ -79,11 +77,11 @@ const CommonFormFields = ({
         </div>
       </div>
       {/* Address Row 1 */}
-      <div className="row addressRow1 mt-4 align-items-center">
-        <div className="col-lg-1 col-md-2 pe-md-0 mb-lg-0 mb-2">
+      <div className="row addressRow1 align-items-center">
+        <div className="col-lg-1 col-md-2 pe-md-0 mb-4">
           Address<span className="text-danger fw-bold">*</span>
         </div>
-        <div className="col-lg-6 mb-lg-0 my-md-2 my-4 custom-class-form-div">
+        <div className="col-lg-8  mb-4 custom-class-form-div">
           <a
             href="/anyValue"
             id="address-modal-label"
@@ -106,7 +104,7 @@ const CommonFormFields = ({
       </div>
 
       {/* SAM T & C */}
-      <div className="row register-links mt-5 align-items-center">
+      <div className="row register-links mt-3 align-items-center">
         <div className=" col-lg-4">
           <NavLink to="/register">SAM Terms and Conditions</NavLink>
         </div>

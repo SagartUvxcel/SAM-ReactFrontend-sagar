@@ -113,8 +113,7 @@ const EditUserDetails = () => {
           .get(`/sam/v1/user-registration/auth/${userId}`, {
             headers: authHeaders,
           })
-          .then(async (res) => {
-            console.log(res.data);
+          .then(async (res) => { 
             const { individual_user, org_user, user_details } = res.data;
             if (individual_user) {
               const {
@@ -467,7 +466,7 @@ const EditUserDetails = () => {
                       <div className="col-md-4 col-6 text-end">
                         <NavLink
                           to="/profile"
-                          className="ms-4 text-decoration-none"
+                          className="btn btn-sm btn-outline-primary"
                         >
                           View Profile <i className="bi bi-arrow-right"></i>
                         </NavLink>

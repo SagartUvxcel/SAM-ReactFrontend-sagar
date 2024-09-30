@@ -300,10 +300,10 @@ const SecurityQuestion = () => {
                 <div className="container mt-3">
                 
           {/* back btn to View Profile */}
-          <div className="col-md-4 col-6 text-start mb-3">
+          <div className=" text-end mb-3">
             <NavLink
               to="/profile"
-              className="ms-4 text-decoration-none"
+              className="btn btn-sm btn-outline-primary"
             >
               <i className="bi bi-arrow-left"></i> Back
             </NavLink>

@@ -16,7 +16,7 @@ function Footers() {
             </div>
           </div>
           <div className="col-12 mt-4">
-            <p className="text-center text-white">
+            <p className="text-center text-white common-label-text-fontSize">
               &copy;Copyright SAMREALITY. All Rights Reserved - 2022 <br />
               Terms & Conditions | Privacy Policy |
             </p>

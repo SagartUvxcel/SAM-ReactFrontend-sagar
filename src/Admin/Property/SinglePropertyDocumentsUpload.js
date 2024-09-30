@@ -5,29 +5,41 @@ import { toast } from "react-toastify";
 import CommonSpinner from "../../CommonSpinner";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import Layout from "../../components/1.CommonLayout/Layout";
+import { useNavigate } from "react-router-dom";
+
 let authHeader = "";
-let temp = 0;
+let roleId = "";
 let chunkSize = 0;
+let isBank = false;
+
 const allAllowedExtensions = [
   "pdf",
   "jpeg",
   "jpg",
   "png",
-  "docx",
   "xlsx",
   "xls",
   "txt",
   "zip",
-  "rar",
   "mp4",
   "mp3",
   "wav",
 ];
 
 const SinglePropertyDocumentsUpload = () => {
+
+  //all references
+  const fileRef = useRef();
+  const decsRef = useRef();
+  const navigate = useNavigate();
+  const otherCategoryInputRef = useRef();
+  const otherCategoryWrapperRef = useRef();
+
   const data = JSON.parse(localStorage.getItem("data"));
   if (data) {
     authHeader = { Authorization: data.loginToken };
+    isBank = data.isBank;
+    roleId = data.roleId;
   }
   // renderTooltip
   const renderTooltip = (props) => <Tooltip id="tooltip">{props}</Tooltip>;
@@ -41,14 +53,12 @@ const SinglePropertyDocumentsUpload = () => {
     }
   };
   const [categoriesLoading, setCategoriesLoading] = useState(false);
-  const [currentPropertyNumber, setCurrentPropertyNumber] = useState("");
+  const [currentPropertyNumber, setCurrentPropertyNumber] = useState({});
   const [totalSizeOfDocuments, setTotalSizeOfDocuments] = useState(null);
   const [imageFiles, setImageFiles] = useState([]);
   const [savedImageFiles, setSavedImageFiles] = useState([]);
   const [currentImageFileIndex, setCurrentImageFileIndex] = useState(null);
   const [lastUploadedImageFileIndex, setLastUploadedImageFileIndex] =
-    useState(null);
-  const [currentChunkIndexOfImage, setCurrentChunkIndexOfImage] =
     useState(null);
   const [uniqueId, setUniqueId] = useState(uuid());
   const [imageLoading, setImageLoading] = useState(false);
@@ -65,11 +75,6 @@ const SinglePropertyDocumentsUpload = () => {
     useState(allAllowedExtensions);
   const [otherCategoryBlankCharErr, setOtherCategoryBlankCharErr] =
     useState(false);
-  const fileRef = useRef();
-  const decsRef = useRef();
-  const otherCategoryInputRef = useRef();
-  const otherCategoryWrapperRef = useRef();
-
   const { category_id, category_text, categoryTextColor, description } =
     documentsInfo;
   let otherCategoryId = null;
@@ -176,7 +181,7 @@ const SinglePropertyDocumentsUpload = () => {
         [name]: value,
       });
     }
-  };
+  }; 
 
   const [alertDetails, setAlertDetails] = useState({
     alertVisible: false,
@@ -188,34 +193,8 @@ const SinglePropertyDocumentsUpload = () => {
   // handle Image File Change
   const handleImageFileChange = (e) => {
     e.preventDefault();
-    // if (e.target.files[0]) {
-    //   let arrForExtension = e.target.files[0].name.split(".");
-    //   let currentFileExtension = arrForExtension[arrForExtension.length - 1];
-    //   let size = parseFloat((e.target.files[0].size / 1024 / 1024).toFixed(2));
-    //   let currentTotalSize = size + totalSizeOfDocuments;
-    //   if (currentTotalSize <= 25) {
-    //     setAlertDetails({ alertVisible: false });
-    //     if (allowedExtensions.length > 0) {
-    //       if (allowedExtensions.includes(currentFileExtension)) {
-    //         setSavedImageFiles([...imageFiles, ...e.target.files]);
-    //       } else {
-    //         toast.error("File not allowed with this extension");
-    //         e.target.value = "";
-    //       }
-    //     }
-    //   } else {
-    //     onResetBtnClick();
-    //     setAlertDetails({
-    //       alertVisible: true,
-    //       alertMsg:
-    //         "Document Size Limit Exceeded: Combined document size must not exceed 25 MB. Please remove unnecessary documents and try again.",
-    //       alertClr: "warning",
-    //     });
-    //   }
-    // }
 
     const files = Array.from(e.target.files);
-    console.log(files);
     let currentTotalSize = totalSizeOfDocuments;
     for (let i = 0; i < files.length; i++) {
       let arrForExtension = files[i].name.split(".");
@@ -227,7 +206,6 @@ const SinglePropertyDocumentsUpload = () => {
         setAlertDetails({ alertVisible: false });
         if (allowedExtensions.length > 0) {
           if (allowedExtensions.includes(currentFileExtension)) {
-            console.log([...savedImageFiles, files[i]])
             setSavedImageFiles(prevFiles => [...prevFiles, files[i]]);
           } else {
             toast.error("File not allowed with this extension");
@@ -255,145 +233,6 @@ const SinglePropertyDocumentsUpload = () => {
     }, 4000);
   };
 
-  // // read And Upload Current Image Chunk
-  // const readAndUploadCurrentImageChunk = () => {
-  //   const reader = new FileReader();
-  //   const file = imageFiles[currentImageFileIndex];
-  //   console.log(file);
-  //   if (!file) {
-  //     return;
-  //   }
-  //   chunkSize = Math.round((file.size * 39) / 100);
-  //   const from = currentChunkIndexOfImage * chunkSize;
-  //   const to = from + chunkSize;
-  //   const blob = file.slice(from, to);
-  //   reader.onload = (e) => uploadImageChunk(e);
-  //   reader.readAsDataURL(blob);
-  // };
-
-  // // upload Image Chunk
-  // const uploadImageChunk = async (readerEvent) => {
-  //   const file = imageFiles[currentImageFileIndex];
-  //   const size = file.size;
-  //   let tempChunkSize = chunkSize;
-  //   temp += tempChunkSize;
-  //   if (temp > size) {
-  //     tempChunkSize = size - (temp - chunkSize);
-  //   }
-  //   const data = readerEvent.target.result.split(",")[1];
-  //   const fileName = file.name;
-  //   const totalChunks = Math.ceil(size / chunkSize);
-  //   const chunkNumber = currentChunkIndexOfImage + 1;
-  //   const detailsToPost = {
-  //     upload_id: uniqueId,
-  //     property_number: currentPropertyNumber,
-  //     chunk_number: chunkNumber,
-  //     total_chunks: totalChunks,
-  //     chunk_size: tempChunkSize,
-  //     total_file_size: size,
-  //     file_name: fileName,
-  //     category_id: category_id,
-  //     description: description,
-  //     data: data,
-  //   };
-  //   console.log(detailsToPost);
-  //   const chunks = Math.ceil(file.size / chunkSize) - 1;
-  //   const isLastChunk = currentChunkIndexOfImage === chunks;
-  //   try {
-  //     await axios
-  //       .post(`/sam/v1/property/auth/property-documents`, detailsToPost, {
-  //         headers: authHeader,
-  //       })
-  //       .then((res) => {
-  //         if (isLastChunk) {
-  //           if (res.data.msg === 0) {
-  //             if (currentImageFileIndex === savedImageFiles.length - 1) {
-  //               setImageLoading(false); 
-  //               toast.success("File uploaded successfully");
-  //               reloadPage();
-  //             }
-  //           } else {
-  //             setImageLoading(false);
-  //             toast.error("Error while uploading files");
-  //             reloadPage();
-  //           }
-  //         }
-  //       });
-  //   } catch (error) {
-  //     if (isLastChunk) {
-  //       setImageLoading(false);
-  //       console.log(error);
-  //       let err =error.response.data.error
-  //       toast.error(err.charAt(0).toUpperCase() + err.slice(1).toLowerCase());
-  //       reloadPage();
-  //     }
-  //   }
-  //   if (isLastChunk) {
-  //     setUniqueId(uuid());
-  //     setLastUploadedImageFileIndex(currentImageFileIndex);
-  //     setCurrentChunkIndexOfImage(null);
-  //   } else {
-  //     setCurrentChunkIndexOfImage(currentChunkIndexOfImage + 1);
-  //   }
-  // };
-
-  // // alertVisible useEffect
-  // useEffect(() => {
-  //   if (alertVisible) {
-  //     window.scrollTo(0, 0);
-  //   }
-  // }, [alertVisible]);
-
-  // useEffect(() => {
-  //   if (lastUploadedImageFileIndex === null) {
-  //     return;
-  //   }
-  //   console.log(lastUploadedImageFileIndex);
-  //   const isLastFile = lastUploadedImageFileIndex === imageFiles.length - 1;
-  //   const nextFileIndex = isLastFile ? null : currentImageFileIndex + 1;
-  //   setCurrentImageFileIndex(nextFileIndex);
-  //   // eslint-disable-next-line
-  // }, [lastUploadedImageFileIndex]);
-
-  // useEffect(() => {
-  //   if (imageFiles.length > 0) {
-  //     if (currentImageFileIndex === null) {
-  //       setCurrentImageFileIndex(
-  //         lastUploadedImageFileIndex === null
-  //           ? 0
-  //           : lastUploadedImageFileIndex + 1
-  //       );
-  //     }
-  //   }
-  //   // eslint-disable-next-line
-  // }, [imageFiles.length]);
-
-  // useEffect(() => {
-  //   if (currentImageFileIndex !== null) {
-  //     setCurrentChunkIndexOfImage(0);
-  //   }
-  // }, [currentImageFileIndex]);
-
-  // useEffect(() => {
-  //   console.log(currentChunkIndexOfImage);
-  //   if (currentChunkIndexOfImage !== null) {
-  //     readAndUploadCurrentImageChunk();
-  //   }
-  //   // eslint-disable-next-line
-  // }, [currentChunkIndexOfImage]);
-
-  // // post Images
-  // const postImages = (e) => {
-  //   e.preventDefault();
-  //   setImageLoading(true);
-  //   console.log(savedImageFiles);
-  //   setImageFiles(savedImageFiles);
-  // };
-
-
-
-  // new code 
-
   // read And Upload Current Image Chunk
   const readAndUploadCurrentImageChunk = (file, currentChunkIndex) => {
     const reader = new FileReader();
@@ -407,7 +246,6 @@ const SinglePropertyDocumentsUpload = () => {
 
   // upload Image Chunk
   const uploadImageChunk = async (readerEvent, file, currentChunkIndex) => {
-    console.log(readerEvent, file, currentChunkIndex);
     const size = file.size;
     let tempChunkSize = chunkSize;
     let temp = (currentChunkIndex * chunkSize);
@@ -420,7 +258,7 @@ const SinglePropertyDocumentsUpload = () => {
     const chunkNumber = currentChunkIndex + 1;
     const detailsToPost = {
       upload_id: uniqueId,
-      property_number: currentPropertyNumber,
+      property_id: currentPropertyNumber.propertyId,
       chunk_number: chunkNumber,
       total_chunks: totalChunks,
       chunk_size: tempChunkSize,
@@ -430,7 +268,6 @@ const SinglePropertyDocumentsUpload = () => {
       description: description,
       data: data,
     };
-
     const chunks = Math.ceil(file.size / chunkSize) - 1;
     const isLastChunk = currentChunkIndex === chunks;
 
@@ -455,7 +292,6 @@ const SinglePropertyDocumentsUpload = () => {
     } catch (error) {
       if (isLastChunk) {
         setImageLoading(false);
-        console.log(error);
         let err = error.response.data.error;
         toast.error(err.charAt(0).toUpperCase() + err.slice(1).toLowerCase());
         reloadPage();
@@ -465,7 +301,6 @@ const SinglePropertyDocumentsUpload = () => {
     if (isLastChunk) {
       setUniqueId(uuid());
       setLastUploadedImageFileIndex(currentImageFileIndex);
-      setCurrentChunkIndexOfImage(null);
     } else {
       readAndUploadCurrentImageChunk(file, currentChunkIndex + 1);
     }
@@ -484,7 +319,6 @@ const SinglePropertyDocumentsUpload = () => {
     if (lastUploadedImageFileIndex === null) {
       return;
     }
-    console.log(lastUploadedImageFileIndex);
     const isLastFile = lastUploadedImageFileIndex === imageFiles.length - 1;
     const nextFileIndex = isLastFile ? null : currentImageFileIndex + 1;
     setCurrentImageFileIndex(nextFileIndex);
@@ -514,7 +348,6 @@ const SinglePropertyDocumentsUpload = () => {
   // postImages
   const postImages = (e) => {
     e.preventDefault();
-    console.log(savedImageFiles);
     if (savedImageFiles.length > 5) {
       toast.error("You cannot upload more than 5 documents at a time.");
       setSavedImageFiles([])
@@ -523,9 +356,6 @@ const SinglePropertyDocumentsUpload = () => {
     setImageLoading(true);
     setImageFiles(savedImageFiles);
   };
-
-
-
 
   // check Can Upload New Document
   const checkCanUploadNewDocument = async (id) => {
@@ -548,7 +378,7 @@ const SinglePropertyDocumentsUpload = () => {
   useEffect(() => {
     let propertyData = JSON.parse(localStorage.getItem("upload-doc"));
     if (propertyData) {
-      setCurrentPropertyNumber(propertyData.number);
+      setCurrentPropertyNumber({ propertyNumber: propertyData.number, propertyId: propertyData.id });
       checkCanUploadNewDocument(propertyData.id);
       if (data) {
         getCategoriesFromDB();
@@ -561,6 +391,18 @@ const SinglePropertyDocumentsUpload = () => {
   const onBackToPropertyBtnClick = () => {
     window.close();
   };
+  const onUploadDocumentsBtnClick = () => {
+
+    localStorage.setItem(
+      "upload-bulk-doc",
+      JSON.stringify({
+        number: currentPropertyNumber.propertyNumber,
+        id: currentPropertyNumber.propertyId,
+      })
+    );
+    navigate(`${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"
+      }/property/bulk-documents-upload`)
+  }
 
   return (
     <Layout>
@@ -569,17 +411,21 @@ const SinglePropertyDocumentsUpload = () => {
           <div className="col-11 wrapper mt-md-0">
             <section className="upload-documents-wrapper mt-5">
               <div className="container-fluid">
-                <div className="row">
+                <div className="row justify-content-between">
                   <div className="col-md-6">
                     <h3 className="fw-bold p-0">Upload Documents</h3>
                     <h6 className="fw-bold text-muted p-0">
                       Property Number
                       <span className="badge bg-box-primary ms-2">
-                        {currentPropertyNumber}
+                        {currentPropertyNumber.propertyNumber}
                       </span>
                     </h6>
                   </div>
-                  <div className="col-md-6 text-end">
+                  <div className="col-md-5 text-end my-2 my-md-0">
+                    <button className="btn btn-sm btn-primary text-white sample-file-download-btn" onClick={onUploadDocumentsBtnClick}><i className="bi bi-upload me-2"></i> Upload Bulk Documents</button>
+
+                  </div>
+                  <div className="col-md-1 text-end ">
                     <button className="btn btn-sm btn-outline-primary" onClick={onBackToPropertyBtnClick}><i className="bi bi-arrow-left"></i>Back</button>
                   </div>
                 </div>
@@ -656,7 +502,7 @@ const SinglePropertyDocumentsUpload = () => {
                               <div className="form-check form-check-inline">
                                 <input
                                   className="form-check-input category-checks"
-                                  tuseStateype="radio"
+                                  type="radio"
                                   name="category_id"
                                   id="category_id"
                                   value={0}

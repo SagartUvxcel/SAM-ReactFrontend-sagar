@@ -7,52 +7,42 @@ import { toast } from "react-toastify";
 import { useRef } from "react";
 import { rootTitle } from "../../CommonFunctions";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
+import ReactSelect from "react-select";
 
-// regular expression 
-const landlineNumberRegularExp = /^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/
-
+// regular expression
+const landlineNumberRegularExp = /^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/;
 
 const Registration = () => {
+  const [zipCity, setZipCity] = useState(""); // City input value
+  const [zipCodes, setZipCodes] = useState([]); // List of zip codes based on entered city 
+  const [isCustomZip, setIsCustomZip] = useState(false);
+  const [customZip, setCustomZip] = useState("");
   const goTo = useNavigate();
   const deselectStateInput = useRef();
-
-  const updatedCountry = localStorage.getItem("location");
-  // handle Focus
-  const handleFocus = (e) => {
-    e.target.nextSibling.classList.add('active');
-  };
-
-  // handle Click
-  const handleClick = (inputId) => {
-    const input = document.getElementById(inputId);
-    input.focus();
-  };
-
 
   const [alertDetails, setAlertDetails] = useState({
     alertVisible: false,
     alertMsg: "",
     alertClr: "",
   });
-
+  const updatedCountry = localStorage.getItem("location");
+  const country_ID = updatedCountry === "india" ? 1 : 11;
+  const [countryId, setCountryId] = useState(country_ID);
+  const [countryFlag, setCountryFlag] = useState(
+    updatedCountry === "india" ? "in" : "my"
+  );
   const [loading, setLoading] = useState(false);
 
   const { alertMsg, alertClr, alertVisible } = alertDetails;
-
-  // useState to store ID of state so that we can validate zipCodes for each state.
-  const [IdOfState, SetIdOfState] = useState("");
-
   // useState to store all states coming from api.
   const [states, setStates] = useState([]);
   // Function to get all states from api so that we can map states in select state field.
   const getAllSates = async () => {
-    const countryId = updatedCountry === "india" ? 1 : 11;
-    const postData = { "country_id": countryId }
+    const postData = { country_id: parseInt(countryId) };
     try {
       const allStates = await axios.post(`/sam/v1/property/by-state`, postData);
-      console.log(allStates.data);
       setStates(allStates.data);
-    } catch (error) { 
+    } catch (error) {
       console.log(error);
     }
   };
@@ -71,6 +61,34 @@ const Registration = () => {
     city,
     zip,
   } = addressDetails;
+
+  //fetch zip code
+  const fetchZipCodes = async (zipCity) => {
+    if (zipCity) {
+      try {
+        const response = await fetch(
+          `https://api.postalpincode.in/postoffice/${zipCity}`
+        );
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json(); 
+
+        if (data && data[0] && data[0].PostOffice) {
+          const postOffices = data[0].PostOffice;
+          const pinCodes = postOffices.map((po) => po.Pincode);           
+          setZipCodes(pinCodes); // Set the zip codes in state 
+        } else {
+          setZipCodes([]); // Reset zip codes if no post office found 
+        }
+      } catch (error) {
+        console.error("Error fetching zip codes:", error.message);
+        setZipCodes([]); // Reset zip codes on error
+      }
+    } else {
+      console.log("Please enter a valid city.");
+    }
+  };
 
   // useState to store/remove and hide/show cities data.
   const [cityUseState, setCityUseState] = useState({
@@ -91,6 +109,7 @@ const Registration = () => {
     contact_details: {
       user_type: "Individual User",
     },
+    country_id: countryId,
   });
 
   // Store validation message and validation color based on input field.
@@ -104,7 +123,7 @@ const Registration = () => {
     tanValidationMessage,
     cinValidationMessage,
     zipCodeValidationColor,
-    zipCodeValidationMessage
+    zipCodeValidationMessage,
   } = validationDetails;
 
   // Things to be changed when we change form i.e. either individual or organization.
@@ -120,7 +139,7 @@ const Registration = () => {
     individualActiveClass,
     organizationActiveClass,
     individualDisplay,
-    organizationDisplay
+    organizationDisplay,
   } = toggleForms;
 
   // Function to reset values.
@@ -149,14 +168,12 @@ const Registration = () => {
       textAreaVisibility: "d-none",
     });
     setValidationDetails({});
-    SetIdOfState("");
     setCityUseState({ citiesByState: [], cityVisibilityClass: "d-none" });
   };
 
   // Function will run on click of save button of address
   const onAddressFormSubmit = (e) => {
     e.preventDefault();
-    console.log(flat_number, building_name, society_name, plot_number, locality, landmark);
     let valuesArray = [
       flat_number ? `Flat No: ${flat_number}` : "",
       building_name ? `Building Name: ${building_name}` : "",
@@ -166,7 +183,7 @@ const Registration = () => {
       `Landmark: ${landmark}`,
       `State: ${state}`,
       `City: ${city}`,
-      `Zip Code: ${zip}`,
+      zip === "other" ? `Zip Code: ${customZip}` : `Zip Code: ${zip}`,
     ];
 
     let mainArray = [];
@@ -180,32 +197,6 @@ const Registration = () => {
       labelValue: "Edit Details",
       textAreaVisibility: "",
     });
-  };
-
-  // Function to validate zipCodes.
-  const zipValidationByState = async (zipValue, stateId) => {
-
-    let zipCodeValue = zipValue;
-    await axios
-      .post(`/sam/v1/customer-registration/zipcode-validation`, {
-        zipcode: zipCodeValue,
-        state_id: stateId,
-      })
-      .then((res) => {
-        if (res.data.status === 0) {
-          setValidationDetails({
-            ...validationDetails,
-            zipCodeValidationMessage: "Invalid ZipCode.",
-            zipCodeValidationColor: "danger",
-          });
-        } else {
-          setValidationDetails({
-            ...validationDetails,
-            zipCodeValidationMessage: "",
-            zipCodeValidationColor: "",
-          });
-        }
-      });
   };
 
   // show Individual Form
@@ -228,7 +219,7 @@ const Registration = () => {
     });
   };
 
-  // show Organization Form
+  // show Organization Form  
   const showOrganizationForm = () => {
     resetValues();
     setFormData({
@@ -257,11 +248,34 @@ const Registration = () => {
     }
   };
 
+  // handle Focus
+  const handleFocus = (e) => {
+    const refTarget = e.target.nextSibling;
+    if (refTarget) {
+      refTarget.classList.add("active");
+    }
+  };
+  const handleInputFocus = (e) => {
+    const Tra = e.target.closest(".custom-input").nextSibling;
+    if (Tra) {
+      Tra.classList.add("active");
+    }
+  };
+
+  // handle Click
+  const handleClick = (inputId) => {
+    const input = document.getElementById(inputId);
+    input.focus();
+  };
+
   // Function to show backend validation on outside click of input filed.
   const onInputBlur = async (e) => {
     const { name, value, style } = e.target;
     if (!value) {
-      e.target.nextSibling.classList.remove('active');
+      const target = e.target.nextSibling;
+      if (target) {
+        target.classList.add("active");
+      }
     }
     if (name === "first_name") {
       setFormData({ ...formData, [name]: value });
@@ -303,6 +317,11 @@ const Registration = () => {
         });
         style.borderColor = "red";
       }
+    } else if (name === "country_id") {
+      setFormData({ ...formData, [name]: value });
+      setCountryId(value);
+      const flag = `${parseInt(value) === 1 ? "in" : "my"}`;
+      setCountryFlag(flag);
     } else if (name === "organization_type") {
       setFormData({ ...formData, [name]: value });
     } else if (name === "company_name") {
@@ -372,8 +391,6 @@ const Registration = () => {
         ...formData,
         contact_details: { ...formData.contact_details, [name]: value },
       });
-    } else if (name === "state") {
-      SetIdOfState(value);
     } else if (name === "email") {
       setFormData({
         ...formData,
@@ -513,6 +530,11 @@ const Registration = () => {
         panValidationMessage: "",
       });
       style.borderColor = "";
+    } else if (name === "country_id") {
+      const flag = `${parseInt(value) === 1 ? "in" : "my"}`;
+      setFormData({ ...formData, [name]: value });
+      setCountryId(value);
+      setCountryFlag(flag);
     } else if (name === "gst_number") {
       setValidationDetails({
         ...validationDetails,
@@ -539,7 +561,7 @@ const Registration = () => {
           ...formData.contact_details,
           [name]: parseInt(value),
         },
-      });
+      }); 
     } else if (name === "building_name") {
       setValues(name, value);
       setFormData({
@@ -579,17 +601,49 @@ const Registration = () => {
         },
       });
     } else if (name === "zip") {
-      setFormData({
-        ...formData,
-        contact_details: {
-          ...formData.contact_details,
-          [name]: parseInt(value),
-        },
-      });
-      setValues(name, value);
+      // Handle the "Other" ZIP option 
+      if (value === "other") {
+        setIsCustomZip(true);
+        setCustomZip("");
+      } else {
+        // Hide the custom ZIP input and set selected ZIP
+        setIsCustomZip(false);
 
-      if (IdOfState !== "" && value !== "") {
-        zipValidationByState(value, parseInt(IdOfState));
+        // Update form data with the selected ZIP code
+        setFormData({
+          ...formData,
+          contact_details: {
+            ...formData.contact_details,
+            [name]: parseInt(value),
+          },
+        });
+      }
+
+      // Update form state
+      setValues(name, value);
+    } else if (name === "customZip") {
+      setCustomZip(value);
+
+      // Validate the custom ZIP code (assuming a 6-digit ZIP is required)
+      if (value.length !== 6 || isNaN(value)) {
+        setValidationDetails({
+          ...validationDetails,
+          zipCodeValidationMessage: "Invalid ZipCode.",
+          zipCodeValidationColor: "danger",
+        });
+      } else {
+        setFormData({
+          ...formData,
+          contact_details: {
+            ...formData.contact_details,
+            zip: parseInt(value),
+          },
+        });
+        setValidationDetails({
+          ...validationDetails,
+          zipCodeValidationMessage: "",
+          zipCodeValidationColor: "",
+        });
       }
     } else if (name === "email") {
       setValidationDetails({
@@ -599,58 +653,64 @@ const Registration = () => {
       style.borderColor = "";
     } else if (name === "state") {
       addressDetails.city = "";
+
       if (value) {
-        document.getElementById("selectedCity").selected = true;
-        let stateName = "";
-        let getStateName = document.getElementById(`state-name-${value}`);
-        if (getStateName) {
-          stateName = getStateName.innerText;
+        let stateName =
+          states.find((state) => state.state_id === parseInt(value))
+            ?.state_name || "";
+
+        if (stateName) {
           setValues(name, stateName);
         }
-        setFormData({
-          ...formData,
+
+        // Update form data with the selected state
+        setFormData((prevData) => ({
+          ...prevData,
           contact_details: {
-            ...formData.contact_details,
+            ...prevData.contact_details,
             [name]: parseInt(value),
           },
-        });
+        }));
+
+        // Fetch cities for the selected state
         const allCities = await axios.post(`/sam/v1/property/by-city`, {
           state_id: parseInt(value),
         });
+
         setCityUseState({
           citiesByState: allCities.data,
           cityVisibilityClass: "",
         });
-        if (String(zip) !== "") {
-          zipValidationByState(String(zip), parseInt(value));
-        }
       }
     } else if (name === "city") {
-      let cityName = "";
-      let getCityName = document.getElementById(`city-name-${value}`);
-      if (getCityName) {
-        cityName = getCityName.innerText;
+      let cityName =
+        citiesByState.find((city) => city.city_id === parseInt(value))
+          ?.city_name || "";
+
+      if (cityName) {
+        setZipCity(cityName);
         setValues(name, cityName);
       }
+
       if (value !== "") {
-        setFormData({
-          ...formData,
+        setFormData((prevData) => ({
+          ...prevData,
           contact_details: {
-            ...formData.contact_details,
+            ...prevData.contact_details,
             [name]: parseInt(value),
           },
-        });
+        }));
       } else {
-        setValues(name, cityName);
-        setFormData({
-          ...formData,
+        setFormData((prevData) => ({
+          ...prevData,
           contact_details: {
-            ...formData.contact_details,
+            ...prevData.contact_details,
             [name]: value,
           },
-        });
+        }));
       }
-    } else if (name === "landline_number") {
+    }
+    else if (name === "landline_number") {
       if (landlineNumberRegularExp.test(value) || value.length === 0) {
         setValidationDetails({
           ...validationDetails,
@@ -664,7 +724,6 @@ const Registration = () => {
         });
         style.borderColor = "red";
       }
-
     }
   };
 
@@ -786,10 +845,23 @@ const Registration = () => {
   };
 
   useEffect(() => {
+    getAllSates();
+    // eslint-disable-next-line
+  }, [countryId]);
+
+  useEffect(() => {
+    if (zipCity) {
+      fetchZipCodes(zipCity); // Fetch ZIP codes when the city is selected
+    }
+  }, [zipCity]);
+
+  useEffect(() => {
     rootTitle.textContent = "SAM TOOL - REGISTER";
     resetValues();
     getAllSates();
-  }, []);
+    // eslint-disable-next-line
+  }, []); 
+  
 
   return (
     <Layout>
@@ -807,14 +879,16 @@ const Registration = () => {
                     </div>
                     {/*  Checkboxes - Individual & Organization */}
                     <div className="col-lg-12 d-flex">
-                      <div className={`individual-label common-btn-font ${individualActiveClass}`}
+                      <div
+                        className={`individual-label common-btn-font ${individualActiveClass}`}
                         name="individual"
                         onClick={changeForm}
                       >
                         Individual
                       </div>
                       <div className="mx-2">|</div>
-                      <div className={`organization-label common-btn-font ${organizationActiveClass}`}
+                      <div
+                        className={`organization-label common-btn-font ${organizationActiveClass}`}
                         name="organization"
                         onClick={changeForm}
                       >
@@ -825,8 +899,9 @@ const Registration = () => {
                       <hr />
                     </div>
                     <div className="col-12" id="registration-alert">
-                      <div className={`login-alert alert alert-${alertClr} alert-dismissible show d-flex align-items-center ${alertVisible ? "" : "d-none"
-                        }`}
+                      <div
+                        className={`login-alert alert alert-${alertClr} alert-dismissible show d-flex align-items-center ${alertVisible ? "" : "d-none"
+                          }`}
                         role="alert"
                       >
                         <span>
@@ -856,7 +931,7 @@ const Registration = () => {
                       <div className="col-lg-12">
                         {/* Full Name */}
                         <div className="row fullNameRow mb-2">
-                          <div className="col-lg-4 mb-lg-0 my-md-2 my-4 custom-class-form-div">
+                          <div className="col-lg-4 mb-4 custom-class-form-div">
                             <input
                               onChange={onInputChange}
                               onBlur={onInputBlur}
@@ -867,10 +942,15 @@ const Registration = () => {
                               className="form-control custom-input "
                               required
                             />
-                            <label className="px-2" htmlFor="first_name" onClick={() => handleClick('first_name')} >First Name<span className="text-danger">*</span></label>
-
+                            <label
+                              className="px-2"
+                              htmlFor="first_name"
+                              onClick={() => handleClick("first_name")}
+                            >
+                              First Name<span className="text-danger">*</span>
+                            </label>
                           </div>
-                          <div className="col-lg-4 mb-lg-0 my-md-2 my-4 custom-class-form-div">
+                          <div className="col-lg-4 mb-4 custom-class-form-div">
                             <input
                               onChange={onInputChange}
                               onBlur={onInputBlur}
@@ -881,9 +961,15 @@ const Registration = () => {
                               className="form-control custom-input "
                               required
                             />
-                            <label className="px-2" htmlFor="middle_name" onClick={() => handleClick('middle_name')} >Middle Name<span className="text-danger">*</span></label>
+                            <label
+                              className="px-2"
+                              htmlFor="middle_name"
+                              onClick={() => handleClick("middle_name")}
+                            >
+                              Middle Name<span className="text-danger">*</span>
+                            </label>
                           </div>
-                          <div className="col-lg-4 mb-lg-0 my-md-2 my-4 custom-class-form-div">
+                          <div className="col-lg-4 mb-4 custom-class-form-div">
                             <input
                               onChange={onInputChange}
                               onBlur={onInputBlur}
@@ -894,12 +980,19 @@ const Registration = () => {
                               className="form-control custom-input "
                               required
                             />
-                            <label className="px-2" htmlFor="last_name" onClick={() => handleClick('last_name')} >Last Name<span className="text-danger">*</span></label>
+                            <label
+                              className="px-2"
+                              htmlFor="last_name"
+                              onClick={() => handleClick("last_name")}
+                            >
+                              Last Name<span className="text-danger">*</span>
+                            </label>
                           </div>
                         </div>
                         {/* Aadhaar Pan */}
                         <div className="row aadhaarPanRow mt-2">
-                          <div className="col-lg-4 mb-lg-0 my-md-2 my-4 custom-class-form-div">
+                        {/* Aadhaar */}
+                          <div className="col-lg-4 mb-4 custom-class-form-div">
                             <input
                               onChange={onInputChange}
                               onBlur={onInputBlur}
@@ -910,7 +1003,14 @@ const Registration = () => {
                               required
                               className="form-control custom-input "
                             />
-                            <label className="px-2" htmlFor="aadhar_number" onClick={() => handleClick('aadhar_number')} >Aadhaar Number<span className="text-danger">*</span></label>
+                            <label
+                              className="px-2"
+                              htmlFor="aadhar_number"
+                              onClick={() => handleClick("aadhar_number")}
+                            >
+                              Aadhaar Number
+                              <span className="text-danger">*</span>
+                            </label>
                             <span
                               className={`pe-1 ${aadhaarValidationMessage
                                 ? "text-danger"
@@ -925,7 +1025,8 @@ const Registration = () => {
                               </small>
                             </span>
                           </div>
-                          <div className="col-lg-4 mb-lg-0 my-md-2 my-4 custom-class-form-div">
+                          {/* Pan */}
+                          <div className="col-lg-4 mb-4 custom-class-form-div">
                             <input
                               onChange={onInputChange}
                               onBlur={onInputBlur}
@@ -936,7 +1037,13 @@ const Registration = () => {
                               required
                               className="form-control text-uppercase custom-input"
                             />
-                            <label className="px-2" htmlFor="pan_number" onClick={() => handleClick('pan_number')} >PAN Number<span className="text-danger">*</span></label>
+                            <label
+                              className="px-2"
+                              htmlFor="pan_number"
+                              onClick={() => handleClick("pan_number")}
+                            >
+                              PAN Number<span className="text-danger">*</span>
+                            </label>
                             <span
                               className={`pe-1 ${panValidationMessage ? "text-danger" : "d-none"
                                 }`}
@@ -950,7 +1057,48 @@ const Registration = () => {
                               </small>
                             </span>
                           </div>
-
+                          {/* country selection */}
+                          <div className="col-lg-4 mb-4 custom-class-form-div ">
+                            <select
+                              onChange={onInputChange}
+                              onFocus={handleFocus}
+                              onBlur={onInputBlur}
+                              id="country"
+                              name="country_id"
+                              type="text"
+                              className="form-select custom-input"
+                              value={formData.country_id}
+                              required
+                            >
+                              <option
+                                ref={deselectStateInput}
+                                value=""
+                                style={{ color: "gray" }}
+                              ></option>
+                              <option value={1}> India </option>
+                              <option value={11}> Malaysia </option>
+                              {/* {states
+                          ? states.map((state, Index) => {
+                            return (
+                              <option
+                                id={`state-name-${state.state_id}`}
+                                key={Index}
+                                value={state.state_id}
+                              >
+                                {state.state_name}
+                              </option>
+                            );
+                          })
+                          : ""} */}
+                            </select>
+                            <label
+                              className="px-2 active"
+                              htmlFor="country"
+                              onClick={() => handleClick("country_id")}
+                            >
+                              Country <span className="text-danger">*</span>
+                            </label>
+                          </div>
                         </div>
                         <CommonFormFields
                           validationDetails={validationDetails}
@@ -961,6 +1109,7 @@ const Registration = () => {
                           handleFocus={handleFocus}
                           handleClick={handleClick}
                           loading={loading}
+                          countryId={countryFlag}
                           onMobileNumberInputBlur={onMobileNumberInputBlur}
                           onMobileNumberInputChange={onMobileNumberInputChange}
                         />
@@ -976,7 +1125,7 @@ const Registration = () => {
                     >
                       <div className="col-lg-12">
                         <div className="row organization-type-row align-items-center">
-                          <div className="col-lg-4 mb-lg-0 my-md-2 my-4 custom-class-form-div">
+                          <div className="col-lg-4 mb-4 custom-class-form-div">
                             <select
                               onBlur={onInputBlur}
                               onFocus={handleFocus}
@@ -999,9 +1148,16 @@ const Registration = () => {
                               </option>
                               <option value="Limited">Limited</option>
                             </select>
-                            <label className="px-2" htmlFor="organization_type" onClick={() => handleClick('organization_type')} >Select Organization Type<span className="text-danger">*</span></label>
+                            <label
+                              className="px-2"
+                              htmlFor="organization_type"
+                              onClick={() => handleClick("organization_type")}
+                            >
+                              Select Organization Type
+                              <span className="text-danger">*</span>
+                            </label>
                           </div>
-                          <div className="col-lg-4 mb-lg-0 my-md-2 my-4 custom-class-form-div">
+                          <div className="col-lg-4 mb-4 custom-class-form-div">
                             <input
                               onBlur={onInputBlur}
                               onFocus={handleFocus}
@@ -1011,9 +1167,16 @@ const Registration = () => {
                               className="form-control custom-input"
                               required
                             />
-                            <label className="px-2" htmlFor="company_name" onClick={() => handleClick('company_name')} >Organization Name<span className="text-danger">*</span></label>
+                            <label
+                              className="px-2"
+                              htmlFor="company_name"
+                              onClick={() => handleClick("company_name")}
+                            >
+                              Organization Name
+                              <span className="text-danger">*</span>
+                            </label>
                           </div>
-                          <div className="col-lg-4 mb-lg-0 my-md-2 my-4 custom-class-form-div">
+                          <div className="col-lg-4 mb-4 custom-class-form-div">
                             <input
                               onChange={onInputChange}
                               onBlur={onInputBlur}
@@ -1024,7 +1187,13 @@ const Registration = () => {
                               className="form-control text-uppercase  custom-input"
                               required
                             />
-                            <label className="px-2" htmlFor="gst_number" onClick={() => handleClick('gst_number')} >GST Number<span className="text-danger">*</span></label>
+                            <label
+                              className="px-2"
+                              htmlFor="gst_number"
+                              onClick={() => handleClick("gst_number")}
+                            >
+                              GST Number<span className="text-danger">*</span>
+                            </label>
                             <span
                               className={`pe-1 ${gstValidationMessage ? "text-danger" : "d-none"
                                 }`}
@@ -1035,8 +1204,8 @@ const Registration = () => {
                         </div>
 
                         {/* TAN & CIN */}
-                        <div className="row  mt-lg-3 mt-2 align-items-center" >
-                          <div className="col-lg-4 mb-lg-0 my-md-2 my-4 custom-class-form-div">
+                        <div className="row  mt-lg-3 mt-2 align-items-center">
+                          <div className="col-lg-4 mb-4 custom-class-form-div">
                             <input
                               onChange={onInputChange}
                               onBlur={onInputBlur}
@@ -1047,7 +1216,13 @@ const Registration = () => {
                               className="form-control text-uppercase  custom-input"
                               required
                             />
-                            <label className="px-2" htmlFor="tan_number" onClick={() => handleClick('tan_number')} >TAN Number<span className="text-danger">*</span></label>
+                            <label
+                              className="px-2"
+                              htmlFor="tan_number"
+                              onClick={() => handleClick("tan_number")}
+                            >
+                              TAN Number<span className="text-danger">*</span>
+                            </label>
                             <span
                               className={`pe-1 ${tanValidationMessage ? "text-danger" : "d-none"
                                 }`}
@@ -1055,7 +1230,7 @@ const Registration = () => {
                               {tanValidationMessage}
                             </span>
                           </div>
-                          <div className="col-lg-4 mb-lg-0 my-md-2 my-4 custom-class-form-div">
+                          <div className="col-lg-4 mb-4 custom-class-form-div">
                             <input
                               onChange={onInputChange}
                               onBlur={onInputBlur}
@@ -1066,13 +1241,61 @@ const Registration = () => {
                               className="form-control text-uppercase  custom-input"
                               required
                             />
-                            <label className="px-2" htmlFor="cin_number" onClick={() => handleClick('cin_number')} >CIN Number<span className="text-danger">*</span></label>
+                            <label
+                              className="px-2"
+                              htmlFor="cin_number"
+                              onClick={() => handleClick("cin_number")}
+                            >
+                              CIN Number<span className="text-danger">*</span>
+                            </label>
                             <span
                               className={`pe-1 ${cinValidationMessage ? "text-danger" : "d-none"
                                 }`}
                             >
                               {cinValidationMessage}
                             </span>
+                          </div>
+                          {/* country selection */}
+                          <div className="col-lg-4 mb-4 custom-class-form-div ">
+                            <select
+                              onChange={onInputChange}
+                              onFocus={handleFocus}
+                              onBlur={onInputBlur}
+                              id="country"
+                              name="country_id"
+                              type="text"
+                              className="form-select custom-input"
+                              value={formData.country_id}
+                              required
+                            >
+                              <option
+                                ref={deselectStateInput}
+                                value=""
+                                style={{ color: "gray" }}
+                              ></option>
+                              <option value={1}> India </option>
+                              <option value={11}> Malaysia </option>
+                              {/* {states
+                          ? states.map((state, Index) => {
+                            return (
+                              <option
+                                id={`state-name-${state.state_id}`}
+                                key={Index}
+                                value={state.state_id}
+                              >
+                                {state.state_name}
+                              </option>
+                            );
+                          })
+                          : ""} */}
+                            </select>
+                            <label
+                              className="px-2 active"
+                              htmlFor="country"
+                              onClick={() => handleClick("country_id")}
+                            >
+                              Country <span className="text-danger">*</span>
+                            </label>
                           </div>
                         </div>
                         <CommonFormFields
@@ -1084,24 +1307,25 @@ const Registration = () => {
                           handleFocus={handleFocus}
                           handleClick={handleClick}
                           loading={loading}
+                          countryId={countryFlag}
                           onMobileNumberInputBlur={onMobileNumberInputBlur}
                           onMobileNumberInputChange={onMobileNumberInputChange}
                         />
                       </div>
                     </form>
-
                   </div>
                 </div>
 
                 {/* Already registered? */}
                 <small className="token-verify-link ">
-                  <div> Already registered?
+                  <div>
+                    {" "}
+                    Already registered?
                     <NavLink to="/register/verify" className="fw-bold ps-1">
                       click here to verify
-                    </NavLink></div>
+                    </NavLink>
+                  </div>
                 </small>
-
-
               </div>
             </div>
           </div>
@@ -1142,7 +1366,13 @@ const Registration = () => {
                         onBlur={onInputBlur}
                         onFocus={handleFocus}
                       />
-                      <label className="px-2" htmlFor="flat_number" onClick={() => handleClick('flat_number')} >Flat Number  </label>
+                      <label
+                        className="px-2"
+                        htmlFor="flat_number"
+                        onClick={() => handleClick("flat_number")}
+                      >
+                        Flat Number{" "}
+                      </label>
                     </div>
                   </div>
                   {/* Building Name */}
@@ -1157,7 +1387,13 @@ const Registration = () => {
                         onBlur={onInputBlur}
                         onFocus={handleFocus}
                       />
-                      <label className="px-2" htmlFor="building_name" onClick={() => handleClick('building_name')} >Building Name  </label>
+                      <label
+                        className="px-2"
+                        htmlFor="building_name"
+                        onClick={() => handleClick("building_name")}
+                      >
+                        Building Name{" "}
+                      </label>
                     </div>
                   </div>
                   {/* Society Name */}
@@ -1173,7 +1409,13 @@ const Registration = () => {
                         onFocus={handleFocus}
                       />
 
-                      <label className="px-2" htmlFor="society_name" onClick={() => handleClick('society_name')} >Society Name  </label>
+                      <label
+                        className="px-2"
+                        htmlFor="society_name"
+                        onClick={() => handleClick("society_name")}
+                      >
+                        Society Name{" "}
+                      </label>
                     </div>
                   </div>
                   {/*  Plot Number */}
@@ -1189,7 +1431,14 @@ const Registration = () => {
                         onFocus={handleFocus}
                       />
 
-                      <label className="px-2" htmlFor="plot_number" onClick={() => handleClick('plot_number')} > Plot Number  </label>
+                      <label
+                        className="px-2"
+                        htmlFor="plot_number"
+                        onClick={() => handleClick("plot_number")}
+                      >
+                        {" "}
+                        Plot Number{" "}
+                      </label>
                     </div>
                   </div>
                   {/* Locality */}
@@ -1204,7 +1453,13 @@ const Registration = () => {
                         onChange={onInputChange}
                         onFocus={handleFocus}
                       />
-                      <label className="px-2" htmlFor="locality" onClick={() => handleClick('locality')} >Locality<span className="text-danger">*</span></label>
+                      <label
+                        className="px-2"
+                        htmlFor="locality"
+                        onClick={() => handleClick("locality")}
+                      >
+                        Locality<span className="text-danger">*</span>
+                      </label>
                     </div>
                   </div>
                   {/* Landmark */}
@@ -1219,95 +1474,148 @@ const Registration = () => {
                         onBlur={onInputBlur}
                         onFocus={handleFocus}
                       />
-                      <label className="px-2" htmlFor="landmark" onClick={() => handleClick('landmark')} >Landmark <span className="text-danger">*</span></label>
+                      <label
+                        className="px-2"
+                        htmlFor="landmark"
+                        onClick={() => handleClick("landmark")}
+                      >
+                        Landmark <span className="text-danger">*</span>
+                      </label>
                     </div>
                   </div>
-                  {/* State */}
+                  {/* State Code */}
                   <div className="col-md-6 my-md-2 my-4">
                     <div className="form-group mb-3 custom-class-form-div">
-                      <select
-                        onChange={onInputChange}
-                        onFocus={handleFocus}
-                        onBlur={onInputBlur}
+                      <ReactSelect
                         id="state"
                         name="state"
-                        type="text"
-                        className="form-select custom-input"
+                        className="custom-input"
+                        options={states?.map((state) => ({
+                          value: state.state_id,
+                          label: state.state_name,
+                        }))}
+                        onChange={(selectedOption) => {
+                          onInputChange({
+                            target: {
+                              name: "state",
+                              value: selectedOption.value,
+                              label: selectedOption.label,
+                            },
+                          });
+                        }}
+                        onFocus={handleInputFocus}
+                        onBlur={onInputBlur}
+                        styles={{
+                          placeholder: (provided) => ({
+                            ...provided,
+                            color: "transparent",
+                          }),
+                        }}
+                      />
+                      <label
+                        className="px-2"
+                        htmlFor="state"
+                        onClick={() => handleClick("state")}
                       >
-
-                        <option
-                          ref={deselectStateInput}
-                          value=""
-                          style={{ color: "gray" }}
-                        >
-                        </option>
-                        {states
-                          ? states.map((state, Index) => {
-                            return (
-                              <option
-                                id={`state-name-${state.state_id}`}
-                                key={Index}
-                                value={state.state_id}
-                              >
-                                {state.state_name}
-                              </option>
-                            );
-                          })
-                          : ""}
-                      </select>
-                      <label className="px-2" htmlFor="state" onClick={() => handleClick('state')} >State <span className="text-danger">*</span></label>
+                        State <span className="text-danger">*</span>
+                      </label>
                     </div>
                   </div>
-                  {/* City */}
-                  <div className={`col-md-6 my-md-2 my-4 ${cityVisibilityClass}`}>
+                  {/* City Code */}
+                  <div
+                    className={`col-md-6 my-md-2 my-4 ${cityVisibilityClass}`}
+                  >
                     <div className="form-group mb-3 custom-class-form-div">
-                      <select
-                        onChange={onInputChange}
-                        onFocus={handleFocus}
-                        onBlur={onInputBlur}
+                      <ReactSelect
                         id="city"
                         name="city"
-                        type="text"
-                        className="form-select custom-input"
+                        className="custom-input"
+                        options={citiesByState?.map((city) => ({
+                          value: city.city_id, // Value sent to the onChange function (city ID)
+                          label: city.city_name, // Displayed label for the dropdown (city name)
+                        }))}
+                        onChange={(selectedOption) => {
+                          if (selectedOption) {
+                            // Pass the city ID and name to onInputChange
+                            onInputChange({
+                              target: {
+                                name: "city",
+                                value: selectedOption.value, // Store city ID
+                              },
+                            });
+                            setZipCity(selectedOption.label); // Store the city name
+                          }
+                        }}
+                        onFocus={handleInputFocus}
+                        onBlur={onInputBlur}
+                        styles={{
+                          placeholder: (provided) => ({
+                            ...provided,
+                            color: "transparent",
+                          }),
+                        }}
+                      />
+                      <label
+                        className="px-2"
+                        htmlFor="city"
+                        onClick={() => handleClick("city")}
                       >
-                        <option
-                          id="selectedCity"
-                          value=""
-                          style={{ color: "gray" }}
-                        >
-                        </option>
-                        {citiesByState
-                          ? citiesByState.map((city, Index) => {
-                            return (
-                              <option
-                                id={`city-name-${city.city_id}`}
-                                key={Index}
-                                value={city.city_id}
-                              >
-                                {city.city_name}
-                              </option>
-                            );
-                          })
-                          : ""}
-                      </select>
-
-                      <label className="px-2" htmlFor="city" onClick={() => handleClick('city')} >City <span className="text-danger">*</span></label>
+                        City <span className="text-danger">*</span>
+                      </label>
                     </div>
                   </div>
                   {/* ZIP Code */}
                   <div className="col-md-6 my-md-2 my-4">
                     <div className="form-group mb-3 custom-class-form-div">
-                      <input
-                        type="text"
-                        onChange={onInputChange}
-                        onFocus={handleFocus}
+                      <ReactSelect
                         id="zip"
-                        onBlur={onInputBlur}
                         name="zip"
-                        className={`form-control custom-input border-${zipCodeValidationColor}`}
+                        className={`custom-input border-${zipCodeValidationColor}`}
+                        options={[
+                          ...zipCodes.map((zip) => ({
+                            value: zip,
+                            label: zip,
+                          })),
+                          { value: "other", label: "Other" },
+                        ]}
+                        onChange={(selectedOption) => {
+                          onInputChange({
+                            target: {
+                              name: "zip",
+                              value: selectedOption.value,
+                            },
+                          });
+                        }}
+                        onFocus={handleInputFocus}
+                        onBlur={onInputBlur}
+                        // Customize the placeholder color
+                        styles={{
+                          placeholder: (provided) => ({
+                            ...provided,
+                            color: "transparent",
+                          }),
+                        }}
                       />
+                      <label
+                        className="px-2"
+                        htmlFor="zip"
+                        onClick={() => handleClick("zip")}
+                      >
+                        Zip Code <span className="text-danger">*</span>
+                      </label>
 
-                      <label className="px-2" htmlFor="zip" onClick={() => handleClick('zip')} >zip Code <span className="text-danger">*</span></label>
+                      {/* Show custom ZIP input when "Other" is selected */}
+                      {isCustomZip && (
+                        <input
+                          type="text"
+                          name="customZip"
+                          value={customZip}
+                          onChange={onInputChange}
+                          className={`form-control mt-2 border-${zipCodeValidationColor}`}
+                          placeholder="Enter your ZIP code"
+                        />
+                      )}
+                      {/* Validation message for the ZIP code */}
                       <span
                         className={`pe-1 ${zipCodeValidationMessage ? "text-danger" : "d-none"
                           }`}
@@ -1316,8 +1624,13 @@ const Registration = () => {
                       </span>
                     </div>
                   </div>
+
                   <div className="modal-footer justify-content-between">
-                    <p className='text-secondary'>All fields marked with an asterisk (<span className="text-danger fw-bold">*</span>) are mandatory.</p>
+                    <p className="text-secondary">
+                      All fields marked with an asterisk (
+                      <span className="text-danger fw-bold">*</span>) are
+                      mandatory.
+                    </p>
                     <button
                       onClick={onAddressFormSubmit}
                       className={`btn btn-primary ${locality &&

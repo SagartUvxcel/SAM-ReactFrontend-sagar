@@ -42,6 +42,7 @@ const ViewSearchResults = () => {
     banks: "",
   });
   const { states, assetCategory, cities, banks } = searchFields;
+  const countryId = updatedCountry === "india" ? 1 : 11;
 
   // It will fetch all states, banks, assets from api and will map those values to respective select fields.
   const getSearchDetails = async () => {
@@ -51,12 +52,10 @@ const ViewSearchResults = () => {
       categoryAPI: `/sam/v1/property/by-category`,
     };
 
-    const countryId = updatedCountry === "india" ? 1 : 11;
     const postData = { "country_id": countryId }
     try {
-      // Get all states from api.
-      // const allStates = await axios.get(apis.stateAPI);
-      const allStates = await axios.post(apis.stateAPI, postData); 
+      // Get all states from api. 
+      const allStates = await axios.post(apis.stateAPI, postData);
       // Get all banks from api.
       const allBanks = await axios.post(apis.bankAPI, postData);
       // Get all asset Categories from api.
@@ -117,28 +116,21 @@ const ViewSearchResults = () => {
       batch_number: 1,
     };
     try {
-      // This api is only for getting all the records and count length of array of properties so that we can decide page numbers for pagination.
-      console.log(dataForTotalCount);
+      // This api is only for getting all the records and count length of array of properties so that we can decide page numbers for pagination. 
       await axios.post(isLogin ? apis.authSearchAPI : apis.searchAPI, dataForTotalCount, {
         headers: authHeaders,
-      }).then((res) => {
-        console.log(res.data);
+      }).then((res) => { 
         if (res.data) {
           setPageCount(Math.ceil(res.data.length / batch_size));
         }
-      });
-
-      console.log(dataToPost);
+      }); 
       // Post data and get Searched result from response.
       await axios.post(apis.searchAPI, dataToPost).then((res) => {
-        // Store Searched results into propertyData useState.
-
-        console.log(res.data);
+        // Store Searched results into propertyData useState. 
         if (res.data !== null) {
           setPropertyData(res.data);
           setLoading(false);
-          setTimeout(() => {
-            // showUpdatedMinMaxPriceRage();
+          setTimeout(() => { 
           }, 1000);
           paginationRef.current.classList.remove("d-none");
         } else {
@@ -514,9 +506,7 @@ const ViewSearchResults = () => {
     }
   };
 
-  const navigateToReceiver = (data) => {
-
-    console.log(data);
+  const navigateToReceiver = (data) => { 
     // Use navigate with the encoded data in URL parameters 
     const secretKey = "my_secret_key";
     // Encoding (Encryption)
@@ -533,7 +523,7 @@ const ViewSearchResults = () => {
   };
 
   useEffect(() => {
-    if (location.state) {
+    if (location.state) { 
       setDataFromHome(location.state.sensitiveData);
       setDataToPost(location.state.sensitiveData);
       setBatch_size(location.state.sensitiveData.batch_size);
@@ -701,7 +691,7 @@ const ViewSearchResults = () => {
                         htmlFor=""
                         className="form-label common-btn-font"
                       >
-                        Price (<i className="bi bi-currency-rupee"></i>)
+                        Price ({countryId === 11 ? "RM" : <i className="bi bi-currency-rupee"></i>})
                       </label>
                     </div>
                     {/* price Min max */}
@@ -725,7 +715,7 @@ const ViewSearchResults = () => {
                                 value={price}
                                 key={Index}
                               >
-                                {price}
+                                {countryId === 11 ? <>{convertCurrency(parseInt(price), "Malaysia", "RM", 0.0564)}<small className="text-muted fs-6"> RM </small></> : `${price}`}
                               </option>
                             );
                           })}
@@ -750,7 +740,7 @@ const ViewSearchResults = () => {
                                 value={price}
                                 key={Index}
                               >
-                                {price}
+                                {countryId === 11 ? <>{convertCurrency(parseInt(price), "Malaysia", "RM", 0.0564)}<small className="text-muted fs-6"> RM </small></> : `${price}`}
                               </option>
                             );
                           })}
@@ -1110,7 +1100,7 @@ const ViewSearchResults = () => {
                           htmlFor=""
                           className="form-label common-btn-font"
                         >
-                          Price (<i className="bi bi-currency-rupee"></i>)
+                          Price ({countryId === 11 ? "RM" : <i className="bi bi-currency-rupee"></i>})
                         </label>
                       </div>
                       {/* min_Price */}
@@ -1133,7 +1123,7 @@ const ViewSearchResults = () => {
                                 value={price}
                                 key={Index}
                               >
-                                {price}
+                                {countryId === 11 ? <>{convertCurrency(parseInt(price), "Malaysia", "RM", 0.0564)}<small className="text-muted fs-6"> RM </small></> : `${price}`}
                               </option>
                             );
                           })}
@@ -1159,7 +1149,7 @@ const ViewSearchResults = () => {
                                 value={price}
                                 key={Index}
                               >
-                                {price}
+                                {countryId === 11 ? <>{convertCurrency(parseInt(price), "Malaysia", "RM", 0.0564)}<small className="text-muted fs-6"> RM </small></> : `${price}`}
                               </option>
                             );
                           })}
@@ -1380,8 +1370,7 @@ const ViewSearchResults = () => {
                       city_name,
                       city_id,
                       range,
-                    } = property;
-                    console.log(range)
+                    } = property; 
                     return (
                       <div className="col-xl-3 col-lg-4 col-md-6" key={Index}>
                         <div className="property-card-wrapper">
@@ -1463,13 +1452,9 @@ const ViewSearchResults = () => {
                                         type_id: dataToPost.type_id
                                           ? dataToPost.type_id
                                           : type_id,
-                                        min_price:
-                                          // dataToPost.min_price
-                                          //   ? dataToPost.min_price : 
+                                        min_price: 
                                           range.split("-")[0],
-                                        max_price:
-                                          // dataToPost.max_price
-                                          //   ? dataToPost.max_price: 
+                                        max_price: 
                                           range.split("-")[1],
                                       });
 
@@ -1492,22 +1477,7 @@ const ViewSearchResults = () => {
                                   >
                                     View
                                   </button>
-                                )}
-
-                                {/* {localData ? (
-                                  <>
-                                    <button
-                                      data-bs-toggle="modal"
-                                      data-bs-target="#commentModal"
-                                      className="btn btn-primary common-btn-font"
-                                      style={{ width: "30%" }}
-                                    >
-                                      Contact
-                                    </button>
-                                  </>
-                                ) : (
-                                  <></>
-                                )} */}
+                                )} 
                               </div>
                             </div>
                           </div>

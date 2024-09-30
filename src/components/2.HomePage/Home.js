@@ -33,14 +33,18 @@ function Home() {
     localities: "",
     assetCategory: "",
     banks: "",
-  });
+  }); 
+  
+  const { states, assetCategory, cities } = searchFields; //destructing 
+  
 
   // useState to store values of each select box for search functionality and Object destructuring.
   const [dataToPost, setDataToPost] = useState({
     batch_size: 4,
     batch_number: 1,
   });
-  const { states, assetCategory, cities } = searchFields;
+  
+
 
   const [searchHistory, setSearchHistory] = useState([]);
   const [currentCountry, setCurrentCountry] = useState(updatedCountry);
@@ -51,20 +55,17 @@ function Home() {
       stateAPI: `/sam/v1/property/by-state`,
       bankAPI: `/sam/v1/property/by-bank`,
       categoryAPI: `/sam/v1/property/by-category`,
-    };
-    console.log(currentCountry);
+    }; 
     const countryId = currentCountry === "india" ? 1 : 11;
 
     const postData = { "country_id": countryId }
     try {
-      // Get all states from api.
-      // const allStates = await axios.get(apis.stateAPI);
+      // Get all states from api. 
       const allStates = await axios.post(apis.stateAPI, postData);  
       // Get all banks from api.
       const allBanks = await axios.post(apis.bankAPI, postData); 
       // Get all asset Categories from api.
-      const assetCategories = await axios.get(apis.categoryAPI);
-
+      const assetCategories = await axios.get(apis.categoryAPI);       
       // store states, banks and asset categories into searchFields useState.
       setSearchFields({
         ...searchFields,
@@ -142,7 +143,8 @@ function Home() {
   }, [dataToPost]);
 
   // This function will run on change of input fields.
-  const onFieldsChange = async (e) => {
+  const onFieldsChange = async (e) => { 
+    
     let apis = {
       cityAPI: `/sam/v1/property/by-city`,
       addressAPI: `/sam/v1/property/by-address`,
@@ -229,6 +231,12 @@ function Home() {
   useEffect(() => { 
   }, [currentCountry])
 
+  useEffect(() => { 
+    const updatedCountry = localStorage.getItem("location");
+    setCurrentCountry(updatedCountry);
+    // eslint-disable-next-line
+  }, [])
+
 
   return (
     <Layout>
@@ -273,10 +281,7 @@ function Home() {
 
             {/* 5 select boxes */}
             <div className="d-flex justify-content-center ">
-              <div className="row five-box-row mt-lg-5 mt-md-0">
-                {/* <div className="row">
-                <p>Search property</p>
-              </div> */}
+              <div className="row five-box-row mt-lg-5 mt-md-0"> 
                 {/* states */}
                 <div className="col-lg-3 col-md-4 col-12">
                   <div className="inner-box">

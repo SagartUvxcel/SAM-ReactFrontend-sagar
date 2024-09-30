@@ -112,16 +112,14 @@ const ListOfProperties = () => {
   const viewCurrentProperty = async () => {
     setPageLoading(true);
     delete dataFromParams.batch_number;
-    delete dataFromParams.batch_size;
-    console.log(dataFromParams);
+    delete dataFromParams.batch_size; 
     const countryId = updatedCountry === "india" ? 1 : 11;
     const postData = { "country_id": countryId }
     try {
       const res = await axios.post(`/sam/v1/property/auth/view-properties`, dataFromParams, {
         headers: authHeaders,
       });
-      let propertyDetails = res.data;
-      console.log(propertyDetails);
+      let propertyDetails = res.data; 
       const bankRes = await axios.post(`/sam/v1/property/by-bank`,postData);
       setBanks(bankRes.data);
       setSelectedPropertyResults(propertyDetails);
@@ -192,8 +190,7 @@ const ListOfProperties = () => {
         .then((res) => {
           if (res.data.msg === 0) {
             toast.success("Message sent successfully");
-          } else if (res.data.msg === 3) {
-            // toast.error("Invalid emailID");
+          } else if (res.data.msg === 3) { 
           } else {
             toast.error("Internal server error");
           }
@@ -502,7 +499,6 @@ const ListOfProperties = () => {
 
       // Clean up
       link.parentNode.removeChild(link);
-      // window.URL.revokeObjectURL(file.srcOfFile);
     })
   }
 
@@ -1135,7 +1131,7 @@ const ListOfProperties = () => {
                                           data-bs-target="#documentModal"
                                           className="btn btn-sm btn-primary"
                                         >
-                                          <i className="bi bi-eye"></i>
+                                          <i className="bi bi-eye" title="View"></i>
                                         </button>
                                       </div>
                                     </td>
@@ -1145,7 +1141,7 @@ const ListOfProperties = () => {
                                         className="btn btn-sm btn-primary me-4"
                                         onClick={() => downloadFileFunction(document.document_id, currentPropertyId)}
                                       >
-                                        <i className="bi bi-download text-white"></i>
+                                        <i className="bi bi-download text-white" title="Download"></i>
                                       </button>
                                     </td>
                                   </> : ""}
@@ -1198,7 +1194,7 @@ const ListOfProperties = () => {
                     download={fileName}
                     title="Download"
                   >
-                    <i className="bi bi-download text-primary"></i>
+                   Download <i className="bi bi-download text-primary"></i>
                   </a>}
                 <i
                   data-bs-dismiss="modal"

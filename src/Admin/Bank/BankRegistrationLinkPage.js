@@ -104,15 +104,13 @@ const BankRegistrationLinkPage = () => {
                                     ...validationDetails,
                                     emailValidationMessage: "Email id already exists.",
                                 });
-                                style.borderColor = "red";
-                                // setFormData({ ...formData, [name]: "" });
+                                style.borderColor = "red"; 
                             } else if (!emailFormat.test(value)) {
                                 setValidationDetails({
                                     ...validationDetails,
                                     emailValidationMessage: "Invalid email Id.",
                                 });
-                                style.borderColor = "red";
-                                // setFormData({ ...formData, [name]: "" });
+                                style.borderColor = "red"; 
                             } else {
                                 setValidationDetails({
                                     ...validationDetails,
@@ -377,7 +375,6 @@ const BankRegistrationLinkPage = () => {
                                                         ) : (
                                                             <> </>
                                                         )}
-                                                        {/* <option value="other">Other</option> */}
 
                                                     </select>
                                                     <label className="ps-0" htmlFor="bank_name" onClick={() => handleClick('bank_name')} >Select Bank Name<span className="text-danger">*</span></label>

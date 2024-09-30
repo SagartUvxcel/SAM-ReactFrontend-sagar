@@ -22,9 +22,11 @@ const BreadCrumb = ({
   const data = JSON.parse(localStorage.getItem("data"));
   if (data) {
     isBank = data.isBank;
-    roleId = data.roleId; 
+    roleId = data.roleId;
   }
   const [isBulkUploadPropertyPageActive, setIsBulkUploadPropertyPageActive] =
+    useState(false);
+  const [isAddSubscriptionsPageActive, setIsAddSubscriptionsPageActive] =
     useState(false);
 
   // If we are on Users section in admin then isUserPageActive will be true.
@@ -43,6 +45,8 @@ const BreadCrumb = ({
         `${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"}/property/upload-properties`
       )
     );
+    setIsAddSubscriptionsPageActive(
+      window.location.href.includes(`/admin/subscription-facility`));
   };
 
   let sampleLink = (
@@ -199,6 +203,12 @@ const BreadCrumb = ({
               ) : (
                 <li className="breadcrumb-item text-secondary">Properties</li>
               )}
+            </>
+          ) : isAddSubscriptionsPageActive ? (
+            <>
+              <li className="breadcrumb-item text-secondary">
+                Subscription Facility
+              </li>
             </>
           ) : (
             <></>

@@ -3,9 +3,11 @@ import React, { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import Layout from "../../components/1.CommonLayout/Layout";
 import AdminSideBar from "../AdminSideBar";
+import { useNavigate } from "react-router-dom";
 import BreadCrumb from "../BreadCrumb";
 import { checkLoginSession, openInNewTab } from "../../CommonFunctions";
 import CommonSpinner from "../../CommonSpinner";
+
 
 let authHeader = "";
 let bank_Id = "";
@@ -18,6 +20,8 @@ let isBank = false;
 // main component function
 const AddProperty = () => {
 
+  
+  const navigate = useNavigate();
   // login credentials
   const data = JSON.parse(localStorage.getItem("data"));
   if (data) {
@@ -27,6 +31,9 @@ const AddProperty = () => {
     roleId = data.roleId;
     branch_Id = data.branch_Id;
   }
+  
+  const updatedCountry = localStorage.getItem("location");
+  const countryId = updatedCountry === "india" ? 1 : 11;
 
   const [formData, setFormData] = useState({
     is_sold: 0,
@@ -39,6 +46,7 @@ const AddProperty = () => {
       locality: "Urban",
       state: "",
       zip: "",
+      country: `${countryId}`,
     },
   });
   const { is_sold, saleable_area, carpet_area } = formData;
@@ -58,13 +66,10 @@ const AddProperty = () => {
   const citySelectBoxRef = useRef();
   const notSoldCheckRef = useRef();
   const [pathLocation, setPathLocation] = useState("");
-  const updatedCountry = localStorage.getItem("location");
-
 
   // get category,bank, state details
   const getDataFromApi = async () => {
 
-    const countryId = updatedCountry === "india" ? 1 : 11;
     const postData = { "country_id": countryId }
     try {
       // property category 
@@ -94,16 +99,14 @@ const AddProperty = () => {
     const propertyCategoryRes = await axios.get(`/sam/v1/property/by-category`);
 
     setPropertyCategories(propertyCategoryRes.data);
-    const bankRes = await axios.post(`/sam/v1/property/by-bank`, postData);
-    console.log(bankRes);
+    const bankRes = await axios.post(`/sam/v1/property/by-bank`, postData); 
     setBanks(bankRes.data);
     const statesRes = await axios.post(`/sam/v1/property/by-state`, postData);
     setAllStates(statesRes.data);
   };
 
   // get bank Details
-  const getBankDetails = async (bankData) => {
-    console.log(bankData, bank_Id);
+  const getBankDetails = async (bankData) => { 
     const activeBankDetails = bankData.filter(bank => bank.bank_id === bank_Id)[0]
     setActiveBank(activeBankDetails);
     const branchRes = await axios.get(`/sam/v1/property/auth/bank-branches/${bank_Id}`, {
@@ -239,11 +242,13 @@ const AddProperty = () => {
       commonFnToSaveAddressDetails(name, parseInt(value));
     } else if (name === "locality") {
       commonFnToSaveAddressDetails(name, value);
-    } else if (name === "landmark") {
+    } else if (name === "country") {
+      commonFnToSaveAddressDetails(name, String(value));
+    }else if (name === "landmark") {
       commonFnToSaveAddressDetails(name, value);
     } else if (name === "state") {
       if (value) {
-        commonFnToSaveAddressDetails(name, parseInt(value));
+        commonFnToSaveAddressDetails(name, String(value));
         const citiesRes = await axios.post(`/sam/v1/property/by-city`, {
           state_id: parseInt(value),
         });
@@ -252,10 +257,8 @@ const AddProperty = () => {
       } else {
         citySelectBoxRef.current.classList.add("d-none");
       }
-
-
     } else if (name === "city") {
-      commonFnToSaveAddressDetails(name, parseInt(value));
+      commonFnToSaveAddressDetails(name, String(value));
     } else if (name === "zip") {
       if (value) {
         commonFnToSaveAddressDetails(name, parseInt(value));
@@ -287,7 +290,7 @@ const AddProperty = () => {
   // on Form Submit
   const onFormSubmit = async (e) => {
     e.preventDefault();
-    let zipCodeValue = String(zip);
+    let zipCodeValue = String(zip); 
     await axios
       .post(`/sam/v1/customer-registration/zipcode-validation`, {
         zipcode: zipCodeValue,
@@ -328,7 +331,7 @@ const AddProperty = () => {
             if (res.data.msg === 0) {
               localStorage.setItem("upload-doc", JSON.stringify({
                 number: formData.property_number,
-                id: null,
+                id: res.data.property_id,
               }));
               localStorage.setItem("property_number", formData.property_number);
               resetValidationsOnSubmit();
@@ -344,7 +347,7 @@ const AddProperty = () => {
               );
             }
           });
-      } catch (error) {
+      } catch (error) { 
         toast.error("Internal server error");
       }
     }
@@ -371,7 +374,22 @@ const AddProperty = () => {
         <div className="row min-100vh position-relative">
           <AdminSideBar />
           <div className="col-xl-10 col-lg-9 col-md-8 mt- mt-md-0">
-            <BreadCrumb />
+            {/* breadCrumb and back button */}
+            <div className="row justify-content-between align-items-center mb-md-0 mb-2">
+              <div className="col-md-6">
+                <BreadCrumb />
+              </div>
+              {/* /back button */}
+              <div className="col-md-6 text-end">
+                <button
+                  className="btn btn-sm btn-outline-primary"
+                  onClick={() => { navigate(`${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"}`) }}
+                >
+                  <i className="bi bi-arrow-left"></i> Back
+                </button>
+              </div>
+
+            </div>
             {showLoader ? <>
               <div
                 className="d-flex justify-content-center align-items-center"
@@ -448,8 +466,28 @@ const AddProperty = () => {
                                   <label className="px-2" htmlFor="property_number" onClick={() => handleClick('property_number')} >Property Number<span className="text-danger">*</span></label>
                                 </div>
                               </div>
+                              {/* country selection */}
+                              <div className="col-xl-4 col-md-6 mt-xl-0 mt-3">
+                                <div className="form-group custom-class-form-div">
+                                  <select
+                                    id="country"
+                                    name="country"
+                                    className="form-select custom-input"
+                                    onChange={onInputChange}
+                                    onBlur={onInputBlur}
+                                    onFocus={handleFocus}
+                                    value={formData.address_details.country}
+                                    required
+                                  >
+                                    <option value=""></option>
+                                    <option value="1">India</option>
+                                    <option value="11">Malaysia</option>
+                                  </select>
+                                  <label className="px-2 active" htmlFor="country" onClick={() => handleClick('country')} >Country<span className="text-danger">*</span></label>
+                                </div>
+                              </div>
                               {/* Bank */}
-                              <div className="col-xl-4 col-md-6 mt-3 mt-xl-0">
+                              <div className="col-xl-4 col-md-6 mt-3">
                                 <div className="form-group custom-class-form-div">
                                   {pathLocation === 'admin' ?
                                     <select

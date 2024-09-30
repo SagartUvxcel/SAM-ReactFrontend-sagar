@@ -87,8 +87,7 @@ const LoginMainPage = () => {
           `/sam/v1/customer-registration/login`,
           JSON.stringify({ username: email, password: password })
         )
-        .then((res) => {
-          console.log(res.data);
+        .then((res) => { 
           const { email, token, role_id, user_id, is_bank, subscription_end_date, subscription_status, subscription_plan_id, bank_id, branch_id,country_id } = res.data.token; 
           let admin = null;
           let editor = null;
@@ -170,7 +169,7 @@ const LoginMainPage = () => {
   return (
     <Layout>
       <section className="login-wrapper min-100vh section-padding">
-        <div className="container-fluid mt-5">
+        <div className="container-fluid mt-4">
           <div className="row justify-content-evenly">
             <div className="col-lg-5 col-xl-5 order-lg-1 order-2 mt-lg-0 mt-5 mb-5">
               <img src={login} alt="" className="login-img" />
@@ -270,7 +269,7 @@ const LoginMainPage = () => {
                 </div>
                 <hr />
                 <div className="d-flex  justify-content-between">
-                  <div className="pe-3">
+                  <div className="pe-3 common-label-text-fontSize">
                     <small className="fw-bold">
                       <NavLink
                         className="ps-1 text-decoration-none"
@@ -280,8 +279,8 @@ const LoginMainPage = () => {
                       </NavLink>
                     </small>
                   </div> 
-                  <div className="">
-                    <small className="register-link text-end fw-bold ps-1">
+                  <div className="common-label-text-fontSize">
+                    <small className="register-link text-end fw-bold ps-1 ">
                       Not Registered ?
                       <NavLink className="ps-1" to="/register">
                         Click here.
@@ -290,7 +289,7 @@ const LoginMainPage = () => {
                     </small>
                   </div>
                 </div>
-                <div className="md-mt-2 ps-1 md-text-end ms-text-start">
+                <div className="md-mt-2 ps-1 md-text-end ms-text-start common-label-text-fontSize">
                   <small className="register-link text-end fw-bold">
                     To active your account
                     <NavLink to="/inactive-account" className="fw-bold ps-1">

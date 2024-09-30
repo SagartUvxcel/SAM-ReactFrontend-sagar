@@ -2,8 +2,7 @@
 
 .gallery {
   display: flex;
-  flex-wrap: wrap;
-  /* gap: 10px; */
+  flex-wrap: wrap; 
 }
 
 .gallery-item {
@@ -22,8 +21,7 @@
   transition: filter 0.3s;
 }
 
-.list-of-properties-view-Image-Modal .gallery .gallery-item button {
-  /* height: 125px; */
+.list-of-properties-view-Image-Modal .gallery .gallery-item button { 
   width: 100%;
   padding: 2px;
 }

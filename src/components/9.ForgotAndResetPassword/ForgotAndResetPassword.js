@@ -8,8 +8,7 @@ import setPassImg from "../../images/setpass.svg";
 import LinkExpiredPasswordResetImage from "../../images/LinkExpiredPasswordResetImage.svg";
 import { rootTitle } from "../../CommonFunctions";
 
-const ForgotAndResetPassword = () => {
-  const navigate = useNavigate();
+const ForgotAndResetPassword = () => { 
   const goTo = useNavigate();
 
   //  Important variables for storing password data as well as validation data.
@@ -159,9 +158,7 @@ const ForgotAndResetPassword = () => {
         token:emailForgotPasswordToken,
       });
       try {
-        const { data } = await axios.post(`/sam/v1/customer-registration/forgot-password-change`, postData)
-
-        console.log(data);
+        const { data } = await axios.post(`/sam/v1/customer-registration/forgot-password-change`, postData) 
         if (data.status === 0) {
           setLoading(false);
           toast.success("Password Changed Successfully !");
@@ -219,11 +216,7 @@ const ForgotAndResetPassword = () => {
     setEmailForgotPasswordToken(emailFromEmailUrl);
 
     if (emailFromEmailUrl) {
-      // const forgotPasswordUrlToken = emailFromEmailUrl.split('='); 
-      // const emailToken = forgotPasswordUrlToken[0];
-      // const tokenDataToPost = forgotPasswordUrlToken[1]; 
-
-      // posting data 
+      // posting data
       const dataToPost = JSON.stringify(
         {
           token: emailFromEmailUrl
@@ -255,8 +248,7 @@ const ForgotAndResetPassword = () => {
         setShowLoader(false);
       }
     } else {
-      setShowLoader(false);
-      // navigate("/access-denied");
+      setShowLoader(false); 
     }
   };
 

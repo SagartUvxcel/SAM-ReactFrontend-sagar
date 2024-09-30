@@ -5,12 +5,14 @@ import AdminSideBar from './AdminSideBar';
 import { Button } from 'react-bootstrap';
 import axios from "axios";
 import { toast } from "react-toastify";
-import { SubscriptionFacilityFetching } from "../components/11.Subscription/SubscriptionFacilityFetching"; 
+import { SubscriptionFacilityFetching } from "../components/11.Subscription/SubscriptionFacilityFetching";
+import { useNavigate } from "react-router-dom";
+import BreadCrumb from "./BreadCrumb";
 
 let authHeaders = "";
 
 const AddSubscriptionFacility = () => {
-
+const navigate =useNavigate();
     const confirmDeleteInputRef = useRef();
     const data = JSON.parse(localStorage.getItem("data"));
     if (data) {
@@ -49,17 +51,14 @@ const AddSubscriptionFacility = () => {
                 })
                 .then((response) => {
                     const addRes = response.data;
-                    console.log(addRes);
                     if (addRes.status === 0) {
                         toast.success("Subscription facility added successfully.")
-                        // setSubscriptions([...subscriptions, { ...newSubscription }]);
                         fetchFacilityData();
                         setNewSubscription({ title: '', basic: false, advanced: false });
                         setShowAddModal(false);
                     }
                 });
         } catch (error) {
-            console.log(error);
             toast.error(error.response.data.error)
             setLoading(false);
         }
@@ -69,14 +68,12 @@ const AddSubscriptionFacility = () => {
     const handleEditSaveSubscription = async (index) => {
         let newArray = subscriptions.slice();
         newArray[index] = newSubscription;
-        console.log(newSubscription);
         const dataToPost = {
             subscription_facility_id: editSubScriptionFacilityId,
             title: newSubscription.title,
             basic: newSubscription.basic,
             advanced: newSubscription.advanced
         }
-        console.log(dataToPost);
         try {
             // Fetch plans from API URL
             await axios
@@ -100,7 +97,7 @@ const AddSubscriptionFacility = () => {
             setLoading(false);
         }
     };
-    
+
     // click on edit button function
     const handleEditSubscription = (index, sub_facility_id) => {
         setNewSubscription(subscriptions[index]);
@@ -126,7 +123,7 @@ const AddSubscriptionFacility = () => {
                         toast.success("Subscription facility deleted successfully.")
                         setSubscriptions(updatedSubscriptions);
                         setDeleteIndex(null);
-                        confirmDeleteInputRef.current.value="";
+                        confirmDeleteInputRef.current.value = "";
                         setLoading(false);
                     }
                 });
@@ -137,8 +134,8 @@ const AddSubscriptionFacility = () => {
     };
 
     // click on edit button function
-    const handleDeleteSubscriptionBtn = (index, subscription_facility_id) => {  
-        confirmDeleteInputRef.current.value="";
+    const handleDeleteSubscriptionBtn = (index, subscription_facility_id) => {
+        confirmDeleteInputRef.current.value = "";
         setDeleteIndex(index);
         setDeleteSubscriptionFacilityId(subscription_facility_id);
         setShowDeleteModal(true);
@@ -163,7 +160,22 @@ const AddSubscriptionFacility = () => {
                 <div className="row min-100vh position-relative">
                     <AdminSideBar />
                     <div className={`col-xl-10 col-lg-9 col-md-8 users-admin`} >
+                        {/* breadCrumb and back button */}
+                        <div className="row justify-content-between align-items-center mb-md-0 mb-2">
+                            <div className="col-md-6">
+                                <BreadCrumb />
+                            </div>
+                            {/* /back button */}
+                            <div className="col-md-6 text-end">
+                                <button
+                                    className="btn btn-sm btn-outline-primary"
+                                    onClick={() => { navigate(`/admin`) }}
+                                >
+                                    <i className="bi bi-arrow-left"></i> Back
+                                </button>
+                            </div>
 
+                        </div>
                         {loading ? (
                             <div className="d-flex justify-content-center align-items-center"
                                 style={{ minHeight: "60vh" }}
@@ -233,14 +245,14 @@ const AddSubscriptionFacility = () => {
                         tabIndex="-1"
                         role="dialog"
                     >
-                        <div className="modal-dialog" role="document">
+                        <div className="modal-dialog modal-dialog-centered" role="document">
                             <div className="modal-content">
                                 <div className="modal-header justify-content-between">
                                     <h5 className="modal-title"> Add Subscription Facility
                                     </h5>
                                     <button
                                         type="button"
-                                        className="close text-end border-0 bg-white"
+                                        className="close text-end h6 border-0 bg-white"
                                         onClick={() => setShowAddModal(false)}
                                         data-dismiss="modal"
                                         aria-label="Close"

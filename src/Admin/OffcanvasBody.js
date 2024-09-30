@@ -39,6 +39,7 @@ const OffcanvasBody = ({ canvasNumber, propertiesLinkDisabled, isBank, roleId })
           >
             <div className="card card-body bg-primary">
               <ul className="list-unstyled">
+                {/* /property */}
                 <li className="nav-item">
                   {propertiesLinkDisabled.propertiesLinkDisabled ? (
                     <span
@@ -59,7 +60,7 @@ const OffcanvasBody = ({ canvasNumber, propertiesLinkDisabled, isBank, roleId })
                     </NavLink>
                   )}
                 </li>
-
+                {/* Add button */}
                 <li className="nav-item">
                   <NavLink
                     className="nav-link sidebar-link"
@@ -69,7 +70,8 @@ const OffcanvasBody = ({ canvasNumber, propertiesLinkDisabled, isBank, roleId })
                     Add
                   </NavLink>
                 </li>
-                <li className="nav-item">
+                {/* Bulk Upload */}
+                {/* <li className="nav-item">
                   <NavLink
                     className="nav-link sidebar-link"
                     to={`${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"
@@ -77,7 +79,8 @@ const OffcanvasBody = ({ canvasNumber, propertiesLinkDisabled, isBank, roleId })
                   >
                     <i className="bi bi-upload me-2 text-light"></i>Bulk Upload
                   </NavLink>
-                </li>
+                </li> */}
+                {/* Bulk Upload With Documents */}
                 <li className="nav-item">
                   <NavLink
                     className="nav-link sidebar-link"
@@ -146,7 +149,7 @@ const OffcanvasBody = ({ canvasNumber, propertiesLinkDisabled, isBank, roleId })
                     </li>
                   </>
                 ) : (<>
-                {/* Branch */}
+                  {/* Branch */}
                   {roleId === 6 ?
                     <li className="nav-item">
                       <NavLink
@@ -163,18 +166,18 @@ const OffcanvasBody = ({ canvasNumber, propertiesLinkDisabled, isBank, roleId })
             </div>
           </div>
         </li> : ""}
-         {/* subscription facility */}
-         {roleId === 1 ?  <li className="nav-item">
+        {/* subscription facility */}
+        {roleId === 1 ? <li className="nav-item">
           <NavLink
             className="nav-link admin-home-link sidebar-link"
-            to={`/subscription-facility`}
+            to={`/admin/subscription-facility`}
           >
             <span className="mx-2">
-            <i className="bi bi-calendar2-check-fill"></i>
+              <i className="bi bi-calendar2-check-fill"></i>
             </span>
             Subscription
           </NavLink>
-        </li>:""}
+        </li> : ""}
 
         <hr className="text-white" />
       </ul>

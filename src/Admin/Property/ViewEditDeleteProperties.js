@@ -27,8 +27,6 @@ let branch_Id = "";
 let propertiesPerPage = 4;
 let initial_batch_number = 1;
 let isBank = false;
-let isLogin = false;
-
 
 const ViewEditDeleteProperties = () => {
 
@@ -46,7 +44,6 @@ const ViewEditDeleteProperties = () => {
   const data = JSON.parse(localStorage.getItem("data"));
   if (data) {
     authHeader = { Authorization: data.loginToken };
-    isLogin = data.isLoggedIn;
     isBank = data.isBank;
     roleId = data.roleId;
     bank_Id = data.bank_id;
@@ -54,6 +51,7 @@ const ViewEditDeleteProperties = () => {
   }
   const updatedCountry = localStorage.getItem("location");
   const countryId = updatedCountry === "india" ? 1 : 11;
+  const [webSocketUrl, setWebSocketUrl] = useState(null);
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(false);
   const [updateBtnLoading, setUpdateBtnLoading] = useState(false);
@@ -71,7 +69,6 @@ const ViewEditDeleteProperties = () => {
   const [storedDataToPost, setStoredDataToPost] = useState({});
   const [confirmDeletePropertyBtnDisabled, setConfirmDeletePropertyBtnDisabled] = useState(true);
   const [batch_size, setBatch_size] = useState(4);
-  const [propertyData, setPropertyData] = useState([]);
   const [searchFields, setSearchFields] = useState({
     states: "",
     cities: "",
@@ -81,7 +78,6 @@ const ViewEditDeleteProperties = () => {
   const { states, assetCategory, cities, banks } = searchFields;
   const [dataToPost, setDataToPost] = useState([]);
   const [searchBtnDisabled, setSearchBtnDisabled] = useState(true);
-  const [bankBoxDisable, setBankBoxDisable] = useState(false);
 
   useEffect(() => {
     if (dataToPost && Object.keys(dataToPost).length > 0) {
@@ -101,8 +97,7 @@ const ViewEditDeleteProperties = () => {
 
     const postData = { "country_id": countryId }
     try {
-      // Get all states from api.
-      // const allStates = await axios.get(apis.stateAPI);
+      // Get all states from api. 
       const allStates = await axios.post(apis.stateAPI, postData);
       // Get all banks from api.
       const allBanks = await axios.post(apis.bankAPI, postData);
@@ -177,10 +172,6 @@ const ViewEditDeleteProperties = () => {
     setLoading(true);
     paginationRef.current.classList.add("d-none");
     window.scrollTo(0, 0);
-    let apis = {
-      searchAPI: `/sam/v1/property/count-category`,
-      authSearchAPI: `/sam/v1/property/auth/count-category`,
-    };
     let dataForTotalCount = {
       ...dataToPost,
       batch_size: 1000,
@@ -188,13 +179,9 @@ const ViewEditDeleteProperties = () => {
       country_id: countryId,
     };
     try {
-      // This api is only for getting all the records and count length of array of properties so that we can decide page numbers for pagination.
-      console.log(dataForTotalCount);
-
       await axios.post(`/sam/v1/property/auth/property-count`, dataForTotalCount, {
         headers: authHeader,
       }).then((res) => {
-        console.log(res.data);
         if (res.data) {
           let totalCount = 0;
           let arr = res.data;
@@ -202,7 +189,6 @@ const ViewEditDeleteProperties = () => {
           arr && arr.forEach((type) => {
             totalCount += type.count;
           });
-          console.log(batch_size);
           setPageCount(Math.ceil(totalCount / batch_size));
         }
       });
@@ -213,13 +199,11 @@ const ViewEditDeleteProperties = () => {
         batch_size: 4,
         country_id: countryId,
       }
-      console.log(postData);
       // Post data and get Searched result from response.
       await axios.post(`/sam/v1/property/auth/all-properties`, postData, {
         headers: authHeader,
       }).then((res) => {
-        // Store Searched results into propertyData useState.
-        console.log(res.data);
+        // Store Searched results into propertyData useState. 
         if (res.data !== null) {
           setProperties(res.data);
           setLoading(false);
@@ -513,12 +497,6 @@ const ViewEditDeleteProperties = () => {
     }
   };
 
-
-
-
-
-
-
   // toggleActivePageClass
   const toggleActivePageClass = (activePage) => {
     let arr = document.querySelectorAll(".page-item");
@@ -619,13 +597,11 @@ const ViewEditDeleteProperties = () => {
   const getListOfPropertyDocuments = async (id) => {
     setPropertyDocumentsList([])
     setPropertyImagesList([])
-    console.log(id);
     const propertyDocsListResData = await axios.get(
       `/sam/v1/property/auth/property_document_list/${id}`,
       { headers: authHeader }
     );
     let propertyDocsListRes = propertyDocsListResData.data;
-    console.log(propertyDocsListResData);
     setPropertyDocumentsList(propertyDocsListRes);
     setViewSinglePropertyPageLoading(false);
     if (propertyDocsListRes !== null) {
@@ -813,6 +789,7 @@ const ViewEditDeleteProperties = () => {
   const [viewSinglePropertyPageLoading, setViewSinglePropertyPageLoading] =
     useState(false);
 
+  // common Function To Save Form Data
   const commonFnToSaveFormData = (name, value) => {
     setFormData((oldData) => ({ ...oldData, [name]: value }));
   };
@@ -996,9 +973,9 @@ const ViewEditDeleteProperties = () => {
             society_name: society_name,
             plot_number: parseInt(plot_no),
             landmark: landmark,
-            city: parseInt(city_id),
+            city: String(city_id),
             zip: parseInt(zip),
-            state: parseInt(state_id),
+            state: String(state_id),
           },
         });
       }
@@ -1051,11 +1028,9 @@ const ViewEditDeleteProperties = () => {
     setSelectedPropertyNumberForEnquiry(property_number);
     setSelectedPropertyTypeForEnquiry(category);
     setMainPageLoading(true);
-    // let propertyId = localStorage.getItem("propertyId");
     if (propertyId) {
       allPropertiesPageRef.current.classList.add("d-none");
       enquiriesPageRef.current.classList.remove("d-none");
-      // setPropertiesLinkDisabled(true);
       try {
         // Get details from api.
         const EnquiryRes = await axios.get(`/sam/v1/property/auth/property-enquiries/${propertyId}`, {
@@ -1277,16 +1252,28 @@ const ViewEditDeleteProperties = () => {
     }
   };
 
+  // get Websocket Url
+  const getWebsocketUrl = async () => {
+    try {
+      const { data } = await axios.get("/sam/v1/customer-registration/ws-backend-url");
+      setWebSocketUrl(data.key);
+    } catch (error) {
+      toast.error("WebSocket connection failed.")
+    }
+  };
+
   //connect To WebSocket
   const connectToWebSocket = () => {
-    // const newSocket = new WebSocket("ws://13.234.136.8:4002/ws");
-    const newSocket = new WebSocket("ws://localhost:3000/ws");
+    console.log(webSocketUrl);
+    const newSocket = new WebSocket(webSocketUrl);
     setSocket(newSocket);
   };
   useEffect(() => {
     rootTitle.textContent = "ADMIN - PROPERTIES";
     setCurrentChatMassageSize(25);
     getSearchDetails();
+    setBatch_size(4);
+    getWebsocketUrl();
     if (data) {
       setLoading(true);
       checkLoginSession(data.loginToken).then((res) => {
@@ -1368,7 +1355,7 @@ const ViewEditDeleteProperties = () => {
             ref={allPropertiesPageRef}
           >
             {/* breadCrumb and back button */}
-            <div className="row justify-content-between align-items-center">
+            <div className="row justify-content-between align-items-center mb-md-0 mb-2">
               <div className="col-md-6">
                 <BreadCrumb />
               </div>
@@ -1505,7 +1492,7 @@ const ViewEditDeleteProperties = () => {
                 >
                   <option value="">Bank</option>
                   {banks
-                    ? banks.map((bank, index) => { 
+                    ? banks.map((bank, index) => {
                       return (
                         <option key={index} value={bank_Id !== 0 ? bank_Id : bank.bank_id}>
                           {bank.bank_name}
@@ -1517,9 +1504,8 @@ const ViewEditDeleteProperties = () => {
                 </select>
               </div>
               {/* More Filters */}
-              {/* {isLogin ?  */}
               <div className="col-md-2 col-12 mt-3 mt-md-0">
-                <div className="dropdown ">
+                <div className="dropdown">
                   <div
                     className="form-select"
                     data-bs-toggle="dropdown"
@@ -1548,7 +1534,7 @@ const ViewEditDeleteProperties = () => {
                     onClick={(e) => {
                       e.stopPropagation();
                     }}
-                    className="dropdown-menu more-filters-dropdown-menu shadow"
+                    className="dropdown-menu more-filters-dropdown-menu shadow  mt-md-0 pt-md-0 mt-5 pt-5" style={{ transform: 'translate3d(0px, 14px, 0px)' }}
                     aria-labelledby="dropdownMenuButton2"
                   >
                     <div className="container-fluid p-3">
@@ -1784,7 +1770,6 @@ const ViewEditDeleteProperties = () => {
                   </ul>
                 </div>
               </div>
-              {/* : ""} */}
               {/* searchBtn */}
               <div className="col-md-1 col-12 my-3 my-md-0">
                 <button
@@ -1810,9 +1795,8 @@ const ViewEditDeleteProperties = () => {
                 </button>
               </div>
             </div>
+            {/* all property section  */}
             <>
-              {/* <h1 className="text-center heading-text-primary fw-bold">Properties</h1>
-              <hr /> */}
               {loading ? (
                 <div
                   className="d-flex justify-content-center align-items-center"
@@ -1833,8 +1817,6 @@ const ViewEditDeleteProperties = () => {
                 </div>
               ) : (
                 <>
-
-
                   {/* all property section */}
                   <section className="admin-view-all-properties">
                     <div className="container-fluid">
@@ -1857,7 +1839,6 @@ const ViewEditDeleteProperties = () => {
                                   <div className="top-line"></div>
                                   <img
                                     className="card-img-top admin-property-image"
-                                    // src="/images2.jpg"
                                     src={imageDocId && imageDocId !== 0 && isImageDocIdValid ? `${!imageUrlsLoading ? imageUrls[property_id] : "/images2.jpg"}` : "/images2.jpg"}
                                     alt=""
                                   />
@@ -1921,7 +1902,7 @@ const ViewEditDeleteProperties = () => {
                                         }}
                                         className="btn btn-sm btn-outline-success property-button-wrapper"
                                       >
-                                        <i className="bi bi-eye-fill"></i>
+                                        <i className="bi bi-eye-fill" title="View"></i>
                                       </button>
                                       {/* Current property DataToUpdate button */}
                                       <button
@@ -1932,7 +1913,7 @@ const ViewEditDeleteProperties = () => {
                                         }}
                                         className="mx-2 btn btn-sm btn-outline-primary property-button-wrapper"
                                       >
-                                        <i className="bi bi-pencil-fill"></i>
+                                        <i className="bi bi-pencil-fill" title="Edit"></i>
                                       </button>
                                       {/* Delete Property button */}
                                       <button
@@ -1943,14 +1924,13 @@ const ViewEditDeleteProperties = () => {
                                         }}
                                         className="btn btn-sm btn-outline-danger property-button-wrapper"
                                       >
-                                        <i className="bi bi-trash-fill"></i>
+                                        <i className="bi bi-trash-fill" title="Delete"></i>
                                       </button>
                                       {/* single-property-documents-upload */}
                                       <NavLink
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         onClick={() => {
-                                          // handleButtonClick()
                                           localStorage.setItem(
                                             "upload-doc",
                                             JSON.stringify({
@@ -1969,7 +1949,7 @@ const ViewEditDeleteProperties = () => {
                                           }/property/single-property-documents-upload`}
                                         className="btn btn-sm btn-outline-dark property-button-wrapper ms-2"
                                       >
-                                        <i className="bi bi-upload"></i>
+                                        <i className="bi bi-upload" title="Upload"></i>
                                       </NavLink>
                                       {/* view current property enquiry details button */}
                                       {isBank ? <button
@@ -1977,13 +1957,10 @@ const ViewEditDeleteProperties = () => {
                                           getCurrentPropertyAllEnquires(
                                             property_id, property_number, category
                                           );
-                                          // getCurrentPropertyAllEnquires(
-                                          //   property_id, property_number, category
-                                          // );
                                         }}
                                         className="mx-2 btn btn-sm btn-outline-info property-button-wrapper"
                                       >
-                                        <i className="bi bi-chat-text"></i>
+                                        <i className="bi bi-chat-text" title="Enquiry"></i>
                                       </button> : <></>}
                                     </div>
                                   </div>
@@ -2033,7 +2010,7 @@ const ViewEditDeleteProperties = () => {
                   <div className="row">
                     <div className="card border-0">
                       {/* breadCrumb and back button */}
-                      <div className="row justify-content-between align-items-center">
+                      <div className="row justify-content-between align-items-center mb-2">
                         <div className="col-md-6">
                           <BreadCrumb
                             isViewPropertyPageActive={true}
@@ -2076,7 +2053,7 @@ const ViewEditDeleteProperties = () => {
                 <section className="add-property-wrapper mb-4">
                   <div className="container-fluid">
                     {/* breadCrumb and back button */}
-                    <div className="row justify-content-between align-items-center">
+                    <div className="row justify-content-between align-items-center mb-2">
                       <div className="col-md-6">
                         <BreadCrumb
                           isUpdatePropertyPageActive={true}
@@ -2172,7 +2149,6 @@ const ViewEditDeleteProperties = () => {
                                 <div className="form-group">
                                   <p><span className="paragraph-label-text">Bank</span>
                                     {activeBank && activeBank.bank_name}
-                                    {/* {formData.bank_name} */}
                                   </p>
                                 </div>
                                 {/* Branch */}
@@ -2442,10 +2418,26 @@ const ViewEditDeleteProperties = () => {
             ref={enquiriesPageRef}
           >
             <>
-              <BreadCrumb
-                PropertyEnquiryPageActive={true}
-                backToAllPropertiesPage={backToAllPropertiesPage}
-              />
+              {/* breadCrumb and back button */}
+              <div className="row justify-content-between align-items-center mb-2">
+                <div className="col-md-6">
+                  <BreadCrumb
+                    PropertyEnquiryPageActive={true}
+                    backToAllPropertiesPage={backToAllPropertiesPage}
+                  />
+                </div>
+                {/* /back button */}
+                <div className="col-md-6 text-end">
+                  <button
+                    className="btn btn-sm btn-outline-primary"
+                    onClick={backToAllPropertiesPage}
+                  >
+                    <i className="bi bi-arrow-left"></i> Back
+                  </button>
+                </div>
+
+              </div>
+
               <section className="add-property-wrapper mb-4">
                 <div className="container-fluid">
                   <h3 className="text-center fw-bold ">Enquiries</h3>
@@ -2495,8 +2487,6 @@ const ViewEditDeleteProperties = () => {
                               <thead className="bg-light">
                                 <tr className="table-heading-class">
                                   <th scope="col">#</th>
-                                  {/* <th scope="col">Property Number</th>
-                                  <th scope="col">Type</th> */}
                                   <th scope="col">User Name</th>
                                   <th scope="col">
                                     Date
@@ -2518,8 +2508,6 @@ const ViewEditDeleteProperties = () => {
                                   return (
                                     <tr key={Index}>
                                       <th scope="row">{Index + 1}</th>
-                                      {/* <td>{property_number}</td> */}
-                                      {/* <td>{property_type}</td> */}
                                       <td className="text-capitalize">{user_name}</td>
                                       <td>{propertyDateFormat(added_date)} </td>
                                       <td>

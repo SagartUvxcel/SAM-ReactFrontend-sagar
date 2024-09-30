@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import CommonNavLinks from "./CommonNavLinks";
-import { checkLoginSession } from "../../CommonFunctions"; 
+import { checkLoginSession } from "../../CommonFunctions";
+import axios from "axios";
 
 let isBank = false;
 let isLoggedIn = false;
@@ -69,7 +70,7 @@ function Header() {
   const pathLocation = () => {
     const path = window.location.pathname;
     const hrefPath = window.location.href;
-    if (path.includes("/property/single-property-documents-upload")) {
+    if (path.includes("/property/single-property-documents-upload") || path.includes("/property/bulk-documents-upload")) {
       setUploadDocumentPage(true);
     }
     const fixedPart = "/list-of-properties?data=";
@@ -79,8 +80,13 @@ function Header() {
   }
 
   // set current country 
-  const setCountry = (country) => {
+  const setCountry = async (country) => {
     localStorage.setItem("location", country);
+    try {
+      const { data } = await axios.get(`/sam/v1/property/change-country/${country === "india" ? 1 : 11}`)
+    } catch (error) {
+      console.log(error);
+    }
     setActiveLocation(country);
     if (roleId === 1) {
       goTo("/admin");
@@ -106,21 +112,21 @@ function Header() {
       pathLocation();
     }
     setStatusOfLogin();
-    const currentLocation = localStorage.getItem("location"); 
-    if (currentLocation) { 
-      if(country_id !== null && isLoggedIn && userRoleId !==3 && userRoleId !==1){ 
+    const currentLocation = localStorage.getItem("location");
+    if (currentLocation) {
+      if (country_id !== null && isLoggedIn && userRoleId !== 3 && userRoleId !== 1) {
         setActiveLocation(`${country_id === 1 ? "india" : "malaysia"}`);
         localStorage.setItem("location", `${country_id === 1 ? "india" : "malaysia"}`);
-      }else{ 
+      } else {
         setActiveLocation(currentLocation);
       }
-    } else { 
-      if (country_id !== null && isLoggedIn) { 
+    } else {
+      if (country_id !== null && isLoggedIn) {
         localStorage.setItem("location", `${country_id === 1 ? "india" : "malaysia"}`);
         setActiveLocation(`${country_id === 1 ? "india" : "malaysia"}`);
       } else {
         localStorage.setItem("location", `india`);
-        setActiveLocation("india"); 
+        setActiveLocation("india");
       }
     }
     // eslint-disable-next-line
@@ -148,12 +154,12 @@ function Header() {
             data-bs-target="#offcanvasExample"
             aria-controls="offcanvasExample"
           >
-            {/* <span className="navbar-toggler-icon"></span> */}
             <i className="fas fa-ellipsis-v"></i>
           </button>
-          <span className="navbar-brand px-lg-4">Assets Class</span>
+          {/* <span className="navbar-brand px-lg-4">Assets Class</span> */}
+          <span className="navbar-brand px-lg-4 ">Stressed Assets Management</span>
           <button
-            className="navbar-toggler"
+            className="navbar-toggler "
             type="button"
             data-bs-toggle="collapse"
             data-bs-target="#navbarNav"
@@ -161,7 +167,6 @@ function Header() {
             aria-expanded="false"
             aria-label="Toggle navigation"
           >
-            {/* <span className="navbar-toggler-icon"></span> */}
             <i className="fas fa-bars"></i>
           </button>
           <div className="collapse navbar-collapse mt-2 mt-md-0" id="navbarNav">
@@ -226,11 +231,11 @@ function Header() {
               {/* country */}
               <div className={`d-flex ${loginStatus && roleId !== 1 ? "" : "d-none"} `}>
                 <li title="To choose a country, logout first and select the country.">
-                  <span className={`nav-link locationList md-me-0 sm-me-2 `} 
+                  <span className={`nav-link locationList md-me-0 sm-me-2 `}
                   >
                     <i className="bi bi-geo-alt me-2 text-light"></i>
                     {activeLocation === "india" ? "India" : "Malaysia"}
-                  </span> </li> 
+                  </span> </li>
               </div>
               <div className={`d-flex ${!loginStatus || roleId === 1 ? "" : "d-none"} `}>
                 <li className="nav-item dropdown">
@@ -263,7 +268,7 @@ function Header() {
                     </li>
                   </ul>
                 </li>
-              </div> 
+              </div>
               {/* If user is not loggedIn then show these logOut links in dropdown */}
               {!uploadDocumentPage ?
                 <li className="nav-item dropdown ps-md-2 d-md-block d-none">

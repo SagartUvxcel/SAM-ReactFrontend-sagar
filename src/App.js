@@ -22,7 +22,7 @@ import ForgotAndResetPassword from "./components/9.ForgotAndResetPassword/Forgot
 import ViewEnquiryLists from "./components/10.User Enquiries/ViewEnquiryLists";
 import Subscription from "./components/11.Subscription/Subscription";
 import UpgradeSubscriptionPage from "./components/11.Subscription/UpgradeSubscriptionPage";
-import PaymentInformation from "./components/11.Subscription/PaymentInformation";
+// import PaymentInformation from "./components/11.Subscription/PaymentInformation";
 import StripePaymentForm from "./components/11.Subscription/StripePaymentForm";
 import CommonSubscriptionNotificationMsg from "./components/11.Subscription/CommonSubscriptionNotificationMsg";
 import ProtectedForLoggedInUser from "./components/ProtectedForLoggedInUser";
@@ -34,7 +34,7 @@ import BankRegistrationLinkPage from "./Admin/Bank/BankRegistrationLinkPage";
 import BankRegistrationPage from "./Admin/Bank/BankRegistrationPage";
 import ViewEditDeleteProperties from "./Admin/Property/ViewEditDeleteProperties";
 import ViewProperty from "./Admin/Property/ViewProperty";
-import UploadProperties from "./Admin/Property/UploadProperties";
+// import UploadProperties from "./Admin/Property/UploadProperties";
 import UploadPropertiesWithDocuments from "./Admin/Property/UploadPropertiesWithDocuments";
 import AddProperty from "./Admin/Property/AddProperty";
 import AddSubscriptionFacility from "./Admin/AddSubscriptionFacility";
@@ -42,6 +42,7 @@ import AdminProtected from "./components/AdminProtected";
 import UserProtected from "./components/UserProtected";
 import AccessDeniedPage from "./components/AccessDeniedPage";
 import SinglePropertyDocumentsUpload from "./Admin/Property/SinglePropertyDocumentsUpload";
+import BulkDocumentsUploadPage from "./Admin/Property/BulkDocumentsUploadPage";
 import ProtectedPages from "./components/ProtectedPages";
 import ProtectSetPasswordPage from "./components/ProtectSetPasswordPage";
 import { ToastContainer, toast } from "react-toastify";
@@ -69,7 +70,8 @@ function App() {
         try {
           let res = await axios.get(`/sam/v1/user-registration/logout`, {
             headers: { Authorization: data.loginToken },
-          });
+          }); 
+          
           if (res.data !== "Session expired or invalid user") {
             let remainingTime = parseInt(res.data.TimeRemaining);
             if (remainingTime > 5) {
@@ -239,7 +241,7 @@ function App() {
             }
           />
           <Route
-            path={`/subscription-facility`}
+            path={`/admin/subscription-facility`}
             element={
               <AdminProtected>
                 <AddSubscriptionFacility />
@@ -308,6 +310,17 @@ function App() {
               </AdminProtected>
             }
           />
+
+          <Route
+            path={`${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"
+              }/property/bulk-documents-upload`}
+            element={
+              <AdminProtected>
+                <BulkDocumentsUploadPage />
+              </AdminProtected>
+            }
+          />
+
           <Route
             path={`${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"
               }/property/properties/view-property/:id`}
@@ -317,14 +330,14 @@ function App() {
               </AdminProtected>
             }
           />
-          <Route
+          {/* <Route
             path={`${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"}/property/upload-properties`}
             element={
               <AdminProtected>
                 <UploadProperties />
               </AdminProtected>
             }
-          />
+          /> */}
           <Route
             path={`${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"}/property/upload-properties-with-documents`}
             element={

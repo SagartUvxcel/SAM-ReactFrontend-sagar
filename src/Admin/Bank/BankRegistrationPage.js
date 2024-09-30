@@ -624,8 +624,7 @@ const BankRegistrationPage = () => {
             let cityName = "";
             let getCityName = document.getElementById(`city-name-${value}`);
             if (getCityName) {
-                cityName = getCityName.innerText;
-                console.log(cityName);
+                cityName = getCityName.innerText; 
                 setValues(name, cityName);
             }
             if (value !== "") {
@@ -669,8 +668,7 @@ const BankRegistrationPage = () => {
             state: "",
             city: "",
             zip: "",
-        });
-        // deselectStateInput.current.selected = true;
+        }); 
         setAddressValues({
             addressValue: "",
             labelValue: "Add Details",
@@ -867,8 +865,7 @@ const BankRegistrationPage = () => {
                                                                             required
                                                                         />
                                                                         <span className="input-group-text custom-input" id="basic-addon2">{splittedBankEmailId.domain}</span>
-                                                                    </div>
-                                                                    {/* </div> */}
+                                                                    </div> 
                                                                     <span
                                                                         className={`pe-1 ${emailValidationMessage ? "text-danger" : "d-none"
                                                                             }`}

@@ -45,7 +45,7 @@ export const checkLoginSession = async (token) => {
     let res = await axios.get(`/sam/v1/user-registration/logout`, {
       headers: { Authorization: token },
     });
-    if (res.data === "Session expired or invalid user") { 
+    if (res.data === "Session expired or invalid user") {
       localStorage.removeItem("data");
       localStorage.removeItem("remainingTime");
       localStorage.removeItem("notificationRefresh");
@@ -71,11 +71,11 @@ export const propertyDateFormat = (dateString) => {
   // Adjusting the date to local time zone
   const localDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
   const options = { day: "2-digit", month: "short", year: "numeric" };
-  const formattedDate = localDate.toLocaleDateString("en-IN", options); 
+  const formattedDate = localDate.toLocaleDateString("en-IN", options);
   // remove - from date
-  const finalDate=formattedDate.replace(/-/g, " "); 
+  const finalDate = formattedDate.replace(/-/g, " ");
   return finalDate;
- 
+
 };
 
 export const openInNewTab = (path) => {
@@ -107,6 +107,11 @@ export const calculateDays = (expiryDate) => {
   const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
 
   return days;
+};
+
+// capitalize Words function
+export const capitalizeWords = (str) => {
+  return str.replace(/\b\w/g, char => char.toUpperCase());
 };
 
 

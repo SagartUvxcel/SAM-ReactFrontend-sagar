@@ -13,7 +13,6 @@ const UpgradeSubscriptionPage = () => {
   const navigate = useNavigate();
 
   const data = JSON.parse(localStorage.getItem("data"));
-  const updatedCountry = localStorage.getItem("location");
   const updatedSubscriptionStatus = localStorage.getItem("updatedSubscriptionStatus");
 
   if (data) {
@@ -31,7 +30,6 @@ const UpgradeSubscriptionPage = () => {
     basicCardDisable: false,
     advancedCardDisable: false,
   });
-  const [disabledIndex, setDisabledIndex] = useState(-1);
 
   const [plansOnCard, setPlansOnCard] = useState({
     basicPlanOnCard: null,
@@ -88,7 +86,6 @@ const UpgradeSubscriptionPage = () => {
       handleActiveCurrentPlan("half yearly");
       let selectedPlansDetails = plans.filter(plan => plan.plan_id !== planToDisable.plan_id)
       setSelectedPlan(selectedPlansDetails[0]);
-      setDisabledIndex(planToDisable.plan_id)
     }
     // eslint-disable-next-line
   }, [planToDisable, plans]);
@@ -162,8 +159,9 @@ const UpgradeSubscriptionPage = () => {
 
   // passing subscription data plans details on payment page
   const onSubscribeClick = () => {
-    const sensitiveData = selectedPlan;
-    navigate("/subscription/payment", { state: { sensitiveData } });
+    const sensitiveData = plans;
+    const activePlanSensitiveData = planToDisable;
+    navigate("/subscription/payment", { state: { sensitiveData, activePlanSensitiveData } });
   };
 
   // selected subscription table
@@ -210,6 +208,7 @@ const UpgradeSubscriptionPage = () => {
       basicPlanOnCard: basicHalfYearly,
       advancedPlanOnCard: advancedHalfYearly,
     });
+
   }, [basicHalfYearly, advancedHalfYearly, plans]);
 
   // useEffect for axios
@@ -273,56 +272,47 @@ const UpgradeSubscriptionPage = () => {
                         </tbody>
                       </table>
                     </div>
-                    {/* subscription-button */}
+                    {/*code by prapti*/}
                     <div className="container-fluid my-5">
-                      <div className="row justify-content-between  mt-3">
-                        {plans && plans.map((plan, Index) => {
-                          return (
-                            <>
-                              <button key={plan.plan_id} className={`upgradePackages  border-0 mb-4 mt-4 mb-md-0 plan-card-${Index + 1} position-relative plan-header-wrapper 
-                            ${selectedPlan.plan_id === plan.plan_id ? "packagesBox-shadow " : ""} 
-                            ${plan.plan_id === disabledIndex ? "disabled" : ""}`}
-
-                                disabled={plan.plan_id === disabledIndex}
-                                onClick={() => {
-                                  onCardBtnClick(plan, Index);
-                                  setSelectedPlan(plan);
-                                }}
-                              >
-                                <span
-                                  className={`position-absolute top-0 start-100 translate-middle badge  bg-success ${selectedPlan.plan_id === plan.plan_id ? "" : "d-none"} `}
-                                >
-                                  <i className="bi bi-check-circle-fill"></i>
-                                </span>
-                                <h4 className={`plan-title mb-4 fw-bold text-uppercase ${plan.billing_cycle === "half yearly" ? "card-text-2" : ""} ${plan.billing_cycle === "annual" ? "card-text-3" : ""}`}>{plan.name.replace(' plan', '')}</h4>
-                                <h6 className="fw-bold plan-price">
-                                  {updatedCountry && updatedCountry === "malaysia" ? (
-                                    <small className="fs-5 top-0">RM </small>
-                                  ) : (<><sup>&#8377;</sup> <sup>&#8377;</sup> <sup>&#8377;</sup> <sup>&#8377;</sup></>)}
-                                  <span className="fs-5"> / {plan.billing_cycle === "half yearly" ? "6 Months" : ""}{plan.billing_cycle === "annual" ? "Year" : ""}</span>
-                                </h6>
-                              </button>
-                            </>
-
-                          )
-                        })}
-                      </div>
-                    </div>
-
-
-                    {/* subscription button */}
-                    <div className="row mt-md-5 justify-content-center">
-                      <div className="col-md-6 ">
-                        <button
-                          className="w-100 btn btn-primary text-capitalize common-btn-font"
-                          onClick={onSubscribeClick}
-                        >
-                          Activate to{" "}
-                          {selectedPlan && selectedPlan.name === "Advanced plan"
-                            ? "Advance"
-                            : "Basic"}
-                          <i className="bi bi-chevron-right"></i>
-                        </button>
+                      <div className="row justify-content-evenly mt-3">
+                        {/* Static Card for "Go for Subscription" */}
+                        <div className="col-md-6 subscription-div-box">
+                          <button
+                            className={`card text-decoration-none subscription-plan-card w-100 h-100 align-items-center position-relative plan-header-wrapper ${selectedPlan.billing_cycle === "subscription"
+                              ? "packagesBox-shadow"
+                              : ""
+                              }`}
+                            onClick={() => {
+                              const subscriptionPlan = {
+                                name: "Subscription",
+                                plan_id: 2,
+                                billing_cycle: "annual",
+                              };
+                              onCardBtnClick(subscriptionPlan, 1);
+                              setSelectedPlan(subscriptionPlan);
+                              onSubscribeClick();
+                            }}
+                          >
+                            <span
+                              className={`position-absolute top-0 start-100 translate-middle badge bg-success ${selectedPlan.billing_cycle === "subscription"
+                                ? ""
+                                : "d-none"
+                                }`}
+                            >
+                              <i className="bi bi-check-circle-fill"></i>
+                            </span>
+                            <h4 className="plan-title ">
+                              Go for Subscription
+                            </h4>
+                            {/* <h4 className="fw-bold plan-price">
+                                {updatedCountry === "malaysia" ? (
+                                  <small className="">RM </small>
+                                ) : (
+                                  <sup>&#8377;</sup>
+                                )}
+                              </h4> */}
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>

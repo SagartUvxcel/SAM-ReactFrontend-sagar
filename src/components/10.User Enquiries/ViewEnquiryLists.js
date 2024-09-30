@@ -5,6 +5,7 @@ import CommonSpinner from "../../CommonSpinner";
 import { propertyDateFormat } from "../../CommonFunctions";
 import { w3cwebsocket as WebSocket } from "websocket";
 import { v4 as uuid } from "uuid";
+import { toast } from "react-toastify";
 import Pagination from "../../Pagination";
 import "./TableStyle.css";
 
@@ -48,6 +49,7 @@ const ViewEnquiryLists = () => {
     search_input: "",
     search_category: "property_number"
   });
+  const [webSocketUrl, setWebSocketUrl] = useState(null);
   const [unreadEnquiryList, setUnreadEnquiryList] = useState([]);
   const [pageLoading, setPageLoading] = useState(false);
   const [chatPageLoading, setChatPageLoading] = useState(false);
@@ -301,7 +303,6 @@ const ViewEnquiryLists = () => {
     return res.data;
   };
 
-  console.log(enquirySearchInputData);
   // search form  onchange
   const onSearchFormInputChange = (e) => {
     const { name, value } = e.target
@@ -333,17 +334,14 @@ const ViewEnquiryLists = () => {
       search_category: enquirySearchInputData.search_category,
       search_input: enquirySearchInputData.search_input
     };
-console.log(dataToPost);
 
     try {
       const resFromApi = await axios.post(`/sam/v1/property/auth/user/enquiry`, dataToPost, {
         headers: authHeader,
       });
-      console.log(resFromApi.data);
       if (resFromApi.data) {
         setEnquiryList(resFromApi.data.Enquiries);
         setPageLoading(false);
-        // setEnquirySearchInputData({ ...enquirySearchInputData, search_input: "" })
       } else {
         setPageLoading(false);
       }
@@ -429,15 +427,27 @@ console.log(dataToPost);
     getUserEnquiriesList();
     getNormalUserEnquiriesList();
     setCurrentChatMassageSize(25);
+    getWebsocketUrl();
     // table hight define
   }, []);
 
   const [socket, setSocket] = useState(null);
 
+
+  // get Websocket Url
+  const getWebsocketUrl = async () => {
+    try {
+      const { data } = await axios.get("/sam/v1/customer-registration/ws-backend-url");
+      setWebSocketUrl(data.key);
+    } catch (error) {
+      toast.error("WebSocket connection failed.")
+    }
+  };
+
   //connect To WebSocket
-  const connectToWebSocket = () => {
-    const newSocket = new WebSocket("ws://localhost:3000/ws");
-    console.log(newSocket);
+  const connectToWebSocket = () => { 
+    const newSocket = new WebSocket(webSocketUrl);
+    // const newSocket = new WebSocket("ws://localhost:3000/ws"); 
     setSocket(newSocket);
   };
 
@@ -453,7 +463,6 @@ console.log(dataToPost);
       };
 
       socket.onmessage = (event) => {
-        console.log("msg received");
         try {
           const receivedMessage = JSON.parse(event.data);
           const { message_type } = receivedMessage;
@@ -567,9 +576,9 @@ console.log(dataToPost);
                         </div>
                         <div className="input-field second-wrap">
                           <select className="form-select form-select-sm h-100 rounded-0" name="search_category"
-                           onChange={onSearchFormInputChange} 
-                           value={enquirySearchInputData.search_category}
-                           aria-label="Default select example">
+                            onChange={onSearchFormInputChange}
+                            value={enquirySearchInputData.search_category}
+                            aria-label="Default select example">
                             <option value="property_number" selected>Property Number</option>
                             <option value="username">User Name</option>
                           </select>
@@ -860,6 +869,7 @@ console.log(dataToPost);
                   className="btn-close"
                   data-bs-dismiss="modal"
                   aria-label="Close"
+                  title="Close"
                   onClick={() => {
                     setCurrentMassageBatch(1);
                     setNewComingMessage(null);

@@ -208,8 +208,7 @@ const BankBranchClosePage = ({ userType }) => {
                         setLoading(false);
                     }
                 });
-        } catch (error) {
-            console.log(error);
+        } catch (error) { 
             toast.error("Please Select at least one property to process.")
             setLoading(false);
         }
@@ -228,8 +227,7 @@ const BankBranchClosePage = ({ userType }) => {
                 })
                 .then((res) => { 
                     const responseData = res.data;
-                    if (responseData) {
-                        // getAllCurrentBranchProperty();
+                    if (responseData) { 
                         navigate(`${roleId === 6 ? "/bank" : "/admin"}/users/branch-users`)
                         toast.success("Branch closed successfully.")
                         setLoading(false);
@@ -238,8 +236,7 @@ const BankBranchClosePage = ({ userType }) => {
                         setLoading(false);
                     }
                 });
-        } catch (error) {
-            console.log(error);
+        } catch (error) { 
             toast.error("Internal server error");
             setLoading(false);
         }

@@ -38,6 +38,7 @@ const UploadProperties = () => {
 
   const [dropzoneActive, setDropzoneActive] = useState(false);
   const [fileName, setFileName] = useState("");
+  const [missingInputs, setMissingInputs] = useState("");
 
   const fileRef = useRef();
   const { data, tableHeadings, tableDisplayClass } = allUseStates;
@@ -84,6 +85,7 @@ const UploadProperties = () => {
     setDropzoneActive(false);
     document.getElementById("showCsvDataInTable").scrollIntoView(true);
   };
+
 
   // file Upload function
   const fileUpload = (e) => {
@@ -164,25 +166,23 @@ const UploadProperties = () => {
         .then((res) => {
           if (isLastChunk) {
             if (res.data.msg === 0) {
-              toast.success("File uploaded successfully");
-              console.log(res.data);
+              toast.success("File uploaded successfully"); 
               reloadPage();
             } else {
-              let arr = [];
-              console.log(res.data);
+              let arr = []; 
               res.data.forEach((data) => {
                 arr.push(data.property_number);
               });
               let duplicateProperties = arr.join(", ");
               let customErrorMessage = "";
-              let errorMsgFromDatabase=res.data[0].error;
+              let errorMsgFromDatabase = res.data[0].error;
               if (arr.length > 1) {
                 customErrorMessage = `Failed to upload properties with property numbers ${duplicateProperties}.
-                Please create new file for uploading ${errorMsgFromDatabase==="Branch not found" ? `${errorMsgFromDatabase} properties`:errorMsgFromDatabase}. `;
+                Please create new file for uploading ${errorMsgFromDatabase === "Branch not found" ? `${errorMsgFromDatabase} properties` : errorMsgFromDatabase}. `;
 
               } else {
                 customErrorMessage = `Failed to upload property with property number ${duplicateProperties}. 
-                Please create new file for uploading ${errorMsgFromDatabase==="Branch not found" ? `${errorMsgFromDatabase.toLowerCase()} properties`:errorMsgFromDatabase.toLowerCase()} with updated details. `;
+                Please create new file for uploading ${errorMsgFromDatabase === "Branch not found" ? `${errorMsgFromDatabase.toLowerCase()} properties` : errorMsgFromDatabase.toLowerCase()} with updated details. `;
               }
               setErrorModalDetails({
                 errorModalOpen: true,

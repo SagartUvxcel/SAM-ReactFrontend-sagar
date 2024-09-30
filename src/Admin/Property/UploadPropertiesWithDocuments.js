@@ -5,530 +5,698 @@ import { useRef } from "react";
 import Layout from "../../components/1.CommonLayout/Layout";
 import { rootTitle } from "../../CommonFunctions";
 import axios from "axios";
-import { toast } from "react-toastify";
-import sampleCSVFile from "./SampleBulkFile.csv";
+import { toast } from "react-toastify"; 
+import PropertyUploadFolder from "./PropertyUploadFolder.zip";
 import { v4 as uuid } from "uuid";
 import BreadCrumb from "../BreadCrumb";
-import * as XLSX from 'xlsx';
+import CommonSpinner from "../../CommonSpinner";
 
-const allowedExtensions = ["csv"];
+let mainPropertyCSVName = "SampleBulkProperties.csv";
+let mainDocumentCSVName = "uploadDocumentsList.csv";
 let chunkSize = 0;
-let temp = 0;
 let authHeaders = "";
 
-const UploadPropertiesWithDocuments = () => {
-
-    // error alert details.
-    const [errorModalDetails, setErrorModalDetails] = useState({
-        errorModalOpen: false,
-        errorHeading: "",
-        errorMessage: "",
-    });
-    const { errorModalOpen, errorHeading, errorMessage } = errorModalDetails;
-    const [files, setFiles] = useState([]);
-    const [saveFile, setSavedFile] = useState([]);
-    const [currentFileIndex, setCurrentFileIndex] = useState(null);
-    const [lastUploadedFileIndex, setLastUploadedFileIndex] = useState(null);
-    const [currentChunkIndex, setCurrentChunkIndex] = useState(null);
-    const [uniqueUploadId, setUniqueUploadId] = useState(uuid());
-    const [allUseStates, setAllUseStates] = useState({
-        data: [],
-        tableHeadings: [],
-        tableDisplayClass: "d-none",
-    });
-
-    const [dropzoneActive, setDropzoneActive] = useState(false);
-    const [fileName, setFileName] = useState("");
-
-    const fileRef = useRef();
+const UploadProperties = () => {
 
 
-    // onCancelClick
-    const onCancelClick = () => {
-        setAllUseStates({
-            data: [],
-            tableHeadings: [],
-            tableDisplayClass: "d-none",
-        });
+  const [uniqueId, setUniqueId] = useState(uuid());
+  const [loading, setLoading] = useState(undefined);
+  const [currentFileIndex, setCurrentFileIndex] = useState(null);
+  const [lastUploadedFileIndex, setLastUploadedFileIndex] = useState(null);
 
-        fileRef.current.value = "";
-        setFileName("");
-        window.scrollTo(0, 0);
-        // setTimeout(() => {
-        //   window.location.reload();
-        // }, 400);
+  const [allPropertyData, setAllPropertyData] = useState({
+    data: [],
+    tableHeadings: [],
+    tableDisplayClass: "d-none",
+  });
+
+  const [allPropertyDocumentList, setAllPropertyDocumentList] = useState([]);
+  const [allPropertyDocuments, setAllPropertyDocuments] = useState([]);
+  const [currentPropertyDocs, setCurrentPropertyDocs] = useState(null);
+  const [propertyErrorDetails, setPropertyErrorDetails] = useState([]);
+  const [docErrorDetails, setDocErrorDetails] = useState([]);
+  const [alreadyExistPropertyNumber, setAlreadyExistPropertyNumber] = useState([]);
+  const [alreadyExistDocuments, setAlreadyExistDocuments] = useState({});
+  const [missingPropertyDetails, setMissingPropertyDetails] = useState({});
+  const [duplicateUploadIdDetails, setDuplicateUploadIdDetails] = useState({});
+
+  const [dropzoneActive, setDropzoneActive] = useState(false);
+  const fileRef = useRef();
+
+  const dataFromLocal = JSON.parse(localStorage.getItem("data"));
+  if (dataFromLocal) {
+    authHeaders = {
+      Authorization: dataFromLocal.loginToken,
     };
+  }
 
-    const dataFromLocal = JSON.parse(localStorage.getItem("data"));
-    if (dataFromLocal) {
-        authHeaders = {
-            Authorization: dataFromLocal.loginToken,
-            "Content-Type": "application/octet-stream",
-        };
+  // on Form Submit
+  const InsertSingleProperty = async (property) => {
+    let zipCodeValue = String(property.zip);
+    const zipRes = await axios.post(`/sam/v1/customer-registration/zipcode-validation`, {
+      zipcode: zipCodeValue,
+      state_id: parseInt(property.state),
+    })
+
+    if (zipRes.data.status !== 0) {
+      return { success: false, error: "Invalid ZipCode" }
     }
 
-    // readFileFunction
-    const readFileFunction = (inputFile) => {
-        setFileName(inputFile.name);
-        const reader = new FileReader();
-        console.log(inputFile)
+    if (parseInt(property.saleable_area) < parseInt(property.carpet_area)) {
+      return { success: false, error: "Carpet area must be less than salable area." }
+    }
 
-        reader.onload = async ({ target }) => {
-            const csv = Papa.parse(target.result, { header: true });
-            console.log(csv);
-            const parsedData = csv.data;
-            setAllUseStates({
-                ...allUseStates,
-                tableHeadings: Object.keys(parsedData[0]),
-                data: parsedData,
-                tableDisplayClass: "",
-            });
-        };
-        reader.readAsText(inputFile);
-        setDropzoneActive(false);
-        document.getElementById("showCsvDataInTable").scrollIntoView(true);
-    };
+    try {
+      const propertyRes = await axios.post(`/sam/v1/property/auth/single-property`, property, {
+        headers: authHeaders,
+      })
 
-    // file Upload function
-    const fileUpload = (e) => {
-        setSavedFile([...files, ...e.target.files]);
-        console.log(e.target.files);
-        if (e.target.files.length) {
-            const inputFile = e.target.files[0];
-            const fileExtension = inputFile.type.split("/")[1];
-            if (!allowedExtensions.includes(fileExtension)) {
-                alert("Please upload a csv file");
-                fileRef.current.value = "";
-                setFileName("");
-                return;
-            } else {
-                readFileFunction(inputFile);
-            }
-        }
-    };
+      if (propertyRes.data.msg === 0) {
+        return { success: true, error: null, msg: propertyRes.data.msg, property_id: propertyRes.data.property_id }
+      } else if (propertyRes.data.msg === 1) {
+        return { success: false, error: propertyRes.data.error, msg: propertyRes.data.msg }
+      } else if (propertyRes.data.msg === 2) {
 
-    // file extension checking
-    const handleDrop = (e) => {
-        e.preventDefault();
-        setSavedFile([...files, ...e.dataTransfer.files]);
-        if (e.dataTransfer.files.length) {
-            const inputFile = e.dataTransfer.files[0];
-            const fileExtension = inputFile.type.split("/")[1];
-            if (!allowedExtensions.includes(fileExtension)) {
-                alert("Please upload a csv file");
-                setDropzoneActive(false);
-                return;
-            } else {
-                readFileFunction(inputFile);
-            }
-        }
-    };
+        return { success: false, error: `Property with property number: ${property.property_number} already exists`, msg: propertyRes.data.msg, property_id: propertyRes.data.property_id }
+      };
+    } catch (error) {
+      return { success: false, error: error.response.data }
+    }
+  };
 
-    // read And Upload Current Chunk
-    const readAndUploadCurrentChunk = () => {
-        const reader = new FileReader();
-        const file = files[currentFileIndex];
-        if (!file) {
-            return;
-        }
-        chunkSize = Math.round((file.size * 39) / 100);
-        const from = currentChunkIndex * chunkSize;
-        const to = from + chunkSize;
-        const blob = file.slice(from, to);
-        reader.onload = (e) => uploadChunk(e);
-        reader.readAsDataURL(blob);
-    };
 
-    // upload Chunk
-    const uploadChunk = async (readerEvent) => {
-        console.log(readerEvent);
-        const file = files[currentFileIndex];
-        const size = file.size;
-        let tempChunkSize = chunkSize;
-        temp += tempChunkSize;
-        if (temp > size) {
-            tempChunkSize = size - (temp - chunkSize);
-        }
-        const data = readerEvent.target.result.split(",")[1];
+  // readFileFunction
+  const readFileFunction = (inputFile, fileName) => {
+    const reader = new FileReader();
 
-        const detailsToPost = {
-            upload_id: uniqueUploadId,
-            chunk_number: currentChunkIndex + 1,
-            total_chunks: Math.ceil(size / chunkSize),
-            chunk_size: tempChunkSize,
-            total_file_size: size,
-            file_name: file.name,
-            data: data,
-        };
-        const chunks = Math.ceil(file.size / chunkSize) - 1;
-        const isLastChunk = currentChunkIndex === chunks;
-        try {
-            await axios
-                .post(`/sam/v1/property/auth/upload-chunk`, detailsToPost, {
-                    headers: authHeaders,
-                })
-                .then((res) => {
-                    if (isLastChunk) {
-                        if (res.data.msg === 0) {
-                            toast.success("File uploaded successfully");
-                            console.log(res.data);
-                            reloadPage();
-                        } else {
-                            let arr = [];
-                            console.log(res.data);
-                            res.data.forEach((data) => {
-                                arr.push(data.property_number);
-                            });
-                            let duplicateProperties = arr.join(", ");
-                            let customErrorMessage = "";
-                            let errorMsgFromDatabase = res.data[0].error;
-                            if (arr.length > 1) {
-                                customErrorMessage = `Failed to upload properties with property numbers ${duplicateProperties}.
-                Please create new file for uploading ${errorMsgFromDatabase === "Branch not found" ? `${errorMsgFromDatabase} properties` : errorMsgFromDatabase}. `;
+    reader.onload = async ({ target }) => {
+      let parsedFilteredCSV = [];
+      const csv = Papa.parse(target.result, {
+        header: true,
+        transform: function (value) {
+          return value.trim();
+        },
 
-                            } else {
-                                customErrorMessage = `Failed to upload property with property number ${duplicateProperties}. 
-                Please create new file for uploading ${errorMsgFromDatabase === "Branch not found" ? `${errorMsgFromDatabase.toLowerCase()} properties` : errorMsgFromDatabase.toLowerCase()} with updated details. `;
-                            }
-                            setErrorModalDetails({
-                                errorModalOpen: true,
-                                errorHeading: res.data[0].error,
-                                errorMessage: customErrorMessage,
-                            });
-                            window.scrollTo(0, 0);
-                        }
+        complete: function (results) {
+          // Filter out blank rows
+          const filteredData = results.data.filter(row => {
+            // Check if all values in the row are empty
+            return Object.values(row).some(value => value !== "");
+          });
+
+          // Convert the filtered data back to a CSV string
+          const filteredCSV = Papa.unparse(filteredData);
+
+          // Now you can parse the filtered CSV string or proceed with further operations
+          parsedFilteredCSV = Papa.parse(filteredCSV, {
+            header: true,
+            complete: function (filteredResults) {
+              let hasMissingFields = false;
+
+              // Check for missing fields in the filtered data
+              let missingDataObject = missingPropertyDetails;
+              let duplicateUploadId = duplicateUploadIdDetails;
+              let uniqueUploadId = {};
+              filteredResults.data.forEach((row, rowIndex) => {
+                Object.keys(row).forEach(field => {
+                  if (row[field] === "") {
+                    if (missingDataObject[rowIndex + 1]) {
+                      missingDataObject[rowIndex + 1] = [...missingDataObject[rowIndex + 1], field]
+                    } else {
+                      missingDataObject[rowIndex + 1] = [field]
                     }
+                    hasMissingFields = true;
+                  }
                 });
-        } catch (error) {
-            if (isLastChunk) {
-                toast.error("Internal server error");
-                reloadPage();
-            }
-        }
+                let currentUploadId = row["upload_property_id"] && fileName === mainPropertyCSVName ? row["upload_property_id"] : undefined;
 
-        if (isLastChunk) {
-            setUniqueUploadId(uuid());
-            setLastUploadedFileIndex(currentFileIndex);
-            setCurrentChunkIndex(null);
+                if (currentUploadId && uniqueUploadId[currentUploadId]) {
+                  if (duplicateUploadId[currentUploadId]) {
+                    let newValue = duplicateUploadId[currentUploadId].includes(rowIndex + 1) === true ? duplicateUploadId[currentUploadId] : [...duplicateUploadId[currentUploadId], rowIndex + 1]
+                    duplicateUploadId[currentUploadId] = newValue
+                  } else {
+                    duplicateUploadId[currentUploadId] = [uniqueUploadId[currentUploadId], rowIndex + 1]
+
+                  }
+                } else if (currentUploadId) {
+                  uniqueUploadId[currentUploadId] = rowIndex + 1;
+                } 
+
+              });
+              setMissingPropertyDetails(() => missingDataObject);
+              setDuplicateUploadIdDetails(() => duplicateUploadId);
+            }
+          });
+        }
+      });
+      const parsedData = parsedFilteredCSV.data;
+      if (fileName === mainPropertyCSVName) {
+        setAllPropertyData({
+          ...allPropertyData,
+          tableHeadings: Object.keys(parsedData[0]),
+          data: parsedData,
+          tableDisplayClass: "",
+        });
+      } else if (fileName === mainDocumentCSVName) {
+        setAllPropertyDocumentList(parsedData)
+      }
+
+    };
+    reader.readAsText(inputFile);
+    setDropzoneActive(false);
+    document.getElementById("showCsvDataInTable").scrollIntoView(true);
+  };
+
+  const handleDrop = async (e) => {
+    e.preventDefault();
+    setDropzoneActive(false);
+
+    const items = e.dataTransfer.items; 
+    if (items.length) {
+      const files = [];
+      for (const item of items) {
+        const entry = item.webkitGetAsEntry();
+        if (entry) {
+          const newFiles = await readAllFilesFromEntry(entry);
+          files.push(...newFiles);
+        }
+      } 
+
+      processFiles(files);
+    }
+  };
+
+  const readAllFilesFromEntry = async (entry) => {
+    let files = [];
+    if (entry.isFile) {
+      const file = await new Promise((resolve) => entry.file(resolve));
+      files.push(file);
+    } else if (entry.isDirectory) {
+      const directoryReader = entry.createReader();
+      const entries = await new Promise((resolve) => directoryReader.readEntries(resolve));
+      for (const nestedEntry of entries) {
+        const nestedFiles = await readAllFilesFromEntry(nestedEntry);
+        files.push(...nestedFiles);
+      }
+    }
+    return files;
+  };
+
+  const fileUpload = (e) => {
+    const files = e.target.files || e.dataTransfer.files;
+    processFiles(Array.from(files)); 
+  };
+
+  //check csv file exist or not
+  const processFiles = (files) => {
+    if (files.length) {
+      let mainPropertyCsv = files.filter((file) => file.type === "text/csv" && mainPropertyCSVName === file.name)[0];
+      let documentCsv = files.filter((file) => file.type === "text/csv" && mainDocumentCSVName === file.name)[0];
+      let remainingDocument = files.filter((file) => !(file.type === "text/csv" && mainPropertyCSVName === file.name) && !(file.type === "text/csv" && mainDocumentCSVName === file.name));
+      if (!mainPropertyCsv || !documentCsv) {
+        return alert("Please upload both CSV files");
+      }
+
+      setAllPropertyDocuments(remainingDocument);
+      readFileFunction(mainPropertyCsv, mainPropertyCSVName);
+      readFileFunction(documentCsv, mainDocumentCSVName);
+    } else {
+      return alert("Please upload folder");
+    }
+  };
+
+
+  // read And Upload Current file Chunk
+  const readAndUploadCurrentFileChunk = (fileDetails, currentChunkIndex) => { 
+    const { file } = fileDetails;
+    const reader = new FileReader();
+    chunkSize = Math.round((file.size * 39) / 100);
+    const from = currentChunkIndex * chunkSize;
+    const to = from + chunkSize;
+    const blob = file.slice(from, to);
+    reader.onload = (e) => uploadFileChunk(e, fileDetails, currentChunkIndex);
+    reader.readAsDataURL(blob);
+  };
+
+  // upload Image Chunk
+  const uploadFileChunk = async (readerEvent, fileDetails, currentChunkIndex) => {
+    const { file, property_number, document_type_id, description, property_id, upload_property_id } = fileDetails;
+    const size = file.size;
+    let tempChunkSize = chunkSize;
+    let temp = (currentChunkIndex * chunkSize);
+    if (temp + chunkSize > size) {
+      tempChunkSize = size - temp;
+    }
+    const data = readerEvent.target.result.split(",")[1];
+    const fileName = file.name;
+    const totalChunks = Math.ceil(size / chunkSize);
+    const chunkNumber = currentChunkIndex + 1;
+    const detailsToPost = {
+      upload_id: uniqueId,
+      property_number: property_number,
+      property_id: property_id,
+      chunk_number: chunkNumber,
+      total_chunks: totalChunks,
+      chunk_size: tempChunkSize,
+      total_file_size: size,
+      file_name: fileName,
+      category_id: Number(document_type_id),
+      description: description,
+      data: data,
+    };
+
+    const chunks = Math.ceil(file.size / chunkSize) - 1;
+    const isLastChunk = currentChunkIndex === chunks;
+
+    try {
+      const docRes = await axios.post(`/sam/v1/property/auth/property-documents`, detailsToPost, { headers: authHeaders })
+      console.log(docRes);
+    } catch (error) {
+      if (isLastChunk) {
+        const { error: err, message } = error.response.data
+        console.log(err);
+        if (message && message === 2) {
+          let propertyDuplicateError = alreadyExistDocuments;
+          if (propertyDuplicateError[upload_property_id]) {
+            propertyDuplicateError[upload_property_id] = [...propertyDuplicateError[upload_property_id], fileName]
+          } else {
+            propertyDuplicateError[upload_property_id] = [fileName];
+          }
+          setAlreadyExistDocuments(() => propertyDuplicateError)
         } else {
-            setCurrentChunkIndex(currentChunkIndex + 1);
+          setDocErrorDetails((old) => [...old, { upload_property_id, error: error.response.data.error }])
         }
-    };
-
-    useEffect(() => {
-        if (lastUploadedFileIndex === null) {
-            return;
-        }
-        const isLastFile = lastUploadedFileIndex === files.length - 1;
-        const nextFileIndex = isLastFile ? null : currentFileIndex + 1;
-        setCurrentFileIndex(nextFileIndex);
-        // eslint-disable-next-line
-    }, [lastUploadedFileIndex]);
-
-    useEffect(() => {
-        if (files.length > 0) {
-            if (currentFileIndex === null) {
-                setCurrentFileIndex(
-                    lastUploadedFileIndex === null ? 0 : lastUploadedFileIndex + 1
-                );
-            }
-        }
-        // eslint-disable-next-line
-    }, [files.length]);
-
-    useEffect(() => {
-        if (currentFileIndex !== null) {
-            setCurrentChunkIndex(0);
-        }
-    }, [currentFileIndex]);
-
-    useEffect(() => {
-        if (currentChunkIndex !== null) {
-            readAndUploadCurrentChunk();
-        }
-        // eslint-disable-next-line
-    }, [currentChunkIndex]);
-
-    // post Chunks To DataBase
-    const postChunksToDataBase = () => {
-        setFiles(saveFile);
-    };
-
-    useEffect(() => {
-        rootTitle.textContent = "ADMIN - UPLOAD PROPERTIES";
-        // eslint-disable-next-line
-    }, []);
-
-    // page reload function
-    const reloadPage = () => {
-        setTimeout(() => {
-            window.location.reload();
-        }, 4000);
-    };
-
-
-    const postProperty = async () => {
-        console.log(allUseStates)
-        console.log(allUseStates.data[0].document_upload_list_url)
-        let filePath = allUseStates.data[0].document_upload_list_url;
-        console.log(typeof filePath);
-        // Check if filePath is not undefined, null, or an empty string
-        if (filePath) {
-            try {
-                // Fetching the file from the URL
-                const response = await fetch(`${filePath}`,{
-                    responseType: 'arraybuffer'
-
-                  });
-
-                console.log(response);
-                // Checking if the response is ok (status code is in the range 200-299)
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                // Reading the response as a blob
-                const blob = await response.blob();
-
-                // Reading the XLSX file data using FileReader
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-
-                    console.log(data);
-                    console.log(workbook);
-                    // Assuming the first sheet
-                    const firstSheetName = workbook.SheetNames[0];
-                    const worksheet = workbook.Sheets[firstSheetName];
-
-                    // Converting sheet to JSON
-                    const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-                    console.log('Parsed XLSX data: ', json);
-
-                    // Set the parsed data to your state
-                    setAllUseStates({
-                        ...allUseStates,
-                        tableHeadings: json[0],
-                        data: json.slice(1),
-                        tableDisplayClass: "",
-                    });
-                };
-
-                // Reading the blob as an ArrayBuffer
-                reader.readAsArrayBuffer(blob);
-            } catch (error) {
-                // Logging any errors that occur during the fetch operation
-                console.error('Error fetching file: ', error);
-            }
-        } else {
-            console.log('No file path provided');
-        }
+      }
     }
 
-    // const postProperty = async () => {
-    //     // Logging the entire allUseStates object to the console for debugging
-    //     console.log(allUseStates);
-
-    //     // Logging the document_upload_list_url to the console for debugging
-    //     console.log(allUseStates.data[0].document_upload_list_url);
-
-    //     // Extracting the document_upload_list_url from the allUseStates object
-    //     let filePath = allUseStates.data[0].document_upload_list_url;
-
-    //     // Checking if filePath is not undefined, null, or an empty string
-    //     if (filePath) {
-    //         try {
-    //             // Fetching the file from the URL
-    //             let response = await fetch(filePath);
-
-    //             // Checking if the response is ok (status code is in the range 200-299)
-    //             if (!response.ok) {
-    //                 throw new Error(`HTTP error! status: ${response.status}`);
-    //             }
-
-    //             // Reading the response text
-    //             let data = await response.text();
-
-    //             // Logging the fetched data to the console
-    //             console.log('Fetched data: ', data);
-    //             const parsedData = Papa.parse(data, { header: true });
-    //             console.log('Parsed data: ', parsedData.data)
-
-    //             // Optionally, set the fetched data to a state or variable (uncomment the line below)
-    //             // setFileData(data);
-    //         } catch (error) {
-    //             // Logging any errors that occur during the fetch operation
-    //             console.error('Error fetching file: ', error);
-    //         }
-    //     } else {
-    //         console.log('No file path provided');
-    //     }
-
-    //     // The commented-out lines below demonstrate a different way to fetch and log the response
-    //     // let res = await fetch(filePath);
-    //     // console.log("res ==>", res);
-    // };
+    if (isLastChunk) {
+      setUniqueId(uuid());
+      setLastUploadedFileIndex(currentFileIndex);
+    } else {
+      readAndUploadCurrentFileChunk(fileDetails, currentChunkIndex + 1);
+    }
+  };
 
 
-    return (
-        <Layout>
-            <div
-                className="container-fluid section-padding"
-                onDrop={(e) => {
-                    e.preventDefault();
-                }}
-                onDragOver={(e) => {
-                    e.preventDefault();
-                }}
-            >
-                <div className="row min-100vh position-relative">
-                    <AdminSideBar />
-                    <div className="col-xl-10 col-lg-9 col-md-8">
+  // lastUploadedImageFileIndex
+  useEffect(() => {
+    if (lastUploadedFileIndex === null) {
+      return;
+    } 
+    const isLastFile = lastUploadedFileIndex !== null && currentPropertyDocs && lastUploadedFileIndex + 1 >= currentPropertyDocs.length;
+    const nextFileIndex = isLastFile ? null : currentFileIndex + 1; 
 
-                        <div className="d-flex justify-content-between align-items-center mt-2">
-                            <BreadCrumb />
-                            <a
-                                className="btn btn-primary text-white sample-file-download-btn me-4"
-                                href={sampleCSVFile}
-                                download="SampleBulkFile.csv"
-                            >
-                                Sample Bulk File <i className="bi bi-download"> </i>
-                            </a>
-                        </div>
+    setCurrentFileIndex(nextFileIndex);
+    if (isLastFile) {
+      setLoading(false)
+    }
+    // eslint-disable-next-line
+  }, [lastUploadedFileIndex]);
 
-                        <div className="container-fluid mt-4">
-                            <div className="row justify-content-center">
-                                <div className="col-xl-7 col-md-11 shadow p-md-4 p-3 mb-5 upload-file-main-wrapper">
-                                    <div className="">
-                                        <div
-                                            onDragOver={(e) => {
-                                                setDropzoneActive(true);
-                                                e.preventDefault();
-                                            }}
-                                            onDragLeave={(e) => {
-                                                setDropzoneActive(false);
-                                                e.preventDefault();
-                                            }}
-                                            onDrop={(e) => handleDrop(e)}
-                                            className={`py-3 upload-file-inner-wrapper ${dropzoneActive ? "active" : ""
-                                                }`}
-                                        >
-                                            <div className="text-center fs-3 fw-bold">
-                                                Choose a file or drag it here
-                                            </div>
+  // imageFiles
+  useEffect(() => {
+    if (currentPropertyDocs && currentPropertyDocs.length > 0) {
+      if (currentFileIndex === null) {
+        setCurrentFileIndex(0);
+      }
+    }
+    // eslint-disable-next-line
+  }, [currentPropertyDocs]);
 
-                                            <div className="upload-btn-wrapper py-xl-3 py-md-2 py-1 w-100">
-                                                <i className="bi bi-upload fs-1 upload-iocn"></i>
-                                                <input
-                                                    ref={fileRef}
-                                                    onChange={fileUpload}
-                                                    className="upload-csv-file"
-                                                    type="file"
-                                                    id="formFile"
-                                                />
-                                            </div>
-                                            {fileName && <div className="text-center fs-5">{fileName}</div>}
-                                        </div>
-                                        <div className="mt-2">
-                                            <small className="text-white">
-                                                Refer to the csv file example below.
-                                            </small>
-                                            <br />
-                                            <img
-                                                src="/sample-img.png"
-                                                className="img-fluid border mt-2"
-                                                alt="hint-img"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
+  // currentImageFileIndex
+  useEffect(() => {
+    if (currentPropertyDocs && currentFileIndex !== null) {
+      readAndUploadCurrentFileChunk(currentPropertyDocs[currentFileIndex], 0);
+    }
+    // eslint-disable-next-line
+  }, [currentFileIndex]);
 
-                                <div
-                                    id="showCsvDataInTable"
-                                    className="col-xl-12 position-relative mb-5 vh-100"
-                                >
-                                    <div
-                                        className={`${allUseStates?.tableDisplayClass} csv-data-table-wrapper`}
-                                    >
-                                        <table className="table table-striped table-bordered table-primary h-100">
-                                            <thead>
-                                                <tr>
-                                                    {allUseStates?.tableHeadings.map((heading, Index) => {
-                                                        return <th key={Index}>{heading}</th>;
-                                                    })}
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {allUseStates?.data.map((i, Index) => {
-                                                    return (
-                                                        <tr key={Index}>
-                                                            {allUseStates?.tableHeadings.map((heading, Index) => {
-                                                                return <td key={Index}>{i[heading]}</td>;
-                                                            })}
-                                                        </tr>
-                                                    );
-                                                })}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    {/* save and cancel button */}
-                                    <div
-                                        className={`text-end mt-3 bg-light  save-cancel-btn-div ${allUseStates?.tableDisplayClass}`}
-                                    >
-                                        {/* Save */}
-                                        <button
-                                            className="btn btn-success me-2"
-                                            onClick={postProperty}
-                                        //   onClick={postChunksToDataBase}
-                                        >
-                                            Save
-                                        </button>
-                                        {/* cancel */}
-                                        <button
-                                            onClick={onCancelClick}
-                                            className="btn btn-secondary"
-                                        >
-                                            Cancel
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
-                {/* Modal */}
-                <div
-                    className={`modal fade ${errorModalOpen ? "show d-block" : "d-none"}`}
-                    id="duplicatePropertyErrorModal"
-                    tabIndex="-1"
-                    aria-hidden="true"
-                    style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
-                >
-                    <div className="modal-dialog modal-dialog-centered modal-sm duplicate-property-error-modal">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h5 className="modal-title" id="exampleModalLabel">
-                                    <i className="bi bi-exclamation-triangle-fill me-2"></i>
-                                    {errorHeading} !
-                                </h5>
-                                <button
-                                    type="button"
-                                    className="btn-close"
-                                    onClick={() => {
-                                        setErrorModalDetails({ errorModalOpen: false });
-                                        window.location.reload();
-                                    }}
-                                ></button>
-                            </div>
-                            <div className="modal-body common-btn-font">{errorMessage}</div>
-                        </div>
-                    </div>
-                </div>
+  useEffect(() => {
+    rootTitle.textContent = "ADMIN - UPLOAD PROPERTIES WITH DOCUMENTS";
+  }, []);
+
+  useEffect(() => {
+    if (loading === false && propertyErrorDetails && propertyErrorDetails.length === 0 && docErrorDetails && docErrorDetails.length === 0 && alreadyExistPropertyNumber && Object.keys(alreadyExistPropertyNumber).length === 0 && alreadyExistDocuments && Object.keys(alreadyExistDocuments).length === 0) {
+      toast.success("All property and document uploaded successfully");
+      clearPageStates();
+    }
+
+  }, [loading, propertyErrorDetails, docErrorDetails, alreadyExistPropertyNumber, alreadyExistDocuments])
+
+
+  // clear page states
+  const clearPageStates = () => {
+    setUniqueId(uuid())
+    setLoading(undefined)
+    setCurrentFileIndex(null)
+    setLastUploadedFileIndex(null)
+    setAlreadyExistDocuments({});
+    setMissingPropertyDetails({})
+    setPropertyErrorDetails([])
+    setDocErrorDetails([])
+    setAlreadyExistPropertyNumber([])
+    setDuplicateUploadIdDetails({});
+    setAllPropertyData({
+      data: [],
+      tableHeadings: [],
+      tableDisplayClass: "d-none",
+    })
+    setAllPropertyDocumentList([])
+    setAllPropertyDocuments([])
+    setCurrentPropertyDocs(null)
+    chunkSize = 0
+    if (fileRef.current) {
+      fileRef.current.value = "";
+    }
+    window.scrollTo(0, 0);
+  };
+
+  // post Property function
+  const postProperty = async () => {
+    setLoading(true);
+
+    for (const property of allPropertyData.data) {
+
+      const { property_number, type_id, title_clear_property, is_stressed, saleable_area, carpet_area, ready_reckoner_price, distress_value, plot_number, locality, landmark, city, state, country, PIN, is_sold, status } = property;
+
+      if (!property_number
+        || !type_id || !title_clear_property || !is_stressed || !saleable_area || !carpet_area || !is_sold || !ready_reckoner_price || !distress_value || !plot_number || !locality || !landmark || !city || !state || !country || !PIN || !status) {
+        const error = { property_number: property_number, error: `For this property, some data is missing. Please update the data properly to upload the property` }
+        setPropertyErrorDetails((old) => [...old, error]);
+        setLoading(false);
+      } else {
+        property.type_id = Number(property.type_id)
+        property.title_clear_property = Number(property.title_clear_property)
+        property.is_stressed = Number(property.is_stressed)
+        property.is_available_for_sale = Number(property.is_available_for_sale)
+        property.saleable_area = Number(property.saleable_area)
+        property.carpet_area = Number(property.carpet_area)
+        property.ready_reckoner_price = Number(property.ready_reckoner_price)
+        property.expected_price = Number(property.expected_price)
+        property.market_price = Number(property.market_price)
+        property.distress_value = Number(property.distress_value)
+        property.is_sold = Number(property.is_sold)
+
+        property.address_details = {
+          flat_number: Number(property.flat_number),
+          plot_number: Number(property.plot_number),
+          building_name: property.building_name,
+          society_name: property.society_name,
+          locality: property.locality,
+          landmark: property.landmark,
+          city: property.city,
+          state: property.state,
+          country: property.country,
+          zip: Number(property.PIN)
+        }
+        const { success, error, msg, property_id } = await InsertSingleProperty(property)
+        if (success === false || !success) {
+          if (msg === 2 && alreadyExistPropertyNumber.includes(property.property_number) === false) {
+            setAlreadyExistPropertyNumber((prevNumbers) => [...prevNumbers, property.property_number]);
+          } else {
+            const err = { property_number: property.property_number, error }
+            setPropertyErrorDetails((old) => [...old, err]);
+          }
+        } 
+        if (allPropertyDocumentList.length > 0) {
+          const currentPropertyDocumentList = allPropertyDocumentList.filter((doc) => doc.upload_property_id === property.upload_property_id) 
+          let allCurrentDocumentPath = [];
+
+          const currentPropertyDocuments = currentPropertyDocumentList.map(doc1 => {
+            const matchedItem1 = allPropertyDocuments.find(doc2 => doc2.webkitRelativePath === doc1.document_url); 
+
+            // if document not found
+            if (matchedItem1 === undefined) { 
+
+              setDocErrorDetails((old) => [...old, { upload_property_id: doc1.upload_property_id, error: `document not found with path ${doc1.document_url}` }])
+            }
+
+            allCurrentDocumentPath.push(doc1.document_url) 
+            return matchedItem1 ? { file: matchedItem1, property_id, ...doc1 } : null;
+
+            // return matchedItem1 ? { file: matchedItem1, ...doc1, property_id } : null;
+          }
+          ).filter(item => item !== null); 
+
+
+          if (currentPropertyDocuments.length > 0 && (msg === 2 || msg === 0)) {
+            setLoading(true); 
+
+            setCurrentPropertyDocs(currentPropertyDocuments)
+          } else if (currentPropertyDocuments.length > 0) {
+            setDocErrorDetails((old) => [...old, { property_number: property.property_number, error: `Document not uploaded because the property not uploaded successfully.` }])
+            setLoading(false);
+          } else {
+            setLoading(false);
+
+          }
+        } else if (allPropertyDocumentList.length > 0) {
+          setDocErrorDetails((old) => [...old, { property_number: property.property_number, error: `Document not uploaded because the property does not exist.` }])
+          setLoading(false);
+        } else {
+          setLoading(false);
+        }
+      }
+    }
+  }
+
+  return (
+    <Layout>
+      <div
+        className="container-fluid section-padding"
+      // onDrop={(e) => {
+      //   e.preventDefault();
+      // }}
+      // onDragOver={(e) => {
+      //   e.preventDefault();
+      // }}
+      >
+        <div className="row min-100vh position-relative">
+          <AdminSideBar />
+          <div className="col-xl-10 col-lg-9 col-md-8">
+
+            <div className="d-flex justify-content-between align-items-center mt-2">
+              <BreadCrumb />
+              <a
+                className="btn btn-primary text-white sample-file-download-btn me-4"
+                href={PropertyUploadFolder}
+                download="PropertyUploadFolder.zip"
+              >
+                <i className="bi bi-download me-2"> </i>  Sample Bulk Folder
+              </a>
             </div>
-        </Layout>
-    );
+            {loading ? (
+              <div
+                className="d-flex justify-content-center align-items-center"
+                style={{ minHeight: "45vh" }}
+              >
+                <CommonSpinner
+                  spinnerColor="primary"
+                  spinnerType="grow"
+                />
+              </div>
+            ) :
+              <div className="container-fluid mt-4">
+                <div className="row justify-content-center">
+                  <div className="col-xl-7 col-md-11 shadow p-md-4 p-3 mb-5 upload-file-main-wrapper">
+                    <div className="">
+                      <div
+                        onDragOver={(e) => {
+                          // setDropzoneActive(true);
+                          e.preventDefault();
+                        }}
+                        onDragLeave={(e) => {
+                          // setDropzoneActive(false);
+                          e.preventDefault();
+                        }}
+                        // onDrop={(e) => handleDrop(e)}
+                        className={`py-3 upload-file-inner-wrapper ${dropzoneActive ? "active" : ""
+                          }`}
+                      >
+                        <div className="text-center fs-3 fw-bold">
+                          Choose a file or drag it here
+                        </div>
+
+                        <div className="upload-btn-wrapper py-xl-3 py-md-2 py-1 w-100">
+                          <i className="bi bi-upload fs-1 upload-iocn"></i>
+                          <input
+                            ref={fileRef}
+                            id="formFile"
+                            type="file"
+                            webkitdirectory="true"
+                            className="upload-csv-file"
+                            directory="true"
+                            multiple
+                            onChange={fileUpload}
+                          />
+                        </div>
+                      </div>
+                      <div className="mt-2">
+                        <small className="text-white">
+                          To download the sample bulk folder format, <a className="custom-text-secondary" href={PropertyUploadFolder}>click here</a>.
+                        </small>
+                        <br />
+                       
+                      </div>
+                    </div>
+                  </div>
+
+                  <div
+                    id="showCsvDataInTable"
+                    className={`col-xl-12 position-relative mb-5 vh-100 ${allPropertyData ? "" : "d-none"}`}
+                  >
+                    <div
+                      className={`${allPropertyData?.tableDisplayClass} csv-data-table-wrapper`}
+                    >
+                      <table className="table table-striped table-bordered table-primary h-100">
+                        <thead>
+                          <tr>
+                            {allPropertyData?.tableHeadings.map((heading, Index) => {
+                              return <th key={Index}>{heading}</th>;
+                            })}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {allPropertyData?.data.map((i, Index) => {
+                            return (
+                              <tr key={Index}>
+                                {allPropertyData?.tableHeadings.map((heading, Index) => {
+                                  return <td key={Index}>{i[heading]}</td>;
+                                })}
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                    {/* save and cancel button */}
+                    <div
+                      className={`text-end mt-3 bg-light  save-cancel-btn-div ${allPropertyData?.tableDisplayClass}`}
+                    >
+                      {/* Save */}
+                      <button
+                        className="btn btn-success me-2"
+                        onClick={postProperty}
+                      >
+                        Save
+                      </button>
+                      {/* cancel */}
+                      <button
+                        onClick={clearPageStates}
+                        className="btn btn-secondary"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>}
+          </div>
+        </div>
+
+        {/* Modal */}
+        <div
+          className={`modal fade ${loading === false && ((propertyErrorDetails && propertyErrorDetails.length > 0) || (docErrorDetails && docErrorDetails.length > 0) || (alreadyExistPropertyNumber && alreadyExistPropertyNumber.length > 0) || (alreadyExistDocuments && Object.keys(alreadyExistDocuments).length > 0)) ? "show d-block" : "d-none"}`}
+          id="propertyErrorModal"
+          tabIndex="-1"
+          aria-hidden="true"
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
+        >
+          <div className="modal-dialog modal-dialog-centered modal-sm duplicate-property-error-modal">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title" id="exampleModalLabel">
+                  <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                  Error Details !
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => {
+                    clearPageStates()
+                  }}
+                ></button>
+              </div>
+              {((propertyErrorDetails && propertyErrorDetails.length > 0) || (alreadyExistPropertyNumber && alreadyExistPropertyNumber.length > 0)) &&
+                <div>
+                  <h4>Property Error</h4>
+                  <div className="m-2">
+                    {alreadyExistPropertyNumber && alreadyExistPropertyNumber.length > 0 && <div><i className="bi bi-dot"></i>{`Property already exists with property numbers:`}<span className="fw-bold">{alreadyExistPropertyNumber.join(", ")}</span>.</div>
+                    }
+                    {propertyErrorDetails && propertyErrorDetails.length > 0 && propertyErrorDetails.map((err, i) => {
+                      return <div key={i} className=""><i className="bi bi-dot"></i>{`${err.property_number} : ${err.error}`}</div>
+                    })}
+                  </div>
+                </div>}
+              {(docErrorDetails || alreadyExistDocuments) && (Object.keys(alreadyExistDocuments).length > 0 || Object.keys(docErrorDetails).length > 0) && <div>
+                <h4>Document Error</h4>
+                <div className="m-2">
+                  {alreadyExistDocuments && Object.keys(alreadyExistDocuments).length > 0 && Object.keys(alreadyExistDocuments).map((upload_property_id, i) => {
+                    return <div><i className="bi bi-dot"></i>{`Documents already exist with `}<span className="fw-bold">upload_property_id {upload_property_id}</span>{`,  including the following document names:`} <span className="fw-bold">{alreadyExistDocuments[upload_property_id].join(", ")}</span>.</div>
+                  })}
+
+                  {docErrorDetails.map((err, i) => {
+                    return <div key={i} className=""><i className="bi bi-dot"></i> upload_property_id   {err.upload_property_id} : {err.error}</div>
+                  })}
+                </div>
+              </div>}
+              <div className="modal-body common-btn-font">(Please create a new CSV containing the updated property details, and remove the previously uploaded ones.)</div>
+            </div>
+          </div>
+        </div>
+
+        {/* file reading error Modal */}
+        <div
+          className={`modal fade ${(missingPropertyDetails && Object.keys(missingPropertyDetails).length > 0) || (duplicateUploadIdDetails && Object.keys(duplicateUploadIdDetails).length > 0) ? "show d-block" : "d-none"}`}
+          id="missingPropertyDetailsModal"
+          tabIndex="-1"
+          aria-hidden="true"
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
+        >
+          <div className="modal-dialog modal-dialog-centered modal-sm duplicate-property-error-modal">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title" id="exampleModalLabel">
+                  <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                  Error Details
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => {
+                    clearPageStates()
+                  }}
+                ></button>
+              </div>
+              {/* duplicateUploadIdDetails */}
+              {duplicateUploadIdDetails && Object.keys(duplicateUploadIdDetails).length > 0 && <div>
+                <h4>Duplicated Upload ID Error</h4>
+                <div className="m-2 mb-4">
+                  {Object.keys(duplicateUploadIdDetails).map((rowIndex, i) => {
+                    const value = duplicateUploadIdDetails[rowIndex];
+                    return <div>{i + 1}. <span>{`Upload property ID `}<span className="fw-bold">  {rowIndex}</span> is duplicated on rows {value.join(", ")} </span></div>
+                  })}
+
+                </div>
+              </div>}
+              {/* missingPropertyDetails */}
+              {missingPropertyDetails && Object.keys(missingPropertyDetails).length > 0 && <div>
+                <h4>Property fields missing Error</h4>
+                <div className="m-2 mb-4">
+                  {Object.keys(missingPropertyDetails).map((rowIndex, i) => {
+                    return <div>{i + 1}. <span>{`Missing values in`}<span className="fw-bold"> row {rowIndex}</span>: the missing fields are</span> <span className="fw-bold">{`${missingPropertyDetails[rowIndex].join(", ")}.`}</span></div>
+                  })}
+
+                </div>
+                <h6 className="text-center">(Please fill in all the details correctly and reupload the file.) </h6>
+              </div>}
+            </div>
+          </div>
+        </div>
+      </div>
+    </Layout>
+  );
 };
 
-export default UploadPropertiesWithDocuments;
+export default UploadProperties;

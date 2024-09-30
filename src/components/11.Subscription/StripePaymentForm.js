@@ -20,9 +20,7 @@ export const StripePaymentForm = () => {
     const fetchStripePromiseKey = async () => {
         setLoading(true);
         try {
-            const response = await axios.get("/sam/v1/customer-registration/auth/stripe-public-key", { headers: authHeaders });
-
-            console.log(response.data);
+            const response = await axios.get("/sam/v1/customer-registration/auth/stripe-public-key", { headers: authHeaders }); 
             if (response.data.key !== "") {
                 const stripePromiseInstance = loadStripe(response.data.key);
                 setStripePromise(stripePromiseInstance);

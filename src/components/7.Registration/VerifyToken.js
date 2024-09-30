@@ -87,7 +87,7 @@ const VerifyToken = () => {
     <Layout>
       <section className="verify-token-wrapper min-100vh section-padding" onLoad={() => getTokenFromURL()}>
         <div className="container">
-          <div className="row justify-content-evenly mt-5">
+          <div className="row justify-content-evenly mt-4">
             <div className="col-xl-4 col-lg-5 col-md-6">
               <form onSubmit={verifyUserToken} action="" className="card p-5">
                 <h3 className="card-title text-center fw-bold">
@@ -166,7 +166,7 @@ const VerifyToken = () => {
                 </div>
               </form>
             </div>
-            <div className="col-xl-4 col-lg-5 col-md-6 mt-5 mt-md-0">
+            <div className="col-xl-4 col-lg-5 col-md-6 my-5 mt-md-0">
               <img src={verifyTokenImg} alt="" className="verify-token-img" />
             </div>
           </div>

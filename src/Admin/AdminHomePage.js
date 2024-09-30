@@ -278,7 +278,7 @@ const AdminHomePage = () => {
                 <div className="col-xl-3 col-md-6 mt-4 mt-md-0">
                   <NavLink
                     to={`${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"
-                      }/property/upload-properties`}
+                      }/property/upload-properties-with-documents`}
                     className="card admin-top-card text-decoration-none "
                   >
                     <div className="card-body d-flex align-items-center">
@@ -310,13 +310,13 @@ const AdminHomePage = () => {
                                 <i className="bi bi-person-circle text-black hover-color-secondary icon col-6"></i>
                               </div>
 
-                              <h4 className="m-0 col-4 heading-text-primary ">
+                              <h5 className="m-0 heading-text-primary ">
                                 {usersCountLoading ? (
                                   <span className="spinner fs-3 spinner-border"></span>
                                 ) : (<span className="user-card-count" >
                                   {individualUsersCount}
                                 </span>
-                                )}</h4>
+                                )}</h5>
 
                             </div>
                             <div>

@@ -14,6 +14,8 @@ let authHeader = "";
 let roleId = "";
 let isBank = false;
 
+const fetchedFiles = {}
+
 const ViewProperty = ({
   selectedProperty,
   propertyDocumentsList,
@@ -126,8 +128,13 @@ const ViewProperty = ({
     setZipExtractedContent(extractedContent);
   };
   // get Chunks Of Documents
-  const getChunksOfDocuments = async (documentId, propertyId) => {
+  const getChunksOfDocuments = async (documentId, propertyId) => { 
     setDocumentLoading(true);
+    if(fetchedFiles[documentId]){ 
+      setSrcOfFile(fetchedFiles[documentId].url)
+      setFileExtension(fetchedFiles[documentId].fileExtension)
+      return setDocumentLoading(false)
+    } 
     let dataToPost = {
       document_id: documentId,
       property_id: propertyId,
@@ -156,11 +163,12 @@ const ViewProperty = ({
               } else {
                 dataString = "";
               }
-              let originalBase64 = window.btoa(combinedBinaryFormatOfChunks);
+              let originalBase64 = window.btoa(combinedBinaryFormatOfChunks); 
               const base64Data = originalBase64;
-              const base64Response = await fetch(`${dataString}${base64Data}`);
-              const blob = await base64Response.blob();
-              const url = URL.createObjectURL(blob);
+              const base64Response = await fetch(`${dataString}${base64Data}`); 
+              const blob = await base64Response.blob(); 
+              const url = URL.createObjectURL(blob); 
+              fetchedFiles[documentId] ={ url,fileExtension};
               setSrcOfFile(url);
               if (fileExtension === "xlsx" || fileExtension === "xls") {
                 fetchExcelFilesData(url);
@@ -334,6 +342,13 @@ const ViewProperty = ({
     setPropertyImagesListState(propertyImagesList)
   }, [propertyImagesList])
 
+  const closeViewModel = (e)=>{
+    e.preventDefault()
+    s1=""
+    cnt=0
+    setSrcOfFile(null)
+  }
+
 
   return (
     <>
@@ -433,8 +448,7 @@ const ViewProperty = ({
                       <button
                         data-bs-toggle="modal"
                         data-bs-target="#viewImageModal"
-                        className="btn btn-sm btn-primary p-2 "
-                      // onClick={() => viewImagesBtnFunction(property_id)}
+                        className="btn btn-sm btn-primary p-2 " 
                       >
                         View Images <i className="bi bi-arrow-right"></i>
                       </button>
@@ -950,7 +964,8 @@ const ViewProperty = ({
                 <i
                   data-bs-dismiss="modal"
                   aria-label="Close"
-                  className="bi bi-x-lg text-white"
+                  className="bi bi-x-lg text-white" 
+                  onClick={closeViewModel}
                 ></i>
               </div>
             </div>
@@ -1045,11 +1060,8 @@ const ViewProperty = ({
                       ) : fileExtension === "" ? (
                         <></>
                       ) : fileExtension === "txt" || fileExtension === "pdf" ? (
-                        <>
-                          <DocViewer
-                            documents={[{ uri: srcOfFile }]}
-                            pluginRenderers={DocViewerRenderers}
-                          />
+                        <> 
+                        <embed src={`${srcOfFile}#toolbar=0`} type="application/pdf" width="100%" height="100%" />; 
                         </>
                       ) : (
                         <div className="wrapper">
@@ -1160,17 +1172,7 @@ const ViewProperty = ({
                   </div>
                 </div>
               </div>
-              <hr className="my-2" />
-              {/* {viewImagesModalLoading ? (
-                <div
-                  className="d-flex justify-content-center align-items-center"
-                >
-                  <CommonSpinner
-                    spinnerColor="primary"
-                    spinnerType="grow"
-                  />
-                </div>
-              ) : */}
+              <hr className="my-2" /> 
               <div className="gallery">
                 {propertyImagesListState.length !== 0 ? propertyImagesListState.map((image, index) => {
                   return (
@@ -1194,8 +1196,7 @@ const ViewProperty = ({
                   <div className="text-muted">
                     No Images available.
                   </div>}
-              </div>
-              {/* } */}
+              </div> 
             </div>
           </div>
         </div>
@@ -1243,6 +1244,7 @@ const ViewProperty = ({
                   data-bs-dismiss="modal"
                   aria-label="Close"
                   className="bi bi-x-lg text-white"
+                  onClick={(e)=>closeViewModel(e)}
                 ></i>
               </div>
             </div>

@@ -20,6 +20,7 @@ let bank_id = 0;
 let defaultRoleText = "";
 let defaultRoleIds = [];
 let rolesToRemove = [];
+let isBank = false;
 
 const ManageUsers = ({ userType }) => {
 
@@ -34,6 +35,7 @@ const ManageUsers = ({ userType }) => {
     authHeader = { Authorization: data.loginToken };
     roleId = data.roleId;
     bank_id = data.bank_id;
+    isBank = data.isBank;
   }
   const [otherDetailsOfUser, setOtherDetailsOfUser] = useState({});
   const { user_id, email_address, mobile_number, user_type } =
@@ -197,11 +199,8 @@ const ManageUsers = ({ userType }) => {
           });
 
       } catch (error) {
-        // setLoading(false);
-        console.log(error);
         toast.error(`${error.response.data.error === 'Not have any other branch' ? "No other branch is present to transfer." : "Internal server error"}`)
       }
-      // navigate("/");
     } else {
       setConfirmDeleteUserBtnDisabled(true);
     }
@@ -251,7 +250,6 @@ const ManageUsers = ({ userType }) => {
                 handlePageClick({ selected: currentPageNumber - 1 });
               }
             } else {
-              // setUsers([]);
             }
           } else {
             toast.error("Internal server error");
@@ -470,7 +468,23 @@ const ManageUsers = ({ userType }) => {
           <div
             className={`col-xl-10 col-lg-9 col-md-8 users-admin ${showAllUsersSectionClass}`}
           >
-            <BreadCrumb userType={userType} />
+
+            {/* breadCrumb and back button */}
+            <div className="row justify-content-between align-items-center">
+              <div className="col-md-6">
+                <BreadCrumb userType={userType} />
+              </div>
+              {/* /back button */}
+              <div className="col-md-6 text-end">
+                <button
+                  className="btn btn-sm btn-outline-primary"
+                  onClick={() => { navigate(`${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"}`) }}
+                >
+                  <i className="bi bi-arrow-left"></i> Back
+                </button>
+              </div>
+
+            </div>
 
             {/* search filter */}
             <div className="row px-md-4 mt-4 admin-users-filter d-flex justify-content-between flex-wrap">
@@ -644,14 +658,14 @@ const ManageUsers = ({ userType }) => {
                     </table>
                   </div>
                   <div className="container mt-4">
-                    {pageCount > 1 ? 
-                    <div className="row">
-                      <Pagination
-                        handlePageClick={handlePageClick}
-                        pageCount={pageCount}
-                      />
-                    </div> 
-                    : ""}
+                    {pageCount > 1 ?
+                      <div className="row">
+                        <Pagination
+                          handlePageClick={handlePageClick}
+                          pageCount={pageCount}
+                        />
+                      </div>
+                      : ""}
                   </div>
                 </>
               )}
@@ -662,13 +676,35 @@ const ManageUsers = ({ userType }) => {
           <div
             className={`col-xl-10 col-lg-9 col-md-8 users-admin ${viewCurrentUserSectionClass}`}
           >
-            <BreadCrumb 
-              typeOfUser={user_type}
-              emailOfCurrentUser={email_address}
-              setDisplayClassesOfMainSections={setDisplayClassesOfMainSections}
-              handlePageClick={handlePageClick}
-              currentPageNumber={currentPageNumber - 1}
-            />
+
+            {/* breadCrumb and back button */}
+            <div className="row justify-content-between align-items-center mb-md-0 mb-2">
+              <div className="col-md-6">
+                <BreadCrumb
+                  typeOfUser={user_type}
+                  emailOfCurrentUser={email_address}
+                  setDisplayClassesOfMainSections={setDisplayClassesOfMainSections}
+                  handlePageClick={handlePageClick}
+                  currentPageNumber={currentPageNumber - 1}
+                />
+              </div>
+              {/* /back button */}
+              <div className="col-md-6 text-end">
+                <button
+                  className="btn btn-sm btn-outline-primary"
+                  onClick={()=>
+                    setDisplayClassesOfMainSections({
+                      showAllUsersSectionClass: "",
+                      viewCurrentUserSectionClass: "d-none",
+                    })}
+                >
+                  <i className="bi bi-arrow-left"></i> Back
+                </button>
+              </div>
+
+            </div>
+
+
             <section className="admin-edit-user">
               <div className="container-fluid">
                 {/* heading */}
@@ -733,7 +769,7 @@ const ManageUsers = ({ userType }) => {
                             </span>
 
                             <div className={`form-group ${classOnEditClick}`}>
-                              {roles && roles.map((data, Index) => { 
+                              {roles && roles.map((data, Index) => {
                                 if (roleId === 6 && (data.id === 3 || data.id === 1)) {
                                   return null;
                                 }
