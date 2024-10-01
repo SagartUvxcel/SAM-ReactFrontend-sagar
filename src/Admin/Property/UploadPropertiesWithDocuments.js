@@ -143,12 +143,16 @@ const UploadProperties = () => {
                 } 
 
               });
+
+              console.log(hasMissingFields);
               setMissingPropertyDetails(() => missingDataObject);
               setDuplicateUploadIdDetails(() => duplicateUploadId);
             }
           });
         }
-      });
+
+      }); 
+      console.log(csv);
       const parsedData = parsedFilteredCSV.data;
       if (fileName === mainPropertyCSVName) {
         setAllPropertyData({
@@ -166,42 +170,7 @@ const UploadProperties = () => {
     setDropzoneActive(false);
     document.getElementById("showCsvDataInTable").scrollIntoView(true);
   };
-
-  const handleDrop = async (e) => {
-    e.preventDefault();
-    setDropzoneActive(false);
-
-    const items = e.dataTransfer.items; 
-    if (items.length) {
-      const files = [];
-      for (const item of items) {
-        const entry = item.webkitGetAsEntry();
-        if (entry) {
-          const newFiles = await readAllFilesFromEntry(entry);
-          files.push(...newFiles);
-        }
-      } 
-
-      processFiles(files);
-    }
-  };
-
-  const readAllFilesFromEntry = async (entry) => {
-    let files = [];
-    if (entry.isFile) {
-      const file = await new Promise((resolve) => entry.file(resolve));
-      files.push(file);
-    } else if (entry.isDirectory) {
-      const directoryReader = entry.createReader();
-      const entries = await new Promise((resolve) => directoryReader.readEntries(resolve));
-      for (const nestedEntry of entries) {
-        const nestedFiles = await readAllFilesFromEntry(nestedEntry);
-        files.push(...nestedFiles);
-      }
-    }
-    return files;
-  };
-
+ 
   const fileUpload = (e) => {
     const files = e.target.files || e.dataTransfer.files;
     processFiles(Array.from(files)); 
@@ -509,8 +478,7 @@ const UploadProperties = () => {
                         onDragLeave={(e) => {
                           // setDropzoneActive(false);
                           e.preventDefault();
-                        }}
-                        // onDrop={(e) => handleDrop(e)}
+                        }} 
                         className={`py-3 upload-file-inner-wrapper ${dropzoneActive ? "active" : ""
                           }`}
                       >

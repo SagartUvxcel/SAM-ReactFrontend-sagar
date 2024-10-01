@@ -84,6 +84,8 @@ function Header() {
     localStorage.setItem("location", country);
     try {
       const { data } = await axios.get(`/sam/v1/property/change-country/${country === "india" ? 1 : 11}`)
+      console.log(data);
+      
     } catch (error) {
       console.log(error);
     }
