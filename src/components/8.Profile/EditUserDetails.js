@@ -20,6 +20,9 @@ const EditUserDetails = () => {
 
   // To store updated user details.
   const [commonUserDetails, setCommonUserDetails] = useState({});
+  console.log(commonUserDetails);
+  console.log(originalValuesToShow);
+  
 
   // Object destructuring.
   const {
@@ -376,6 +379,8 @@ const EditUserDetails = () => {
       plot_number: plot_number,
       society_name: society_name,
     };
+    console.log(dataToPost );
+    
     setUpdateBtnLoading(true);
     try {
       await axios

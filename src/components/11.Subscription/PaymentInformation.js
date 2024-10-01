@@ -6,7 +6,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { SubscriptionFacilityFetching } from "./SubscriptionFacilityFetching";
 
-const TAX_RATE = 0.18;
+// const taxRate = 0.18;
 
 let authHeaders = "";
 let planStatus = false;
@@ -15,6 +15,7 @@ let email = "";
 export const PaymentInformation = () => {
 
   const [plan, setPlan] = useState("");
+  const [taxRate, setTaxRate] = useState(0);
   const [billingOption, setBillingOption] = useState("");
   const [filteredBillingOptions, setFilteredBillingOptions] = useState([]);
   const [subtotal, setSubtotal] = useState(0);
@@ -162,6 +163,20 @@ export const PaymentInformation = () => {
     navigate("/");
   };
 
+  // tax Fetch Function
+  const taxFetchFunction = async () => {
+    try {
+      const { data } = await axios.get("/sam/v1/customer-registration/auth/tax-percentage", {
+        headers: authHeaders,
+      })
+      setTaxRate(data.tax_in_percentage/100);
+
+    } catch (error) {
+      console.log(error);
+
+    }
+  }
+
   useEffect(() => {
     if (plan) {
       // Check if a plan is selected
@@ -212,7 +227,7 @@ export const PaymentInformation = () => {
       ? parseFloat(selectedPlanData.price)
       : 0;
 
-    const calculatedTax = calculatedSubtotal * TAX_RATE;
+    const calculatedTax = calculatedSubtotal * taxRate;
     const calculatedFinalAmount = calculatedSubtotal + calculatedTax;
 
     setSubtotal(calculatedSubtotal);
@@ -220,7 +235,11 @@ export const PaymentInformation = () => {
     setFinalAmount(calculatedFinalAmount);
     setPlanDetails(selectedPlanData);
     // eslint-disable-next-line
-  }, [billingOption, filteredBillingOptions, TAX_RATE]);
+  }, [billingOption, filteredBillingOptions, taxRate]);
+
+  useEffect(() => {
+    taxFetchFunction();
+  }, [])
 
   // on page load
   window.onload = () => {
