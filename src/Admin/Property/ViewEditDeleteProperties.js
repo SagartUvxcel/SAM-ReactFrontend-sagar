@@ -667,7 +667,7 @@ const ViewEditDeleteProperties = () => {
   // get Default ImageUrl
   const getDefaultImageUrl = async (documentId, propertyId) => {
     const defaultImageDetails = await getChunksOfImages(documentId, propertyId);
-    return defaultImageDetails.srcOfFile
+    return defaultImageDetails?.srcOfFile
   }
 
   // get Chunks Of Images

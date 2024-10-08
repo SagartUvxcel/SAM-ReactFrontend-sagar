@@ -205,7 +205,7 @@ const SinglePropertyDocumentsUpload = () => {
       if (currentTotalSize <= 25) {
         setAlertDetails({ alertVisible: false });
         if (allowedExtensions.length > 0) {
-          if (allowedExtensions.includes(currentFileExtension)) {
+          if (allowedExtensions.includes(currentFileExtension)) { 
             setSavedImageFiles(prevFiles => [...prevFiles, files[i]]);
           } else {
             toast.error("File not allowed with this extension");
@@ -347,12 +347,17 @@ const SinglePropertyDocumentsUpload = () => {
 
   // postImages
   const postImages = (e) => {
-    e.preventDefault();
-    if (savedImageFiles.length > 5) {
+    e.preventDefault();     
+    if (savedImageFiles.length > 5  && documentsInfo.category_id !== 16) {
       toast.error("You cannot upload more than 5 documents at a time.");
       setSavedImageFiles([])
       return;
+    }else if (savedImageFiles.length > 20  && documentsInfo.category_id === 16) {
+      toast.error("You cannot upload more than 20 documents at a time.");
+      setSavedImageFiles([])
+      return;
     }
+
     setImageLoading(true);
     setImageFiles(savedImageFiles);
   };

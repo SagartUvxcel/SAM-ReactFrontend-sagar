@@ -1077,7 +1077,7 @@ const ListOfProperties = () => {
                 <div className="d-flex justify-content-between">
                   <span className="fw-bold">
                     <i className="bi bi-file-earmark pe-2"></i>
-                    Documents
+                    Documents List
                   </span>
                   <button
                     type="button"

@@ -143,16 +143,15 @@ const ManageUsers = ({ userType }) => {
   const handlePageClick = async (pageNumber) => {
     window.scrollTo(0, 0);
     let currentPage = pageNumber.selected + 1;
-    toggleActivePageClass(currentPage);
-    setCurrentPageNumber(currentPage);
-    const nextOrPrevPageUsers = await fetchMoreUsers(currentPage);
+    toggleActivePageClass(currentPage < 1 ? 1 : currentPage);
+    setCurrentPageNumber(currentPage < 1 ? 1 : currentPage);
+    const nextOrPrevPageUsers = await fetchMoreUsers(currentPage < 1 ? 1 : currentPage);
     setUsers(nextOrPrevPageUsers);
     toggleClassOfNextPrevPageItems();
   };
 
   // Fetch more users on page click.
   const fetchMoreUsers = async (currentPage) => {
-
     if (dataFromBankAdminPage === null) {
       const dataToPost = {
         type: userType,
@@ -171,7 +170,6 @@ const ManageUsers = ({ userType }) => {
         number_of_records: records_per_page,
         bank_id: dataFromBankAdminPage
       }
-
       const usersRes = await axios.post(`/sam/v1/bank-registration/auth/bank/user-list`, dataToPost, {
         headers: authHeader,
       });
@@ -250,6 +248,8 @@ const ManageUsers = ({ userType }) => {
                 handlePageClick({ selected: currentPageNumber - 1 });
               }
             } else {
+              getAllUsers();
+
             }
           } else {
             toast.error("Internal server error");
@@ -594,7 +594,7 @@ const ManageUsers = ({ userType }) => {
                                     id="navbarDropdown"
                                     role="button"
                                     data-bs-toggle="dropdown"
-                                    aria-expanded="false"
+                                    aria-expanded="false" 
                                   >
                                     Select
                                   </span>
@@ -641,6 +641,7 @@ const ManageUsers = ({ userType }) => {
                                             branchIdDetails,
                                             branchNameDetails
                                           );
+                                          document.getElementById("confirm-delete-input").value = "";
                                         }}
                                       >
                                         <i className="bi bi-trash pe-2"></i>
@@ -692,7 +693,7 @@ const ManageUsers = ({ userType }) => {
               <div className="col-md-6 text-end">
                 <button
                   className="btn btn-sm btn-outline-primary"
-                  onClick={()=>
+                  onClick={() =>
                     setDisplayClassesOfMainSections({
                       showAllUsersSectionClass: "",
                       viewCurrentUserSectionClass: "d-none",

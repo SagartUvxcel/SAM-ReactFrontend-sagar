@@ -709,8 +709,7 @@ const Registration = () => {
           },
         }));
       }
-    }
-    else if (name === "landline_number") {
+    } else if (name === "landline_number") {
       if (landlineNumberRegularExp.test(value) || value.length === 0) {
         setValidationDetails({
           ...validationDetails,

@@ -372,8 +372,8 @@ const BulkDocumentsUploadPage = () => {
                   <div className="col-md-5 text-end my-2 my-md-0">
                     <a
                       className="btn btn-sm btn-primary text-white sample-file-download-btn me-4"
-                      href={sampleCSVFile}
-                      download="SampleBulkFile.csv"
+                      href={DocumentsUploadFolder}
+                      download="DocumentsUploadFolder.zip"
                     >
                       <i className="bi bi-download me-2"> </i>  Sample Bulk Folder
                     </a>
@@ -431,7 +431,7 @@ const BulkDocumentsUploadPage = () => {
                           </div>
                           <div className="mt-2">
                             <small className="text-white">
-                              To download the sample bulk folder format, <a className="custom-text-secondary" href={DocumentsUploadFolder}>click here</a>.
+                              To download the sample bulk folder format, <a className="custom-text-secondary" download="DocumentsUploadFolder.zip" href={DocumentsUploadFolder}>click here</a>.
                             </small>
                             <br />
 

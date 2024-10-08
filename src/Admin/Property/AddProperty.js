@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import BreadCrumb from "../BreadCrumb";
 import { checkLoginSession, openInNewTab } from "../../CommonFunctions";
 import CommonSpinner from "../../CommonSpinner";
+import ReactSelect from "react-select";
 
 
 let authHeader = "";
@@ -20,7 +21,6 @@ let isBank = false;
 // main component function
 const AddProperty = () => {
 
-  
   const navigate = useNavigate();
   // login credentials
   const data = JSON.parse(localStorage.getItem("data"));
@@ -31,7 +31,7 @@ const AddProperty = () => {
     roleId = data.roleId;
     branch_Id = data.branch_Id;
   }
-  
+
   const updatedCountry = localStorage.getItem("location");
   const countryId = updatedCountry === "india" ? 1 : 11;
 
@@ -66,6 +66,10 @@ const AddProperty = () => {
   const citySelectBoxRef = useRef();
   const notSoldCheckRef = useRef();
   const [pathLocation, setPathLocation] = useState("");
+  const [zipCity, setZipCity] = useState(""); // City input value
+  const [zipCodes, setZipCodes] = useState([]); // List of zip codes based on entered city 
+  const [isCustomZip, setIsCustomZip] = useState(false);
+  const [customZip, setCustomZip] = useState("");
 
   // get category,bank, state details
   const getDataFromApi = async () => {
@@ -99,14 +103,14 @@ const AddProperty = () => {
     const propertyCategoryRes = await axios.get(`/sam/v1/property/by-category`);
 
     setPropertyCategories(propertyCategoryRes.data);
-    const bankRes = await axios.post(`/sam/v1/property/by-bank`, postData); 
+    const bankRes = await axios.post(`/sam/v1/property/by-bank`, postData);
     setBanks(bankRes.data);
     const statesRes = await axios.post(`/sam/v1/property/by-state`, postData);
     setAllStates(statesRes.data);
   };
 
   // get bank Details
-  const getBankDetails = async (bankData) => { 
+  const getBankDetails = async (bankData) => {
     const activeBankDetails = bankData.filter(bank => bank.bank_id === bank_Id)[0]
     setActiveBank(activeBankDetails);
     const branchRes = await axios.get(`/sam/v1/property/auth/bank-branches/${bank_Id}`, {
@@ -143,9 +147,45 @@ const AddProperty = () => {
   };
 
 
+  //fetch zip code
+  const fetchZipCodes = async (zipCity) => {
+    if (zipCity) {
+      try {
+        const response = await fetch(
+          `https://api.postalpincode.in/postoffice/${zipCity}`
+        );
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+
+        if (data && data[0] && data[0].PostOffice) {
+          const postOffices = data[0].PostOffice;
+          const pinCodes = postOffices.map((po) => po.Pincode);
+          setZipCodes(pinCodes); // Set the zip codes in state 
+        } else {
+          setZipCodes([]); // Reset zip codes if no post office found 
+        }
+      } catch (error) {
+        console.error("Error fetching zip codes:", error.message);
+        setZipCodes([]); // Reset zip codes on error
+      }
+    } else {
+      console.log("Please enter a valid city.");
+    }
+  };
+
   // handle Focus
   const handleFocus = (e) => {
     e.target.nextSibling.classList.add('active');
+  };
+
+  // handle Input Focus
+  const handleInputFocus = (e) => {
+    const Tra = e.target.closest(".custom-input").nextSibling;
+    if (Tra) {
+      Tra.classList.add("active");
+    }
   };
 
   // on input blur
@@ -244,7 +284,7 @@ const AddProperty = () => {
       commonFnToSaveAddressDetails(name, value);
     } else if (name === "country") {
       commonFnToSaveAddressDetails(name, String(value));
-    }else if (name === "landmark") {
+    } else if (name === "landmark") {
       commonFnToSaveAddressDetails(name, value);
     } else if (name === "state") {
       if (value) {
@@ -259,9 +299,60 @@ const AddProperty = () => {
       }
     } else if (name === "city") {
       commonFnToSaveAddressDetails(name, String(value));
-    } else if (name === "zip") {
-      if (value) {
-        commonFnToSaveAddressDetails(name, parseInt(value));
+      console.log(allCities);
+      console.log(parseInt(value));
+      console.log(allCities.find((city) => city.city_id === parseInt(value))
+        ?.city_name || "");
+
+
+      let cityName = allCities.find((city) => city.city_id === parseInt(value))
+        ?.city_name || "";
+
+      if (cityName) {
+        setZipCity(cityName);
+      }
+
+    }
+    // else if (name === "zip") {
+    //   if (value) {
+    //     commonFnToSaveAddressDetails(name, parseInt(value));
+    //   }
+    // } 
+    else if (name === "zip") {
+      // Handle the "Other" ZIP option 
+      if (value === "other") {
+        setIsCustomZip(true);
+        setCustomZip("");
+      } else {
+        // Hide the custom ZIP input and set selected ZIP
+        setIsCustomZip(false);
+
+        // Update form data with the selected ZIP code
+        setFormData({
+          ...formData,
+          address_details: {
+            ...formData.address_details,
+            [name]: parseInt(value),
+          },
+        });
+      }
+    } else if (name === "customZip") {
+      setCustomZip(value);
+
+      // Validate the custom ZIP code (assuming a 6-digit ZIP is required)
+      if (value.length !== 6 || isNaN(value)) {
+        setZipCodeValidationMessage("Invalid ZipCode.");
+      } else {
+        console.log("hiii=>",typeof value, value);
+        
+        setFormData({
+          ...formData,
+          address_details: {
+            ...formData.address_details,
+            zip: parseInt(value),
+          },
+        });
+        setZipCodeValidationMessage("");
       }
     } else if (name === "title_clear_property") {
       if (value === "1") {
@@ -285,27 +376,13 @@ const AddProperty = () => {
   const resetValidationsOnSubmit = () => {
     setAreaValidationMessage("");
     setZipCodeValidationMessage("");
+    setCustomZip("");
+    setIsCustomZip(false);
   };
 
   // on Form Submit
   const onFormSubmit = async (e) => {
     e.preventDefault();
-    let zipCodeValue = String(zip); 
-    await axios
-      .post(`/sam/v1/customer-registration/zipcode-validation`, {
-        zipcode: zipCodeValue,
-        state_id: parseInt(state),
-      })
-      .then((res) => {
-        if (res.data.status === 0) {
-          setZipCodeValidationMessage("Invalid ZipCode.");
-          zipError = true;
-        } else {
-          setAreaValidationMessage("");
-          zipError = false;
-        }
-      });
-
     if (parseInt(saleable_area) < parseInt(carpet_area)) {
       setAreaValidationMessage("Carpet area must be less than salable area.");
       areaError = true;
@@ -347,7 +424,7 @@ const AddProperty = () => {
               );
             }
           });
-      } catch (error) { 
+      } catch (error) {
         toast.error("Internal server error");
       }
     }
@@ -367,6 +444,12 @@ const AddProperty = () => {
     }
     // eslint-disable-next-line
   }, []);
+
+  useEffect(() => {
+    if (zipCity) {
+      fetchZipCodes(zipCity); // Fetch ZIP codes when the city is selected
+    }
+  }, [zipCity]);
 
   return (
     <Layout>
@@ -910,7 +993,7 @@ const AddProperty = () => {
                               </div>
                               {/* State */}
                               <div className="col-xl-4 col-md-6 mb-3">
-                                <div className="form-group custom-class-form-div">
+                                {/* <div className="form-group custom-class-form-div">
                                   <select
                                     id="state"
                                     name="state"
@@ -937,6 +1020,41 @@ const AddProperty = () => {
                                     )}
                                   </select>
                                   <label className="px-2" htmlFor="state" onClick={() => handleClick('state')} >Select State<span className="text-danger">*</span></label>
+                                </div> */}
+                                <div className="form-group mb-3 custom-class-form-div">
+                                  <ReactSelect
+                                    id="state"
+                                    name="state"
+                                    className="custom-input"
+                                    options={allStates?.map((state) => ({
+                                      value: state.state_id,
+                                      label: state.state_name,
+                                    }))}
+                                    onChange={(selectedOption) => {
+                                      onInputChange({
+                                        target: {
+                                          name: "state",
+                                          value: selectedOption.value,
+                                          label: selectedOption.label,
+                                        },
+                                      });
+                                    }}
+                                    onFocus={handleInputFocus}
+                                    // onBlur={onInputBlur}
+                                    styles={{
+                                      placeholder: (provided) => ({
+                                        ...provided,
+                                        color: "transparent",
+                                      }),
+                                    }}
+                                  />
+                                  <label
+                                    className="px-2"
+                                    htmlFor="state"
+                                    onClick={() => handleClick("state")}
+                                  >
+                                    State <span className="text-danger">*</span>
+                                  </label>
                                 </div>
                               </div>
                               {/* City */}
@@ -944,7 +1062,7 @@ const AddProperty = () => {
                                 className="col-xl-4 col-md-6 mb-3 d-none"
                                 ref={citySelectBoxRef}
                               >
-                                <div className="form-group custom-class-form-div">
+                                {/* <div className="form-group custom-class-form-div">
                                   <select
                                     id="city"
                                     name="city"
@@ -971,11 +1089,52 @@ const AddProperty = () => {
                                     )}
                                   </select>
                                   <label className="px-2" htmlFor="city" onClick={() => handleClick('city')} >City<span className="text-danger">*</span></label>
+                                </div> */}
+
+                                <div className="form-group mb-3 custom-class-form-div">
+                                  <ReactSelect
+                                    id="city"
+                                    name="city"
+                                    className="custom-input"
+                                    options={allCities?.map((city) => ({
+                                      value: city.city_id, // Value sent to the onChange function (city ID)
+                                      label: city.city_name, // Displayed label for the dropdown (city name)
+                                    }))}
+                                    onChange={(selectedOption) => {
+                                      if (selectedOption) {
+                                        // Pass the city ID and name to onInputChange
+                                        onInputChange({
+                                          target: {
+                                            name: "city",
+                                            value: selectedOption.value, // Store city ID
+                                          },
+                                        });
+                                        setZipCity(selectedOption.label); // Store the city name
+                                      }
+                                    }}
+                                    onFocus={handleInputFocus}
+                                    // onBlur={onInputBlur}
+                                    styles={{
+                                      placeholder: (provided) => ({
+                                        ...provided,
+                                        color: "transparent",
+                                      }),
+                                    }}
+                                  />
+                                  <label
+                                    className="px-2"
+                                    htmlFor="city"
+                                    onClick={() => handleClick("city")}
+                                  >
+                                    City <span className="text-danger">*</span>
+                                  </label>
                                 </div>
+
+
                               </div>
                               {/* Zip */}
                               <div className="col-xl-4 col-md-6 mb-3">
-                                <div className="form-group custom-class-form-div">
+                                {/* <div className="form-group custom-class-form-div">
                                   <input
                                     type="text"
                                     onChange={onInputChange}
@@ -991,6 +1150,70 @@ const AddProperty = () => {
                                   <label className="px-2" htmlFor="zip" onClick={() => handleClick('zip')} >Zip<span className="text-danger">*</span></label>
                                   <span
                                     className={`text-danger ${zipCodeValidationMessage ? "" : "d-none"
+                                      }`}
+                                  >
+                                    {zipCodeValidationMessage}
+                                  </span>
+                                </div> */}
+
+                                <div className="form-group mb-3 custom-class-form-div">
+                                  <ReactSelect
+                                    id="zip"
+                                    name="zip"
+                                    className={`custom-input ${zipCodeValidationMessage
+                                      ? "border-danger"
+                                      : ""
+                                      }`}
+                                    options={[
+                                      ...zipCodes.map((zip) => ({
+                                        value: zip,
+                                        label: zip,
+                                      })),
+                                      { value: "other", label: "Other" },
+                                    ]}
+                                    onChange={(selectedOption) => {
+                                      onInputChange({
+                                        target: {
+                                          name: "zip",
+                                          value: selectedOption.value,
+                                        },
+                                      });
+                                    }}
+                                    onFocus={handleInputFocus}
+                                    // onBlur={onInputBlur}
+                                    // Customize the placeholder color
+                                    styles={{
+                                      placeholder: (provided) => ({
+                                        ...provided,
+                                        color: "transparent",
+                                      }),
+                                    }}
+                                  />
+                                  <label
+                                    className="px-2"
+                                    htmlFor="zip"
+                                    onClick={() => handleClick("zip")}
+                                  >
+                                    Zip Code <span className="text-danger">*</span>
+                                  </label>
+
+                                  {/* Show custom ZIP input when "Other" is selected */}
+                                  {isCustomZip && (
+                                    <input
+                                      type="text"
+                                      name="customZip"
+                                      value={customZip}
+                                      onChange={onInputChange}
+                                      className={`form-control mt-2 ${zipCodeValidationMessage
+                                        ? "border-danger"
+                                        : ""
+                                        }`}
+                                      placeholder="Enter your ZIP code"
+                                    />
+                                  )}
+                                  {/* Validation message for the ZIP code */}
+                                  <span
+                                    className={`pe-1 ${zipCodeValidationMessage ? "text-danger" : "d-none"
                                       }`}
                                   >
                                     {zipCodeValidationMessage}

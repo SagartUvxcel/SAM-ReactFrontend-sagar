@@ -241,6 +241,11 @@ export const PaymentInformation = () => {
     taxFetchFunction();
   }, [])
 
+   // capitalize Words function
+   const capitalizeWords = (str) => {
+    return str.replace(/\b\w/g, char => char.toUpperCase());
+  };
+
   // on page load
   window.onload = () => {
     navigate("/subscription");
@@ -268,14 +273,14 @@ export const PaymentInformation = () => {
                           value={plan}
                           onChange={(e) => setPlan(e.target.value)}
                         >
-                          <option value="">Select a Plan</option>
+                          <option value="">Select a plan</option>
                           {Array.from(
                             new Set(
                               dataFromSubscriptionPage && dataFromSubscriptionPage.map((item) => item.name)
                             )
                           ).map((uniquePlanName, index) => (
                             <option key={index} value={uniquePlanName}>
-                              {uniquePlanName}
+                              {capitalizeWords(uniquePlanName)}
                             </option>
                           ))}
                         </select>
@@ -291,7 +296,7 @@ export const PaymentInformation = () => {
                           value={billingOption}
                           onChange={(e) => setBillingOption(e.target.value)}
                         >
-                          <option value="">Select a Billing Option</option>
+                          <option value="">Select a billing option</option>
                           {filteredBillingOptions.map((option, index) => (
                             <option
                               key={index}
@@ -303,7 +308,7 @@ export const PaymentInformation = () => {
                                 activePlans?.billing_cycle
                               }
                             >
-                              {option.billing_cycle}
+                              {capitalizeWords(option.billing_cycle)}
                             </option>
                           ))}
                         </select>

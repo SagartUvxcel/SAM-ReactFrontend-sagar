@@ -502,7 +502,7 @@ const UploadProperties = () => {
                       </div>
                       <div className="mt-2">
                         <small className="text-white">
-                          To download the sample bulk folder format, <a className="custom-text-secondary" href={PropertyUploadFolder}>click here</a>.
+                          To download the sample bulk folder format, <a className="custom-text-secondary" download="PropertyUploadFolder.zip" href={PropertyUploadFolder}>click here</a>.
                         </small>
                         <br />
                        
