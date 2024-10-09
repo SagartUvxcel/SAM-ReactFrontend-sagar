@@ -50,7 +50,7 @@ const AddProperty = () => {
     },
   });
   const { is_sold, saleable_area, carpet_area } = formData;
-  const { locality, state, zip } = formData.address_details;
+  const { locality} = formData.address_details;
 
   const [propertyCategories, setPropertyCategories] = useState([]);
   const [banks, setBanks] = useState([]);

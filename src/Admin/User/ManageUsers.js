@@ -70,7 +70,6 @@ const ManageUsers = ({ userType }) => {
   const [currentPageNumber, setCurrentPageNumber] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
 
-
   // get All Users data
   const getAllUsers = async (searchInput = "") => {
     setLoading(true);
@@ -235,7 +234,6 @@ const ManageUsers = ({ userType }) => {
             toast.success(`User ${userName} ${roleId === 6 ? "deleted" : `${roleId === 1 && accountStatus === 1 ? "activated" : "deactivated"}`} successfully`);
             setConfirmDeleteUserBtnDisabled(true);
             setAccountStatus(accountStatus);
-            getAllUsers();
             setTotalUsersCount(totalUsersCount - 1);
             if (totalUsersCount - 1 !== 0) {
               let newPageCount = Math.ceil(
@@ -247,9 +245,9 @@ const ManageUsers = ({ userType }) => {
               } else {
                 handlePageClick({ selected: currentPageNumber - 1 });
               }
+              getAllUsers();
             } else {
               getAllUsers();
-
             }
           } else {
             toast.error("Internal server error");
@@ -594,7 +592,7 @@ const ManageUsers = ({ userType }) => {
                                     id="navbarDropdown"
                                     role="button"
                                     data-bs-toggle="dropdown"
-                                    aria-expanded="false" 
+                                    aria-expanded="false"
                                   >
                                     Select
                                   </span>

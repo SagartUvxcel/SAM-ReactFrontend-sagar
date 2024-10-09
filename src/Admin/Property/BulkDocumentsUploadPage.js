@@ -5,7 +5,6 @@ import Layout from "../../components/1.CommonLayout/Layout";
 import { rootTitle } from "../../CommonFunctions";
 import axios from "axios";
 import { toast } from "react-toastify";
-import sampleCSVFile from "./SampleBulkFile.csv";
 import { v4 as uuid } from "uuid";
 import CommonSpinner from "../../CommonSpinner";
 import DocumentsUploadFolder from "./DocumentsUploadFolder.zip";
