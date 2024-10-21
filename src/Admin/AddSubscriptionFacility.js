@@ -12,7 +12,7 @@ import BreadCrumb from "./BreadCrumb";
 let authHeaders = "";
 
 const AddSubscriptionFacility = () => {
-const navigate =useNavigate();
+    const navigate = useNavigate();
     const confirmDeleteInputRef = useRef();
     const data = JSON.parse(localStorage.getItem("data"));
     if (data) {
@@ -35,10 +35,25 @@ const navigate =useNavigate();
     const onInputChange = (e) => {
         const { name, value, checked, type } = e.target;
         const newValue = type === 'checkbox' ? checked : value;
-        setNewSubscription(prevState => ({
-            ...prevState,
-            [name]: newValue
-        }));
+        // setNewSubscription(prevState => ({
+        //     ...prevState,
+        //     [name]: newValue
+        // }));
+        console.log(name, value, checked, type);
+
+        setNewSubscription(prevState => {
+            if (name === 'basic' && newValue === true) {
+                // If "basic" is selected, deselect "advanced"
+                return { ...prevState, basic: true, advanced: true };
+            } else if (name === 'advanced' && newValue === true) {
+                // If "advanced" is selected, allow both "basic" and "advanced"
+                return { ...prevState, advanced: true, basic: false };
+            } else {
+                // For other cases, toggle the value directly
+                return { ...prevState, [name]: newValue };
+            }
+        });
+
     };
 
     // add facility function
@@ -106,7 +121,7 @@ const navigate =useNavigate();
         setShowEditModal(true);
     };
 
-    // on cilck confirm delete btn
+    // on click confirm delete btn
     const handleDeleteSubscriptionFacility = async (sub_facility_id) => {
         setShowDeleteModal(false);
         const updatedSubscriptions = [...subscriptions];

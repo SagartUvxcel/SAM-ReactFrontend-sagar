@@ -277,6 +277,7 @@ const handleClick = (inputId) => {
                         className="form-control custom-input"
                         onBlur={onPasswordsBlur}
                         onChange={onPasswordsChange}
+                        onPaste={(e) => e.preventDefault()}
                         onFocus={handleFocus}
                         required
                       />

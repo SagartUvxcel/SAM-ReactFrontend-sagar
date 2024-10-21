@@ -8,7 +8,7 @@ import setPassImg from "../../images/setpass.svg";
 import LinkExpiredPasswordResetImage from "../../images/LinkExpiredPasswordResetImage.svg";
 import { rootTitle } from "../../CommonFunctions";
 
-const ForgotAndResetPassword = () => { 
+const ForgotAndResetPassword = () => {
   const goTo = useNavigate();
 
   //  Important variables for storing password data as well as validation data.
@@ -155,10 +155,10 @@ const ForgotAndResetPassword = () => {
       const postData = JSON.stringify({
         password: newPassword,
         username: emailFromURL,
-        token:emailForgotPasswordToken,
+        token: emailForgotPasswordToken,
       });
       try {
-        const { data } = await axios.post(`/sam/v1/customer-registration/forgot-password-change`, postData) 
+        const { data } = await axios.post(`/sam/v1/customer-registration/forgot-password-change`, postData)
         if (data.status === 0) {
           setLoading(false);
           toast.success("Password Changed Successfully !");
@@ -248,7 +248,7 @@ const ForgotAndResetPassword = () => {
         setShowLoader(false);
       }
     } else {
-      setShowLoader(false); 
+      setShowLoader(false);
     }
   };
 
@@ -337,6 +337,7 @@ const ForgotAndResetPassword = () => {
                             onChange={onPasswordsChange}
                             onBlur={onInputBlur}
                             onFocus={handleFocus}
+                            onPaste={(e) => e.preventDefault()}
                             required
                           />
                           <label className="px-0 forgot-password-label " htmlFor="confirmPassword" onClick={() => handleClick('confirmPassword')} >Confirm Password   <span className="text-danger ">*</span></label>

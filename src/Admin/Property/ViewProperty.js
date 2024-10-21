@@ -8,6 +8,9 @@ import { toast } from "react-toastify";
 import * as XLSX from "xlsx";
 import JSZip from "jszip";
 import convertCurrency from "../../components/1.CommonLayout/currencyConverter";
+/* Required for the annotation and text layers */
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
 
 let cnt = 0;
 let authHeader = "";
@@ -128,13 +131,13 @@ const ViewProperty = ({
     setZipExtractedContent(extractedContent);
   };
   // get Chunks Of Documents
-  const getChunksOfDocuments = async (documentId, propertyId) => { 
+  const getChunksOfDocuments = async (documentId, propertyId) => {
     setDocumentLoading(true);
-    if(fetchedFiles[documentId]){ 
+    if (fetchedFiles[documentId]) {
       setSrcOfFile(fetchedFiles[documentId].url)
       setFileExtension(fetchedFiles[documentId].fileExtension)
       return setDocumentLoading(false)
-    } 
+    }
     let dataToPost = {
       document_id: documentId,
       property_id: propertyId,
@@ -163,12 +166,12 @@ const ViewProperty = ({
               } else {
                 dataString = "";
               }
-              let originalBase64 = window.btoa(combinedBinaryFormatOfChunks); 
+              let originalBase64 = window.btoa(combinedBinaryFormatOfChunks);
               const base64Data = originalBase64;
-              const base64Response = await fetch(`${dataString}${base64Data}`); 
-              const blob = await base64Response.blob(); 
-              const url = URL.createObjectURL(blob); 
-              fetchedFiles[documentId] ={ url,fileExtension};
+              const base64Response = await fetch(`${dataString}${base64Data}`);
+              const blob = await base64Response.blob();
+              const url = URL.createObjectURL(blob);
+              fetchedFiles[documentId] = { url, fileExtension };
               setSrcOfFile(url);
               if (fileExtension === "xlsx" || fileExtension === "xls") {
                 fetchExcelFilesData(url);
@@ -342,10 +345,10 @@ const ViewProperty = ({
     setPropertyImagesListState(propertyImagesList)
   }, [propertyImagesList])
 
-  const closeViewModel = (e)=>{
+  const closeViewModel = (e) => {
     e.preventDefault()
-    s1=""
-    cnt=0
+    s1 = ""
+    cnt = 0
     setSrcOfFile(null)
   }
 
@@ -359,7 +362,7 @@ const ViewProperty = ({
             <div className="col-xl-5">
               {/* image slider */}
               <div
-                id="carouselExampleIndicators" 
+                id="carouselExampleIndicators"
                 className="carousel slide"
                 data-bs-ride="carousel"
               >
@@ -375,7 +378,7 @@ const ViewProperty = ({
                         aria-current={index === 0 ? "true" : "false"}
                         aria-label={`Slide ${index + 1}`}
                       ></button>
-                    ))} 
+                    ))}
                 </div>
                 <div className="carousel-inner  ">
                   {propertyImagesListState && propertyImagesListState.length !== 0 ?
@@ -448,7 +451,7 @@ const ViewProperty = ({
                       <button
                         data-bs-toggle="modal"
                         data-bs-target="#viewImageModal"
-                        className="btn btn-sm btn-primary p-2 " 
+                        className="btn btn-sm btn-primary p-2 "
                       >
                         View Images <i className="bi bi-arrow-right"></i>
                       </button>
@@ -812,11 +815,11 @@ const ViewProperty = ({
                     <div className="col-md-4 col-6">
                       <small className="text-muted">Market Price</small>
                       <h5 className="mt-1 common-btn-font">
-                      {updatedCountry && updatedCountry === "malaysia" ? <>{convertCurrency(parseInt(market_price), "Malaysia", "RM", 0.0564)
-                      } <small className="text-muted">RM </small></> : <>
-                        <i className="bi bi-currency-rupee"></i>
-                        {parseInt(market_price) >= 10000000 ? `${(parseInt(market_price) / 10000000).toFixed(2)}` : `${(parseInt(market_price) / 100000).toFixed(1)}`}
-                        <small className="text-muted">{parseInt(market_price) >= 10000000 ? " Cr." : " Lac"}</small></>}
+                        {updatedCountry && updatedCountry === "malaysia" ? <>{convertCurrency(parseInt(market_price), "Malaysia", "RM", 0.0564)
+                        } <small className="text-muted">RM </small></> : <>
+                          <i className="bi bi-currency-rupee"></i>
+                          {parseInt(market_price) >= 10000000 ? `${(parseInt(market_price) / 10000000).toFixed(2)}` : `${(parseInt(market_price) / 100000).toFixed(1)}`}
+                          <small className="text-muted">{parseInt(market_price) >= 10000000 ? " Cr." : " Lac"}</small></>}
                       </h5>
                     </div>
                   ) : (
@@ -827,11 +830,11 @@ const ViewProperty = ({
                     <div className="col-md-4 col-6">
                       <small className="text-muted">Ready Reckoner Price</small>
                       <h5 className="mt-1 common-btn-font">
-                      {updatedCountry && updatedCountry === "malaysia" ? <>{convertCurrency(parseInt(ready_reckoner_price), "Malaysia", "RM", 0.0564)
-                      } <small className="text-muted">RM </small></> : <>
-                      <i className="bi bi-currency-rupee"></i>
-                        {parseInt(ready_reckoner_price) >= 10000000 ? `${(parseInt(ready_reckoner_price) / 10000000).toFixed(2)}` : `${(parseInt(ready_reckoner_price) / 100000).toFixed(1)}`}
-                        <small className="text-muted">{parseInt(ready_reckoner_price) >= 10000000 ? " Cr." : " Lac"}</small></>}
+                        {updatedCountry && updatedCountry === "malaysia" ? <>{convertCurrency(parseInt(ready_reckoner_price), "Malaysia", "RM", 0.0564)
+                        } <small className="text-muted">RM </small></> : <>
+                          <i className="bi bi-currency-rupee"></i>
+                          {parseInt(ready_reckoner_price) >= 10000000 ? `${(parseInt(ready_reckoner_price) / 10000000).toFixed(2)}` : `${(parseInt(ready_reckoner_price) / 100000).toFixed(1)}`}
+                          <small className="text-muted">{parseInt(ready_reckoner_price) >= 10000000 ? " Cr." : " Lac"}</small></>}
                       </h5>
                     </div>
                   ) : (
@@ -842,11 +845,11 @@ const ViewProperty = ({
                     <div className="col-md-4 col-6">
                       <small className="text-muted">Reserved Price</small>
                       <h5 className="mt-1 common-btn-font">
-                      {updatedCountry && updatedCountry === "malaysia" ? <>{convertCurrency(parseInt(expected_price), "Malaysia", "RM", 0.0564)
-                      } <small className="text-muted">RM </small></> : <>
-                      <i className="bi bi-currency-rupee"></i>
-                        {parseInt(expected_price) >= 10000000 ? `${(parseInt(expected_price) / 10000000).toFixed(2)}` : `${(parseInt(expected_price) / 100000).toFixed(1)}`}
-                        <small className="text-muted">{parseInt(expected_price) >= 10000000 ? " Cr." : " Lac"}</small></>}
+                        {updatedCountry && updatedCountry === "malaysia" ? <>{convertCurrency(parseInt(expected_price), "Malaysia", "RM", 0.0564)
+                        } <small className="text-muted">RM </small></> : <>
+                          <i className="bi bi-currency-rupee"></i>
+                          {parseInt(expected_price) >= 10000000 ? `${(parseInt(expected_price) / 10000000).toFixed(2)}` : `${(parseInt(expected_price) / 100000).toFixed(1)}`}
+                          <small className="text-muted">{parseInt(expected_price) >= 10000000 ? " Cr." : " Lac"}</small></>}
                       </h5>
                     </div>
                   ) : (
@@ -964,7 +967,7 @@ const ViewProperty = ({
                 <i
                   data-bs-dismiss="modal"
                   aria-label="Close"
-                  className="bi bi-x-lg text-white" 
+                  className="bi bi-x-lg text-white"
                   onClick={closeViewModel}
                 ></i>
               </div>
@@ -1060,8 +1063,8 @@ const ViewProperty = ({
                       ) : fileExtension === "" ? (
                         <></>
                       ) : fileExtension === "txt" || fileExtension === "pdf" ? (
-                        <> 
-                        <embed src={`${srcOfFile}#toolbar=0`} type="application/pdf" width="100%" height="100%" />; 
+                        <>
+                          <embed src={`${srcOfFile}#toolbar=0`} type="application/pdf" width="100%" height="100%" />;
                         </>
                       ) : (
                         <div className="wrapper">
@@ -1172,7 +1175,7 @@ const ViewProperty = ({
                   </div>
                 </div>
               </div>
-              <hr className="my-2" /> 
+              <hr className="my-2" />
               <div className="gallery">
                 {propertyImagesListState.length !== 0 ? propertyImagesListState.map((image, index) => {
                   return (
@@ -1196,7 +1199,7 @@ const ViewProperty = ({
                   <div className="text-muted">
                     No Images available.
                   </div>}
-              </div> 
+              </div>
             </div>
           </div>
         </div>
@@ -1244,7 +1247,7 @@ const ViewProperty = ({
                   data-bs-dismiss="modal"
                   aria-label="Close"
                   className="bi bi-x-lg text-white"
-                  onClick={(e)=>closeViewModel(e)}
+                  onClick={(e) => closeViewModel(e)}
                 ></i>
               </div>
             </div>

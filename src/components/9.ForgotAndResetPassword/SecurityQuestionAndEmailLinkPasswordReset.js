@@ -478,6 +478,7 @@ const SecurityQuestionAndEmailLinkPasswordReset = () => {
                             onChange={onFormInputsChange}
                             onBlur={onInputBlur}
                             onFocus={handleFocus}
+                            onPaste={(e) => e.preventDefault()}
                             required
                           />
                           <label className="px-0 security-question-label " htmlFor="confirmPassword" onClick={() => handleClick('confirmPassword')} > Confirm Password<span className="text-danger ">*</span></label>

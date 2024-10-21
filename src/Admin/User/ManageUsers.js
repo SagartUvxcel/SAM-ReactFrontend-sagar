@@ -29,14 +29,8 @@ const ManageUsers = ({ userType }) => {
 
   const [users, setUsers] = useState([]);
   const dataFromBankAdminPage = location.state ? location.state.sensitiveData : bank_id > 0 ? bank_id : null;
-
-  const data = JSON.parse(localStorage.getItem("data"));
-  if (data) {
-    authHeader = { Authorization: data.loginToken };
-    roleId = data.roleId;
-    bank_id = data.bank_id;
-    isBank = data.isBank;
-  }
+  
+  const [mainData, setMainData] = useState(null);
   const [otherDetailsOfUser, setOtherDetailsOfUser] = useState({});
   const { user_id, email_address, mobile_number, user_type } =
     otherDetailsOfUser;
@@ -73,6 +67,8 @@ const ManageUsers = ({ userType }) => {
   // get All Users data
   const getAllUsers = async (searchInput = "") => {
     setLoading(true);
+    // console.log("dataFromBankAdminPage === null==>",searchInput);
+
     if (dataFromBankAdminPage === null) {
       const dataToPost = {
         type: userType,
@@ -81,6 +77,8 @@ const ManageUsers = ({ userType }) => {
         number_of_records: records_per_page,
         search_input: searchInput
       };
+      //  console.log("getUserFunction==>",dataToPost);
+
       try {
         await axios
           .post(`${url}/get-users`, dataToPost, { headers: authHeader })
@@ -113,6 +111,8 @@ const ManageUsers = ({ userType }) => {
         bank_id: dataFromBankAdminPage,
         search_input: searchInput
       }
+
+      console.log("dataFromBankAdminPage !== null==>", dataToPost);
       try {
         await axios.post(`/sam/v1/bank-registration/auth/bank/user-list`, dataToPost, { headers: authHeader })
           .then((res) => {
@@ -141,10 +141,13 @@ const ManageUsers = ({ userType }) => {
   // This will run when we click any page link in pagination. e.g. prev, 1, 2, 3, 4, next.
   const handlePageClick = async (pageNumber) => {
     window.scrollTo(0, 0);
+    console.log("handlePageClick==>1==>", pageNumber);
+
     let currentPage = pageNumber.selected + 1;
     toggleActivePageClass(currentPage < 1 ? 1 : currentPage);
     setCurrentPageNumber(currentPage < 1 ? 1 : currentPage);
     const nextOrPrevPageUsers = await fetchMoreUsers(currentPage < 1 ? 1 : currentPage);
+    console.log(nextOrPrevPageUsers);
     setUsers(nextOrPrevPageUsers);
     toggleClassOfNextPrevPageItems();
   };
@@ -155,11 +158,14 @@ const ManageUsers = ({ userType }) => {
       const dataToPost = {
         type: userType,
         page_number: currentPage,
+        status: accountStatus,
         number_of_records: records_per_page,
       };
       const usersRes = await axios.post(`${url}/get-users`, dataToPost, {
         headers: authHeader,
       });
+      console.log(usersRes.data);
+
       return usersRes.data;
     } else {
 
@@ -241,12 +247,17 @@ const ManageUsers = ({ userType }) => {
               );
               setPageCount(newPageCount);
               if (newPageCount < currentPageNumber) {
+
+                console.log("handlePageClick==>2==>", currentPageNumber);
                 handlePageClick({ selected: currentPageNumber - 2 });
               } else {
+                console.log("handlePageClick==>3==>", currentPageNumber);
                 handlePageClick({ selected: currentPageNumber - 1 });
               }
-              getAllUsers();
+              // getAllUsers();
             } else {
+              console.log("call==>1==>");
+
               getAllUsers();
             }
           } else {
@@ -261,8 +272,8 @@ const ManageUsers = ({ userType }) => {
   // save Current User Data
   const saveCurrentUserData = async (id) => {
     setSelectedUserId(id);
-    if (data) {
-      setLoggedInUserId(data.userId);
+    if (mainData) {
+      setLoggedInUserId(mainData.userId);
       // Get user by Id.
       const currentUser = await axios.get(
         `/sam/v1/user-registration/auth/${id}`,
@@ -431,26 +442,42 @@ const ManageUsers = ({ userType }) => {
     let timeOut;
     if (searchTerm && searchTerm.length > 0) {
       timeOut = setTimeout(() => {
+
+        console.log("call==>2==>");
         getAllUsers(searchTerm);
       }, 800)
     }
     return () => clearTimeout(timeOut)
     // eslint-disable-next-line
   }, [searchTerm])
+console.log(accountStatus);
 
+const [isStatusChange, setIsStatusChange] = useState(null)
 
   useEffect(() => {
-    if (accountStatus !== null) {
+    console.log("hiiiiiiiii");
+
+    if (isStatusChange !== null) {
+      console.log("call==>5==>");
       getAllUsers();
     }
     // eslint-disable-next-line
-  }, [accountStatus]);
+  }, [isStatusChange]);
 
   useEffect(() => {
+    const data = JSON.parse(localStorage.getItem("data"));
+    setMainData(data);
+  if (data) {
+    authHeader = { Authorization: data.loginToken };
+    roleId = data.roleId;
+    bank_id = data.bank_id;
+    isBank = data.isBank;
+  }
     if (data) {
       setLoading(true);
       checkLoginSession(data.loginToken).then((res) => {
         if (res === "Valid") {
+          console.log("call==>4==>");
           getAllUsers();
         }
       });
@@ -496,7 +523,9 @@ const ManageUsers = ({ userType }) => {
                       name="states"
                       className="form-select form-select-sm px-5 py-2"
                       aria-label=".form-select-sm example"
-                      onChange={(e) => setAccountStatus(Number(e.target.value))}
+                      onChange={(e) => {
+                        setAccountStatus(Number(e.target.value))
+                        setIsStatusChange(Number(e.target.value));}}
                     >
                       <option value={0}>Active</option>
                       <option value={1}>Inactive</option>
@@ -629,7 +658,7 @@ const ManageUsers = ({ userType }) => {
                                       <div
                                         data-bs-toggle={`${arrayOfRoles.join(", ") === "Editor" ? "" : "modal"}`}
                                         data-bs-target="#confirmDeleteUserModal"
-                                        className={`dropdown-item ${email_address === data.user
+                                        className={`dropdown-item ${email_address === mainData.user
                                           ? "d-none" : ""} ${arrayOfRoles.join(", ") === "Editor" ? `${accountStatus === 1 ? "d-none" : ""}` : ""}`}
                                         onClick={() => {
                                           onDeleteBtnClick(

@@ -79,6 +79,9 @@ const SinglePropertyDocumentsUpload = () => {
     documentsInfo;
   let otherCategoryId = null;
 
+  const [docErrorDetails, setDocErrorDetails] = useState([]);
+  const [alreadyExistDocuments, setAlreadyExistDocuments] = useState([]);
+
   // document categories fetching from database
   const getCategoriesFromDB = async () => {
     setCategoriesLoading(true);
@@ -181,7 +184,7 @@ const SinglePropertyDocumentsUpload = () => {
         [name]: value,
       });
     }
-  }; 
+  };
 
   const [alertDetails, setAlertDetails] = useState({
     alertVisible: false,
@@ -193,6 +196,7 @@ const SinglePropertyDocumentsUpload = () => {
   // handle Image File Change
   const handleImageFileChange = (e) => {
     e.preventDefault();
+    setSavedImageFiles([]);
 
     const files = Array.from(e.target.files);
     let currentTotalSize = totalSizeOfDocuments;
@@ -205,7 +209,7 @@ const SinglePropertyDocumentsUpload = () => {
       if (currentTotalSize <= 25) {
         setAlertDetails({ alertVisible: false });
         if (allowedExtensions.length > 0) {
-          if (allowedExtensions.includes(currentFileExtension)) { 
+          if (allowedExtensions.includes(currentFileExtension)) {
             setSavedImageFiles(prevFiles => [...prevFiles, files[i]]);
           } else {
             toast.error("File not allowed with this extension");
@@ -232,7 +236,6 @@ const SinglePropertyDocumentsUpload = () => {
       window.location.reload();
     }, 4000);
   };
-
   // read And Upload Current Image Chunk
   const readAndUploadCurrentImageChunk = (file, currentChunkIndex) => {
     const reader = new FileReader();
@@ -279,7 +282,11 @@ const SinglePropertyDocumentsUpload = () => {
           if (res.data.msg === 0) {
             if (currentImageFileIndex === savedImageFiles.length - 1) {
               setImageLoading(false);
-              toast.success("All files uploaded successfully");
+              console.log(alreadyExistDocuments);
+              
+              if (savedImageFiles.length === 1 || alreadyExistDocuments.length <= 0) {
+                toast.success("All files uploaded successfully");
+              }
               reloadPage();
             }
           } else {
@@ -293,8 +300,12 @@ const SinglePropertyDocumentsUpload = () => {
       if (isLastChunk) {
         setImageLoading(false);
         let err = error.response.data.error;
-        toast.error(err.charAt(0).toUpperCase() + err.slice(1).toLowerCase());
-        reloadPage();
+        if (savedImageFiles.length === 1) {
+          toast.error(err.charAt(0).toUpperCase() + err.slice(1).toLowerCase());
+          reloadPage();
+        }
+        setAlreadyExistDocuments((pre) => [...pre, err.charAt(0).toUpperCase() + err.slice(1).toLowerCase()]);
+
       }
     }
 
@@ -347,12 +358,12 @@ const SinglePropertyDocumentsUpload = () => {
 
   // postImages
   const postImages = (e) => {
-    e.preventDefault();     
-    if (savedImageFiles.length > 5  && documentsInfo.category_id !== 16) {
+    e.preventDefault();
+    if (savedImageFiles.length > 5 && documentsInfo.category_id !== 16) {
       toast.error("You cannot upload more than 5 documents at a time.");
       setSavedImageFiles([])
       return;
-    }else if (savedImageFiles.length > 20  && documentsInfo.category_id === 16) {
+    } else if (savedImageFiles.length > 20 && documentsInfo.category_id === 16) {
       toast.error("You cannot upload more than 20 documents at a time.");
       setSavedImageFiles([])
       return;
@@ -408,6 +419,15 @@ const SinglePropertyDocumentsUpload = () => {
     navigate(`${isBank ? `${roleId === 6 ? "/bank" : "/branch"}` : "/admin"
       }/property/bulk-documents-upload`)
   }
+
+
+  // clear page states
+  const clearPageStates = () => {
+    setDocErrorDetails([])
+    setAlreadyExistDocuments([])
+    reloadPage();
+    window.scrollTo(0, 0);
+  };
 
   return (
     <Layout>
@@ -699,6 +719,44 @@ const SinglePropertyDocumentsUpload = () => {
                 </div>
               </div>
             </section>
+
+            {/* Modal */}
+            <div
+              className={`modal fade ${(((docErrorDetails && docErrorDetails.length > 0) || (alreadyExistDocuments && Object.keys(alreadyExistDocuments).length > 0)) && (savedImageFiles && savedImageFiles.length > 1)) ? "show d-block" : "d-none"}`}
+              id="propertyErrorModal"
+              tabIndex="-1"
+              aria-hidden="true"
+              style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
+            >
+              <div className="modal-dialog modal-dialog-centered modal-sm duplicate-property-error-modal">
+                <div className="modal-content">
+                  <div className="modal-header">
+                    <h5 className="modal-title" id="exampleModalLabel">
+                      <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                      Error Details !
+                    </h5>
+                    <button
+                      type="button"
+                      className="btn-close"
+                      onClick={() => {
+                        clearPageStates();
+
+                      }}
+                    ></button>
+                  </div>
+                  {(docErrorDetails || alreadyExistDocuments) && (Object.keys(alreadyExistDocuments).length > 0 || Object.keys(docErrorDetails).length > 0) && <div>
+                    <h4>Document Error</h4>
+                    <div className="m-2">
+                      {alreadyExistDocuments && Object.keys(alreadyExistDocuments).length > 0 && alreadyExistDocuments.map((alreadyExistDocument, i) => {
+                        return <div><i className="bi bi-dot"></i>{alreadyExistDocument}.</div>
+                      })}
+                    </div>
+                  </div>}
+                  <div className="modal-body common-btn-font text-bold">(Other documents were uploaded successfully!)</div>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>

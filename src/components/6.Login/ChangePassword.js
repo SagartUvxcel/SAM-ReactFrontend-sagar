@@ -278,6 +278,7 @@ const ChangePassword = () => {
                           className="form-control custom-input change-input"
                           onBlur={onPasswordsBlur}
                           onChange={onPasswordsChange}
+                          onPaste={(e) => e.preventDefault()}
                           onFocus={handleFocus}
                           required
                         />

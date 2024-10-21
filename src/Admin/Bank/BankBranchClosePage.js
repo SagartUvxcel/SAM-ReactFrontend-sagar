@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import Layout from "../../components/1.CommonLayout/Layout";
 import AdminSideBar from "../AdminSideBar";
-import CommonSpinner from "../../CommonSpinner"; 
+import CommonSpinner from "../../CommonSpinner";
 import { toast } from "react-toastify";
 import { useNavigate, useLocation } from "react-router-dom"
 import axios from "axios";
@@ -30,7 +30,7 @@ const BankBranchClosePage = ({ userType }) => {
     const mainContainer = useRef();
     const dataForCloseBranchPage = location.state ? location.state.sensitiveData : null;
     const [branchData, setBranchData] = useState(dataForCloseBranchPage);
-    const [loading, setLoading] = useState(false); 
+    const [loading, setLoading] = useState(false);
     const [displayBranchSection, setDisplayBranchSection] = useState({
         propertyNotPresentBranchClass: "",
         propertyPresentBranchClass: "",
@@ -49,8 +49,8 @@ const BankBranchClosePage = ({ userType }) => {
 
     // select all property button function
     const handleSelectAll = () => {
-        setSelectAll(!selectAll);  
-        if (!selectAll) { 
+        setSelectAll(!selectAll);
+        if (!selectAll) {
             setSelectedProperties(branchPropertyList.map(property => property.property_id));
         } else {
             setSelectedProperties([]);
@@ -70,7 +70,7 @@ const BankBranchClosePage = ({ userType }) => {
     };
 
     // get All Users data
-    const getAllUsers = async (searchInput = "") => { 
+    const getAllUsers = async (searchInput = "") => {
         const dataToPost = {
             status: accountStatus,
             page_number: initial_page_number,
@@ -110,7 +110,7 @@ const BankBranchClosePage = ({ userType }) => {
             await axios
                 .post(`/sam/v1/property/auth/branch-property`, dataToPost, { headers: authHeader })
                 .then((res) => {
-                    const responseData = res.data; 
+                    const responseData = res.data;
                     setBranchPropertyList(responseData)
                     setLoading(false);
                 });
@@ -152,13 +152,13 @@ const BankBranchClosePage = ({ userType }) => {
 
     // on Branch Details Form Submit
     const onBranchDetailsFormSubmit = async (e) => {
-        e.preventDefault(); 
+        e.preventDefault();
         try {
             await axios
                 .post(`/sam/v1/bank-registration/auth/change-user-branch`, formData, {
                     headers: authHeader,
                 })
-                .then((res) => { 
+                .then((res) => {
                     if (res.data) {
                         setDisplayBranchSection({
                             propertyNotPresentBranchClass: "d-none",
@@ -184,13 +184,13 @@ const BankBranchClosePage = ({ userType }) => {
             is_all: selectAll,
             ...formData,
             property_ids: selectedProperties
-        } 
+        }
         try {
             await axios
                 .post(`/sam/v1/bank-registration/auth/change-property-branch`, dataToPost, {
                     headers: authHeader,
                 })
-                .then((res) => { 
+                .then((res) => {
                     const responseData = res.data;
                     const is_more_property_status = responseData.is_more_property;
                     if (is_more_property_status === true) {
@@ -208,7 +208,7 @@ const BankBranchClosePage = ({ userType }) => {
                         setLoading(false);
                     }
                 });
-        } catch (error) { 
+        } catch (error) {
             toast.error("Please Select at least one property to process.")
             setLoading(false);
         }
@@ -219,15 +219,15 @@ const BankBranchClosePage = ({ userType }) => {
         setLoading(true);
         const dataToPost = {
             current_branch_id: branchData.branchIdDetails,
-        } 
+        }
         try {
             await axios
                 .post(`/sam/v1/bank-registration/auth/close-branch`, dataToPost, {
                     headers: authHeader,
                 })
-                .then((res) => { 
+                .then((res) => {
                     const responseData = res.data;
-                    if (responseData) { 
+                    if (responseData) {
                         navigate(`${roleId === 6 ? "/bank" : "/admin"}/users/branch-users`)
                         toast.success("Branch closed successfully.")
                         setLoading(false);
@@ -236,7 +236,7 @@ const BankBranchClosePage = ({ userType }) => {
                         setLoading(false);
                     }
                 });
-        } catch (error) { 
+        } catch (error) {
             toast.error("Internal server error");
             setLoading(false);
         }
@@ -273,8 +273,11 @@ const BankBranchClosePage = ({ userType }) => {
                         <div className="my-4">
                             <button
                                 className="btn btn-sm btn-outline-primary"
-                                onClick={() => navigate(`${roleId === 6 ? "/bank" : "/admin"
-                                    }/users/branch-users`)}
+                                onClick={() => {
+                                    const sensitiveData = branchData.dataFromBankAdminPage;
+                                    navigate(`${roleId === 6 ? "/bank" : "/admin"
+                                        }/users/branch-users`, { state: { sensitiveData } })
+                                }}
                             >
                                 <i className="bi bi-arrow-left"></i> Back
                             </button>
@@ -381,7 +384,7 @@ const BankBranchClosePage = ({ userType }) => {
                                             <div className="col-xl-12">
                                                 <form onSubmit={onChangeBranchFormSubmit} className="card p-xl-2">
                                                     <div className="card-body">
-                                                        <h4 className="fw-bold">Move properties to other branch</h4>
+                                                        <h4 className="fw-bold">Shift properties to other branch</h4>
                                                         <hr />
                                                         {/* Row 1 - Basic Details */}
                                                         <div className="row mb-2">
@@ -463,13 +466,13 @@ const BankBranchClosePage = ({ userType }) => {
                                                                             </tr>
                                                                         ))}
                                                                     </tbody>
-                                                                </table> 
+                                                                </table>
                                                             </div>
                                                             {/*shift user button */}
                                                             <div className="row text-end">
                                                                 <div className="col-12 mt-4">
                                                                     <button type="submit" className="btn btn-primary">
-                                                                        Change Properties Branch
+                                                                       Shift Properties
                                                                     </button>
                                                                 </div>
                                                             </div>

@@ -104,13 +104,13 @@ const BankRegistrationLinkPage = () => {
                                     ...validationDetails,
                                     emailValidationMessage: "Email id already exists.",
                                 });
-                                style.borderColor = "red"; 
+                                style.borderColor = "red";
                             } else if (!emailFormat.test(value)) {
                                 setValidationDetails({
                                     ...validationDetails,
                                     emailValidationMessage: "Invalid email Id.",
                                 });
-                                style.borderColor = "red"; 
+                                style.borderColor = "red";
                             } else {
                                 setValidationDetails({
                                     ...validationDetails,
@@ -297,12 +297,12 @@ const BankRegistrationLinkPage = () => {
                             <img src={bankRegistrationLinkPage} className="img-fluid " alt="bankLinkImg" />
                         </div>
                         <div className="col-md-8 col-lg-8 col-xl-7 offset-xl-1 order-lg-2 order-1 mt-lg-0 ms-0 mt-5 card px-5 py-4 ">
-                            <h4 className="text-center fw-bold mb-2">Bank Registration Link</h4>
+                            <h4 className="text-center fw-bold mb-2">Bank Registration </h4>
                             <hr className="" />
 
                             <div className="row align-items-center mb-3 ">
                                 {/* Bank radio button */}
-                                <div className="form-check col-md-2 col-5">
+                                <div className="form-check  col-6">
                                     <input
                                         className="form-check-input"
                                         type="radio"
@@ -317,11 +317,11 @@ const BankRegistrationLinkPage = () => {
                                         checked={bankSelected === 0}
                                     />
                                     <label className="form-check-label" htmlFor="bank_button">
-                                        Bank
+                                        Bank Admin Registration
                                     </label>
                                 </div>
                                 {/* Branch radio button */}
-                                <div className="form-check col-md-2 col-5">
+                                <div className="form-check col-6">
                                     <input
                                         className="form-check-input"
                                         type="radio"
@@ -334,10 +334,9 @@ const BankRegistrationLinkPage = () => {
                                             clearErrorMsgFunction();
                                         }}
                                         checked={bankSelected === 1}
-
                                     />
                                     <label className="form-check-label" htmlFor="exampleRadios1">
-                                        Branch
+                                        Branch Registration
                                     </label>
                                 </div>
                             </div>

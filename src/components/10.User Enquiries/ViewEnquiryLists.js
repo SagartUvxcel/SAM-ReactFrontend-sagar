@@ -445,8 +445,11 @@ const ViewEnquiryLists = () => {
   };
 
   //connect To WebSocket
-  const connectToWebSocket = () => { 
+  const connectToWebSocket = () => {
+    console.log(webSocketUrl);
+
     const newSocket = new WebSocket(webSocketUrl);
+
     // const newSocket = new WebSocket("ws://localhost:3000/ws"); 
     setSocket(newSocket);
   };

@@ -15,6 +15,10 @@ import * as XLSX from "xlsx";
 import JSZip from "jszip";
 import "./Gallery.css";
 import convertCurrency from "../1.CommonLayout/currencyConverter";
+/* Required for the annotation and text layers */
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
+
 
 let authHeaders = "";
 let isBank = "";
@@ -26,11 +30,11 @@ const ListOfProperties = () => {
   const location = useLocation();
   const secretKey = "my_secret_key";
   const queryParams = new URLSearchParams(location.search);
-  const data = queryParams.get("data");  
+  const data = queryParams.get("data");
   const updatedCountry = localStorage.getItem("location");
   const dataFromParams = JSON.parse(
     CryptoJS.AES.decrypt(data, secretKey).toString(CryptoJS.enc.Utf8)
-  ); 
+  );
   const localData = JSON.parse(localStorage.getItem("data"));
   if (localData) {
     authHeaders = { Authorization: localData.loginToken };
@@ -112,15 +116,15 @@ const ListOfProperties = () => {
   const viewCurrentProperty = async () => {
     setPageLoading(true);
     delete dataFromParams.batch_number;
-    delete dataFromParams.batch_size; 
+    delete dataFromParams.batch_size;
     const countryId = updatedCountry === "india" ? 1 : 11;
     const postData = { "country_id": countryId }
     try {
       const res = await axios.post(`/sam/v1/property/auth/view-properties`, dataFromParams, {
         headers: authHeaders,
       });
-      let propertyDetails = res.data; 
-      const bankRes = await axios.post(`/sam/v1/property/by-bank`,postData);
+      let propertyDetails = res.data;
+      const bankRes = await axios.post(`/sam/v1/property/by-bank`, postData);
       setBanks(bankRes.data);
       setSelectedPropertyResults(propertyDetails);
       localStorage.setItem("defaultResultsOfProperties", JSON.stringify(propertyDetails));
@@ -190,7 +194,7 @@ const ListOfProperties = () => {
         .then((res) => {
           if (res.data.msg === 0) {
             toast.success("Message sent successfully");
-          } else if (res.data.msg === 3) { 
+          } else if (res.data.msg === 3) {
           } else {
             toast.error("Internal server error");
           }
@@ -674,7 +678,7 @@ const ListOfProperties = () => {
                         territory,
                         title_clear_property,
                         bank_id,
-                      } = property; 
+                      } = property;
                       let bankDetails = banks.filter(bank => bank.bank_id === parseInt(bank_id))[0];
                       return (
                         <div key={Index} className="p-0">
@@ -796,11 +800,11 @@ const ListOfProperties = () => {
                                           Market Price
                                         </small>
                                         <div className="common-btn-font">
-                                        {updatedCountry && updatedCountry === "malaysia" ? <>{convertCurrency(parseInt(market_price), "Malaysia", "RM", 0.0564)
-                                        } <small className="text-muted">RM </small></> : <>
-                                          <i className="bi bi-currency-rupee"></i>
-                                          {parseInt(market_price) >= 10000000 ? `${(parseInt(market_price) / 10000000).toFixed(2)}` : `${(parseInt(market_price) / 100000).toFixed(1)}`}
-                                          <small className="text-muted">{parseInt(market_price) >= 10000000 ? " Cr." : " Lac"}</small>
+                                          {updatedCountry && updatedCountry === "malaysia" ? <>{convertCurrency(parseInt(market_price), "Malaysia", "RM", 0.0564)
+                                          } <small className="text-muted">RM </small></> : <>
+                                            <i className="bi bi-currency-rupee"></i>
+                                            {parseInt(market_price) >= 10000000 ? `${(parseInt(market_price) / 10000000).toFixed(2)}` : `${(parseInt(market_price) / 100000).toFixed(1)}`}
+                                            <small className="text-muted">{parseInt(market_price) >= 10000000 ? " Cr." : " Lac"}</small>
                                           </>}
                                         </div>
                                       </div>
@@ -813,11 +817,11 @@ const ListOfProperties = () => {
                                           Ready Reckoner Price
                                         </small>
                                         <div className="common-btn-font">
-                                        {updatedCountry && updatedCountry === "malaysia" ? <>{convertCurrency(parseInt(ready_reckoner_price), "Malaysia", "RM", 0.0564)
-                                        } <small className="text-muted">RM </small></> : <>
-                                          <i className="bi bi-currency-rupee"></i>
-                                          {parseInt(ready_reckoner_price) >= 10000000 ? `${(parseInt(ready_reckoner_price) / 10000000).toFixed(2)}` : `${(parseInt(ready_reckoner_price) / 100000).toFixed(1)}`}
-                                          <small className="text-muted">{parseInt(ready_reckoner_price) >= 10000000 ? " Cr." : " Lac"}</small></>}
+                                          {updatedCountry && updatedCountry === "malaysia" ? <>{convertCurrency(parseInt(ready_reckoner_price), "Malaysia", "RM", 0.0564)
+                                          } <small className="text-muted">RM </small></> : <>
+                                            <i className="bi bi-currency-rupee"></i>
+                                            {parseInt(ready_reckoner_price) >= 10000000 ? `${(parseInt(ready_reckoner_price) / 10000000).toFixed(2)}` : `${(parseInt(ready_reckoner_price) / 100000).toFixed(1)}`}
+                                            <small className="text-muted">{parseInt(ready_reckoner_price) >= 10000000 ? " Cr." : " Lac"}</small></>}
                                         </div>
                                       </div>
                                       {/* Reserved Price */}
@@ -829,11 +833,11 @@ const ListOfProperties = () => {
                                           Reserved Price
                                         </small>
                                         <div className="common-btn-font">
-                                        {updatedCountry && updatedCountry === "malaysia" ? <>{convertCurrency(parseInt(expected_price), "Malaysia", "RM", 0.0564)
-                                        } <small className="text-muted">RM </small></> : <>
-                                          <i className="bi bi-currency-rupee"></i>
-                                          {parseInt(expected_price) >= 10000000 ? `${(parseInt(expected_price) / 10000000).toFixed(2)}` : `${(parseInt(expected_price) / 100000).toFixed(1)}`}
-                                          <small className="text-muted">{parseInt(expected_price) >= 10000000 ? " Cr." : " Lac"}</small></>}
+                                          {updatedCountry && updatedCountry === "malaysia" ? <>{convertCurrency(parseInt(expected_price), "Malaysia", "RM", 0.0564)
+                                          } <small className="text-muted">RM </small></> : <>
+                                            <i className="bi bi-currency-rupee"></i>
+                                            {parseInt(expected_price) >= 10000000 ? `${(parseInt(expected_price) / 10000000).toFixed(2)}` : `${(parseInt(expected_price) / 100000).toFixed(1)}`}
+                                            <small className="text-muted">{parseInt(expected_price) >= 10000000 ? " Cr." : " Lac"}</small></>}
                                         </div>
                                       </div>
                                       {/* Saleable Area */}
@@ -1194,7 +1198,7 @@ const ListOfProperties = () => {
                     download={fileName}
                     title="Download"
                   >
-                   Download <i className="bi bi-download text-primary"></i>
+                    Download <i className="bi bi-download text-primary"></i>
                   </a>}
                 <i
                   data-bs-dismiss="modal"
